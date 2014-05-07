@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{16F31A87-2E6D-432A-A9DA-F0EE2181D644}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ELTE.AEGIS.Temporal</RootNamespace>
+    <AssemblyName>AEGIS.Temporal.Reference</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Positioning\CalendarDate.cs" />
+    <Compile Include="Positioning\ClockTime.cs" />
+    <Compile Include="Positioning\DateAndTime.cs" />
+    <Compile Include="Positioning\JulianDate.cs" />
+    <Compile Include="Positioning\OrdinalPosition.cs" />
+    <Compile Include="Positioning\PeriodDuration.cs" />
+    <Compile Include="Positioning\TemporalCoordinate.cs" />
+    <Compile Include="Positioning\TemporalPosition.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reference\Calendar.cs" />
+    <Compile Include="Reference\CalendarEra.cs" />
+    <Compile Include="Reference\Calendars.cs" />
+    <Compile Include="Reference\Calendars\GregorianCalendar.cs" />
+    <Compile Include="Reference\Calendars\JulianCalendar.cs" />
+    <Compile Include="Reference\Calendars\ProlepticJulianCalendar.cs" />
+    <Compile Include="Reference\Clock.cs" />
+    <Compile Include="Reference\Clocks.cs" />
+    <Compile Include="Reference\CompoundTemporalReferenceSystem.cs" />
+    <Compile Include="Reference\CompoundTemporalReferenceSystems.cs" />
+    <Compile Include="Reference\CoordinateSystems\JulianDateSystem.cs" />
+    <Compile Include="Reference\CoordinateSystems\ModifiedJulianDateSystem.cs" />
+    <Compile Include="Reference\OrdinalEra.cs" />
+    <Compile Include="Reference\OrdinalReferenceSystem.cs" />
+    <Compile Include="Reference\OrdinalReferenceSystems.cs" />
+    <Compile Include="Reference\TemporalCoordinateSystem.cs" />
+    <Compile Include="Reference\TemporalCoordinateSystems.cs" />
+    <Compile Include="Reference\TemporalReferenceSystem.cs" />
+    <Compile Include="Reference\TimeZone.cs" />
+    <Compile Include="Reference\TimeZones.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
+      <Project>{bbf043a5-9195-43b3-8e01-459b5e66f136}</Project>
+      <Name>AEGIS.Core.Reference</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
+      <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
+      <Name>AEGIS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
+      <Project>{89ddce89-0a0e-4dfd-b16f-05e020e873e1}</Project>
+      <Name>AEGIS.Numerics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Temporal\AEGIS.Temporal.csproj">
+      <Project>{02e62ed3-5f63-4972-ad9d-a5b6949620e7}</Project>
+      <Name>AEGIS.Temporal</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

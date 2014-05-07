@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A60304A6-92A9-45A5-B486-5F3C29727230}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AEGIS.Tests.Reference</RootNamespace>
+    <AssemblyName>AEGIS.Tests.Core.Reference</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Operations\Conversions\GeocentricToTopocentricConversionTest.cs" />
+    <Compile Include="Operations\Conversions\GeographicToGeocentricConversionTest.cs" />
+    <Compile Include="Operations\Conversions\GeographicToTopocentricConversionTest.cs" />
+    <Compile Include="Operations\CoordinateProjectionFactoryTest.cs" />
+    <Compile Include="Operations\Projections\AmericanPolyconicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\CassiniSoldnerProjectionTest.cs" />
+    <Compile Include="Operations\Projections\EquidistantCylindricalProjectionTest.cs" />
+    <Compile Include="Operations\Projections\GuamProjectionTest.cs" />
+    <Compile Include="Operations\Projections\HotineObliqueMercatorProjectionTest.cs" />
+    <Compile Include="Operations\Projections\KrovakProjectionTest.cs" />
+    <Compile Include="Operations\Projections\LabordeObliqueMercatorProjectionTest.cs" />
+    <Compile Include="Operations\Projections\LambertConicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\MercatorProjectionTest.cs" />
+    <Compile Include="Operations\Projections\ModifiedAzimuthalEquidistantProjectionTest.cs" />
+    <Compile Include="Operations\Projections\ObliqueStereographicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\PolarStereographicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\TransverseMercatorProjectionTest.cs" />
+    <Compile Include="Operations\Projections\VerticalPerspectiveProjectionTest.cs" />
+    <Compile Include="Operations\Transformations\P6SeismicBinGridTransformationTest.cs" />
+    <Compile Include="Operations\Transformations\SimilarityTransformationTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
+      <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
+      <Name>AEGIS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
+      <Project>{89ddce89-0a0e-4dfd-b16f-05e020e873e1}</Project>
+      <Name>AEGIS.Numerics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
+      <Project>{bbf043a5-9195-43b3-8e01-459b5e66f136}</Project>
+      <Name>AEGIS.Core.Reference</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

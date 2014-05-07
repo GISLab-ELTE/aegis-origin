@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{10B2784A-3A36-4987-8FC7-FCE2F73E97D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ELTE.AEGIS.IO.Spectral</RootNamespace>
+    <AssemblyName>AEGIS.IO.Spectral</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SpectralGeometryStreamFormats.cs" />
+    <Compile Include="SpectralGeometryStreamParameters.cs" />
+    <Compile Include="GeoTiff\GeoTiffReader.cs" />
+    <Compile Include="GeoTiff\TiffCompression.cs" />
+    <Compile Include="GeoTiff\TiffPhotometricInterpretation.cs" />
+    <Compile Include="GeoTiff\TiffReader.cs" />
+    <Compile Include="GeoTiff\TiffSampleFormat.cs" />
+    <Compile Include="GeoTiff\TiffTagType.cs" />
+    <Compile Include="GeoTiff\TiffWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RawImage\EsriRawImageReader.cs" />
+    <Compile Include="RawImage\RawImageLayout.cs" />
+    <Compile Include="RawImage\RawImageReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
+      <Project>{bbf043a5-9195-43b3-8e01-459b5e66f136}</Project>
+      <Name>AEGIS.Core.Reference</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core.Spectral\AEGIS.Core.Spectral.csproj">
+      <Project>{de84226a-73aa-4aa6-b68b-417e9e8615c6}</Project>
+      <Name>AEGIS.Core.Spectral</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
+      <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
+      <Name>AEGIS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.IO\AEGIS.IO.csproj">
+      <Project>{06119cfd-1e6f-44e4-b3fd-9c81a126c8bf}</Project>
+      <Name>AEGIS.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
+      <Project>{89ddce89-0a0e-4dfd-b16f-05e020e873e1}</Project>
+      <Name>AEGIS.Numerics</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
