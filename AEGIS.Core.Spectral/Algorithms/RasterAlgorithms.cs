@@ -1,19 +1,4 @@
-﻿/// <copyright file="RasterAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-
-using System;
+﻿using System;
 using ELTE.AEGIS.Numerics;
 using System.Collections.Generic;
 
@@ -32,16 +17,19 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <returns>The maximum value of the specified radiometric resolution.</returns>
         /// <exception cref="System.ArgumentException">
-        /// The radiometric resolution is less than 1.
+        /// The radiometric resolution is less than 1.;radiometricResolution
         /// or
-        /// The radiometric resolution is geater than 32.
+        /// The radiometric resolution is geater than 64.;radiometricResolution
         /// </exception>
         public static UInt64 RadiometricResolutionMax(Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
                 throw new ArgumentException("The radiometric resolution is less than 1.", "radiometricResolution");
-            if (radiometricResolution > 32)
-                throw new ArgumentException("The radiometric resolution is geater than 32.", "radiometricResolution");
+            if (radiometricResolution > 64)
+                throw new ArgumentException("The radiometric resolution is geater than 64.", "radiometricResolution");
+
+            if (radiometricResolution == 64)
+                return UInt64.MaxValue;
 
             return Convert.ToUInt64(1UL << radiometricResolution) - 1;
         }
@@ -100,6 +88,72 @@ namespace ELTE.AEGIS.Algorithms
                 }
             }
             return threshold;
+        }
+
+        /// <summary>
+        /// Computes the balance point of a histogram.
+        /// </summary>
+        /// <param name="histogramValues">The histogram values of the image.</param>
+        /// <returns>The balance point of the histogram values.</returns>
+        /// <exception cref="System.ArgumentNullException">The list of histogram values is null.</exception>
+        /// <exception cref="System.ArgumentException">The list of histogram values is empty.</exception>
+        public static Double ComputeHistogramBalance(IList<Int32> histogramValues)
+        {
+            if (histogramValues == null)
+                throw new ArgumentNullException("histogramValues", "The list of histogram values is null.");
+            if (histogramValues.Count == 0)
+                throw new ArgumentException("The list of histogram values is empty.", "histogramValues");
+
+            Int32 leftBoundary = 0, rightBoundary = histogramValues.Count - 1;
+
+            // adjust the boundaries
+            while (leftBoundary < rightBoundary && histogramValues[leftBoundary] == 0)
+                leftBoundary++;
+
+            while (rightBoundary > leftBoundary && histogramValues[rightBoundary] == 0)
+                rightBoundary--;
+
+            Int32 balance = (leftBoundary + rightBoundary) / 2;
+
+            // define the starting weights
+            Int32 leftWeight = 0, rightWeight = 0;
+
+            for (Int32 i = 0; i < histogramValues.Count; i++)
+            {
+                if (i <= balance)
+                    leftWeight += histogramValues[i];
+                if (i >= balance)
+                    rightWeight += histogramValues[i];
+            }
+
+            while (leftBoundary < rightBoundary)
+            {
+                if (leftWeight < rightWeight) // right side is heavier
+                {
+                    rightWeight -= histogramValues[rightBoundary];
+                    rightBoundary--;
+
+                    if ((leftBoundary + rightBoundary) / 2 < balance)
+                    {
+                        rightWeight += histogramValues[balance];
+                        leftWeight -= histogramValues[balance];
+                        balance--;
+                    }
+                }
+                else // left side is heavier
+                {
+                    leftWeight -= histogramValues[leftBoundary];
+                    leftBoundary++;
+                    if ((leftBoundary + rightBoundary) / 2 > balance)
+                    {
+                        leftWeight += histogramValues[balance];
+                        rightWeight -= histogramValues[balance];
+                        balance++;
+                    }
+                }
+            }
+
+            return balance;
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿/// <copyright file="ThresholdClassification.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="ThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -20,12 +20,13 @@ using System.Linq;
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
     /// <summary>
-    /// Represents a threshold transformation.
+    /// Represents a threshold based spectral classification.
     /// </summary>
-    public abstract class ThresholdClassification : PerBandSpectralTransformation
+    public abstract class ThresholdingClassification : PerBandSpectralTransformation
     {
         #region protected fields
 
+        protected Func<IRaster, Int32, Int32, Int32, Boolean> _selectorFunction;
         protected Double[] _lowerThresholdValues;
         protected Double[] _upperThresholdValues;
 
@@ -34,7 +35,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ThresholdClassification" /> class.
+        /// Initializes a new instance of the <see cref="ThresholdingClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -52,7 +53,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The type of a parameter value does not match the type specified by the method.
         /// </exception>
-        protected ThresholdClassification(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
+        protected ThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
         }
@@ -70,6 +71,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
+            // decide based on selector function
+            if (_selectorFunction != null)
+                return _selectorFunction(_source.Raster, rowIndex, columnIndex, bandIndex) ? Byte.MaxValue : Byte.MinValue;
+
+            // decide based on constants
             if (_source.Raster.Representation == RasterRepresentation.Floating)
             {
                 Double value = (_source.Raster as IFloatRaster).GetValue(rowIndex, columnIndex, bandIndex);
@@ -99,8 +105,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      new Int32[] { 8 },
                                                                                      new SpectralRange[] { _source.Raster.SpectralRanges[_sourceBandIndex] },
-                                                                                     _source.Raster.Mapper,
-                                                                                     RasterRepresentation.Integer),
+                                                                                    _source.Raster.Mapper,
+                                                                                    RasterRepresentation.Integer),
                                                                  _source);
             }
             else

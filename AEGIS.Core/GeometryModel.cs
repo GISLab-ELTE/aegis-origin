@@ -24,7 +24,7 @@ namespace ELTE.AEGIS
     public enum GeometryModel
     {
         /// <summary>
-        /// No spatial or temporal suppport is specified.
+        /// No spatial or temporal support is specified.
         /// </summary>
         None = 1,
 

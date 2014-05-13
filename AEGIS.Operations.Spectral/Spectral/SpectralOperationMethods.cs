@@ -67,7 +67,6 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             return All.Where(obj => System.Text.RegularExpressions.Regex.IsMatch(obj.Identifier, identifier)).ToList();
         }
-
         /// <summary>
         /// Returns all <see cref="SpectralOperationMethod" /> instances matching a specified name.
         /// </summary>
@@ -85,11 +84,13 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         #region Private static instances
 
+        private static SpectralOperationMethod _balancedHistogramThresholdingClassification;
         private static SpectralOperationMethod _boxFilter;
         private static SpectralOperationMethod _contrastLimitedAdaptingHistogramEqualization;
         private static SpectralOperationMethod _densitySlicing;
+        private static SpectralOperationMethod _constantBasedThresholdingClassification;
         private static SpectralOperationMethod _customFilter;
-        private static SpectralOperationMethod _customThresholdClassification;
+        private static SpectralOperationMethod _functionBasedThresholdingClassification;
         private static SpectralOperationMethod _gammaCorrection;
         private static SpectralOperationMethod _gaussianBlurFilter;
         private static SpectralOperationMethod _histogramEqualization;
@@ -101,7 +102,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _medianFilter;
         private static SpectralOperationMethod _minimumFilter;
         private static SpectralOperationMethod _normalizedDifferenceIndexComputation;
-        private static SpectralOperationMethod _otsuThresholdClassification;
+        private static SpectralOperationMethod _otsuThresholdingClassification;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralTranslation;
@@ -112,6 +113,22 @@ namespace ELTE.AEGIS.Operations.Spectral
         #endregion
 
         #region Public static properties
+
+        /// <summary>
+        /// Balanced histogram thresholding.
+        /// </summary>
+        public static SpectralOperationMethod BalancedHistogramThresholdingClassification
+        {
+            get
+            {
+                return _balancedHistogramThresholdingClassification ?? (_balancedHistogramThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213124", "Balanced histogram thresholding",
+                                                                         "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         RasterRepresentation.Integer,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
 
         /// <summary>
         /// Box filter.
@@ -165,18 +182,18 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Custom threshold.
+        /// Constant based spectral thresholding.
         /// </summary>
-        public static SpectralOperationMethod CustomThresholdClassification
+        public static SpectralOperationMethod ConstantBasedThresholdClassification
         {
             get
             {
-                return _customThresholdClassification ?? (_customThresholdClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213120", "Custom threshold",
-                                                                         "Creates a monochrome raster by applying a threshold value on all intensity values.", null, "1.0.0",
+                return _constantBasedThresholdingClassification ?? (_constantBasedThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213120", "Constant based spectral thresholding",
+                                                                         "Creates a monochrome raster by separating values located within the specified boundaries.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.LowerThresholdValue,
-                                                                         SpectralOperationParameters.UpperThresholdValue,
+                                                                         SpectralOperationParameters.LowerThresholdBoundary,
+                                                                         SpectralOperationParameters.UpperThresholdBoundary,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -194,6 +211,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.DensitySlicingThresholds));
+            }
+        }
+
+        /// <summary>
+        /// Function based spectral thresholding.
+        /// </summary>
+        public static SpectralOperationMethod FunctionBasedThresholdClassification
+        {
+            get
+            {
+                return _functionBasedThresholdingClassification ?? (_functionBasedThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213122", "Function based spectral thresholding",
+                                                                         "Creates a monochrome raster by separating values based on the specified selector function.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.SpectralSelectorFunction,
+                                                                         SpectralOperationParameters.BandIndex));
             }
         }
 
@@ -380,14 +413,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Otsu threshold.
+        /// Otsu thresholding.
         /// </summary>
-        public static SpectralOperationMethod OtsuThresholdClassification
+        public static SpectralOperationMethod OtsuThresholdingClassification
         {
             get
             {
-                return _otsuThresholdClassification ?? (_otsuThresholdClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213121", "Otsu threshold",
+                return _otsuThresholdingClassification ?? (_otsuThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213121", "Otsu thresholding",
                                                                          "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
                                                                          RasterRepresentation.Integer,
