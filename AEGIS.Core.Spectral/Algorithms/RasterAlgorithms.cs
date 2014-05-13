@@ -1,4 +1,19 @@
-﻿using System;
+﻿/// <copyright file="RasterAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Educational Community License, Version 2.0 (the "License"); you may
+///     not use this file except in compliance with the License. You may
+///     obtain a copy of the License at
+///     http://www.osedu.org/licenses/ECL-2.0
+///
+///     Unless required by applicable law or agreed to in writing,
+///     software distributed under the License is distributed on an "AS IS"
+///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+///     or implied. See the License for the specific language governing
+///     permissions and limitations under the License.
+/// </copyright>
+/// <author>Roberto Giachetta</author>
+
+using System;
 using ELTE.AEGIS.Numerics;
 using System.Collections.Generic;
 
@@ -17,19 +32,16 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <returns>The maximum value of the specified radiometric resolution.</returns>
         /// <exception cref="System.ArgumentException">
-        /// The radiometric resolution is less than 1.;radiometricResolution
+        /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is geater than 64.;radiometricResolution
+        /// The radiometric resolution is geater than 32.
         /// </exception>
         public static UInt64 RadiometricResolutionMax(Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
                 throw new ArgumentException("The radiometric resolution is less than 1.", "radiometricResolution");
-            if (radiometricResolution > 64)
-                throw new ArgumentException("The radiometric resolution is geater than 64.", "radiometricResolution");
-
-            if (radiometricResolution == 64)
-                return UInt64.MaxValue;
+            if (radiometricResolution > 32)
+                throw new ArgumentException("The radiometric resolution is geater than 32.", "radiometricResolution");
 
             return Convert.ToUInt64(1UL << radiometricResolution) - 1;
         }
