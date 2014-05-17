@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Provides extensions to <see cref="IGeometryFactory" /> for producing <see cref="ISpectralGeometry" /> instances.
+    /// Provides extensions to <see cref="IGeometryFactory"/> for producing <see cref="ISpectralGeometry"/> instances.
     /// </summary>
     public static class SpectralGeometryFactoryExtensions
     {
@@ -52,12 +52,182 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="raster">The raster data.</param>
         /// <returns>A spectral polygon containing the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation
+)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
         }
 
         /// <summary>
@@ -66,110 +236,1319 @@ namespace ELTE.AEGIS
         /// <param name="raster">The raster data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A spectral polygon containing the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows,numberOfColumns, mapper, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows,numberOfColumns,mapper,representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows,numberOfColumns, radiometricResolution, spectralRanges, mapper, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The shell is null.
-        /// or
-        /// The raster is null.
-        /// </exception>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IEnumerable<Coordinate> shell)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="holes">The coordinates of the holes.</param>
         /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The shell is null.
-        /// or
-        /// The raster is null.
-        /// </exception>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation,shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The shell is null.
-        /// or
-        /// The raster is null.
-        /// </exception>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="holes">The coordinates of the holes.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The shell is null.
-        /// or
-        /// The raster is null.
-        /// </exception>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell, holes, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell, holes, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The raster is null.
-        /// or
-        /// The source polygon is null.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IPolygon source)
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, source);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation, shell, holes, metadata);
+        }
+
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, source);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, source);
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         {
             // test case 1: integer raster
 
-            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), null);
+            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object.Mapper), null); //!!!
             operation.Execute();
 
             Assert.AreEqual(_raster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -85,7 +85,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             // test case 2: floating raster
 
-            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), null);
+            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object.Mapper), null); //!!!
             operation.Execute();
 
             Assert.AreEqual(_floatRaster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -109,7 +109,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.BandIndex, 0);
 
-            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), parameters);
+            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object.Mapper), parameters); //!!!
             operation.Execute();
 
             Assert.AreEqual(_raster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             // test case 2: floating raster
 
-            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), parameters);
+            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object.Mapper), parameters); //!!!
             operation.Execute();
 
             Assert.AreEqual(_floatRaster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -142,5 +142,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
                         Assert.AreEqual(_floatRaster.Object.GetValue(j, k, i), -(operation.Result.Raster as IFloatRaster).GetValue(j, k, i));
                     }
         }
+       
     }
 }

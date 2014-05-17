@@ -307,7 +307,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 
                 _subImageIndex++;
 
-                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster, metadata);
+                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster.Mapper, metadata);
             }
             catch (Exception ex)
             {

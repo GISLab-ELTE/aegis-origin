@@ -71,7 +71,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             parameters.Add(SpectralOperationParameters.LowerThresholdValue, 100);
             parameters.Add(SpectralOperationParameters.UpperThresholdValue, 150);
 
-            CustomThresholdClassification operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), parameters);
+            CustomThresholdClassification operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object.Mapper), parameters);  //!!!
             operation.Execute();
 
             Assert.AreEqual(_raster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -89,7 +89,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
 
             // test case 2: floating raster
 
-            operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), parameters);
+            operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object.Mapper), parameters); //!!!
             operation.Execute();
 
             Assert.AreEqual(_floatRaster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             parameters.Add(SpectralOperationParameters.UpperThresholdValue, 150);
             parameters.Add(SpectralOperationParameters.BandIndex, 0);
 
-            CustomThresholdClassification operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), parameters);
+            CustomThresholdClassification operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object.Mapper), parameters); //!!!
             operation.Execute();
 
             Assert.AreEqual(_raster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -133,7 +133,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
 
             // test case 2: floating raster
 
-            operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), parameters);
+            operation = new CustomThresholdClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object.Mapper), parameters); //!!!
             operation.Execute();
 
             Assert.AreEqual(_floatRaster.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -148,5 +148,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
                     Assert.AreEqual(_floatRaster.Object.GetValue(j, k, 0) >= 100 && _floatRaster.Object.GetValue(j, k, 0) <= 150 ? 255 : 0, operation.Result.Raster.GetValue(j, k, 0), 0);
                 }
         }
+        
     }
 }
