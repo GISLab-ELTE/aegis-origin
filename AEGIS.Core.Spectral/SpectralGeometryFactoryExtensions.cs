@@ -52,6 +52,19 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="raster">The raster data.</param>
         /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterMapper mapper)
         {
             EnsureFactory(factory);
@@ -228,6 +241,20 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, metadata);
         }
 
         /// <summary>
@@ -422,6 +449,25 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell);
         }
 
         /// <summary>
@@ -645,6 +691,26 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell, holes);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
         /// <param name="mapper">The mapper.</param>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="holes">The coordinates of the holes.</param>
@@ -655,7 +721,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, shell, holes);
         }
 
         /// <summary>
@@ -672,7 +738,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation,shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(mapper, representation,shell, holes);
         }
 
         /// <summary>
@@ -689,7 +755,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, shell, holes);
         }
 
         /// <summary>
@@ -707,7 +773,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralRanges, mapper, representation, shell, holes);
         }
 
         /// <summary>
@@ -725,7 +791,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, shell, holes);
         }
 
         /// <summary>
@@ -744,7 +810,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfRows, numberOfColumns, mapper, representation, shell, holes);
         }
 
         /// <summary>
@@ -763,7 +829,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, shell, holes);
         }
 
         /// <summary>
@@ -783,7 +849,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, mapper, representation, shell, holes);
         }
 
         /// <summary>
@@ -804,7 +870,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, shell, holes);
         }
 
         /// <summary>
@@ -826,7 +892,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation, shell, holes);
         }
 
         /// <summary>
@@ -847,7 +913,7 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, shell, holes);
         }
 
         /// <summary>
@@ -869,7 +935,27 @@ namespace ELTE.AEGIS
         {
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell, holes);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell, metadata);
         }
 
         /// <summary>
@@ -1100,6 +1186,27 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, shell, holes, metadata);
         }
 
         /// <summary>
@@ -1343,6 +1450,24 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation, shell, holes, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The raster is null.
+        /// or
+        /// The source polygon is null.
+        /// </exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, IPolygon source)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, source);
         }
 
         /// <summary>

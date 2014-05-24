@@ -84,6 +84,17 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster)
+        {
+            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
         /// <param name="mapper">The raster mapper.</param>
         /// <returns>A spectral polygon containing the specified raster data.</returns>
         /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
@@ -251,6 +262,18 @@ namespace ELTE.AEGIS.Geometry
         {
             IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
             return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IDictionary<String, Object> metadata)
+        {
+            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
         }
 
         /// <summary>
@@ -434,6 +457,23 @@ namespace ELTE.AEGIS.Geometry
         {
             IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
             return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell)
+        {
+            return new SpectralPolygon(this, raster, shell, null, null);
         }
 
         /// <summary>
@@ -642,6 +682,23 @@ namespace ELTE.AEGIS.Geometry
             return new SpectralPolygon(this, raster, shell, null, null);
         }
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        {
+            return new SpectralPolygon(this, raster, shell, holes, null);
+        }
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -861,6 +918,23 @@ namespace ELTE.AEGIS.Geometry
             return new SpectralPolygon(this, raster, shell, holes, null);
         }
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        {
+            return new SpectralPolygon(this, raster, shell, null, metadata);
+        }
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1078,6 +1152,25 @@ namespace ELTE.AEGIS.Geometry
         {
             IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
             return new SpectralPolygon(this, raster, shell, null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        {
+            return new SpectralPolygon(this, raster, shell, holes, metadata);
         }
 
         /// <summary>
@@ -1310,6 +1403,24 @@ namespace ELTE.AEGIS.Geometry
             return new SpectralPolygon(this, raster, shell, holes, metadata);
         }
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster data.</param>
+        /// <param name="source">The source polygon.</param>
+        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The raster is null.
+        /// or
+        /// The source polygon is null.
+        /// </exception>
+        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IPolygon source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+        }
 
         /// <summary>
         /// Creates a spectral polygon.

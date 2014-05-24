@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// Gets the number of columns.
             /// </summary>
             /// <value>The number of spectral values contained in a row.</value>
-            public Int32 NumberOfColumns { get { return _spectralResolution; } }
+            public Int32 NumberOfColumns { get { return _numberOfColumns; } }
 
             /// <summary>
             /// Gets the number of rows.
@@ -99,24 +99,29 @@ namespace ELTE.AEGIS.IO.RawImage
 
             #region Constructor
 
-            public RawImageSpectralEntity(RawImageReader rawImageReader)
+            public RawImageSpectralEntity(RawImageReader rawImageReader, Int32[] _radiometricResolutions, RasterRepresentation _representation)
             {
+                _rawImageReader = rawImageReader;
                 _spectralResolution = rawImageReader._spectralResolution;
                 _numberOfColumns = rawImageReader._numberOfColumns;
                 _numberOfRows = rawImageReader._numberOfRows;
+                this._radiometricResolutions = _radiometricResolutions;
+                this._representation = _representation;
+                _supportedOrders = new SpectralDataOrder[] { SpectralDataOrder.BandRowColumn, SpectralDataOrder.RowBandColumn, SpectralDataOrder.RowColumnBand};
             }
 
             #endregion
 
             #region ISpectralEntity methods for reading integer value
+
             public UInt32 ReadValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
             {
-                return 0;
+                return _rawImageReader.ReadValue(rowIndex, columnIndex, bandIndex);
             }
             
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues)
             {
-                return null;
+                return _rawImageReader.ReadValueSequence(startIndex, numberOfValues);
             }
 
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
@@ -126,7 +131,7 @@ namespace ELTE.AEGIS.IO.RawImage
 
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
             {
-                return null;
+                return _rawImageReader.ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues);
             }
 
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
@@ -310,6 +315,8 @@ namespace ELTE.AEGIS.IO.RawImage
             #endregion
 
             private static SpectralDataOrder[] _supportedOrders;
+
+            private RawImageReader _rawImageReader;
         }
 
         #region Private constant fields
@@ -527,6 +534,7 @@ namespace ELTE.AEGIS.IO.RawImage
             }
         }
 
+
         #endregion
 
         #region Protected GeometryStreamReader methods
@@ -549,7 +557,7 @@ namespace ELTE.AEGIS.IO.RawImage
                 IRaster raster = ReadRasterContent(referenceSystem);
                 IDictionary<String, Object> metadata = ReadGeometryMetadata();
 
-                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster.Mapper, metadata); //!!!
+                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster, metadata); 
             }
             catch (Exception ex)
             {
@@ -633,6 +641,7 @@ namespace ELTE.AEGIS.IO.RawImage
 
             return raster;
         }
+
         /// <summary>
         /// Reads a strip from the file.
         /// </summary>
@@ -705,6 +714,7 @@ namespace ELTE.AEGIS.IO.RawImage
                     break;
             }
         }
+
         /// <summary>
         /// Reads the value from the array to a raster.
         /// </summary>
@@ -745,6 +755,57 @@ namespace ELTE.AEGIS.IO.RawImage
             }
         }
 
+        protected UInt32 ReadValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        {
+            UInt32[] bytes = ReadValueSequence(rowIndex, columnIndex, bandIndex, 1);
+            return bytes[0];
+        }
+
+        protected UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues)
+        {
+            Byte[] bytes = new Byte[numberOfValues];   
+            _baseStream.Read(bytes, startIndex, bytes.Length);
+            UInt32[] list=new UInt32[bytes.Length];
+            for (int i = 0; i < bytes.Length;i++ )
+            {
+                list[i] = (UInt32)bytes[i];
+            }
+            return list;
+        }
+
+        protected UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
+        {
+            Byte[] bytes = new Byte[numberOfValues];
+            Int32 index = 0;
+            switch (_layout)
+            {
+                case (RawImageLayout.BandInterlevedByLine):
+                    {
+                        index = _spectralResolution * _numberOfColumns * (rowIndex - 1) + (_spectralResolution - 1) * _numberOfColumns + columnIndex;
+                    }
+                    break;
+                case (RawImageLayout.BandInterlevedByPixel):
+                    {
+
+                    }
+                    break;
+                case (RawImageLayout.BandSequential):
+                    {
+                        index = (bandIndex - 1) * _numberOfRows * _numberOfColumns + (rowIndex - 1) * _numberOfColumns + columnIndex;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            _baseStream.Read(bytes, index, bytes.Length);
+            UInt32[] list = new UInt32[bytes.Length];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                list[i] = (UInt32)bytes[i];
+            }
+            return list;
+        }
+
         #endregion
 
         #region Protected methods
@@ -768,5 +829,6 @@ namespace ELTE.AEGIS.IO.RawImage
 
 
         #endregion
+
     }
 }
