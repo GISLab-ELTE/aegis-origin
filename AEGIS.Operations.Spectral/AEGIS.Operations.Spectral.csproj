@@ -40,9 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spectral\Classification\CustomThresholdClassification.cs" />
-    <Compile Include="Spectral\Classification\OtsuThresholdClassification.cs" />
-    <Compile Include="Spectral\Classification\ThresholdClassification.cs" />
+    <Compile Include="Spectral\Classification\BalancedHistogramTresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\ConstantBasedThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\FunctionBasedThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
     <Compile Include="Spectral\Common\SpectralInversion.cs" />
     <Compile Include="Spectral\Common\SpectralTranslation.cs" />
     <Compile Include="Spectral\Filter\BoxFilterTransformation.cs" />
@@ -77,9 +79,7 @@
       <Name>AEGIS.Operations</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Spectral\Threshold\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

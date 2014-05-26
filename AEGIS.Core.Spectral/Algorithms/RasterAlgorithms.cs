@@ -102,6 +102,72 @@ namespace ELTE.AEGIS.Algorithms
             return threshold;
         }
 
+        /// <summary>
+        /// Computes the balance point of a histogram.
+        /// </summary>
+        /// <param name="histogramValues">The histogram values of the image.</param>
+        /// <returns>The balance point of the histogram values.</returns>
+        /// <exception cref="System.ArgumentNullException">The list of histogram values is null.</exception>
+        /// <exception cref="System.ArgumentException">The list of histogram values is empty.</exception>
+        public static Double ComputeHistogramBalance(IList<Int32> histogramValues)
+        {
+            if (histogramValues == null)
+                throw new ArgumentNullException("histogramValues", "The list of histogram values is null.");
+            if (histogramValues.Count == 0)
+                throw new ArgumentException("The list of histogram values is empty.", "histogramValues");
+
+            Int32 leftBoundary = 0, rightBoundary = histogramValues.Count - 1;
+
+            // adjust the boundaries
+            while (leftBoundary < rightBoundary && histogramValues[leftBoundary] == 0)
+                leftBoundary++;
+
+            while (rightBoundary > leftBoundary && histogramValues[rightBoundary] == 0)
+                rightBoundary--;
+
+            Int32 balance = (leftBoundary + rightBoundary) / 2;
+
+            // define the starting weights
+            Int32 leftWeight = 0, rightWeight = 0;
+
+            for (Int32 i = 0; i < histogramValues.Count; i++)
+            {
+                if (i <= balance)
+                    leftWeight += histogramValues[i];
+                if (i >= balance)
+                    rightWeight += histogramValues[i];
+            }
+
+            while (leftBoundary < rightBoundary)
+            {
+                if (leftWeight < rightWeight) // right side is heavier
+                {
+                    rightWeight -= histogramValues[rightBoundary];
+                    rightBoundary--;
+
+                    if ((leftBoundary + rightBoundary) / 2 < balance)
+                    {
+                        rightWeight += histogramValues[balance];
+                        leftWeight -= histogramValues[balance];
+                        balance--;
+                    }
+                }
+                else // left side is heavier
+                {
+                    leftWeight -= histogramValues[leftBoundary];
+                    leftBoundary++;
+                    if ((leftBoundary + rightBoundary) / 2 > balance)
+                    {
+                        leftWeight += histogramValues[balance];
+                        rightWeight -= histogramValues[balance];
+                        balance++;
+                    }
+                }
+            }
+
+            return balance;
+        }
+
         #endregion
     }
 }

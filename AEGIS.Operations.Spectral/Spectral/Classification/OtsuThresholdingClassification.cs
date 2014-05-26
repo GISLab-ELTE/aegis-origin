@@ -1,4 +1,4 @@
-﻿/// <copyright file="CustomThresholdClassification.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="OtsuThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Management;
 using System;
 using System.Collections.Generic;
@@ -20,15 +21,15 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
     /// <summary>
-    /// Represents a threshold transformation with custom threshold value.
+    /// Represents a threshold based spectral classification using Otsu's method.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213120", "Custom threshold")]
-    public class CustomThresholdClassification : ThresholdClassification
+    [IdentifiedObjectInstance("AEGIS::213121", "Otsu thresholding")]
+    public class OtsuThresholdingClassification : ThresholdingClassification
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomThresholdClassification" /> class.
+        /// Initializes a new instance of the <see cref="OtsuThresholdingClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -46,13 +47,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public CustomThresholdClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public OtsuThresholdingClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomThresholdClassification" /> class.
+        /// Initializes a new instance of the <see cref="OtsuThresholdingClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -71,13 +72,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public CustomThresholdClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.CustomThresholdClassification, parameters)
+        public OtsuThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, null, SpectralOperationMethods.OtsuThresholdingClassification, parameters)
         {
             if (_sourceBandIndex >= 0)
             {
-                _lowerThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdValue)) };
-                _upperThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdValue)) };
+                _lowerThresholdValues = new Double[] { RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndex)) };
+                _upperThresholdValues = new Double[] { GetParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary) };
             }
             else
             {
@@ -86,8 +87,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
 
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {
-                    _lowerThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdValue));
-                    _upperThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdValue));
+                    _lowerThresholdValues[i] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(i));
+                    _upperThresholdValues[i] = GetParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary);
                 }
             }
         }

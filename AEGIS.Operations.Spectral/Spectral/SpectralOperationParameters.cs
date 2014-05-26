@@ -111,10 +111,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _indexOfVioletBand;
         private static OperationParameter _indexOfVisibleBand;
         private static OperationParameter _indexOfYellowBand;
-        private static OperationParameter _lowerThresholdValue;
+        private static OperationParameter _lowerThresholdBoundary;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
-        private static OperationParameter _upperThresholdValue;
+        private static OperationParameter _spectralSelectorFunction;
+        private static OperationParameter _upperThresholdBoundary;
 
         #endregion
 
@@ -510,15 +511,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Lower threshold value.
+        /// Lower threshold boundary.
         /// </summary>
-        public static OperationParameter LowerThresholdValue
+        public static OperationParameter LowerThresholdBoundary
         {
             get
             {
-                return _lowerThresholdValue ?? (_lowerThresholdValue =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS:223101", "Lower threshold value",
-                                                                       "The lower threshold value for creating a monochrome image.", null)
+                return _lowerThresholdBoundary ?? (_lowerThresholdBoundary =
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS:223101", "Lower threshold boundary",
+                                                                       "The lower threshold boundary value for creating a monochrome image.", null)
                 );
 
             }
@@ -557,15 +558,29 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Upper threshold value.
+        /// Spectral selector function.
         /// </summary>
-        public static OperationParameter UpperThresholdValue
+        public static OperationParameter SpectralSelectorFunction
         {
             get
             {
-                return _upperThresholdValue ?? (_upperThresholdValue =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223102", "Upper threshold value",
-                                                                       "The upper threshold value for creating a monochrome image.", null, 
+                return _spectralSelectorFunction ?? (_spectralSelectorFunction =
+                    OperationParameter.CreateRequiredParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>("AEGIS::223100", "Spectral selector function",
+                                                                                                            "A function deciding whether a raster value meets a specified criteria.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Upper threshold boundary.
+        /// </summary>
+        public static OperationParameter UpperThresholdBoundary
+        {
+            get
+            {
+                return _upperThresholdBoundary ?? (_upperThresholdBoundary =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223102", "Upper threshold boundary",
+                                                                       "The upper threshold boundary for creating a monochrome image.", null, 
                                                                        Double.PositiveInfinity)
                 );
 

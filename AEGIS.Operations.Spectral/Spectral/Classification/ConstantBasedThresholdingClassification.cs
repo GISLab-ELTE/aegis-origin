@@ -1,4 +1,4 @@
-﻿/// <copyright file="OtsuThresholdClassification.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="ConstantBasedThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,7 +13,6 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Management;
 using System;
 using System.Collections.Generic;
@@ -21,15 +20,15 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
     /// <summary>
-    /// Represents a threshold transformation using Otsu's method.
+    /// Represents a threshold based spectral classification using the specified constants.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213121", "Otsu threshold")]
-    public class OtsuThresholdClassification : ThresholdClassification
+    [IdentifiedObjectInstance("AEGIS::213120", "Constant based spectral thresholding")]
+    public class ConstantBasedThresholdingClassification : ThresholdingClassification
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OtsuThresholdClassification" /> class.
+        /// Initializes a new instance of the <see cref="ConstantBasedThresholdingClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -47,13 +46,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public OtsuThresholdClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public ConstantBasedThresholdingClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OtsuThresholdClassification" /> class.
+        /// Initializes a new instance of the <see cref="ConstantBasedThresholdingClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -72,13 +71,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public OtsuThresholdClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, null, SpectralOperationMethods.OtsuThresholdClassification, parameters)
+        public ConstantBasedThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.ConstantBasedThresholdClassification, parameters)
         {
             if (_sourceBandIndex >= 0)
             {
-                _lowerThresholdValues = new Double[] { RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndex)) };
-                _upperThresholdValues = new Double[] { GetParameter<Double>(SpectralOperationParameters.UpperThresholdValue) };
+                _lowerThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdBoundary)) };
+                _upperThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdBoundary)) };
             }
             else
             {
@@ -87,9 +86,34 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
 
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {
-                    _lowerThresholdValues[i] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(i));
-                    _upperThresholdValues[i] = GetParameter<Double>(SpectralOperationParameters.UpperThresholdValue);
+                    _lowerThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                    _upperThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdBoundary));
                 }
+            }
+        }
+
+        #endregion
+
+        #region Protected RasterTransformation methods
+
+        /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral value at the specified index.</returns>
+        protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        {
+            if (_source.Raster.Representation == RasterRepresentation.Floating)
+            {
+                Double value = (_source.Raster as IFloatRaster).GetValue(rowIndex, columnIndex, bandIndex);
+                return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
+            }
+            else
+            {
+                UInt32 value = _source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
+                return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
             }
         }
 

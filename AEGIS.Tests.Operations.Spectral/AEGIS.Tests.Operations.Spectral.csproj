@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spectral\Classification\CustomThresholdClassificationTest.cs" />
+    <Compile Include="Spectral\Classification\ConstantBasedThresholdingClassificationTest.cs" />
     <Compile Include="Spectral\Common\SpectralInversionTest.cs" />
   </ItemGroup>
   <ItemGroup>
