@@ -14,13 +14,16 @@ namespace ELTE.AEGIS.IO.FileSystems
     /// </summary>
     public class HdfsFileSystem : FileSystem
     {
+        #region Private types
+        private enum FileSystemEntryType { File, Directory }
+        #endregion
 
         #region FileSystem public properties
         /// <summary>
         /// Gets the scheme name for this file system.
         /// </summary>
         /// <value>The scheme name for this file system.</value>
-        public override String UriScheme { get { return Uri.UriSchemeHttp; } }
+        public override String UriScheme { get { return "HDFS://"; } }
 
         /// <summary>
         /// Gets the directory separator for this file system.
@@ -38,44 +41,46 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// Gets the volume separator for this file system.
         /// </summary>
         /// <value>The volume separator for this file system.</value>
-        public override Char VolumeSeparator { get { return Path.VolumeSeparatorChar; } }
+        public override Char VolumeSeparator { get { return '/'; } }
         #endregion
 
-        private const String WebHdfsContextRoot = "/webhdfs/v1";
-
+        #region Public properties
         /// <summary>
         /// Gets the HDFS NameNode hostname.
         /// </summary>
-        public String NameNodeHost { get; private set; }
+        public String HostName { get; private set; }
 
         /// <summary>
         /// Gets the port of the HDFS NameNode.
         /// </summary>
-        public String NameNodePort { get; private set; }
+        public String PortNumber { get; private set; }
 
         /// <summary>
         /// Gets the HDFS username.
         /// </summary>
         public String HdfsUsername { get; private set; }
+        #endregion
 
+        #region Private fields
+        private const String WebHdfsContextRoot = "/webhdfs/v1";
 
         private String _urlRoot;
+        #endregion
 
         #region Public constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="HdfsFileSystem"/> class.
         /// </summary>
-        /// <param name="nameNodeHost">The HDFS NameNode hostname.</param>
+        /// <param name="hostName">The HDFS hostname.</param>
         /// <param name="hdfsUsername">The HDFS username.</param>
-        /// <param name="nameNodePort">The HDFS NameNode port.</param>
-        public HdfsFileSystem(String nameNodeHost, String hdfsUsername, String nameNodePort = "50070")
+        /// <param name="portNumber">The HDFS port.</param>
+        public HdfsFileSystem(String hostName, String portNumber, String hdfsUsername)
         {
-            NameNodeHost = nameNodeHost;
-            NameNodePort = nameNodePort;
+            HostName = hostName;
+            PortNumber = portNumber;
             HdfsUsername = hdfsUsername;
 
-            _urlRoot = "http://" + NameNodeHost + ":" + NameNodePort + WebHdfsContextRoot;
-
+            _urlRoot = "http://" + HostName + ":" + PortNumber + WebHdfsContextRoot;
         }
         #endregion
 
@@ -106,12 +111,16 @@ namespace ELTE.AEGIS.IO.FileSystems
                 request.Method = "PUT";
                 request.ContentType = "application/json; charset=utf-8";
 
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse) { }
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse) 
+                {
+                    String responseString = ((new StreamReader(response.GetResponseStream())).ReadToEnd());
 
-                //WebClient webClient = new WebClient();
-                //webClient.UploadString(urlPath, "PUT", "");
+                    if (!responseString.Contains("true"))
+                        throw new ArgumentException("Failed to create folder on the specified path.", "path");
+                }
+
             }
-            catch (WebException ex)
+            catch (WebException ex) //TODO: Proper exception throwing
             {
                 throw new WebException("Failed to create folder.",ex);
             }
@@ -135,7 +144,6 @@ namespace ELTE.AEGIS.IO.FileSystems
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException("The path is empty", "path");
 
-            //TODO: Mode recursive or not?
             String urlPath = _urlRoot + path + "?op=DELETE&recursive=true&user.name=" + HdfsUsername;
 
             try
@@ -143,7 +151,13 @@ namespace ELTE.AEGIS.IO.FileSystems
                 HttpWebRequest request = WebRequest.Create(urlPath) as HttpWebRequest;
                 request.Method = "DELETE";
 
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse) { }
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse) 
+                {
+                    String responseString = ((new StreamReader(response.GetResponseStream())).ReadToEnd());
+
+                    if (!responseString.Contains("true"))
+                        throw new ArgumentException("Failed to delete folder on the specified path.", "path");
+                }
             }
             catch(WebException ex)
             {
@@ -391,7 +405,6 @@ namespace ELTE.AEGIS.IO.FileSystems
             }
         }
 
-
         /// <summary>
         /// Returns the directories located on the specified path.
         /// </summary>
@@ -411,9 +424,10 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// </exception>
         public override String[] GetDirectories(String path, String searchPattern, Boolean recursive)
         {
-            return GetFileSystemEntries(path, searchPattern, recursive).
-                Where(x => x.Split('.').Count() == 1).
-                ToArray();
+            return GetEntries(path, searchPattern, recursive)
+                .Where(x => x.Value == FileSystemEntryType.Directory)
+                .Select(x => x.Key)
+                .ToArray();
         }
 
         /// <summary>
@@ -435,9 +449,10 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// </exception>
         public override String[] GetFiles(String path, String searchPattern, Boolean recursive)
         {
-            return GetFileSystemEntries(path, searchPattern, recursive).
-                Where(x => x.Split('.').Count() > 1).
-                ToArray();
+            return GetEntries(path, searchPattern, recursive)
+                .Where(x => x.Value == FileSystemEntryType.File)
+                .Select(x => x.Key)
+                .ToArray();
         }
 
         /// <summary>
@@ -459,14 +474,32 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// </exception>
         public override String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
         {
+            return GetEntries(path, searchPattern, recursive).Keys.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the file system entries on the specified path.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>A dictionary with path names in the key and the type of the entry in the value (File or Directory).</returns>
+        /// <exception cref="System.ArgumentNullException">path;The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.;path
+        /// or
+        /// The specified path is a file.;path
+        /// or
+        /// The specified path is invalid.;path
+        /// </exception>
+        private IDictionary<String, FileSystemEntryType> GetEntries(String path, String searchPattern, Boolean recursive)
+        {
             if (path == null)
                 throw new ArgumentNullException("path", "The path is null.");
             if (String.IsNullOrEmpty(path))
                 throw new ArgumentException("The path is empty.", "path");
-            if (path.Split('.').Count() != 1)
-                throw new ArgumentException("The specified path is a file.", "path");
 
-            List<String> entries = new List<String>();
+            Dictionary<String, FileSystemEntryType> entries = new Dictionary<String, FileSystemEntryType>();
 
             Queue<String> paths = new Queue<String>();
             paths.Enqueue(path);
@@ -485,39 +518,47 @@ namespace ELTE.AEGIS.IO.FileSystems
                     {
                         StringBuilder responseString = new StringBuilder((new StreamReader(response.GetResponseStream()).ReadToEnd()));
 
-                        if (String.IsNullOrEmpty(responseString.ToString())) //Empty folder
-                            continue;                        
+                        if (responseString.ToString().Trim() == "{\"FileStatuses\":{\"FileStatus\":[]}}") //Empty folder
+                            continue;
 
                         responseString.Remove(0, 33);
                         responseString.Remove(responseString.Length - 4, 3);
+
+
+
                         String entryDescriptors = responseString.ToString().Trim();
 
                         String[] splittedDescriptors = entryDescriptors.Split('}').Where(x => !String.IsNullOrWhiteSpace(x)).ToArray();
 
-                        foreach(String descriptor in splittedDescriptors)
+                        foreach (String descriptor in splittedDescriptors)
                         {
-                            Int32 fileNameStartIndex = descriptor.IndexOf("\"pathSuffix\":\"");
+                            //Get entry name
+                            Int32 fileNameStartIndex = descriptor.IndexOf("pathSuffix\":\"");
                             if (fileNameStartIndex == -1)
                                 continue;
-                            fileNameStartIndex += 14;
+                            fileNameStartIndex += 13;
 
                             String entryName = new String(descriptor.Substring(fileNameStartIndex).TakeWhile(x => x != '"').ToArray());
                             if (String.IsNullOrEmpty(entryName))
                                 continue;
 
                             String entryFullName = currentPath + (currentPath[currentPath.Length - 1] == '/' ? "" : "/") + entryName;
-                            
-                            if(Regex.IsMatch(entryName, searchPattern)) //TODO: Search pattern is not regex
-                                entries.Add(entryFullName);
 
-                            if(recursive && (entryName.Split('.').Count() == 1) ) //If recursive and not file.
+                            //Get entry type
+                            FileSystemEntryType entryType = descriptor.Contains("FILE") ? FileSystemEntryType.File : FileSystemEntryType.Directory;
+
+
+                            if (Regex.IsMatch(entryName, WildcardToRegex(searchPattern)))
+                                entries.Add(entryFullName, entryType);
+
+                            if (recursive && entryType == FileSystemEntryType.Directory)
                                 paths.Enqueue(entryFullName);
                         }
 
                     }
 
                 }
-                return entries.ToArray();
+                return entries;
             }
             catch (WebException ex)
             {
@@ -550,53 +591,219 @@ namespace ELTE.AEGIS.IO.FileSystems
 
             return "/";
         }
-        
-        
+         
         /// <summary>
-        /// Returns the names of the logical drives of the file system (Not Supported).
+        /// When overriden in a derived class, returns the names of the logical drives of the file system.
         /// </summary>
-        /// <exception cref="System.NotSupportedException">The operation is not supported in this context</exception>
+        /// <exception cref="System.NotSupportedException"></exception>
         public override String[] GetLogicalDrives()
         {
-            throw new System.NotSupportedException();
+            throw new NotSupportedException("The operation is not supported in this context.");
         }
 
-        #endregion
-
-        #region NotYetImplemented
-        public override Stream CreateFile(string path, bool overwrite)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override Stream OpenFile(string path, System.IO.FileMode mode, System.IO.FileAccess access)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Move(string sourcePath, string destinationPath)
-        {
- 	        throw new System.NotImplementedException();
-        }
-
-        public override void Copy(string sourcePath, string destinationPath)
-        {
- 	        throw new System.NotImplementedException();
-        }
-
-
-
-
+        /// <summary>
+        /// Returns the path of the parent directory for the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>
+        /// The string containing the full path to the parent directory.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">path;The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.;path
+        /// or
+        /// The specified path not exists
+        /// </exception>
         public override String GetParent(String path)
         {
-            throw new System.NotImplementedException();
+            if (path == null)
+                throw new ArgumentNullException("path", "The path is null.");
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException("The path is empty.", "path");
+
+            String parent = path.Substring(0,path.LastIndexOf('/') + 1);
+
+            
+
+            if (!Exists(parent))
+                throw new ArgumentException("The specified path not exists");
+
+            return parent;
         }
 
+        /// <summary>
+        /// When overriden in a derived class, creates or overwrites a file on the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file to create.</param>
+        /// <param name="overwrite">A value that specifies whether the file should be overwritten in case it exists.</param>
+        /// <returns>
+        /// A stream that provides read/write access to the file specified in path.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException"></exception>
+        public override Stream CreateFile(String path, Boolean overwrite)
+        {
+            throw new NotSupportedException("The operation is not supported in this context.");
+        }
+
+        /// <summary>
+        /// When overriden in a derived class, opens a stream on the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file to open.</param>
+        /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+        /// <param name="access">A value that specifies the operations that can be performed on the file.</param>
+        /// <returns>
+        /// A stream in the specified mode and path, with the specified access.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException"></exception>
+        public override Stream OpenFile(String path, FileMode mode, FileAccess access)
+        {
+            throw new NotSupportedException("The operation is not supported in this context.");
+        }
+
+        /// <summary>
+        /// Moves a filesystem entry and its contents to a new location.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file or directory to move.</param>
+        /// <param name="destinationPath">The path to the new location for the entry.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is null.;localPath
+        /// or
+        /// The path is null.;remotePath
+        /// or
+        /// The path is empty;localPath
+        /// or
+        /// The path is empty;remotePath
+        /// or
+        /// The source is not a file;remotePath
+        /// </exception>
+        public override void Move(String sourcePath, String destinationPath)
+        {
+            Copy(sourcePath, destinationPath);
+            Delete(sourcePath);
+        }
+
+        /// <summary>
+        /// Copies an existing file to a new file.
+        /// </summary>
+        /// <param name="sourcePath">The source path.</param>
+        /// <param name="destinationPath">The destination path.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is null.;localPath
+        /// or
+        /// The path is null.;remotePath
+        /// or
+        /// The path is empty;localPath
+        /// or
+        /// The path is empty;remotePath
+        /// or
+        /// The source is not a file;remotePath
+        /// </exception>
+        public override void Copy(String sourcePath, String destinationPath)
+        {
+            if (sourcePath == null)
+                throw new ArgumentException("The path is null.", "localPath");
+            if (destinationPath == null)
+                throw new ArgumentException("The path is null.", "remotePath");
+            if (String.IsNullOrWhiteSpace(sourcePath))
+                throw new ArgumentException("The path is empty", "localPath");
+            if (String.IsNullOrWhiteSpace(destinationPath))
+                throw new ArgumentException("The path is empty", "remotePath");
+
+            if (!IsFile(sourcePath))
+                throw new ArgumentException("The source is not a file", "remotePath");
+
+            String tempFilePath = Path.GetTempFileName();
+
+            DownloadFile(sourcePath, tempFilePath);
+            UploadFile(tempFilePath, destinationPath);
 
 
-
-
+        }
         #endregion
 
+        #region Public methods
+        /// <summary>
+        /// Uploads the file on the local path to the remote path.
+        /// </summary>
+        /// <param name="localPath">The local path.</param>
+        /// <param name="remotePath">The remote path.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is null.;localPath
+        /// or
+        /// The path is null.;remotePath
+        /// or
+        /// The path is empty;localPath
+        /// or
+        /// The path is empty;remotePath
+        /// </exception>
+        public void UploadFile(String localPath, String remotePath)
+        {
+            if (localPath == null)
+                throw new ArgumentException("The path is null.", "localPath");
+            if (remotePath == null)
+                throw new ArgumentException("The path is null.", "remotePath");
+            if (String.IsNullOrWhiteSpace(localPath))
+                throw new ArgumentException("The path is empty", "localPath");
+            if (String.IsNullOrWhiteSpace(remotePath))
+                throw new ArgumentException("The path is empty", "remotePath");
+
+            String url = _urlRoot + remotePath + "?op=CREATE&user.name=" + HdfsUsername;
+
+            using(WebClient client = new WebClient())
+            {
+                client.UploadFile(url, "PUT", localPath);
+                
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Downloads the file from the remote path to the local path.
+        /// </summary>
+        /// <param name="remotePath">The remote path.</param>
+        /// <param name="localPath">The local path.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is null.;localPath
+        /// or
+        /// The path is null.;remotePath
+        /// or
+        /// The path is empty;localPath
+        /// or
+        /// The path is empty;remotePath
+        /// </exception>
+        public void DownloadFile(String remotePath, String localPath)
+        {
+            if (localPath == null)
+                throw new ArgumentException("The path is null.", "localPath");
+            if (remotePath == null)
+                throw new ArgumentException("The path is null.", "remotePath");
+            if (String.IsNullOrWhiteSpace(localPath))
+                throw new ArgumentException("The path is empty", "localPath");
+            if (String.IsNullOrWhiteSpace(remotePath))
+                throw new ArgumentException("The path is empty", "remotePath");
+
+            String url = _urlRoot + remotePath + "?op=OPEN&user.name=" + HdfsUsername;
+
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadFile(url, localPath);
+            }
+        }
+        #endregion
+
+        #region Private methods
+        /// <summary>
+        /// Converts a pattern containing wildcard characters to regular expression.
+        /// </summary>
+        /// <param name="pattern">The pattern.</param>
+        /// <returns>The regex corresponding to the wildcard pattern.</returns>
+        private static String WildcardToRegex(String pattern)
+        {
+            return "^" + Regex.Escape(pattern).
+                Replace("\\*", ".*").
+                Replace("\\?", ".") + "$";
+        }
+        #endregion
     }
 }
