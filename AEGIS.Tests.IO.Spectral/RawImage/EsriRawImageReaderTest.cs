@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Tests.IO.RawImage
 
                 Assert.AreEqual(0, esriRawImageReader.Parameters.Count);
                 Assert.IsNotNull(esriRawImageReader.BaseStream);
-                Assert.IsNotNull(esriRawImageReader.Factory);
+                Assert.IsNull(esriRawImageReader.Factory);
                 Assert.IsNotNull(esriRawImageReader.Path);
                 Assert.IsFalse(esriRawImageReader.EndOfStream);
 
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Tests.IO.RawImage
 
                 Assert.AreEqual(0, esriRawImageReader.Parameters.Count);
                 Assert.IsNotNull(esriRawImageReader.BaseStream);
-                Assert.IsNotNull(esriRawImageReader.Factory);
+                Assert.IsNull(esriRawImageReader.Factory);
                 Assert.IsNotNull(esriRawImageReader.Path);
                 Assert.IsFalse(esriRawImageReader.EndOfStream);
 
