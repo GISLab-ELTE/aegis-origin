@@ -28,6 +28,11 @@ namespace ELTE.AEGIS.IO
     {
         #region Private fields
 
+        /// <summary>
+        /// Defines an empty collection of parameters. This field is read-only.
+        /// </summary>
+        private readonly static Dictionary<GeometryStreamParameter, Object> EmptyParameters = new Dictionary<GeometryStreamParameter, Object>();
+
         private readonly GeometryStreamFormat _format;
         private readonly IDictionary<GeometryStreamParameter, Object> _parameters;
         private readonly Uri _path;
@@ -60,17 +65,19 @@ namespace ELTE.AEGIS.IO
         /// Gets the parameters of the reader.
         /// </summary>
         /// <value>The parameters of the reader stored as key/value pairs.</value>
-        public IDictionary<GeometryStreamParameter, Object> Parameters { get { return new ReadOnlyDictionary<GeometryStreamParameter, Object>(_parameters); } }
+        public IDictionary<GeometryStreamParameter, Object> Parameters { get { return new ReadOnlyDictionary<GeometryStreamParameter, Object>(_parameters != null ? _parameters : EmptyParameters); } }
         /// <summary>
         /// Gets the path of the data.
         /// </summary>
         /// <value>The full path of the data.</value>
         public Uri Path { get { return _path; } }
+
         /// <summary>
         /// Gets the undelying stream.
         /// </summary>
         /// <value>The underlying stream.</value>
         public Stream BaseStream { get { return _baseStream; } }
+
         /// <summary>
         /// Gets a value that indicates whether the current stream position is at the end of the stream.
         /// </summary>
@@ -461,7 +468,8 @@ namespace ELTE.AEGIS.IO
             if (disposing)
             {
                 _baseStream.Dispose();
-                _parameters.Clear();
+                if (_parameters != null)
+                    _parameters.Clear();
             }
         }
 
