@@ -36,14 +36,14 @@ namespace ELTE.AEGIS.Algorithms
         /// or
         /// The radiometric resolution is geater than 32.
         /// </exception>
-        public static UInt64 RadiometricResolutionMax(Int32 radiometricResolution)
+        public static UInt32 RadiometricResolutionMax(Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
                 throw new ArgumentException("The radiometric resolution is less than 1.", "radiometricResolution");
             if (radiometricResolution > 32)
                 throw new ArgumentException("The radiometric resolution is geater than 32.", "radiometricResolution");
 
-            return Convert.ToUInt64(1UL << radiometricResolution) - 1;
+            return Convert.ToUInt32(1UL << radiometricResolution) - 1;
         }
 
         #endregion

@@ -45,6 +45,8 @@
     <Compile Include="Spectral\Classification\FunctionBasedThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
+    <Compile Include="Spectral\Common\HistogramEqualization.cs" />
+    <Compile Include="Spectral\Common\HistogramTransformation.cs" />
     <Compile Include="Spectral\Common\SpectralInversion.cs" />
     <Compile Include="Spectral\Common\SpectralTranslation.cs" />
     <Compile Include="Spectral\Filter\BoxFilterTransformation.cs" />
