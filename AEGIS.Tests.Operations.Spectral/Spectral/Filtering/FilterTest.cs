@@ -21,11 +21,16 @@ using System;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for <see cref="Filter"/> class.
+    /// Test fixture for the <see cref="Filter"/> class.
     /// </summary>
     [TestFixture]
     public class FilterTest
     {
+        #region Test methods
+
+        /// <summary>
+        /// Test method for the constructor.
+        /// </summary>
         [TestCase]
         public void FilterConstructorTest()
         {
@@ -57,5 +62,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.AreEqual(filter.Offset, 10);
             Assert.AreEqual(filter.Kernel, matrix);
         }
+
+        #endregion
     }
 }

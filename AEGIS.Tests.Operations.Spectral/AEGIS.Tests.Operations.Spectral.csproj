@@ -49,6 +49,10 @@
     <Compile Include="Spectral\Classification\ConstantBasedThresholdingClassificationTest.cs" />
     <Compile Include="Spectral\Common\HistogramEqualizationTest.cs" />
     <Compile Include="Spectral\Common\SpectralInversionTest.cs" />
+    <Compile Include="Spectral\Filtering\BoxFilterTranformationTest.cs" />
+    <Compile Include="Spectral\Filtering\FilterFactoryTest.cs" />
+    <Compile Include="Spectral\Filtering\FilterTest.cs" />
+    <Compile Include="Spectral\Filtering\GaussianBlurFilterTransformationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

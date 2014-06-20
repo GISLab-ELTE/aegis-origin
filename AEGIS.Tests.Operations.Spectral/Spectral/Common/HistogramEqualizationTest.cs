@@ -26,11 +26,13 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 {
     /// <summary>
-    /// Test fixture for <see cref="HistogramEqualization"/> class.
+    /// Test fixture for the <see cref="HistogramEqualization"/> class.
     /// </summary>
     [TestFixture]
     public class HistogramEqualizationTest
     {
+        #region Private fields
+
         /// <summary>
         /// The raster (mocked).
         /// </summary>
@@ -40,6 +42,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         /// The histogram values for earch band of the raster.
         /// </summary>
         private Int32[][] _histogramValues;
+
+        #endregion
+
+        #region Test setup
 
         /// <summary>
         /// Test setup.
@@ -63,12 +69,18 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             _rasterMock.Setup(raster => raster.HistogramValues).Returns(ComputeHistogram(_rasterMock.Object));
         }
 
+        #endregion
+
+        #region Test methods
+
         /// <summary>
-        /// Test for execution on each band.
+        /// Test method for execution.
         /// </summary>
         [TestCase]
         public void HistogramEqualizationExecuteTest()
         {
+            // test case 1: execute for all bands
+
             HistogramEqualization operation = new HistogramEqualization(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
@@ -82,18 +94,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             {
                 AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex);
             }
-        }
 
-        /// <summary>
-        /// Test for execution on a single band.
-        /// </summary>
-        [TestCase]
-        public void HistogramEqualizationExecuteForBandTest()
-        {
+
+            // test case 2: execute for a specific band
+
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.BandIndex, 1);
 
-            HistogramEqualization operation = new HistogramEqualization(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new HistogramEqualization(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -106,6 +114,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             AssertResultForBand(_rasterMock.Object, 1, operation.Result.Raster, 0);
         }
+
+        #endregion
+
+        #region Private methods
 
         /// <summary>
         /// Asserts the results for the specified band.
@@ -127,7 +139,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
                     Assert.LessOrEqual(result.GetValue(rowIndex, columnIndex, resultBandIndex), RasterAlgorithms.RadiometricResolutionMax(source.RadiometricResolutions[sourceBandIndex]));
                 }
         }
-
 
         /// <summary>
         /// Computes the histogram of the specified raster.
@@ -154,5 +165,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             return _histogramValues;
         }
+
+        #endregion
     }
 }

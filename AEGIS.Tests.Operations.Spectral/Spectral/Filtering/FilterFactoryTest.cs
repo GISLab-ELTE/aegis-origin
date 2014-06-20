@@ -22,11 +22,16 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for <see cref="FilterFactory"/> class.
+    /// Test fixture for the <see cref="FilterFactory"/> class.
     /// </summary>
     [TestFixture]
     public class FilterFactoryTest
     {
+        #region Test methods
+
+        /// <summary>
+        /// Test method for box filter creation.
+        /// </summary>
         [TestCase]
         public void FilterFactoryCreateBoxFilterTest()
         {
@@ -42,6 +47,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.IsTrue(boxFilter.Kernel.All(value => value == 1));
         }
 
+        /// <summary>
+        /// Test method for Gaussian filter creation.
+        /// </summary>
         [TestCase]
         public void FilterFactoryCreateGaussianFilterTest()
         {
@@ -57,7 +65,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             for (Int32 rowIndex = 0; rowIndex < gaussianFilter.Kernel.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < gaussianFilter.Kernel.NumberOfColumns; columnIndex++)
-                    Assert.AreEqual(gaussianFilter.Kernel[rowIndex, columnIndex], 1 / (2 * Math.PI * 0.25) * Math.Exp(-(Calculator.Square(rowIndex - 1) + Calculator.Square(columnIndex - 1)) / 0.5), 0.0001);
+                    Assert.AreEqual(gaussianFilter.Kernel[rowIndex, columnIndex], 1 / (2 * Math.PI) * Math.Exp(-(Calculator.Square(rowIndex - 1) + Calculator.Square(columnIndex - 1)) / 2), 0.000001);
         }
+
+        #endregion
     }
 }
