@@ -47,6 +47,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The produces gaussian filter.</returns>
         public static Filter CreateGaussianFilter(Int32 radius)
         {
+            return CreateGaussianFilter(radius, 1);
+        }
+
+        /// <summary>
+        /// Creates a gaussian filter.
+        /// </summary>
+        /// <param name="radius">The radius of the filter.</param>
+        /// <param name="sigma">The standard deviation of the Gaussian distribution.</param>
+        /// <returns>The produces gaussian filter.</returns>
+        public static Filter CreateGaussianFilter(Int32 radius, Double sigma)
+        {
+            // source: http://en.wikipedia.org/wiki/Gaussian_blur
+
             if (radius < 1)
                 throw new ArgumentOutOfRangeException("size", "The size is not positive.");
 
@@ -57,7 +70,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             for (Int32 rowIndex = 0; rowIndex < matrix.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < matrix.NumberOfColumns; columnIndex++)
                 {
-                    matrix[rowIndex, columnIndex] = Gaussian(rowIndex - radius, radius / 2.0) * Gaussian(columnIndex - radius, radius / 2.0);
+                    matrix[rowIndex, columnIndex] = Gaussian(rowIndex - radius, sigma) * Gaussian(columnIndex - radius, sigma);
 
                     sum += matrix[rowIndex, columnIndex];
                 }
@@ -73,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// Returns the Gaussian function value for the variable.
         /// </summary>
         /// <param name="x">The variable.</param>
-        /// <param name="sigma">The sigma.</param>
+        /// <param name="sigma">The standard deviation of the Gaussian distribution.</param>
         /// <returns>The Gaussian value for the variable.</returns>
         private static Double Gaussian(Double x, Double sigma)
         {
