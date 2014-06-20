@@ -14,9 +14,10 @@
 /// <author>Roberto Giachetta</author>
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ELTE.AEGIS.Numerics.LinearAlgebra;
 
 namespace ELTE.AEGIS.Numerics
 {
@@ -24,11 +25,191 @@ namespace ELTE.AEGIS.Numerics
     /// Represents a matrix in Euclidean space.
     /// </summary>
     [Serializable]
-    public class Matrix
+    public class Matrix : IEnumerable<Double>
     {
+        #region Private types
+
+        /// <summary>
+        /// Enumerates the elements of a matrix.
+        /// </summary>
+        /// <remarks>
+        /// The enumerator performes a level order traversal of the specified matrix.
+        /// </remarks>
+        public class Enumerator : IEnumerator<Double>
+        {
+            #region Private fields
+
+            /// <summary>
+            /// The matrix that is enumrated.
+            /// </summary>
+            private Matrix _localMatrix;
+
+            /// <summary>
+            /// The version of the matrix when the enumerator was cerated.
+            /// </summary>
+            private Int32 _localVersion;
+
+            /// <summary>
+            /// The current row index.
+            /// </summary>
+            private Int32 _rowIndex;
+
+            /// <summary>
+            /// The current column index.
+            /// </summary>
+            private Int32 _columnIndex;
+
+            /// <summary>
+            /// A value indicating whether the enumerator is disposed.
+            /// </summary>
+            private Boolean _disposed;
+
+            #endregion
+
+            #region IEnumerable properties
+
+            /// <summary>
+            /// Gets the element at the current position of the enumerator.
+            /// </summary>
+            /// <value>The element at the current position of the enumerator.</value>
+            public Double Current
+            {
+                get { return _localMatrix._values[_rowIndex][_columnIndex]; }
+            }
+
+            /// <summary>
+            /// Gets the element at the current position of the enumerator.
+            /// </summary>
+            /// <value>The element at the current position of the enumerator.-</value>
+            Object IEnumerator.Current
+            {
+                get { return _localMatrix._values[_rowIndex][_columnIndex]; }
+            }
+
+            #endregion
+
+            #region Constructors and destructor
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Heap{TKey, TValue}.Enumerator" /> class.
+            /// </summary>
+            /// <param name="heap">The heap.</param>
+            internal Enumerator(Matrix matrix)
+            {
+                _localMatrix = matrix;
+                _localVersion = matrix._version;
+
+                _rowIndex = -1;
+                _columnIndex = _localMatrix.NumberOfColumns - 1;
+                _disposed = false;
+            }
+
+            /// <summary>
+            /// Finalizes an instance of the <see cref="Enumerator"/> class.
+            /// </summary>
+            ~Enumerator()
+            {
+                Dispose(false);
+            }
+
+            #endregion
+
+            #region IEnumerator methods
+
+            /// <summary>
+            /// Advances the enumerator to the next element of the collection.
+            /// </summary>
+            /// <returns>
+            /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
+            /// </returns>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
+            /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
+            public Boolean MoveNext()
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (_localVersion != _localMatrix._version)
+                    throw new InvalidOperationException("The collection was modified after the enumerator was created.");
+
+                if (_rowIndex == _localMatrix.NumberOfRows - 1 && _columnIndex == _localMatrix.NumberOfColumns - 1)
+                    return false;
+
+                _columnIndex++;
+                if (_columnIndex == _localMatrix.NumberOfColumns)
+                {
+                    _rowIndex++;
+                    _columnIndex = 0;
+                }
+
+                return true;
+            }
+
+            /// <summary>
+            /// Sets the enumerator to its initial position, which is before the first element in the collection.
+            /// </summary>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
+            /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
+            public void Reset()
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+                if (_localVersion != _localMatrix._version)
+                    throw new InvalidOperationException("The collection was modified after the enumerator was created.");
+
+                _rowIndex = -1;
+                _columnIndex = _localMatrix.NumberOfColumns - 1;
+            }
+
+            #endregion
+
+            #region IDisposable methods
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            #endregion
+
+            #region Protected methods
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            /// <param name="disposing">A value indicating whether disposing is performed on the object.</param>
+            protected virtual void Dispose(Boolean disposing)
+            {
+                _disposed = true;
+
+                if (disposing)
+                {
+                    _localMatrix = null;
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Private fields
 
-        private Double[][] _values; // the values stored by rows
+        /// <summary>
+        /// The version of the matrix.
+        /// </summary>
+        private Int32 _version;
+
+        /// <summary>
+        /// The values stored by rows.
+        /// </summary>
+        private Double[][] _values;
 
         #endregion
 
@@ -141,7 +322,11 @@ namespace ELTE.AEGIS.Numerics
                 if (columnIndex < 0 || columnIndex >= _values[0].Length)
                     throw new IndexOutOfRangeException("Column index was outside the bounds of the matrix.");
 
+                if (_values[rowIndex][columnIndex] == value)
+                    return;
+
                 _values[rowIndex][columnIndex] = value;
+                _version++;
             }
         }
 
@@ -169,6 +354,8 @@ namespace ELTE.AEGIS.Numerics
             _values = new Double[numberOfRows][];
             for (Int32 i = 0; i < _values.Length; i++)
                 _values[i] = new Double[numberOfColumns];
+
+            _version = 0;
         }
 
         /// <summary>
@@ -192,6 +379,8 @@ namespace ELTE.AEGIS.Numerics
             _values = new Double[numberOfRows][];
             for (Int32 i = 0; i < _values.Length; i++)
                 _values[i] = Enumerable.Repeat(defaultValue, numberOfColumns).ToArray();
+
+            _version = 0;
         }
 
         /// <summary>
@@ -206,6 +395,8 @@ namespace ELTE.AEGIS.Numerics
                 _values[i] = new Double[other._values[i].Length];
                 Array.Copy(other._values[i], _values[i], _values[i].Length);
             }
+
+            _version = 0;
         }
 
         #endregion
@@ -223,7 +414,7 @@ namespace ELTE.AEGIS.Numerics
             if (rowIndex < 0 || rowIndex >= _values.Length)
                 throw new ArgumentOutOfRangeException("rowIndex", "Row index was outside the bounds of the matrix.");
 
-            return _values[rowIndex];
+            return _values[rowIndex].ToArray();
         }
 
 
@@ -246,6 +437,28 @@ namespace ELTE.AEGIS.Numerics
             return values;
         }
 
+
+        #endregion
+
+        #region IEnumerable methods
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        public IEnumerator<Double> GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         #endregion
 
