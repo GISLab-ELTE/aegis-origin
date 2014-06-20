@@ -18,7 +18,7 @@ using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
 
-namespace ELTE.AEGIS.Operations.Spectral.Filter
+namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
     /// Represents a median filter transformation with weight modifiers.
@@ -26,12 +26,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
     [IdentifiedObjectInstance("AEGIS::213214", "Weighted median filter")]
     public class WeightedMedianFilterTransformation : FilterTransformation
     {
-        #region Protected fields
-
-        protected Matrix _weightKernel;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -81,12 +75,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         public WeightedMedianFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.WeightedMedianFilter, parameters)
         {
-            _weightKernel = _parameters[SpectralOperationParameters.FilterKernel] as Matrix;
-
-            _filterSize = _weightKernel.NumberOfColumns;
-
-            if (_filterSize != _weightKernel.NumberOfRows || _filterSize < 1 || _filterSize % 2 == 0)
-                throw new ArgumentException("The value of a parameter (" + SpectralOperationParameters.FilterKernel.Name + ") is not within the expected range.", "parameters");
+            _filter = new Filter(GetParameter<Matrix>(SpectralOperationParameters.FilterKernel), 1, 0);
         }
 
         #endregion
@@ -102,20 +91,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filterSize * _filterSize];
-            Int32 rowBase = rowIndex - _filterSize / 2;
-            Int32 columnBase = columnIndex - _filterSize / 2;
+            Double[] filteredValues = new Double[_filterRadius * _filterRadius];
+            Int32 rowBase = rowIndex - _filterRadius / 2;
+            Int32 columnBase = columnIndex - _filterRadius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filterSize; k++)
-                for (Int32 l = 0; l < _filterSize; l++)
+            for (Int32 k = 0; k < _filterRadius; k++)
+                for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    filteredValues[index] += _weightKernel[k, l] * _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
+                    filteredValues[index] += _filter.Kernel[k, l] * _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(filteredValues);
 
-            return (UInt32)filteredValues[_filterSize * _filterSize / 2];
+            return (UInt32)filteredValues[_filterRadius * _filterRadius / 2];
         }
 
         /// <summary>
@@ -127,20 +116,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filterSize * _filterSize];
-            Int32 rowBase = rowIndex - _filterSize / 2;
-            Int32 columnBase = columnIndex - _filterSize / 2;
+            Double[] filteredValues = new Double[_filterRadius * _filterRadius];
+            Int32 rowBase = rowIndex - _filterRadius / 2;
+            Int32 columnBase = columnIndex - _filterRadius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filterSize; k++)
-                for (Int32 l = 0; l < _filterSize; l++)
+            for (Int32 k = 0; k < _filterRadius; k++)
+                for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    filteredValues[index] += _weightKernel[k, l] * (_source.Raster as IFloatRaster).GetNearestValue(rowBase + k, columnBase + l, bandIndex);
+                    filteredValues[index] += _filter.Kernel[k, l] * (_source.Raster as IFloatRaster).GetNearestValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(filteredValues);
 
-            return filteredValues[_filterSize * _filterSize / 2];
+            return filteredValues[_filterRadius * _filterRadius / 2];
         }
 
         #endregion
