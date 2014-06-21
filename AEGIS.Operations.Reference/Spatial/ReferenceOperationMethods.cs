@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Reference
+namespace ELTE.AEGIS.Operations.Spatial
 {
     /// <summary>
     /// Represents a collection of known <see cref="OperationMethod" /> instances for reference operations.
@@ -108,7 +108,8 @@ namespace ELTE.AEGIS.Operations.Reference
                                         ExecutionMode.OutPlace,
                                         ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
                                         ReferenceOperationParameters.TargetReferenceSystem,
-                                        OperationParameters.GeometryFactory));
+                                        OperationParameters.GeometryFactory,
+                                        OperationParameters.MetadataPreservation));
             }
         }
 

@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Reference
+namespace ELTE.AEGIS.Operations.Spatial
 {
     /// <summary>
     /// Represents a reference system transformation.
@@ -47,9 +47,9 @@ namespace ELTE.AEGIS.Operations.Reference
         public ReferenceTransformation(IGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, ReferenceOperationMethods.ReferenceTransformation, parameters)
         {
-            _targetReferenceSystem = parameters[ReferenceOperationParameters.TargetReferenceSystem] as IReferenceSystem;
-            _metadataPreservation = parameters.ContainsKey(OperationParameters.MetadataPreservation) ? (Boolean)parameters[OperationParameters.MetadataPreservation] : (Boolean)OperationParameters.MetadataPreservation.DefaultValue;
-            _factory = parameters.ContainsKey(Operations.OperationParameters.GeometryFactory) ? (IGeometryFactory)Operations.OperationParameters.GeometryFactory : null;
+            _targetReferenceSystem = GetParameter<IReferenceSystem>(ReferenceOperationParameters.TargetReferenceSystem);
+            _metadataPreservation = GetParameter<Boolean>(OperationParameters.MetadataPreservation);
+            _factory = GetParameter<IGeometryFactory>(OperationParameters.GeometryFactory);
         }
 
         #endregion
@@ -91,7 +91,7 @@ namespace ELTE.AEGIS.Operations.Reference
         /// <exception cref="System.InvalidOperationException">Transformation of the specified geometry is not supported.</exception>
         private IGeometry Compute(IGeometry source)
         {
-            if (_source.ReferenceSystem == null || _source.ReferenceSystem.Equals(_targetReferenceSystem))
+            if (source.ReferenceSystem == null || source.ReferenceSystem.Equals(_targetReferenceSystem))
                 return source;
 
             if (source is IPoint)
@@ -164,8 +164,8 @@ namespace ELTE.AEGIS.Operations.Reference
         private IPolygon Compute(IPolygon source)
         {
             return _factory.CreatePolygon(Compute(source.Shell),
-                                                 source.HoleCount > 0 ? source.Holes.Select(hole => Compute(hole)) : null,
-                                                 _metadataPreservation ? source.Metadata : null);
+                                          source.HoleCount > 0 ? source.Holes.Select(hole => Compute(hole)) : null,
+                                          _metadataPreservation ? source.Metadata : null);
         }
 
         /// <summary>
@@ -219,9 +219,6 @@ namespace ELTE.AEGIS.Operations.Reference
         /// <returns>The coordinate in the specified reference system.</returns>
         private Coordinate Compute(Coordinate coordinate)
         {
-            if (_transformation == null)
-                return coordinate;
-
             return _transformation.Transform(coordinate);
         }
 
