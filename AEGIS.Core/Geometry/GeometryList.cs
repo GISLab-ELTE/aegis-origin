@@ -101,7 +101,7 @@ namespace ELTE.AEGIS.Geometry
     /// Represents a generic list of geometries in spatial coordinate space.
     /// </summary>
     /// <typeparam name="T">The type of geometries in the list.</typeparam>
-    public class GeometryList<T> : Geometry, IGeometryCollection<T>, IList<T> where T : class, IGeometry
+    public class GeometryList<T> : Geometry, IGeometryCollection<T>, IList<T> where T : IGeometry
     {
         #region Public types
 
@@ -321,7 +321,7 @@ namespace ELTE.AEGIS.Geometry
         public virtual T this[Int32 index]
         {
             get { return _geometries[index]; }
-            set 
+            set
             {
                 if (index < 0)
                     throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
@@ -330,11 +330,11 @@ namespace ELTE.AEGIS.Geometry
                 if (value == null)
                     throw new InvalidOperationException("The value is null.");
 
-                if (_geometries[index] != value)
-                {
-                    _geometries[index] = value;
-                    OnGeometryChanged();
-                }
+                if (_geometries[index].Equals(value))
+                    return;
+
+                _geometries[index] = value;
+                OnGeometryChanged();
             }
         }
 
@@ -678,7 +678,7 @@ namespace ELTE.AEGIS.Geometry
             list._size = _size;
             for (Int32 i = 0; i < _size; i++)
             {
-                list._geometries[i] = _geometries[i].Clone() as T;
+                list._geometries[i] = (T)_geometries[i].Clone();
             }
 
             return list;

@@ -458,6 +458,42 @@ namespace ELTE.AEGIS
         /// <exception cref="System.ArgumentNullException">The other geometry collection is null.</exception>
         IGeometryCollection<IGeometry> CreateGeometryCollection(IGeometryCollection<IGeometry> other);
 
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <returns>The empty geometry collection.</returns>
+        IGeometryCollection<T> CreateGeometryCollection<T>() where T : IGeometry;
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The empty geometry collection with the specified metadata.</returns>
+        IGeometryCollection<T> CreateGeometryCollection<T>(IDictionary<String, Object> metadata) where T : IGeometry;
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="geometries">The source geometries.</param>
+        /// <returns>The geometry collection containing the specified geometries.</returns>
+        IGeometryCollection<T> CreateGeometryCollection<T>(IEnumerable<T> geometries) where T : IGeometry;
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="geometries">The source geometries.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The geometry collection containing the specified geometries and metadata.</returns>
+        IGeometryCollection<T> CreateGeometryCollection<T>(IEnumerable<T> geometries, IDictionary<String, Object> metadata) where T : IGeometry;
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="other">The other geometry collection.</param>
+        /// <returns>A geometry collection that matches <paramref name="other" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The other geometry collection is null.</exception>
+        IGeometryCollection<T> CreateGeometryCollection<T>(IGeometryCollection<T> other) where T : IGeometry;
+
         #endregion
 
         #region Factory methods for multi points
