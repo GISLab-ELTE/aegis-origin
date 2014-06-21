@@ -21,13 +21,6 @@ namespace ELTE.AEGIS
     /// <summary>
     /// Defines behavior for generic geometry collections in coordinate space.
     /// </summary>
-    public interface IGeometryCollection : IGeometryCollection<IGeometry>
-    { 
-    }
-
-    /// <summary>
-    /// Defines behavior for generic geometry collections in coordinate space.
-    /// </summary>
     /// <typeparam name="T">The type of geometry.</typeparam>
     public interface IGeometryCollection<out T> : IGeometry, IEnumerable<T> where T : IGeometry
     {

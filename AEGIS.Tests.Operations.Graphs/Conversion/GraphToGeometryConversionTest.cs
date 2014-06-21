@@ -176,10 +176,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
 
             result = conversion.Result;
 
-            Assert.IsTrue(result is IGeometryCollection);
-            Assert.AreEqual(coordinates.Count - 1 + newCoordinates.Count, (result as IGeometryCollection).Count);
+            Assert.IsTrue(result is IGeometryCollection<IGeometry>);
+            Assert.AreEqual(coordinates.Count - 1 + newCoordinates.Count, (result as IGeometryCollection<IGeometry>).Count);
 
-            foreach (IGeometry geometry in result as IGeometryCollection)
+            foreach (IGeometry geometry in result as IGeometryCollection<IGeometry>)
             {
                 Assert.IsTrue(geometry is ILine || geometry is IPoint);
 
