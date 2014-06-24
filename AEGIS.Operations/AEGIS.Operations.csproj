@@ -56,6 +56,7 @@
     <Compile Include="OperationParameter.cs" />
     <Compile Include="OperationsEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">

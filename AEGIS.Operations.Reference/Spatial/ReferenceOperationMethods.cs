@@ -99,17 +99,13 @@ namespace ELTE.AEGIS.Operations.Spatial
             get
             {
                 return _referenceTransformation ?? (_referenceTransformation =
-                    new OperationMethod("AEGIS::212901", "Reference system transformation",
-                                        "Transforms the specified geometry the a new reference system.", null, "1.0",
-                                        false,
-                                        typeof(IGeometry),
-                                        typeof(IGeometry),
-                                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                                        ExecutionMode.OutPlace,
-                                        ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
-                                        ReferenceOperationParameters.TargetReferenceSystem,
-                                        OperationParameters.GeometryFactory,
-                                        OperationParameters.MetadataPreservation));
+                    OperationMethod.CreateMethod<IGeometry, IGeometry>(
+                        "AEGIS::212901", "Reference system transformation",
+                        "Transforms the specified geometry the a new reference system.", 
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.Any,
+                        ReferenceOperationParameters.TargetReferenceSystem,
+                        OperationParameters.GeometryFactory,
+                        OperationParameters.MetadataPreservation));
             }
         }
 

@@ -28,13 +28,44 @@ namespace ELTE.AEGIS.Operations
     {
         #region Private fields
 
-        private readonly String _version;
+        /// <summary>
+        /// The version of the method.
+        /// </summary>
+        private readonly Version _version;
+
+        /// <summary>
+        /// A value indicating whther the operation is reversible.
+        /// </summary>
         private readonly Boolean _isReversible;
+
+        /// <summary>
+        /// The type of the source.
+        /// </summary>
         private readonly Type _sourceType;
-        private readonly Type _targetType;
+
+        /// <summary>
+        /// The type of the result.
+        /// </summary>
+        private readonly Type _resultType;
+
+        /// <summary>
+        /// The supported geometry models.
+        /// </summary>
         private readonly GeometryModel[] _supportedModels;
+
+        /// <summary>
+        /// The supported execution domains.
+        /// </summary>
         private readonly ExecutionDomain[] _supportedDomains;
+
+        /// <summary>
+        /// The supported execution modes.
+        /// </summary>
         private readonly ExecutionMode[] _supportedModes;
+
+        /// <summary>
+        /// The parameters of the method.
+        /// </summary>
         private readonly OperationParameter[] _parameters;
 
         #endregion
@@ -45,7 +76,7 @@ namespace ELTE.AEGIS.Operations
         /// Gets or sets the version of the method.
         /// </summary>
         /// <value>The version of the method.</value>
-        public String Version { get { return _version; } }
+        public Version Version { get { return _version; } }
 
         /// <summary>
         /// Gets a values indicating whether the operation is reversible.
@@ -60,10 +91,10 @@ namespace ELTE.AEGIS.Operations
         public Type SourceType { get { return _sourceType; } }
 
         /// <summary>
-        /// Gets the target type of the method.
+        /// Gets the result type of the method.
         /// </summary>
-        /// <value>The target type of the method.</value>
-        public Type TargetType { get { return _targetType; } }
+        /// <value>The result type of the method.</value>
+        public Type ResultType { get { return _resultType; } }
 
         /// <summary>
         /// Gets or sets the geometry models supported by the method.
@@ -103,7 +134,7 @@ namespace ELTE.AEGIS.Operations
         /// <param name="version">The version.</param>
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
         /// <param name="sourceType">The source type of the method.</param>
-        /// <param name="targetType">The target type of the method.</param>
+        /// <param name="resultType">The result type of the method.</param>
         /// <param name="supportedModels">The supported models of the method.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
         /// <param name="supportedDomains">The supported execution domains of the method.</param>
@@ -115,22 +146,22 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The target type is null.
         /// </exception>
-        public OperationMethod(String identifier, String name, String remarks, String[] aliases, String version,
+        public OperationMethod(String identifier, String name, String remarks, String[] aliases, Version version,
                                Boolean isReversible, 
-                               Type sourceType, Type targetType, GeometryModel supportedModels, 
+                               Type sourceType, Type resultType, GeometryModel supportedModels, 
                                ExecutionMode supportedModes, ExecutionDomain supportedDomains,
                                params OperationParameter[] parameters)
             : base(identifier, name, remarks, aliases)
         {
             if (sourceType == null)
                 throw new ArgumentNullException("sourceType", "The source type is null.");
-            if (targetType == null)
+            if (resultType == null)
                 throw new ArgumentNullException("targetType", "The target type is null.");
 
             _version = version;
             _isReversible = isReversible;
             _sourceType = sourceType;
-            _targetType = targetType;
+            _resultType = resultType;
             _supportedModels = ExtractGeometryModels(supportedModels);
             _supportedModes = ExtractExecutionModes(supportedModes);
             _supportedDomains = ExtractExecutionDomains(supportedDomains);
@@ -191,34 +222,58 @@ namespace ELTE.AEGIS.Operations
         /// Creates a new instance of the <see cref="OperationMethod" /> class.
         /// </summary>
         /// <typeparam name="SourceType">The type of the source.</typeparam>
-        /// <typeparam name="TargetType">The type of the target.</typeparam>
+        /// <typeparam name="ResultType">The type of the result.</typeparam>
+        /// <param name="identifier">The identifier.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="remarks">The remarks.</param>
+        /// <param name="isReversible">Indicates whether the method is reversible.</param>
+        /// <param name="supportedModels">The supported models of the method.</param>
+        /// <param name="supportedModes">The supported execution modes of the method.</param>
+        /// <param name="parameters">The parameters of the method.</param>
+        /// <returns>The <see cref="OperationMethod"/> instance produced by the method.</returns>
+        /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
+        public static OperationMethod CreateMethod<SourceType, ResultType>(String identifier, String name, String remarks,
+                                                                           Boolean isReversible,
+                                                                           GeometryModel supportedModels, ExecutionMode supportedModes,
+                                                                           params OperationParameter[] parameters)
+        {
+            return new OperationMethod(identifier, name, remarks, null, Version.Default,
+                                       isReversible, typeof(SourceType), typeof(ResultType),
+                                       supportedModels, supportedModes, ExecutionDomain.Local | ExecutionDomain.Remote, parameters);
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="OperationMethod" /> class.
+        /// </summary>
+        /// <typeparam name="SourceType">The type of the source.</typeparam>
+        /// <typeparam name="ResultType">The type of the result.</typeparam>
         /// <param name="identifier">The identifier.</param>
         /// <param name="name">The name.</param>
         /// <param name="remarks">The remarks.</param>
         /// <param name="aliases">The aliases.</param>
         /// <param name="version">The version.</param>
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
-        /// <param name="sourceType">The source type of the method.</param>
-        /// <param name="targetType">The target type of the method.</param>
         /// <param name="supportedModels">The supported models of the method.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
         /// <param name="supportedDomains">The supported execution domains of the method.</param>
         /// <param name="parameters">The parameters of the method.</param>
+        /// <returns>The <see cref="OperationMethod"/> instance produced by the method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
-        /// The source type is null.
-        /// or
-        /// The target type is null.
+        /// The version is null.
         /// </exception>
-        public static OperationMethod CreateMethod<SourceType, TargetType>(String identifier, String name, String remarks, String[] aliases, String version,
+        /// <exception cref="System.ArgumentException">The version has no components or more than three components.</exception>
+        /// <exception cref="System.FormatException">One or more components of the version do not parse into an integer.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">One or more components of the version have a value of less than 0.</exception>
+        public static OperationMethod CreateMethod<SourceType, ResultType>(String identifier, String name, String remarks, String[] aliases, String version,
                                                                            Boolean isReversible,
                                                                            GeometryModel supportedModels,
                                                                            ExecutionMode supportedModes, ExecutionDomain supportedDomains,
                                                                            params OperationParameter[] parameters)
         {
-            return new OperationMethod(identifier, name, remarks, aliases, version,
-                                       isReversible, typeof(SourceType), typeof(TargetType),
+            return new OperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
+                                       isReversible, typeof(SourceType), typeof(ResultType),
                                        supportedModels, supportedModes, supportedDomains, parameters);
         }
 

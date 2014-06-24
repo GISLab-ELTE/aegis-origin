@@ -333,7 +333,7 @@ namespace ELTE.AEGIS.Operations
 
             for (Int32 i = 1; i < operations.Count; i++)
             {
-                if (!operations[i].Method.SourceType.Equals(operations[i - 1].Method.TargetType) && !operations[i - 1].Method.TargetType.GetType().IsSubclassOf(operations[i].Method.SourceType) && !operations[i - 1].Method.TargetType.GetInterfaces().Contains(operations[i - 1].Method.TargetType))
+                if (!operations[i].Method.SourceType.Equals(operations[i - 1].Method.ResultType) && !operations[i - 1].Method.ResultType.GetType().IsSubclassOf(operations[i].Method.SourceType) && !operations[i - 1].Method.ResultType.GetInterfaces().Contains(operations[i - 1].Method.ResultType))
                     throw new ArgumentException("The specified source type is not supported by the method (" + operations[i].Method.Name + ").", "source");
             }
 

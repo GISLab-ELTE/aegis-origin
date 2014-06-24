@@ -27,7 +27,14 @@ namespace ELTE.AEGIS.Operations.Spectral
     {
         #region Private fields
 
+        /// <summary>
+        /// The supported raster representations.
+        /// </summary>
         private RasterRepresentation[] _supportedRepresentations;
+
+        /// <summary>
+        /// The spectral domain of the operation.
+        /// </summary>
         private SpectralOperationDomain _spectralDomain;
 
         #endregion
@@ -61,21 +68,21 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
         /// <param name="spectralDomain">The domain of the operation.</param>
         /// <param name="sourceType">The source type of the method.</param>
-        /// <param name="targetType">The target type of the method.</param>
+        /// <param name="resultType">The result type of the method.</param>
         /// <param name="supportedModels">The supported geometry models.</param>
         /// <param name="supportedRepresentations">The supported raster representations.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
         /// <param name="supportedDomains">The supported execution domains of the method.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
-        public SpectralOperationMethod(String identifier, String name, String remarks, String[] aliases, String version,
+        public SpectralOperationMethod(String identifier, String name, String remarks, String[] aliases, Version version,
                                        Boolean isReversible, SpectralOperationDomain spectralDomain,
-                                       Type sourceType, Type targetType, GeometryModel supportedModels,
+                                       Type sourceType, Type resultType, GeometryModel supportedModels,
                                        RasterRepresentation supportedRepresentations,                                       
                                        ExecutionMode supportedModes,
                                        ExecutionDomain supportedDomains,
                                        params OperationParameter[] parameters)
-            : base(identifier, name, remarks, aliases, version, isReversible, sourceType, targetType, supportedModels, supportedModes, supportedDomains, parameters)
+            : base(identifier, name, remarks, aliases, version, isReversible, sourceType, resultType, supportedModels, supportedModes, supportedDomains, parameters)
         {
             _supportedRepresentations = ExtractRasterRepresentations(supportedRepresentations);
             _spectralDomain = spectralDomain;
@@ -96,20 +103,27 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
         /// <param name="spectralDomain">The domain of the operation.</param>
         /// <param name="parameters">The parameters of the operation.</param>
-        /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         /// <returns>The <see cref="SpectralOperationMethod" /> instance produced by the method.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The identifier is null.
+        /// or
+        /// The version is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The version has no components or more than three components.</exception>
+        /// <exception cref="System.FormatException">One or more components of the version do not parse into an integer.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">One or more components of the version have a value of less than 0.</exception>
         public static SpectralOperationMethod CreateSpectralTransformation(String identifier, String name, String remarks, String[] aliases, String version, 
                                                                            Boolean isReversible, SpectralOperationDomain spectralDomain,
                                                                            params OperationParameter[] parameters)
         { 
-            return new SpectralOperationMethod(identifier, name, remarks, aliases, version,
+            return new SpectralOperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
                                                isReversible, spectralDomain,
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
-                                               GeometryModel.None | GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                                               RasterRepresentation.Integer | RasterRepresentation.Floating,
-                                               ExecutionMode.InPlace | ExecutionMode.OutPlace,
-                                               ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
+                                               GeometryModel.Any,
+                                               RasterRepresentation.Floating | RasterRepresentation.Integer,
+                                               ExecutionMode.Any,
+                                               ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
         }
 
@@ -126,20 +140,27 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="supportedExecutions">The supported execution modes of the method.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <returns>The <see cref="SpectralOperationMethod" /> instance produced by the method.</returns>
-        /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The identifier is null.
+        /// or
+        /// The version is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The version has no components or more than three components.</exception>
+        /// <exception cref="System.FormatException">One or more components of the version do not parse into an integer.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">One or more components of the version have a value of less than 0.</exception>
         public static SpectralOperationMethod CreateSpectralTransformation(String identifier, String name, String remarks, String[] aliases, String version,
                                                                            Boolean isReversible, SpectralOperationDomain spectralDomain,
                                                                            ExecutionMode supportedExecutions,
                                                                            params OperationParameter[] parameters)
         {
-            return new SpectralOperationMethod(identifier, name, remarks, aliases, version,
+            return new SpectralOperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
                                                isReversible, spectralDomain,
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
-                                               GeometryModel.None | GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
+                                               GeometryModel.Any,
                                                RasterRepresentation.Integer | RasterRepresentation.Floating, 
                                                supportedExecutions,
-                                               ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
+                                               ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
         }
 
@@ -162,14 +183,14 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                            RasterRepresentation supportedRepresentation,
                                                                            params OperationParameter[] parameters)
         {
-            return new SpectralOperationMethod(identifier, name, remarks, aliases, version,
+            return new SpectralOperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
                                                isReversible, spectralDomain,
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
-                                               GeometryModel.None | GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
+                                               GeometryModel.Any,
                                                supportedRepresentation,
-                                               ExecutionMode.InPlace | ExecutionMode.OutPlace,
-                                               ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
+                                               ExecutionMode.Any,
+                                               ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
         }
 
