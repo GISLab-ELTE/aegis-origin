@@ -56,7 +56,7 @@
     <Compile Include="OperationState.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ParameterizedOperation.cs" />
+    <Compile Include="OperationConfiguration.cs" />
     <Compile Include="OperationMethod.cs" />
     <Compile Include="OperationParameter.cs" />
     <Compile Include="OperationsEngine.cs" />

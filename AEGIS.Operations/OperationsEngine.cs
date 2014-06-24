@@ -180,7 +180,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        public Object ExecuteOperation(ParameterizedOperation operation, Object source)
+        public Object ExecuteOperation(OperationConfiguration operation, Object source)
         {
             return ExecuteOperation(operation.Method, operation.Parameters, source);
         }
@@ -211,7 +211,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public void ExecuteOperation(ParameterizedOperation operation, Object source, Object target)
+        public void ExecuteOperation(OperationConfiguration operation, Object source, Object target)
         {
             ExecuteOperation(operation.Method, operation.Parameters, source, target);
         }
@@ -298,7 +298,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        public Object ExecuteOperation(IList<ParameterizedOperation> operations, Object source)
+        public Object ExecuteOperation(IList<OperationConfiguration> operations, Object source)
         {
             if (operations == null)
                 throw new ArgumentNullException("operations", "The array of operations is null.");

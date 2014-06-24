@@ -49,6 +49,7 @@
     <Compile Include="Management\OperationClassAttributeTest.cs" />
     <Compile Include="Management\OperationMethodCollectionAttributeTest.cs" />
     <Compile Include="Management\OperationParameterCollectionAttributeTest.cs" />
+    <Compile Include="OperationConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\AssemblyOperationProviderTest.cs" />
     <Compile Include="TestOperation.cs" />
