@@ -39,6 +39,11 @@ namespace ELTE.AEGIS
         Spatial3D = 4,
 
         /// <summary>
+        /// Spatial with 2 or 3 dimensional coordinate system.
+        /// </summary>
+        Spatial = 6,
+
+        /// <summary>
         /// Spatio-temporal with 2 dimensional spatial coordinate system and one dimensional temporal coordinate system.
         /// </summary>
         SpatioTemporal2D = 8,
@@ -49,8 +54,18 @@ namespace ELTE.AEGIS
         SpatioTemporal3D = 16,
 
         /// <summary>
-        /// Temporal with one dimensional coordinate system.
+        /// Spatio-temporal with 2 or 3 dimensional spatial coordinate system and one dimensional temporal coordinate system.
         /// </summary>
-        Temporal = 32
+        SpatioTemporal = 24,
+
+        /// <summary>
+        /// Spatial or spatio-temporal with 2 or 3 dimensional spatial coordinate system and optionally one dimensional temporal coordinate system.
+        /// </summary>
+        SpatialOrSpatioTemporal = 30,
+
+        /// <summary>
+        /// Support for all models.
+        /// </summary>
+        Any = 31
     }
 }
