@@ -46,6 +46,10 @@
     <Compile Include="ExecutionDomain.cs" />
     <Compile Include="ExecutionMode.cs" />
     <Compile Include="IOperation.cs" />
+    <Compile Include="Management\OperationCertificate.cs" />
+    <Compile Include="Management\OperationClassAttribute.cs" />
+    <Compile Include="Management\OperationMethodCollectionAttribute.cs" />
+    <Compile Include="Management\OperationParameterCollectionAttribute.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="OperationParameters.cs" />
     <Compile Include="OperationState.cs">
