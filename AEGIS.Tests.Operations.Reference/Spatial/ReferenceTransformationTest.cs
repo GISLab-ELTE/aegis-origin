@@ -37,20 +37,18 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         /// Test for operation execution with metadata.
         /// </summary>
         [TestCase]
-        public void ReferenceTransformationExecuteWithMetadataPreservationTest()
+        public void ReferenceTransformationExecuteTest()
         {
-            TestExecutionForPoint(true);
-            TestExecuteForAllGeometries(true);
-        }
+            // test case 1: with metadata
 
-        /// <summary>
-        /// Test for operation execution without metadata.
-        /// </summary>
-        [TestCase]
-        public void ReferenceTransformationExecuteWithoutMetadataPreservationTest()
-        {
-            TestExecutionForPoint(false);
-            TestExecuteForAllGeometries(false);
+            TestExecuteForReferenceSystems(true);
+            TestExecuteForGeometries(true);
+
+
+            // test case 2: without metadata
+
+            TestExecuteForReferenceSystems(false);
+            TestExecuteForGeometries(false);
         }
 
         #endregion
@@ -58,10 +56,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         #region Private methods
 
         /// <summary>
-        /// Test for points.
+        /// Test execution for multiple reference systems by using points.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
-        private void TestExecutionForPoint(Boolean metadataPreservation)
+        private void TestExecuteForReferenceSystems(Boolean metadataPreservation)
         {
             // test case 1: projected to projected
 
@@ -84,9 +82,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
             Assert.AreEqual(sourcePoint.Metadata, resultPoint.Metadata);
 
-            // test case 2: geographic to projected
 
-            Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
+            // test case 2: geographic to projected
 
             sourceGeoCoordinate = new GeoCoordinate(Angle.FromDegree(45), Angle.FromDegree(45));
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
@@ -103,6 +100,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             resultPoint = transformation.Result as IPoint;
 
             Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
+
 
             // test case 3: projected to geographic
 
@@ -123,6 +121,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(expectedGeoCoordinate.Latitude.GetValue(UnitsOfMeasurement.Degree), resultPoint.Coordinate.X);
             Assert.AreEqual(expectedGeoCoordinate.Longitude.GetValue(UnitsOfMeasurement.Degree), resultPoint.Coordinate.Y);
 
+
             // test case 4: projected to projected (reverse)
 
             sourceCoordinate = new Coordinate(10, 10);
@@ -142,6 +141,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
 
             Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
 
+
             // test case 5: same reference system
 
             sourcePoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreatePoint(10, 10);
@@ -155,6 +155,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             resultPoint = transformation.Result as IPoint;
 
             Assert.AreEqual(sourcePoint.Coordinate, resultPoint.Coordinate);
+
 
             // test case 6: no source reference system
 
@@ -170,7 +171,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
 
             Assert.AreEqual(sourcePoint.Coordinate, resultPoint.Coordinate);
 
+
             // test case 7: no target reference system
+
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, null);
 
@@ -178,10 +181,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         }
 
         /// <summary>
-        /// Test for all geometry types.
+        /// Test execution for multiple geometry types.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
-        private void TestExecuteForAllGeometries(Boolean metadataPreservation)
+        private void TestExecuteForGeometries(Boolean metadataPreservation)
         {
             Coordinate[] sourceCoordinates = new Randomizer(0).GetDoubles(0, 10000, 100).Select(value => new Coordinate(value, value)).ToArray();
             Coordinate[] expectedCoordinates = new Coordinate[sourceCoordinates.Length];

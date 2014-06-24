@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spatial
     /// <summary>
     /// Represents a reference system transformation.
     /// </summary>
-    [OperationClass("AEGIS::212901", "Reference system transformation")]
+    [OperationClass("AEGIS::212901", "Reference system transformation", "1.0.0", typeof(ReferenceTransformationCertificate))]
     public class ReferenceTransformation : Operation<IGeometry, IGeometry>
     {
         #region Private fields
@@ -91,6 +91,9 @@ namespace ELTE.AEGIS.Operations.Spatial
         /// <exception cref="System.InvalidOperationException">Transformation of the specified geometry is not supported.</exception>
         private IGeometry Compute(IGeometry source)
         {
+            if (source == null)
+                return null;
+
             if (source.ReferenceSystem == null || source.ReferenceSystem.Equals(_targetReferenceSystem))
                 return source;
 
