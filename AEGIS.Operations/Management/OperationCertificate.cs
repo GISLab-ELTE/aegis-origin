@@ -45,21 +45,21 @@ namespace ELTE.AEGIS.Operations.Management
         /// </summary>
         /// <param name="engine">The engine.</param>
         /// <returns><c>true</c> if the engine is valid for the operation; otherwise <c>false</c>.</returns>
-        public virtual Boolean ValidateEngine(OperationsEngine engine) { return true; }
+        public virtual Boolean ValidateEngine(OperationsEngine engine) { return engine != null; }
 
         /// <summary>
         /// Validates the source object.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns><c>true</c> if the source object is valid for the operation; otherwise <c>false</c>.</returns>
-        public virtual Boolean ValidateSource(Object source) { return true; }
+        public virtual Boolean ValidateSource(Object source) { return source != null; }
 
         /// <summary>
         /// Validates the target object.
         /// </summary>
         /// <param name="target">The target.</param>
         /// <returns><c>true</c> if the target object is valid for the operation; otherwise <c>false</c>.</returns>
-        public virtual Boolean ValidateTarget(Object target) { return true; }
+        public virtual Boolean ValidateTarget(Object target) { return target != null; }
 
         /// <summary>
         /// Validates the target object with respect to the source.
@@ -67,7 +67,7 @@ namespace ELTE.AEGIS.Operations.Management
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
         /// <returns><c>true</c> if the target object is valid for the operation; otherwise <c>false</c>.</returns>
-        public virtual Boolean ValidateTarget(Object target, Object source) { return true; }
+        public virtual Boolean ValidateTarget(Object target, Object source) { return target != null; }
 
         /// <summary>
         /// Validates the parameters.

@@ -28,26 +28,6 @@ namespace ELTE.AEGIS.Operations
     /// </summary>
     public class OperationsEngine
     {
-        #region Singleton pattern
-
-        private static OperationsEngine _instance;
-
-        /// <summary>
-        /// Gets the current instance.
-        /// </summary>
-        /// <value>The current instance.</value>
-        public static OperationsEngine Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new OperationsEngine();
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Private fields
 
         private readonly List<OperationMethod> _methods;
@@ -69,7 +49,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationsEngine" /> class.
         /// </summary>
-        private OperationsEngine()
+        public OperationsEngine()
         {
             _methods = new List<OperationMethod>();
             _operations = new Dictionary<OperationMethod, Type>();
