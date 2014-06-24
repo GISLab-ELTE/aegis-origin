@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents a spectral translation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213102", "Spectral translation")]
+    [OperationClass("AEGIS::213102", "Spectral translation")]
     public class SpectralTranslation : PerBandSpectralTransformation
     {
         #region Private fields

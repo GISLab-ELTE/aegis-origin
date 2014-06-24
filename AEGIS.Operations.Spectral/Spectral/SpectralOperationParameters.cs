@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances for spectral operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationParameter))]
+    [OperationParameterCollection]
     public static class SpectralOperationParameters
     {
         #region Query fields

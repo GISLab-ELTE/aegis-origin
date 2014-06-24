@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using ELTE.AEGIS.Operations.Spatial.Strategy;
 using ELTE.AEGIS.Reference;
 using System;
@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spatial
     /// <summary>
     /// Represents a reference system transformation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212901", "Reference system transformation")]
+    [OperationClass("AEGIS::212901", "Reference system transformation")]
     public class ReferenceTransformation : Operation<IGeometry, IGeometry>
     {
         #region Private fields

@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// <summary>
     /// Represents a collection of known <see cref="SpectralOperationMethod" /> instances.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationMethod))]
+    [OperationMethodCollection]
     public static class SpectralOperationMethods
     {
         #region Query fields

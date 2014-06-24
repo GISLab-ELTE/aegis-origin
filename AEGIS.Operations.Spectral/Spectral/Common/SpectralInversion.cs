@@ -14,7 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents an inversion transformation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213104", "Spectral inversion")]
+    [OperationClass("AEGIS::213104", "Spectral inversion")]
     public class SpectralInversion : PerBandSpectralTransformation
     {
         #region Private fields

@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using the specified constants.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213120", "Constant based spectral thresholding")]
+    [OperationClass("AEGIS::213120", "Constant based spectral thresholding")]
     public class ConstantBasedThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

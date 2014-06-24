@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spatial
     /// <summary>
     /// Represents a collection of known <see cref="OperationMethod" /> instances for graph operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationMethod))]
+    [OperationMethodCollection]
     public static class GraphOperationMethods
     {
         #region Query fields
@@ -111,11 +111,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _aStarAlgorithm ?? (_aStarAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212334", "A* star algorithm",
-                        "A* is a computer algorithm that is widely used in pathfinding and graph traversal, the process of plotting an efficiently traversable path between vertices.", null, "1.0.0", 
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D, 
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,                                        
+                        "A* is a computer algorithm that is widely used in pathfinding and graph traversal, the process of plotting an efficiently traversable path between vertices.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,                          
                         GraphOperationParameters.SourceVertex, 
                         GraphOperationParameters.TargetVertex,
                         GraphOperationParameters.DistanceMetric,
@@ -135,11 +132,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _bellmannFordAlgorithm ?? (_bellmannFordAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212314", "Bellmann-Ford algorithm",
-                        "Computes shortest paths from a single source vertex to all of the other vertices in a weighted directed graph.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,     
+                        "Computes shortest paths from a single source vertex to all of the other vertices in a weighted directed graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.DistanceMetric
                     ));
@@ -155,11 +149,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _breathFirstSearch ?? (_breathFirstSearch =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::201306", "Breath-first search",
-                        "Tranverses the graph by beginning at the root vertex and exploring all the neighboring vertices. Then for each of those nearest vertices, it explores their unexplored neighbor vertices, and so on.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,    
+                        "Tranverses the graph by beginning at the root vertex and exploring all the neighboring vertices. Then for each of those nearest vertices, it explores their unexplored neighbor vertices, and so on.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex
                     ));
             }
@@ -175,11 +166,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _depthFirstSearch ?? (_depthFirstSearch =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::201302", "Depth-first search",
-                        "Tranverses the graph by exploring as far as possible along each branch before backtracking.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Tranverses the graph by exploring as far as possible along each branch before backtracking.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex
                     ));
             }
@@ -195,11 +183,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _dijkstasAlgorithm ?? (_dijkstasAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212310", "Dijkstra's algorithm",
-                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.DistanceMetric
                     ));
@@ -216,11 +201,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _dijkstasSingleShortestPathAlgorithm ?? (_dijkstasSingleShortestPathAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212331", "Dijkstra's algorithm (single shortest path)",
-                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.TargetVertex,
                         GraphOperationParameters.DistanceMetric
@@ -238,11 +220,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _floydWarshallAlgorithmMinimalPath ?? (_floydWarshallAlgorithmMinimalPath =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212317", "Floyd–Warshall algorithm (for minimal path)",
-                        "Floyd–Warshall algorithm is a graph analysis algorithm for finding shortest paths in a weighted graph to positive or negative edge weights (but to no negative cycles).", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Floyd–Warshall algorithm is a graph analysis algorithm for finding shortest paths in a weighted graph to positive or negative edge weights (but to no negative cycles).",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.DistanceMetric
                     ));
             }
@@ -258,11 +237,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _floydWarshallAlgorithmTransitiveClosure ?? (_floydWarshallAlgorithmTransitiveClosure =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212601", "Floyd–Warshall algorithm (for transitive closure)",
-                        "Floyd–Warshall algorithm is a graph analysis algorithm for computing the transitive closure of a weighted graph to positive or negative edge weights (but to no negative cycles).", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote
+                        "Floyd–Warshall algorithm is a graph analysis algorithm for computing the transitive closure of a weighted graph to positive or negative edge weights (but to no negative cycles).",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace
                     ));
             }
         }
@@ -277,11 +253,8 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _primsAlgorithm ?? (_primsAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212501", "Prim's algorithm",
-                        "Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a connected weighted undirected graph.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a connected weighted undirected graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.DistanceMetric
                     ));
@@ -295,14 +268,11 @@ namespace ELTE.AEGIS.Operations.Spatial
         {
             get
             {
-                return _kruskalAlgorithm ?? (_kruskalAlgorithm =
+                return _kruskalAlgorithm ?? (_kruskalAlgorithm = 
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212501", "Kruskal's algorithm",
-                        "Kruskal's algorithm is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Kruskal's algorithm is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.WeightMetric
                     ));
@@ -316,14 +286,11 @@ namespace ELTE.AEGIS.Operations.Spatial
         {
             get
             {
-                return _reverseDeleteAlgorithm ?? (_reverseDeleteAlgorithm =
+                return _reverseDeleteAlgorithm ?? (_reverseDeleteAlgorithm = 
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212501", "Reverse-delete algorithm",
-                        "Reverse-delete is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Reverse-delete is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.WeightMetric
                     ));

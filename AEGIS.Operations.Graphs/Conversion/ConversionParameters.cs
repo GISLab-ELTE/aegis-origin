@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances for conversion operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationParameter))]
+    [OperationParameterCollection]
     public static class ConversionParameters
     {
         #region Query fields

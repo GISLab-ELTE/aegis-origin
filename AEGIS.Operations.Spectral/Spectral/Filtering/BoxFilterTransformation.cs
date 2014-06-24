@@ -13,10 +13,9 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Numerics;
-using ELTE.AEGIS.Management;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
@@ -26,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <remarks>
     /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighbouring values under the kernel.
     /// </remarks>
-    [IdentifiedObjectInstance("AEGIS::213202", "Box filter")]
+    [OperationClass("AEGIS::213202", "Box filter")]
     public class BoxFilterTransformation : FilterTransformation
     {
         #region Constructors

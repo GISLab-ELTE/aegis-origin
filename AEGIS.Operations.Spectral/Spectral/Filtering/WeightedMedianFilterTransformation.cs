@@ -13,8 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a median filter transformation with weight modifiers.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213214", "Weighted median filter")]
+    [OperationClass("AEGIS::213214", "Weighted median filter")]
     public class WeightedMedianFilterTransformation : FilterTransformation
     {
         #region Constructors

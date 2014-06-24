@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a median filter transformation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213213", "Median filter")]
+    [OperationClass("AEGIS::213213", "Median filter")]
     public class MedianFilterTransformation : FilterTransformation
     {
         #region Constructors

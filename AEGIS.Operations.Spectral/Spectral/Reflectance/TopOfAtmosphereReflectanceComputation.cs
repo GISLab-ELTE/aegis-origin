@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,6 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// <summary>
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries.
     /// </summary>
+    [OperationClass("AEGIS::213461", "Top of atmosphere reflectance computation")]
     public class TopOfAtmosphereReflectanceComputation : SpectralTransformation
     {
         #region Private fields
@@ -77,7 +79,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
         public TopOfAtmosphereReflectanceComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
-            : base(source, result, SpectralOperationMethods.NormalizedDifferenceIndexComputation, parameters)
+            : base(source, result, SpectralOperationMethods.TopOfAthmospehereReflectanceComputation, parameters)
         {
             if (parameters != null && parameters.ContainsKey(SpectralOperationParameters.IndexOfRedBand))
             {

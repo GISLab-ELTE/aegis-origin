@@ -13,17 +13,17 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Numerics;
-using ELTE.AEGIS.Management;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
     /// Represents a filter transformation using custom kernel, factor and offset values.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213200", "Custom filter")]
+    [OperationClass("AEGIS::213200", "Custom filter")]
     public class CustomFilterTransformation : FilterTransformation
     {
         #region Constructors
