@@ -67,6 +67,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             return All.Where(obj => System.Text.RegularExpressions.Regex.IsMatch(obj.Identifier, identifier)).ToList();
         }
+
         /// <summary>
         /// Returns all <see cref="SpectralOperationMethod" /> instances matching a specified name.
         /// </summary>

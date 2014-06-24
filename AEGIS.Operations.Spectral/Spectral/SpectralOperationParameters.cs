@@ -281,7 +281,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gaussianStandardDeviation ?? (_gaussianStandardDeviation =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223204", "Gaussian standard deviation",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223104", "Gaussian standard deviation",
                                                                        "The standard deviation value for the Gaussian blur filter.", null, 1)
                 );
             }
@@ -295,7 +295,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _histogramMatchFunction ?? (_histogramMatchFunction =
-                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223123", "Histogram match function",
+                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223271", "Histogram match function",
                                                                                     "The function that is matched against the current raster histogram.", null)
                     );
             }

@@ -179,7 +179,10 @@ namespace ELTE.AEGIS.Operations
         /// <returns><c>true</c> if the specified <see cref="OperationMethod" /> is equal to the current <see cref="OperationMethod" />; otherwise, <c>false</c>.</returns>
         public Boolean Equals(OperationMethod another)
         {
-            return base.Equals(another) && _version.Equals(another._version); 
+            if (ReferenceEquals(null, another)) return false;
+            if (ReferenceEquals(this, another)) return true;
+
+            return _identifier.Equals(another._identifier) && _version.Equals(another._version);
         }
 
         #endregion
@@ -193,7 +196,11 @@ namespace ELTE.AEGIS.Operations
         /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to the current <see cref="System.Object" />; otherwise, <c>false</c>.</returns>
         public override Boolean Equals(Object obj)
         {
-            return base.Equals(obj) && (obj is OperationMethod) && _version.Equals((obj as OperationMethod)._version); 
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (!(obj is OperationMethod)) return false;
+
+            return _identifier.Equals((obj as OperationMethod)._identifier) && _version.Equals((obj as OperationMethod)._version);
         }
 
         /// <summary>
