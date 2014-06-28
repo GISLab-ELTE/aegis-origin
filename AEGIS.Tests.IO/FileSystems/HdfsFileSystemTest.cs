@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace ELTE.AEGIS.Tests.IO.FileSystems
         [SetUp]
         public void SetUp()
         {
-            fileSystem = new HdfsFileSystem("192.168.56.101", "14000", "hduser");
+            fileSystem = new HdfsFileSystem("gis.inf.elte.hu", "14000", "hduser");
         }
 
 
@@ -25,31 +26,37 @@ namespace ELTE.AEGIS.Tests.IO.FileSystems
         {
             try
             {
+                fileSystem.Exists("/");
+            }
+            catch(ArgumentException ex)
+            {
+                if (((WebException)ex.InnerException).Status == WebExceptionStatus.ConnectFailure)
+                    return;
+            }
+
+            try
+            {
+
+                if (fileSystem.Exists("/testing"))
+                    fileSystem.Delete("/testing");
 
                 String[] entries = fileSystem.GetFileSystemEntries("/", "*", false);
-                foreach (String entryPath in entries)
-                    fileSystem.Delete(entryPath);
 
-                fileSystem.CreateDirectory("/test");
-                String str = fileSystem.GetParent("/test");
-                
+                fileSystem.CreateDirectory("/testing");
+                String str = fileSystem.GetParent("/testing");
 
-                fileSystem.UploadFile(@"D:\Data\testFile.txt","/testFile");
-                Assert.IsTrue(fileSystem.Exists("/test"));
-                Assert.IsTrue(fileSystem.IsDirectory("/test"));
-                Assert.IsFalse(fileSystem.IsFile("/test"));
-                Assert.IsTrue(fileSystem.IsFile("/testFile"));
-                Assert.IsFalse(fileSystem.IsDirectory("/testFile"));
+                fileSystem.UploadFile(@"D:\Data\testFile.txt","/testing/testFile");
+                Assert.IsTrue(fileSystem.Exists("/testing"));
+                Assert.IsTrue(fileSystem.IsDirectory("/testing"));
+                Assert.IsFalse(fileSystem.IsFile("/testing"));
+                Assert.IsTrue(fileSystem.IsFile("/testing/testFile"));
+                Assert.IsFalse(fileSystem.IsDirectory("/testing/testFile"));
 
-                fileSystem.Copy("/testFile", "/test/testFile");
+                fileSystem.Copy("/testing/testFile", "/testing/testFile2");
 
-                fileSystem.CreateDirectory("/test/testFolder");
-                
-                fileSystem.Move("/test/testFile", "/test/testFolder/testFile");
-                
- 
+                fileSystem.CreateDirectory("/testing/testFolder");
 
-
+                fileSystem.Move("/testing/testFile", "/testing/testFolder/testFile");
 
             }
             catch(Exception ex)

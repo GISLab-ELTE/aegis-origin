@@ -93,8 +93,10 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is null;path
         /// or
         /// The path is empty;path
+        /// or
+        /// Failed to create folder on the specified path.;path
         /// </exception>
-        /// <exception cref="System.Net.WebException">Failed to create folder.</exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to create folder</exception>
         public override void CreateDirectory(String path)
         {
             if (path == null)
@@ -102,11 +104,11 @@ namespace ELTE.AEGIS.IO.FileSystems
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException("The path is empty", "path");
 
+
+            String urlPath = _urlRoot + path + "?op=MKDIRS&user.name=" + HdfsUsername;
+
             try
             {
-
-                String urlPath = _urlRoot + path + "?op=MKDIRS&user.name=" + HdfsUsername;
-
                 HttpWebRequest request = WebRequest.Create(urlPath) as HttpWebRequest;
                 request.Method = "PUT";
                 request.ContentType = "application/json; charset=utf-8";
@@ -118,11 +120,19 @@ namespace ELTE.AEGIS.IO.FileSystems
                     if (!responseString.Contains("true"))
                         throw new ArgumentException("Failed to create folder on the specified path.", "path");
                 }
-
             }
-            catch (WebException ex) //TODO: Proper exception throwing
+            catch (WebException ex)
             {
-                throw new WebException("Failed to create folder.",ex);
+                if (ex.Response == null)
+                    throw new ArgumentException("Failed to create folder on the specified path.", ex);
+
+                switch(((HttpWebResponse)ex.Response).StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedAccessException("The caller does not have the required permission to create folder", ex);
+                    default:
+                        throw new ArgumentException("Failed to create folder on the specified path.", ex);
+                }
             }
 
         }
@@ -135,8 +145,12 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is null;path
         /// or
         /// The path is empty;path
+        /// or
+        /// Failed to delete entry on the specified path.;path
+        /// or
+        /// Failed to delete entry on the specified path.
         /// </exception>
-        /// <exception cref="System.Net.WebException">Failed to delete path</exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to delete entry</exception>
         public override void Delete(String path)
         {
             if (path == null)
@@ -156,12 +170,21 @@ namespace ELTE.AEGIS.IO.FileSystems
                     String responseString = ((new StreamReader(response.GetResponseStream())).ReadToEnd());
 
                     if (!responseString.Contains("true"))
-                        throw new ArgumentException("Failed to delete folder on the specified path.", "path");
+                        throw new ArgumentException("Failed to delete entry on the specified path.", "path");
                 }
             }
             catch(WebException ex)
             {
-                throw new WebException("Failed to delete path",ex);
+                if (ex.Response == null)
+                    throw new ArgumentException("Failed to delete entry on the specified path.", ex);
+
+                switch (((HttpWebResponse)ex.Response).StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedAccessException("The caller does not have the required permission to delete entry", ex);
+                    default:
+                        throw new ArgumentException("Failed to delete entry on the specified path.", ex);
+                }
             }
         }
 
@@ -176,6 +199,8 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is null;path
         /// or
         /// The path is empty;path
+        /// or
+        /// An error occured during the request.
         /// </exception>
         public override Boolean Exists(String path)
         {
@@ -201,13 +226,13 @@ namespace ELTE.AEGIS.IO.FileSystems
             catch(WebException ex)
             {
                 if (ex.Response == null)
-                    throw;
+                    throw new ArgumentException("An error occured during the request.", ex);
 
                 HttpStatusCode statusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 if (statusCode == HttpStatusCode.NotFound)
                     return false;
 
-                throw;
+                throw new ArgumentException("An error occured during the request.", ex);
             }
 
         }
@@ -223,6 +248,8 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is null;path
         /// or
         /// The path is empty;path
+        /// or
+        /// An error occured during the request.
         /// </exception>
         public override Boolean IsDirectory(String path)
         {
@@ -249,13 +276,13 @@ namespace ELTE.AEGIS.IO.FileSystems
             catch(WebException ex)
             {
                 if (ex.Response == null)
-                    throw;
+                    throw new ArgumentException("An error occured during the request.", ex);
 
                 HttpStatusCode statusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 if (statusCode == HttpStatusCode.NotFound)
                     return false;
 
-                throw;
+                throw new ArgumentException("An error occured during the request.", ex);
             }
 
         }
@@ -271,6 +298,8 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is null;path
         /// or
         /// The path is empty;path
+        /// or
+        /// An error occured during the request.
         /// </exception>
         public override Boolean IsFile(String path)
         {
@@ -297,13 +326,13 @@ namespace ELTE.AEGIS.IO.FileSystems
             catch (WebException ex)
             {
                 if (ex.Response == null)
-                    throw;
+                    throw new ArgumentException("An error occured during the request.", ex);
 
                 HttpStatusCode statusCode = ((HttpWebResponse)ex.Response).StatusCode;
                 if (statusCode == HttpStatusCode.NotFound)
                     return false;
 
-                throw;
+                throw new ArgumentException("An error occured during the request.", ex);
             }
         }
 
@@ -356,6 +385,8 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is empty.;path
         /// or
         /// The path contains only white space, or contains one or more invalid characters.;path
+        /// or
+        /// The path, file name, or both exceed the system-defined maximum length.;path
         /// </exception>
         public override String GetFileName(String path)
         {
@@ -372,6 +403,10 @@ namespace ELTE.AEGIS.IO.FileSystems
             {
                 throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
             }
+            catch (PathTooLongException)
+            {
+                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+            }
 
         }
 
@@ -387,6 +422,8 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The path is empty.;path
         /// or
         /// The path contains only white space, or contains one or more invalid characters.;path
+        /// or
+        /// The path, file name, or both exceed the system-defined maximum length.;path
         /// </exception>
         public override String GetFileNameWithoutExtension(String path)
         {
@@ -403,6 +440,10 @@ namespace ELTE.AEGIS.IO.FileSystems
             {
                 throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
             }
+            catch (PathTooLongException)
+            {
+                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+            }
         }
 
         /// <summary>
@@ -418,10 +459,11 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.;path
         /// or
-        /// The specified path is a file.;path
+        /// Failed to get the entries on the specified path.
         /// or
-        /// The specified path is invalid.;path
+        /// Failed to get the entries on the specified path.
         /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to get entries on the specified path.</exception>
         public override String[] GetDirectories(String path, String searchPattern, Boolean recursive)
         {
             return GetEntries(path, searchPattern, recursive)
@@ -443,10 +485,11 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.;path
         /// or
-        /// The specified path is a file.;path
+        /// Failed to get the entries on the specified path.
         /// or
-        /// The specified path is invalid.;path
+        /// Failed to get the entries on the specified path.
         /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to get entries on the specified path.</exception>
         public override String[] GetFiles(String path, String searchPattern, Boolean recursive)
         {
             return GetEntries(path, searchPattern, recursive)
@@ -456,42 +499,42 @@ namespace ELTE.AEGIS.IO.FileSystems
         }
 
         /// <summary>
-        /// Returns the file system entries located on the specified path.
+        /// Gets the entries.
         /// </summary>
-        /// <param name="path">The path of the directory to search.</param>
-        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
-        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>
-        /// An array containing the full paths to all file system entries.
-        /// </returns>
+        /// <param name="path">The path.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="recursive">if set to <c>true</c> [recursive].</param>
+        /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">path;The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.;path
         /// or
-        /// The specified path is a file.;path
+        /// Failed to get the entries on the specified path.
         /// or
-        /// The specified path is invalid.;path
+        /// Failed to get the entries on the specified path.
         /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to get entries on the specified path.</exception>
         public override String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
         {
             return GetEntries(path, searchPattern, recursive).Keys.ToArray();
         }
 
         /// <summary>
-        /// Gets the file system entries on the specified path.
+        /// Gets entries from the filesystem on the specified path.
         /// </summary>
-        /// <param name="path">The path of the directory to search.</param>
-        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
-        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>A dictionary with path names in the key and the type of the entry in the value (File or Directory).</returns>
+        /// <param name="path">The path.</param>
+        /// <param name="searchPattern">The search pattern.</param>
+        /// <param name="recursive">if set to <c>true</c> [recursive].</param>
+        /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">path;The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.;path
         /// or
-        /// The specified path is a file.;path
+        /// Failed to get the entries on the specified path.
         /// or
-        /// The specified path is invalid.;path
+        /// Failed to get the entries on the specified path.
         /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission to get entries on the specified path.</exception>
         private IDictionary<String, FileSystemEntryType> GetEntries(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
@@ -563,13 +606,15 @@ namespace ELTE.AEGIS.IO.FileSystems
             catch (WebException ex)
             {
                 if (ex.Response == null)
-                    throw;
+                    throw new ArgumentException("Failed to get the entries on the specified path.", ex);
 
-                HttpStatusCode statusCode = ((HttpWebResponse)ex.Response).StatusCode;
-                if (statusCode == HttpStatusCode.NotFound)
-                    throw new ArgumentException("The specified path is invalid.", "path");
-
-                throw;
+                switch (((HttpWebResponse)ex.Response).StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedAccessException("The caller does not have the required permission to get entries on the specified path.", ex);
+                    default:
+                        throw new ArgumentException("Failed to get the entries on the specified path.", ex);
+                }
             }
         }
 
@@ -591,10 +636,13 @@ namespace ELTE.AEGIS.IO.FileSystems
 
             return "/";
         }
-         
+
         /// <summary>
-        /// When overriden in a derived class, returns the names of the logical drives of the file system.
+        /// When overriden in a derived class, returns the names of the logical drives of the file system..
         /// </summary>
+        /// <returns>
+        /// The array containing the logical drive names in the file system.
+        /// </returns>
         /// <exception cref="System.NotSupportedException"></exception>
         public override String[] GetLogicalDrives()
         {
@@ -623,10 +671,8 @@ namespace ELTE.AEGIS.IO.FileSystems
 
             String parent = path.Substring(0,path.LastIndexOf('/') + 1);
 
-            
-
             if (!Exists(parent))
-                throw new ArgumentException("The specified path not exists");
+                throw new ArgumentException("The specified path does not exist.");
 
             return parent;
         }
@@ -749,13 +795,18 @@ namespace ELTE.AEGIS.IO.FileSystems
 
             String url = _urlRoot + remotePath + "?op=CREATE&user.name=" + HdfsUsername;
 
-            using(WebClient client = new WebClient())
+            try
             {
-                client.UploadFile(url, "PUT", localPath);
-                
+                using (WebClient client = new WebClient())
+                {
+                    client.UploadFile(url, "PUT", localPath);
+                }
             }
-
-            
+            catch(WebException ex)
+            {
+                if (ex.Response == null)
+                    throw new ArgumentException("Failed to upload file.", ex);
+            }
         }
 
         /// <summary>
@@ -785,9 +836,17 @@ namespace ELTE.AEGIS.IO.FileSystems
 
             String url = _urlRoot + remotePath + "?op=OPEN&user.name=" + HdfsUsername;
 
-            using (WebClient client = new WebClient())
+            try
             {
-                client.DownloadFile(url, localPath);
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(url, localPath);
+                }
+            }
+            catch(WebException ex)
+            {
+                if (ex.Response == null)
+                    throw new ArgumentException("Failed to upload file.", ex);
             }
         }
         #endregion
