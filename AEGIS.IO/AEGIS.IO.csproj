@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileSystem.cs" />
+    <Compile Include="FileSystems\HdfsFileSystem.cs" />
     <Compile Include="FileSystems\LocalFileSystem.cs" />
     <Compile Include="GeometryStreamFormat.cs" />
     <Compile Include="GeometryStreamFormats.cs" />
