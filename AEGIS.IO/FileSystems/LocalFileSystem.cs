@@ -15,6 +15,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 namespace ELTE.AEGIS.IO.FileSystems
 {
@@ -49,6 +50,43 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <value>The volume separator for this file system.</value>
         public override Char VolumeSeparator { get { return Path.VolumeSeparatorChar; } }
 
+        /// <summary>
+        /// Gets a value indicating whether the file system is connected.
+        /// </summary>
+        /// <value><c>true</c> if operations can be executed on the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsConnected 
+        { 
+            get 
+            {
+                try
+                {
+                    return Directory.GetLogicalDrives().Length > 0;
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether file streaming is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file streaming commands can be executed on the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsStreamingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets a value indicating whether content browsing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if the content of the file system can be listed; otherwise, <c>false</c>.</value>
+        public override Boolean IsContentBrowsingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets a value indicating whether content writing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsContentWritingSupported { get { return true; } }
+
         #endregion
 
         #region FileSystem public methods
@@ -61,45 +99,55 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path is invalid.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The path is invalid.
-        /// or
-        /// The path exceeds the system-defined maximum length.
+        /// The specified path is a file.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public override void CreateDirectory(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            if (File.Exists(path))
+                throw new ArgumentException(MessagePathIsFile, "path");
 
             try
             {
                 Directory.CreateDirectory(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException ex)
             {
-                throw new ArgumentException("The path is invalid.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path is invalid.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The path exceeds the system-defined maximum length.", "path");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
 
@@ -113,41 +161,58 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// A file already exists on the path.
+        /// The path is in an invalid format.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path already exists.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public override Stream CreateFile(String path, Boolean overwrite)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
-            if (!overwrite && File.Exists(path))
-                throw new ArgumentException("A file already exists on the path.", "path");
+            if (!overwrite && Exists(path))
+                throw new ArgumentException(MessagePathExists, "path");
 
             try
             {
                 return File.Create(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
-            }            
-            catch (PathTooLongException)
-            {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (NotSupportedException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-        }   
-     
+            catch (PathTooLongException ex)
+            {
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
+            }
+        }
+
         /// <summary>
         /// Opens a stream on the specified path.
         /// </summary>
@@ -159,48 +224,86 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.;path
+        /// The path is a directory.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// or
+        /// The file access is invalid.
+        /// or
+        /// The specified file mode and file access combination is invalid.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">
-        /// The file on path is hidden.
-        /// or
         /// The file on path is read-only.
         /// or
         /// The caller does not have the required permission for the path.
         /// </exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public override Stream OpenFile(String path, FileMode mode, FileAccess access)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
-            if (!File.Exists(path))
-                throw new ArgumentException("The path is invalid.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return File.Open(path, mode, access);
             }
-            catch (ArgumentException)
+            catch (FileNotFoundException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathNotExists, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (ArgumentOutOfRangeException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                if (ex.ParamName == "mode")
+                    throw new ArgumentException(MessageInvalidFileMode, "path", ex);
+                else
+                    throw new ArgumentException(MessageInvalidFileAccess, "mode", ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (ArgumentException ex)
             {
-                if (mode == FileMode.Create || mode == FileMode.CreateNew)
-                    throw new UnauthorizedAccessException("The file on path is hidden.");
-                if (access == FileAccess.ReadWrite || access == FileAccess.Write)
-                    throw new UnauthorizedAccessException("The file on path is read-only.");
+                if (ex.ParamName == "path")
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                else
+                    throw new ArgumentException(MessageInvalidFileModeOrAccess, "access", ex);
+            }
+            catch (NotSupportedException ex)
+            {
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+            }
+            catch (PathTooLongException ex)
+            {
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                if (Directory.Exists(path))
+                    throw new ArgumentException(MessagePathIsDirectory, "path", ex);
 
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                if (mode == FileMode.Create || mode == FileMode.CreateNew)
+                    throw new ArgumentException(MessagePathNotExists, "path", ex);
+                if (access == FileAccess.ReadWrite || access == FileAccess.Write)
+                    throw new UnauthorizedAccessException(MessagePathReadOnly, ex);
+
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
 
@@ -212,26 +315,74 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
         /// The path does not exist.
+        /// or
+        /// The file system entry on the specified path is currently in use.
         /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
         public override void Delete(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
+            // determine whether the specified path is a directory or file
             if (File.Exists(path))
             {
-                File.Delete(path);
-                return;
+                try
+                {
+                    File.Delete(path);
+                    return;
+                }
+                catch (PathTooLongException ex)
+                {
+                    throw new ArgumentException(MessagePathTooLong, "path", ex);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                }
+                catch (IOException ex)
+                {
+                    throw new ArgumentException(MessagePathInUse, "path", ex);
+                }
             }
-            if (Directory.Exists(path))
+            else
             {
-                Directory.Delete(path, true);
-                return;
+                try
+                {
+                    Directory.Delete(path, true);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                }
+                catch (NotSupportedException ex)
+                {
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                }
+                catch (PathTooLongException ex)
+                {
+                    throw new ArgumentException(MessagePathTooLong, "path", ex);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                }
+                catch (DirectoryNotFoundException ex)
+                {
+                    throw new ArgumentException(MessagePathNotExists, "path", ex);
+                }
+                catch (IOException ex)
+                {
+                    throw new ArgumentException(MessagePathInUse, "path", ex);
+                }
             }
-            throw new ArgumentException("The path does not exist.", "path");
         }
 
         /// <summary>
@@ -245,63 +396,73 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.;sourcePath
+        /// The source path is empty.
         /// or
-        /// The destination path is empty.;destinationPath
+        /// The destination path is empty.
         /// or
-        /// The source and destination paths are equal.;destinationPath
+        /// The source and destination paths are equal.
         /// or
-        /// The source or destination path contains only white space, or contains one or more invalid characters.;sourcePath
+        /// The source path does not exist.
         /// or
-        /// The source path is invalid.;sourcePath
+        /// The destination path already exists.
         /// or
-        /// The source or destination paths exceed the system-defined maximum length.;sourcePath
+        /// The source path is in an invalid format.
         /// or
-        /// The destination path already exists.;destinationPath
+        /// The destination path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="ConnectionException">No connection is available to the specified destination path.</exception>
         public override void Move(String sourcePath, String destinationPath)
         {
             if (sourcePath == null)
-                throw new ArgumentNullException("sourcePath", "The source path is null.");
+                throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);
             if (destinationPath == null)
-                throw new ArgumentNullException("destinationPath", "The destination path is null.");
+                throw new ArgumentNullException("destinationPath", MessageDestinationPathIsNull);
             if (String.IsNullOrEmpty(sourcePath))
-                throw new ArgumentException("The source path is empty.", "sourcePath");
+                throw new ArgumentException(MessageSourcePathIsEmpty, "sourcePath");
             if (String.IsNullOrEmpty(destinationPath))
-                throw new ArgumentException("The destination path is empty.", "destinationPath");
+                throw new ArgumentException(MessageDestinationPathIsEmpty, "destinationPath");
 
             if (sourcePath.Equals(destinationPath))
-                throw new ArgumentException("The source and destination paths are equal.", "destinationPath");
+                throw new ArgumentException(MessageSourceDestinationPathEqual, "destinationPath");
 
+            if (Exists(destinationPath))
+                throw new ArgumentException(MessageDestinationPathExists, "destinationPath");
+
+            // move to entry to the new destination
             try
             {
                 Directory.Move(sourcePath, destinationPath);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The source or destination path contains only white space, or contains one or more invalid characters.", "sourcePath");
+                if (ex.ParamName == "sourceDirName")
+                    throw new ArgumentException(MessageSourcePathInvalidFormat, "sourcePath", ex);
+                else
+                    throw new ArgumentException(MessageDestinationPathInvalidFormat, "destinationPath", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The source path is invalid.", "sourcePath");
+                throw new ArgumentException(MessageSourceDestinationPathTooLong, "sourcePath", ex);
             }
-            catch (PathTooLongException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new ArgumentException("The source or destination paths exceed the system-defined maximum length.", "sourcePath");
+                throw new ArgumentException(MessageSourcePathNotExists, "sourcePath", ex);
             }
-            catch (IOException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The destination path already exists.", "sourcePath");
+                throw new UnauthorizedAccessException(MessageSourceDestinationPathUnauthorized, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }  
-            catch (UnauthorizedAccessException)
-            {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for either the source or the destination path.");
-            }
         }
 
         /// <summary>
-        /// Copies an existing file to a new file.
+        /// Copies an existing filesystem entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
@@ -311,65 +472,88 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.;sourcePath
+        /// The source path is empty.
         /// or
-        /// The destination path is empty.;destinationPath
+        /// The destination path is empty.
         /// or
-        /// The source and destination paths are equal.;destinationPath
+        /// The source and destination paths are equal.
         /// or
-        /// The source or destination path contains only white space, or contains one or more invalid characters.;sourcePath
+        /// The source path does not exist.
         /// or
-        /// The source path is invalid.;sourcePath;sourcePath
+        /// The destination path already exists.
         /// or
-        /// The source or destination paths exceed the system-defined maximum length.;sourcePath
+        /// The source path is in an invalid format.
         /// or
-        /// The destination path already exists.;destinationPath
+        /// The destination path is in an invalid format.
         /// or
-        /// The destination path is invalid.;destinationPath
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public override void Copy(String sourcePath, String destinationPath)
         {
             if (sourcePath == null)
-                throw new ArgumentNullException("sourcePath", "The source path is null.");
+                throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);
             if (destinationPath == null)
-                throw new ArgumentNullException("destinationPath", "The destination path is null.");
+                throw new ArgumentNullException("destinationPath", MessageDestinationPathIsNull);
             if (String.IsNullOrEmpty(sourcePath))
-                throw new ArgumentException("The source path is empty.", "sourcePath");
+                throw new ArgumentException(MessageSourcePathIsEmpty, "sourcePath");
             if (String.IsNullOrEmpty(destinationPath))
-                throw new ArgumentException("The destination path is empty.", "destinationPath");
+                throw new ArgumentException(MessageDestinationPathIsEmpty, "destinationPath");
 
             if (sourcePath.Equals(destinationPath))
-                throw new ArgumentException("The source and destination paths are equal.", "destinationPath");
+                throw new ArgumentException(MessageSourceDestinationPathEqual, "destinationPath");
 
+            if (Exists(destinationPath))
+                throw new ArgumentException(MessageDestinationPathExists, "destinationPath");
+
+            // move to entry to the new destination
             try
             {
-                File.Copy(sourcePath, destinationPath);
+                if (Directory.Exists(sourcePath))
+                {
+                    CopyDirectory(sourcePath, destinationPath);
+                }
+                else
+                {
+                    File.Copy(sourcePath, destinationPath);
+                }
             }
-            catch (ArgumentException)
+            catch (FileNotFoundException ex)
             {
-                throw new ArgumentException("The source or destination path contains only white space, or contains one or more invalid characters.", "sourcePath");
+                throw new ArgumentException(MessageSourcePathNotExists, "sourcePath", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The source path is invalid.", "sourcePath");
+                if (ex.ParamName == "sourceFileName")
+                    throw new ArgumentException(MessageSourcePathInvalidFormat, "sourcePath", ex);
+                else
+                    throw new ArgumentException(MessageDestinationPathInvalidFormat, "destinationPath", ex);
             }
-            catch (PathTooLongException)
+            catch (NotSupportedException ex)
             {
-                throw new ArgumentException("The source or destination paths exceed the system-defined maximum length.", "sourcePath");
+                throw new ArgumentException(MessageSourcePathInvalidFormat, "sourcePath", ex);
             }
-            catch (IOException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The destination path already exists.", "sourcePath");
+                throw new ArgumentException(MessageSourceDestinationPathTooLong, "sourcePath", ex);
             }
-            catch (NotSupportedException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The destination path is invalid.", "destinationPath");
+                throw new UnauthorizedAccessException(MessageSourceDestinationPathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for either the source or the destination path.");
+                throw new ConnectionException(MessageNoConnectionToPath, destinationPath, ex);
             }
+            catch (IOException ex)
+            {
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
+            } 
         }
 
         /// <summary>
@@ -411,33 +595,33 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
         public override String GetDirectoryRoot(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Directory.GetDirectoryRoot(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
         }
 
@@ -450,45 +634,49 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path was not found.
-        /// or
-        /// The directory specified by path is read-only.
+        /// The path does not exist.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
         public override String GetParent(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
-                return Directory.GetParent(path).FullName;
+                DirectoryInfo info = Directory.GetParent(path);
+
+                // in case the root directory is queried, the return value is null
+                if (info == null)
+                    return null;
+
+                return info.FullName;
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new ArgumentException("The specified path was not found.", "path");
+                throw new ArgumentException(MessagePathNotExists, "path", ex);
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                throw new ArgumentException("The directory specified by path is read-only.", "path");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
         }
 
@@ -501,28 +689,28 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         public override String GetDirectory(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Path.GetDirectoryName(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
         }
 
@@ -535,22 +723,22 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// </exception>
         public override String GetFileName(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Path.GetFileName(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
         }
 
@@ -563,44 +751,44 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// </exception>
         public override String GetFileNameWithoutExtension(String path)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
             
             try
             {
                 return Path.GetFileNameWithoutExtension(path);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
         }
 
         /// <summary>
-        /// Returns the names of the logical drives of the file system.
+        /// Returns the names of the root directories of the file system.
         /// </summary>
-        /// <returns>The array containing the logical drive names in the file system.</returns>
-        /// <exception cref="System.IO.IOException">An I/O error occured.</exception>
-        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
-        public override String[] GetLogicalDrives()
+        /// <returns>The array containing the root directories in the file system.</returns>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="ConnectionException">No connection is available to the file system.</exception>
+        public override String[] GetRootDirectories()
         {
             try
             {
                 return Directory.GetLogicalDrives();
             }
-            catch (IOException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new IOException("An I/O error occured.");
+                throw new UnauthorizedAccessException(MessageUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (IOException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
 
@@ -615,45 +803,54 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">No connection is available to the file system.</exception>
         public override String[] GetDirectories(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Directory.GetDirectories(path, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                if (ex.ParamName == "searchPattern")
+                    throw new ArgumentException(MessageInvalidSearchPattern, "searchPattern", ex);
+                else
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new ArgumentException("The specified path is invalid.", "path");
+                throw new ArgumentException(MessagePathNotExists, "path", ex);
             }
-            catch (IOException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The path is a file.", "path");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (IOException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                if (File.Exists(path))
+                    throw new ArgumentException(MessagePathIsFile, "path", ex);
+
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
 
@@ -668,45 +865,54 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">No connection is available to the file system.</exception>
         public override String[] GetFiles(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Directory.GetFiles(path, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                if (ex.ParamName == "searchPattern")
+                    throw new ArgumentException(MessageInvalidSearchPattern, "searchPattern", ex);
+                else
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new ArgumentException("The specified path is invalid.", "path");
+                throw new ArgumentException(MessagePathNotExists, "path", ex);
             }
-            catch (IOException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The path is a file.", "path");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (IOException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                if (File.Exists(path))
+                    throw new ArgumentException(MessagePathIsFile, "path", ex);
+
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
 
@@ -721,45 +927,86 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
         /// The path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">No connection is available to the file system.</exception>
         public override String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
+                throw new ArgumentNullException("path", MessagePathIsNull);
             if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
+                throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
             {
                 return Directory.GetFileSystemEntries(path, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
-                throw new ArgumentException("The path contains only white space, or contains one or more invalid characters.", "path");
+                if (ex.ParamName == "searchPattern")
+                    throw new ArgumentException(MessageInvalidSearchPattern, "searchPattern", ex);
+                else
+                    throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
             }
-            catch (PathTooLongException)
+            catch (PathTooLongException ex)
             {
-                throw new ArgumentException("The path, file name, or both exceed the system-defined maximum length.", "path");
+                throw new ArgumentException(MessagePathTooLong, "path", ex);
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
-                throw new ArgumentException("The specified path is invalid.", "path");
+                throw new ArgumentException(MessagePathNotExists, "path", ex);
             }
-            catch (IOException)
+            catch (UnauthorizedAccessException ex)
             {
-                throw new ArgumentException("The path is a file.", "path");
+                throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
             }
-            catch (UnauthorizedAccessException)
+            catch (IOException ex)
             {
-                throw new UnauthorizedAccessException("The caller does not have the required permission for the path.");
+                if (File.Exists(path))
+                    throw new ArgumentException(MessagePathIsFile, "path", ex);
+
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Copies the specified directory.
+        /// </summary>
+        /// <param name="sourcePath">The source path.</param>
+        /// <param name="destinationPath">The destination path.</param>
+        private void CopyDirectory(String sourcePath, String destinationPath)
+        {
+            // create the destination directory
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+
+            // copy the files in the directory
+            foreach (String sourceFilePath in Directory.GetFiles(sourcePath))
+            {
+                String destinationFilePath = Path.Combine(destinationPath, Path.GetFileName(sourceFilePath));
+                File.Copy(sourceFilePath, destinationFilePath);
+            }
+
+            // copy all subdirectories
+            foreach (String sourceDirectoryPath in Directory.GetDirectories(sourcePath))
+            {
+                String destinationDirectoryPath = Path.Combine(destinationPath, Path.GetFileName(sourceDirectoryPath));
+                CopyDirectory(sourceDirectoryPath, destinationDirectoryPath);
             }
         }
 

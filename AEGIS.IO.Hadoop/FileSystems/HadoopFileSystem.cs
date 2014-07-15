@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.FileSystems
 {
@@ -19,6 +18,7 @@ namespace ELTE.AEGIS.IO.FileSystems
         #endregion
 
         #region FileSystem public properties
+
         /// <summary>
         /// Gets the scheme name for this file system.
         /// </summary>
@@ -42,6 +42,37 @@ namespace ELTE.AEGIS.IO.FileSystems
         /// </summary>
         /// <value>The volume separator for this file system.</value>
         public override Char VolumeSeparator { get { return '/'; } }
+
+        /// <summary>
+        /// Gets a value indicating whether the file system is connected.
+        /// </summary>
+        /// <value><c>true</c> if operations can be executed on the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsConnected
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether file streaming is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file streaming commands can be executed on the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsStreamingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets a value indicating whether content browsing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if the content of the file system can be listed; otherwise, <c>false</c>.</value>
+        public override Boolean IsContentBrowsingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets a value indicating whether content writing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
+        public override Boolean IsContentWritingSupported { get { return true; } }
+
         #endregion
 
         #region Public properties
@@ -638,13 +669,17 @@ namespace ELTE.AEGIS.IO.FileSystems
         }
 
         /// <summary>
-        /// When overriden in a derived class, returns the names of the logical drives of the file system..
+        /// Returns the path to the root directories of the file system.
         /// </summary>
-        /// <returns>
-        /// The array containing the logical drive names in the file system.
-        /// </returns>
-        /// <exception cref="System.NotSupportedException"></exception>
-        public override String[] GetLogicalDrives()
+        /// <returns>The array containing the path to the root directories in the file system.</returns>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public override String[] GetRootDirectories()
         {
             throw new NotSupportedException("The operation is not supported in this context.");
         }

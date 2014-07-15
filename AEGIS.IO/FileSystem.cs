@@ -24,6 +24,170 @@ namespace ELTE.AEGIS.IO
     /// </summary>
     public abstract class FileSystem
     {
+        #region Protected constant fields
+
+        /// <summary>
+        /// Exception message in case the path is null. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsNull = "The path is null.";
+
+        /// <summary>
+        /// Exception message in case the path is empty. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsEmpty = "The path is empty.";
+
+        /// <summary>
+        /// Exception message in case the path is a directory. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsDirectory = "The path is a directory.";
+
+        /// <summary>
+        /// Exception message in case the specified path is a file. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsFile = "The specified path is a file.";
+
+        /// <summary>
+        /// Exception message in case the path is in an invalid format. This field is constant.
+        /// </summary>
+        protected const String MessagePathInvalidFormat = "The path is in an invalid format.";
+
+        /// <summary>
+        /// Exception message in case the path exceeds the maximum length supported by the file system. This field is constant.
+        /// </summary>
+        protected const String MessagePathTooLong = "The path exceeds the maximum length supported by the file system.";
+
+        /// <summary>
+        /// Exception message in case the caller does not have the required permission for the path. This field is constant.
+        /// </summary>
+        protected const String MessagePathUnauthorized = "The caller does not have the required permission for the path.";
+
+        /// <summary>
+        /// Exception message in case the file system entry on the specified path is currently in use. This field is constant.
+        /// </summary>
+        protected const String MessagePathInUse = "The file system entry on the specified path is currently in use.";
+
+        /// <summary>
+        /// Exception message in case the path already exists. This field is constant.
+        /// </summary>
+        protected const String MessagePathExists = "The path already exists.";
+
+        /// <summary>
+        /// Exception message in case the path does not exist. This field is constant.
+        /// </summary>
+        protected const String MessagePathNotExists = "The path does not exist.";
+
+        /// <summary>
+        /// Exception message in case the source path is null. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathIsNull = "The source path is null.";
+        
+        /// <summary>
+        /// Exception message in case the source path is empty. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathIsEmpty = "The source path is empty.";
+
+        /// <summary>
+        /// Exception message in case the source path does not exist. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathNotExists = "The source path does not exist.";
+
+        /// <summary>
+        /// Exception message in case the source path is in an invalid format. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathInvalidFormat = "The source path is in an invalid format.";
+
+        /// <summary>
+        /// Exception message in case the path exceeds the maximum length supported by the file system. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathTooLong = "The path exceeds the maximum length supported by the file system.";
+
+        /// <summary>
+        /// Exception message in case the file system entry on the specified path is currently in use. This field is constant.
+        /// </summary>
+        protected const String MessageSourcePathInUse = "The file system entry on the specified path is currently in use.";
+
+        /// <summary>
+        /// Exception message in case the source and destination paths are equal. This field is constant.
+        /// </summary>
+        protected const String MessageSourceDestinationPathEqual = "The source and destination paths are equal.";
+
+        /// <summary>
+        /// Exception message in case the source or destination paths exceed the system-defined maximum length. This field is constant.
+        /// </summary>
+        protected const String MessageSourceDestinationPathTooLong = "The path exceeds the maximum length supported by the file system.";
+
+        /// <summary>
+        /// Exception message in case the caller does not have the required permission for either the source or the destination path. This field is constant.
+        /// </summary>
+        protected const String MessageSourceDestinationPathUnauthorized = "The caller does not have the required permission for either the source or the destination path.";
+
+        /// <summary>
+        /// Exception message in case the destination path is null. This field is constant.
+        /// </summary>
+        protected const String MessageDestinationPathIsNull = "The destination path is null.";
+
+        /// <summary>
+        /// Exception message in case the destination path is empty. This field is constant.
+        /// </summary>
+        protected const String MessageDestinationPathIsEmpty = "The destination path is empty.";
+
+        /// <summary>
+        /// Exception message in case the destination path is in an invalid format. This field is constant.
+        /// </summary>
+        protected const String MessageDestinationPathInvalidFormat = "The destination path is in an invalid format.";
+
+        /// <summary>
+        /// Exception message in case the destination path already exists. This field is constant.
+        /// </summary>
+        protected const String MessageDestinationPathExists = "The destination path already exists.";
+
+        /// <summary>
+        /// Exception message in case no connection is available to the specified path. This field is constant.
+        /// </summary>
+        protected const String MessageNoConnectionToPath = "No connection is available to the specified path.";
+        
+        /// <summary>
+        /// Exception message in case no connection is available to the file system. This field is constant.
+        /// </summary>
+        protected const String MessageNoConnectionToFileSystem = "No connection is available to the file system.";
+
+        /// <summary>
+        /// Exception message in case the file mode is invalid. This field is constant.
+        /// </summary>
+        protected const String MessageInvalidFileMode = "The file mode is invalid.";
+
+        /// <summary>
+        /// Exception message in case the file access is invalid. This field is constant.
+        /// </summary>
+        protected const String MessageInvalidFileAccess = "The file access is invalid.";
+
+        /// <summary>
+        /// Exception message in case the search pattern is an invalid format. This field is constant.
+        /// </summary>
+        protected const String MessageInvalidSearchPattern = "The search pattern is an invalid format.";
+
+        /// <summary>
+        /// Exception message in case the specified file mode and file access combination is invalid. This field is constant.
+        /// </summary>
+        protected const String MessageInvalidFileModeOrAccess = "The specified file mode and file access combination is invalid.";
+
+        /// <summary>
+        /// Exception message in case the file on path is read-only. This field is constant.
+        /// </summary>
+        protected const String MessagePathReadOnly = "The file on path is read-only.";
+
+        /// <summary>
+        /// Exception message in case the caller does not have the required permission. This field is constant.
+        /// </summary>
+        protected const String MessageUnauthorized = "The caller does not have the required permission.";
+
+        /// <summary>
+        /// Exception message in case the operation is not supported by the file system. This field is constant.
+        /// </summary>
+        protected const String MessageNotSupported = "The operation is not supported by the file system.";
+
+        #endregion
+
         #region Public static methods
 
         /// <summary>
@@ -92,6 +256,30 @@ namespace ELTE.AEGIS.IO
         /// <value>The volume separator for this file system.</value>
         public abstract Char VolumeSeparator { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether the file system is connected.
+        /// </summary>
+        /// <value><c>true</c> if operations can be executed on the file system; otherwise, <c>false</c>.</value>
+        public abstract Boolean IsConnected { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether file streaming is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file streaming commands can be executed on the file system; otherwise, <c>false</c>.</value>
+        public abstract Boolean IsStreamingSupported { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether content browsing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if the content of the file system can be listed; otherwise, <c>false</c>.</value>
+        public abstract Boolean IsContentBrowsingSupported { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether content writing is supported by the file system.
+        /// </summary>
+        /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
+        public abstract Boolean IsContentWritingSupported { get; }
+
         #endregion
 
         #region Public methods
@@ -104,15 +292,19 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path is a zero-length string, contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path is invalid.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The path is invalid.
-        /// or
-        /// The path exceeds the system-defined maximum length.
+        /// The specified path is a file.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract void CreateDirectory(String path);
 
         /// <summary>
@@ -124,13 +316,21 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path is a zero-length string, contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path already exists.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public Stream CreateFile(String path)
-        {
+        {            
             return CreateFile(path, true);
         }
 
@@ -144,13 +344,17 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// A file already exists on the path.
+        /// The path is in an invalid format.
         /// or
-        /// The path is a zero-length string, contains only white space, or contains one or more invalid characters.
-        /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract Stream CreateFile(String path, Boolean overwrite);
 
         /// <summary>
@@ -162,18 +366,26 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a zero-length string, contains only white space, or contains one or more invalid characters.
+        /// The path is a directory.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">
-        /// The file on path is hidden.
-        /// or
         /// The file on path is read-only.
         /// or
         /// The caller does not have the required permission for the path.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public Stream OpenFile(String path, FileMode mode)
         {
@@ -191,18 +403,30 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a zero-length string, contains only white space, or contains one or more invalid characters.
+        /// The path is a directory.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// or
+        /// The file access is invalid.
+        /// or
+        /// The specified file mode and file access combination is invalid.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">
-        /// The file on path is hidden.
-        /// or
         /// The file on path is read-only.
         /// or
         /// The caller does not have the required permission for the path.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public abstract Stream OpenFile(String path, FileMode mode, FileAccess access);
 
@@ -214,12 +438,25 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
         /// The path does not exist.
+        /// or
+        /// The file system entry on the specified path is currently in use.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public abstract void Delete(String path);
 
         /// <summary>
-        /// Moves a filesystem entry and its contents to a new location.
+        /// Moves a filesystem entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -229,25 +466,33 @@ namespace ELTE.AEGIS.IO
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.;sourcePath
+        /// The source path is empty.
         /// or
-        /// The destination path is empty.;destinationPath
+        /// The destination path is empty.
         /// or
-        /// The source and destination paths are equal.;destinationPath
+        /// The source and destination paths are equal.
         /// or
-        /// The source or destination path contains only white space, or contains one or more invalid characters.;sourcePath
+        /// The source path does not exist.
         /// or
-        /// The source path is invalid.;sourcePath
+        /// The destination path already exists.
         /// or
-        /// The source or destination paths exceed the system-defined maximum length.;sourcePath
+        /// The source path is in an invalid format.
         /// or
-        /// The destination path already exists.;destinationPath
+        /// The destination path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract void Move(String sourcePath, String destinationPath);
 
         /// <summary>
-        /// Copies an existing file to a new file.
+        /// Copies an existing filesystem entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
@@ -257,23 +502,29 @@ namespace ELTE.AEGIS.IO
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.;sourcePath
+        /// The source path is empty.
         /// or
-        /// The destination path is empty.;destinationPath
+        /// The destination path is empty.
         /// or
-        /// The source and destination paths are equal.;destinationPath
+        /// The source and destination paths are equal.
         /// or
-        /// The source or destination path contains only white space, or contains one or more invalid characters.;sourcePath
+        /// The source path does not exist.
         /// or
-        /// The source path is invalid.;sourcePath;sourcePath
+        /// The destination path already exists.
         /// or
-        /// The source or destination paths exceed the system-defined maximum length.;sourcePath
+        /// The source path is in an invalid format.
         /// or
-        /// The destination path already exists.;destinationPath
+        /// The destination path is in an invalid format.
         /// or
-        /// The destination path is invalid.;destinationPath
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract void Copy(String sourcePath, String destinationPath);
 
         /// <summary>
@@ -281,6 +532,12 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract Boolean Exists(String path);
 
         /// <summary>
@@ -288,6 +545,12 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, and is a directory, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract Boolean IsDirectory(String path);
 
         /// <summary>
@@ -295,6 +558,12 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, and is a file, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract Boolean IsFile(String path);
 
         /// <summary>
@@ -336,11 +605,17 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The source path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract String GetDirectoryRoot(String path);
 
         /// <summary>
@@ -352,15 +627,19 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path was not found.
-        /// or
-        /// The directory specified by path is read-only.
+        /// The path does not exist.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract String GetParent(String path);
 
         /// <summary>
@@ -372,7 +651,15 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public abstract String GetDirectory(String path);
 
@@ -385,9 +672,13 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// No connection is available to the file system.
         /// </exception>
         public abstract String GetFileName(String path);
 
@@ -400,17 +691,28 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public abstract String GetFileNameWithoutExtension(String path);
 
         /// <summary>
-        /// Returns the names of the logical drives of the file system.
+        /// Returns the path to the root directories of the file system.
         /// </summary>
-        /// <returns>The array containing the logical drive names in the file system.</returns>
-        /// <exception cref="System.IO.IOException">An I/O error occured.</exception>
-        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
-        public abstract String[] GetLogicalDrives();
+        /// <returns>The array containing the path to the root directories in the file system.</returns>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public abstract String[] GetRootDirectories();
 
         /// <summary>
         /// Returns the directories located on the specified path.
@@ -421,18 +723,24 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public String[] GetDirectories(String path)
         {
-            return GetDirectories(path, "*", true);
+            return GetDirectories(path, "*", false);
         }
 
         /// <summary>
@@ -446,15 +754,23 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract String[] GetDirectories(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
@@ -466,18 +782,24 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public String[] GetFiles(String path)
         {
-            return GetFiles(path, "*", true);
+            return GetFiles(path, "*", false);
         }
 
         /// <summary>
@@ -491,15 +813,23 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract String[] GetFiles(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
@@ -511,18 +841,24 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public String[] GetFileSystemEntries(String path)
         {
-            return GetFileSystemEntries(path, "*", true);
+            return GetFileSystemEntries(path, "*", false);
         }
 
         /// <summary>
@@ -536,15 +872,23 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
         /// or
-        /// The path contains only white space, or contains one or more invalid characters.
+        /// The path is in an invalid format.
         /// or
-        /// The path, file name, or both exceed the system-defined maximum length.
+        /// The path exceeds the maximum length supported by the file system.
         /// or
-        /// The specified path is invalid.
+        /// The path does not exist.
         /// or
-        /// The path is a file.
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public abstract String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive);
 
         #endregion
