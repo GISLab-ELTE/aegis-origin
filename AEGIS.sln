@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Operations.Reference.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Tests.Operations.Reference.Graph", "AEGIS.Tests.Operations.Reference.Graph\AEGIS.Tests.Operations.Reference.Graph.csproj", "{83EA7045-7ADF-420A-8B04-C8CA5F21D146}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.IO.Hadoop", "AEGIS.IO.Hadoop\AEGIS.IO.Hadoop.csproj", "{F3C5A0C8-0154-4C83-B183-CFDE322390E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Tests.IO.Hadoop", "AEGIS.Tests.IO.Hadoop\AEGIS.Tests.IO.Hadoop.csproj", "{E1AF4E6A-879F-4934-BD02-47C8701B93F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -393,6 +397,30 @@ Global
 		{83EA7045-7ADF-420A-8B04-C8CA5F21D146}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{83EA7045-7ADF-420A-8B04-C8CA5F21D146}.Release|Win32.ActiveCfg = Release|Any CPU
 		{83EA7045-7ADF-420A-8B04-C8CA5F21D146}.Release|x86.ActiveCfg = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|Win32.ActiveCfg = Release|Any CPU
+		{F3C5A0C8-0154-4C83-B183-CFDE322390E2}.Release|x86.ActiveCfg = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|Win32.ActiveCfg = Release|Any CPU
+		{E1AF4E6A-879F-4934-BD02-47C8701B93F5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

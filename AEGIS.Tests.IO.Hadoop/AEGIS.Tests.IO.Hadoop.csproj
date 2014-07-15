@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A4B5A3E0-11FE-4F58-ACFF-01E2E9146C71}</ProjectGuid>
+    <ProjectGuid>{E1AF4E6A-879F-4934-BD02-47C8701B93F5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ELTE.AEGIS.Tests.IO</RootNamespace>
-    <AssemblyName>AEGIS.Tests.IO</AssemblyName>
+    <AssemblyName>AEGIS.Tests.IO.Hadoop</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -42,23 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystems\HdfsFileSystemTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shapefile\ShapefileReaderTest.cs" />
-    <Compile Include="Shapefile\ShapefileWriterTest.cs" />
-    <Compile Include="WellKnown\GeometryConverterTest.cs" />
-    <Compile Include="WellKnown\IdentifiedObjectConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
-      <Project>{bbf043a5-9195-43b3-8e01-459b5e66f136}</Project>
-      <Name>AEGIS.Core.Reference</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
       <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
       <Name>AEGIS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.IO.Hadoop\AEGIS.IO.Hadoop.csproj">
+      <Project>{f3c5a0c8-0154-4c83-b183-cfde322390e2}</Project>
+      <Name>AEGIS.IO.Hadoop</Name>
     </ProjectReference>
     <ProjectReference Include="..\AEGIS.IO\AEGIS.IO.csproj">
       <Project>{06119cfd-1e6f-44e4-b3fd-9c81a126c8bf}</Project>
@@ -70,10 +67,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileSystems\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
