@@ -13,17 +13,17 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Reference
+namespace ELTE.AEGIS.Operations.Spatial
 {
     /// <summary>
     /// Represents a collection of known <see cref="OperationMethod" /> instances for reference operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationMethod))]
+    [OperationMethodCollection]
     public static class ReferenceOperationMethods
     {
         #region Query fields
@@ -98,17 +98,14 @@ namespace ELTE.AEGIS.Operations.Reference
         {
             get
             {
-                return _referenceTransformation ?? (_referenceTransformation =
-                    new OperationMethod("AEGIS::212901", "Reference system transformation",
-                                        "Transforms the specified geometry the a new reference system.", null, "1.0",
-                                        false,
-                                        typeof(IGeometry),
-                                        typeof(IGeometry),
-                                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                                        ExecutionMode.OutPlace,
-                                        ExecutionDomain.Local | ExecutionDomain.Remote | ExecutionDomain.External,
-                                        ReferenceOperationParameters.TargetReferenceSystem,
-                                        OperationParameters.GeometryFactory));
+                return _referenceTransformation ?? (_referenceTransformation = OperationMethod.CreateMethod<IGeometry, IGeometry>(
+                        "AEGIS::212901", "Reference system transformation",
+                        "Transforms the specified geometry the a new reference system.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        ReferenceOperationParameters.TargetReferenceSystem,
+                        OperationParameters.GeometryFactory,
+                        OperationParameters.MetadataPreservation)
+                );
             }
         }
 

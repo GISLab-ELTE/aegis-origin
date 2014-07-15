@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Collections
         /// Enumerates the elements of a heap.
         /// </summary>
         /// <remarks>
-        /// The enumrator performes a level order traversal of the specified heap.
+        /// The enumerator performes a level order traversal of the specified heap.
         /// </remarks>
         [Serializable]
         public class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>, IEnumerator, IDisposable

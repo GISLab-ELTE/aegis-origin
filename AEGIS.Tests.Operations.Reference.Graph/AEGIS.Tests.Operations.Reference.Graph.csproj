@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{83EA7045-7ADF-420A-8B04-C8CA5F21D146}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ELTE.AEGIS.Test.Operations</RootNamespace>
+    <AssemblyName>AEGIS.Test.Operations.Reference.Graph</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AEGIS.Core.Reference">
+      <HintPath>..\..\FiltersExample\packages\AEGIS.Core.Reference.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spatial\GraphReferenceTransformationTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core.Graphs\AEGIS.Core.Graphs.csproj">
+      <Project>{ff03243f-3d48-440f-ae8a-195fe93837f1}</Project>
+      <Name>AEGIS.Core.Graphs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
+      <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
+      <Name>AEGIS.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
+      <Project>{89ddce89-0a0e-4dfd-b16f-05e020e873e1}</Project>
+      <Name>AEGIS.Numerics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Operations.Reference.Graph\AEGIS.Operations.Reference.Graph.csproj">
+      <Project>{012ba807-b9dc-4017-b91e-1f7085ec38de}</Project>
+      <Name>AEGIS.Operations.Reference.Graph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Operations.Reference\AEGIS.Operations.Reference.csproj">
+      <Project>{094f9edc-0fe7-4279-9bc4-9b1d934f841b}</Project>
+      <Name>AEGIS.Operations.Reference</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Operations\AEGIS.Operations.csproj">
+      <Project>{ab2101fb-62a9-4462-8920-ecd5ec2a4ac0}</Project>
+      <Name>AEGIS.Operations</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

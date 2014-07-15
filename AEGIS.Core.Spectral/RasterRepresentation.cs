@@ -31,6 +31,11 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Integer.
         /// </summary>
-        Integer = 2
+        Integer = 2,
+
+        /// <summary>
+        /// Any.
+        /// </summary>
+        Any = 3
     }
 }

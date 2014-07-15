@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents a collection of known <see cref="OperationMethod" /> instances for conversion operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationMethod))]
+    [OperationMethodCollection]
     public static class ConversionMethods
     {
         #region Query fields
@@ -104,11 +104,8 @@ namespace ELTE.AEGIS.Operations.Conversion
                 return _geometryPolygonization ?? (_geometryPolygonization =
                     OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
                         "AEGIS::212185", "Geometry polygonization",
-                        "Converts geometries of any kind to polygonial representation.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Converts geometries of any kind to polygonial representation.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         OperationParameters.GeometryFactory,
                         OperationParameters.MetadataPreservation
                     ));
@@ -125,11 +122,8 @@ namespace ELTE.AEGIS.Operations.Conversion
                 return _geometryToGraphConversion ?? (_geometryToGraphConversion =
                     OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
                         "AEGIS::212185", "Geometry to graph conversion",
-                        "Converts geometries to a single graph representation. The resulting graph can match the original directions of the geometry lines, os can be bidirectional.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Converts geometries to a single graph representation. The resulting graph can match the original directions of the geometry lines, os can be bidirectional.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         ConversionParameters.BidirectionalConversion,
                         OperationParameters.MetadataPreservation
                     ));
@@ -146,11 +140,8 @@ namespace ELTE.AEGIS.Operations.Conversion
                 return _geometryToNetworkConversion ?? (_geometryToNetworkConversion =
                      OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
                         "AEGIS::212101", "Geometry to network conversion",
-                        "Converts geometries to a single network representation. The resulting network can match the original directions of the geometry lines, os can be bidirectional.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Converts geometries to a single network representation. The resulting network can match the original directions of the geometry lines, os can be bidirectional.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         ConversionParameters.BidirectionalConversion,
                         OperationParameters.MetadataPreservation
                     ));
@@ -167,11 +158,8 @@ namespace ELTE.AEGIS.Operations.Conversion
                 return _graphToGeometryConversion ?? (_graphToGeometryConversion =
                      OperationMethod.CreateMethod<IGeometryGraph, IGeometry>(
                         "AEGIS::212110", "Graph to geometry conversion",
-                        "Converts a graph to geometry representation. The dimension of the extracted geometries can be limited to points (0), curves (1) and surfaces (2). The factory of the resulting geometries can also be specified.", null, "1.0.0",
-                        false,
-                        GeometryModel.Spatial2D | GeometryModel.Spatial3D | GeometryModel.SpatioTemporal2D | GeometryModel.SpatioTemporal3D,
-                        ExecutionMode.OutPlace,
-                        ExecutionDomain.Local | ExecutionDomain.Remote,
+                        "Converts a graph to geometry representation. The dimension of the extracted geometries can be limited to points (0), curves (1) and surfaces (2). The factory of the resulting geometries can also be specified.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         ConversionParameters.GeometryDimension,
                         OperationParameters.GeometryFactory,
                         OperationParameters.MetadataPreservation

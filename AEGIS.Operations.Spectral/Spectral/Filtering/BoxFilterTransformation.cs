@@ -1,4 +1,4 @@
-﻿/// <copyright file="CustomFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="BoxFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,23 +13,25 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Numerics;
-using ELTE.AEGIS.Management;
 
-namespace ELTE.AEGIS.Operations.Spectral.Filter
+namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a filter transformation using custom kernel, factor and offset values.
+    /// Represnts a box filter transformation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213200", "Custom filter")]
-    public class CustomFilterTransformation : FilterTransformation
+    /// <remarks>
+    /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighbouring values under the kernel.
+    /// </remarks>
+    [OperationClass("AEGIS::213202", "Box filter")]
+    public class BoxFilterTransformation : FilterTransformation
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -47,13 +49,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public CustomFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public BoxFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -72,16 +74,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public CustomFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.CustomFilter, parameters)
+        public BoxFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.BoxFilter, parameters)
         {
-            _filterFactor = Convert.ToDouble(_parameters[SpectralOperationParameters.FilterFactor]);
-            _filterKernel = _parameters[SpectralOperationParameters.FilterKernel] as Matrix;
-            _filterOffset = Convert.ToDouble(_parameters[SpectralOperationParameters.FilterOffset]);
-            _filterSize = _filterKernel.NumberOfColumns;
-
-            if (_filterSize != _filterKernel.NumberOfRows || _filterSize < 1 || _filterSize % 2 == 0)
-                throw new ArgumentException("The value of a parameter (" + SpectralOperationParameters.FilterKernel.Name + ") is not within the expected range.", "parameters");
+            _filter = FilterFactory.CreateBoxFilter(_filterRadius);
         }
 
         #endregion

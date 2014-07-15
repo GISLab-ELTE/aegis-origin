@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using the specified function.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213122", "Function based spectral thresholding")]
+    [OperationClass("AEGIS::213122", "Function based spectral thresholding")]
     public class FunctionBasedThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

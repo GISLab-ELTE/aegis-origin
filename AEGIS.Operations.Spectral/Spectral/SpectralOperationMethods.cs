@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// <summary>
     /// Represents a collection of known <see cref="SpectralOperationMethod" /> instances.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationMethod))]
+    [OperationMethodCollection]
     public static class SpectralOperationMethods
     {
         #region Query fields
@@ -67,6 +67,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             return All.Where(obj => System.Text.RegularExpressions.Regex.IsMatch(obj.Identifier, identifier)).ToList();
         }
+
         /// <summary>
         /// Returns all <see cref="SpectralOperationMethod" /> instances matching a specified name.
         /// </summary>
@@ -142,7 +143,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Returns the average of the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
+                                                                         SpectralOperationParameters.FilterRadius,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -258,8 +259,9 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.FilterRadius,
+                                                                         SpectralOperationParameters.GaussianStandardDeviation));
             }
         }
 
@@ -338,7 +340,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The Laplace filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
+                                                                         SpectralOperationParameters.FilterRadius,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -355,7 +357,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Returns the maximum of the the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
+                                                                         SpectralOperationParameters.FilterRadius,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -372,7 +374,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Returns the minimum of the the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
+                                                                         SpectralOperationParameters.FilterRadius,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -389,7 +391,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Returns the median of the the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterSize,
+                                                                         SpectralOperationParameters.FilterRadius,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }

@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoTiff
 
                 Assert.AreEqual(0, tiffReader.Parameters.Count);
                 Assert.IsNotNull(tiffReader.BaseStream);
-                Assert.IsNotNull(tiffReader.Factory);
+                Assert.IsNull(tiffReader.Factory);
                 Assert.IsNotNull(tiffReader.Path);
                 Assert.IsFalse(tiffReader.EndOfStream);
 
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoTiff
 
                 Assert.AreEqual(0, tiffReader.Parameters.Count);
                 Assert.IsNotNull(tiffReader.BaseStream);
-                Assert.IsNotNull(tiffReader.Factory);
+                Assert.IsNull(tiffReader.Factory);
                 Assert.IsNotNull(tiffReader.Path);
                 Assert.IsFalse(tiffReader.EndOfStream);
 

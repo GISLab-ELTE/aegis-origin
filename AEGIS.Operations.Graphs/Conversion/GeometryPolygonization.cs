@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation converting any kind of <see cref="IGeometry" /> to polygons.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212185", "Geometry polygonization")]
+    [OperationClass("AEGIS::212185", "Geometry polygonization")]
     public class GeometryPolygonization : Operation<IGeometry, IGeometry>
     {
         #region Private fields

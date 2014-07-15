@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationParameter))]
+    [OperationParameterCollection]
     public class OperationParameters
     {
         #region Query fields
@@ -89,7 +89,7 @@ namespace ELTE.AEGIS.Operations
 
         #endregion
 
-        #region Public static methods
+        #region Public static properties
 
         /// <summary>
         /// Geometry factory.

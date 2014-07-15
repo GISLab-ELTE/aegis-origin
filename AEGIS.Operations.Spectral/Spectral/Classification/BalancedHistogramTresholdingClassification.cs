@@ -14,7 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using histogram balancing.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213124", "Balanced histogram thresholding")]
+    [OperationClass("AEGIS::213124", "Balanced histogram thresholding")]
     public class BalancedHistogramTresholdingClassification : ThresholdingClassification
     {
         #region Constructors

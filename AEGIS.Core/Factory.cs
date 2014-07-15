@@ -247,6 +247,56 @@ namespace ELTE.AEGIS
                 return isRegistered;
             }
 
+            /// <summary>
+            /// Registers the specified factory type.
+            /// </summary>
+            /// <param name="factoryType">The type of the factory.</param>
+            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            public void Register(Type factoryType)
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                Int32 version;
+
+                foreach (Type contractType in factoryType.GetInterfaces())
+                {
+                    if (!contractType.GetInterfaces().Contains(typeof(IFactory)))
+                        continue;
+                    do
+                    {
+                        version = _version;
+                        _defaultContainer.Register(contractType, factoryType, true);
+
+                    } while (version != Interlocked.CompareExchange(ref _version, version, version));
+                }
+            }
+
+            /// <summary>
+            /// Registers the specified factory instance.
+            /// </summary>
+            /// <param name="factoryInstance">The factory instance.</param>
+            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            public void RegisterInstance(IFactory factoryInstance)
+            {
+                if (_disposed)
+                    throw new ObjectDisposedException(GetType().FullName);
+
+                Int32 version;
+
+                foreach (Type contractType in factoryInstance.GetType().GetInterfaces())
+                {
+                    if (!contractType.GetInterfaces().Contains(typeof(IFactory)))
+                        continue;
+                    do
+                    {
+                        version = _version;
+                        _defaultContainer.RegisterInstance(contractType, factoryInstance, true);
+
+                    } while (version != Interlocked.CompareExchange(ref _version, version, version));
+                }
+            }
+
             #endregion
 
             #region IDisposable methods
@@ -381,6 +431,9 @@ namespace ELTE.AEGIS
         /// <returns>The internal factory instance for the specified type if any; otherwise, <c>null</c>.</returns>
         public IFactory GetFactory(Type factoryType)
         {
+            if (factoryType == null)
+                throw new ArgumentNullException("The factory type is null.");
+
             return _factories.Values.FirstOrDefault(value => value.GetType().IsSubclassOf(factoryType) || value.GetType().GetInterfaces().Contains(factoryType));
         }
 
@@ -406,6 +459,9 @@ namespace ELTE.AEGIS
         /// <returns>The internal factory for the specified product if any; otherwise, <c>null</c>.</returns>
         public IFactory GetFactoryFor(Type productType)
         {
+            if (productType == null)
+                throw new ArgumentNullException("The product type is null.");
+
             if (!_factories.ContainsKey(productType))
                 return null;
 
@@ -419,6 +475,9 @@ namespace ELTE.AEGIS
         /// <param name="factory">The factory.</param>
         public void SetFactoryFor<T>(IFactory factory)
         {
+            if (factory == null)
+                throw new ArgumentNullException("The factory is null.");
+
             _factories[typeof(T)] = factory;
         }
 
@@ -440,6 +499,9 @@ namespace ELTE.AEGIS
         /// <returns><c>true</c> if the factory contains an internal factory for the specified product; otherwise, <c>false</c>.</returns>
         public Boolean ContainsFactoryFor(Type productType)
         {
+            if (productType == null)
+                throw new ArgumentNullException("The product type is null.");
+
             return _factories.ContainsKey(productType);
         }
 
@@ -462,8 +524,12 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factoryType">The type of the factory.</typeparam>
         /// <returns>The default registered instance for the factory or the default type value if the factory is unresolvable.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory type is null.</exception>
         public static Object DefaultInstance(Type factoryType)
         {
+            if (factoryType == null)
+                throw new ArgumentNullException("factoryType", "The factory type is null.");
+
             return FactoryImplementation.Instance.DefaultInstance(factoryType);
         }
 
@@ -484,8 +550,12 @@ namespace ELTE.AEGIS
         /// <param name="FactoryType">The type of the factory.</typeparam>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory type is null.</exception>
         public static Object GetInstance(Type factoryType, params Object[] parameters)
         {
+            if (factoryType == null)
+                throw new ArgumentNullException("factoryType", "The factory type is null.");
+
             return FactoryImplementation.Instance.GetInstance(factoryType, parameters);
         }
 
@@ -495,8 +565,12 @@ namespace ELTE.AEGIS
         /// <param name="prototype">The prototype factory.</param>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
+        /// <exception cref="System.ArgumentNullException">The prototype is null.</exception>
         public static Object GetInstance(Object prototype, params Object[] parameters)
         {
+            if (prototype == null)
+                throw new ArgumentNullException("prototype", "The prototype is null.");
+
             return FactoryImplementation.Instance.GetInstance(prototype.GetType(), parameters);
         }
 
@@ -508,6 +582,28 @@ namespace ELTE.AEGIS
         public static Boolean HasDefaultInstance<FactoryType>()
         { 
             return FactoryImplementation.Instance.HasDefaultInstance(typeof(FactoryType));
+        }
+
+        /// <summary>
+        /// Registers the specified factory type..
+        /// </summary>
+        /// <typeparam name="FactoryType">The type of the factory.</typeparam>
+        public static void Register<FactoryType>() where FactoryType : IFactory
+        {
+            FactoryImplementation.Instance.Register(typeof(FactoryType));
+        }
+
+        /// <summary>
+        /// Registers the specified factory instance.
+        /// </summary>
+        /// <param name="factory">The factory instance.</param>
+        /// <exception cref="System.ArgumentNullException">The factory instance is null.</exception>
+        public static void RegisterInstance(IFactory factory)
+        {
+            if (factory == null)
+                throw new ArgumentNullException("factory", "The factory instance is null.");
+
+            FactoryImplementation.Instance.RegisterInstance(factory);
         }
 
         #endregion

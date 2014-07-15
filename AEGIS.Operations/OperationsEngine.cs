@@ -28,26 +28,6 @@ namespace ELTE.AEGIS.Operations
     /// </summary>
     public class OperationsEngine
     {
-        #region Singleton pattern
-
-        private static OperationsEngine _instance;
-
-        /// <summary>
-        /// Gets the current instance.
-        /// </summary>
-        /// <value>The current instance.</value>
-        public static OperationsEngine Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new OperationsEngine();
-                return _instance;
-            }
-        }
-
-        #endregion
-
         #region Private fields
 
         private readonly List<OperationMethod> _methods;
@@ -69,7 +49,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationsEngine" /> class.
         /// </summary>
-        private OperationsEngine()
+        public OperationsEngine()
         {
             _methods = new List<OperationMethod>();
             _operations = new Dictionary<OperationMethod, Type>();
@@ -200,7 +180,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        public Object ExecuteOperation(ParameterizedOperation operation, Object source)
+        public Object ExecuteOperation(OperationConfiguration operation, Object source)
         {
             return ExecuteOperation(operation.Method, operation.Parameters, source);
         }
@@ -231,7 +211,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public void ExecuteOperation(ParameterizedOperation operation, Object source, Object target)
+        public void ExecuteOperation(OperationConfiguration operation, Object source, Object target)
         {
             ExecuteOperation(operation.Method, operation.Parameters, source, target);
         }
@@ -318,7 +298,7 @@ namespace ELTE.AEGIS.Operations
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        public Object ExecuteOperation(IList<ParameterizedOperation> operations, Object source)
+        public Object ExecuteOperation(IList<OperationConfiguration> operations, Object source)
         {
             if (operations == null)
                 throw new ArgumentNullException("operations", "The array of operations is null.");
@@ -333,7 +313,7 @@ namespace ELTE.AEGIS.Operations
 
             for (Int32 i = 1; i < operations.Count; i++)
             {
-                if (!operations[i].Method.SourceType.Equals(operations[i - 1].Method.TargetType) && !operations[i - 1].Method.TargetType.GetType().IsSubclassOf(operations[i].Method.SourceType) && !operations[i - 1].Method.TargetType.GetInterfaces().Contains(operations[i - 1].Method.TargetType))
+                if (!operations[i].Method.SourceType.Equals(operations[i - 1].Method.ResultType) && !operations[i - 1].Method.ResultType.GetType().IsSubclassOf(operations[i].Method.SourceType) && !operations[i - 1].Method.ResultType.GetInterfaces().Contains(operations[i - 1].Method.ResultType))
                     throw new ArgumentException("The specified source type is not supported by the method (" + operations[i].Method.Name + ").", "source");
             }
 

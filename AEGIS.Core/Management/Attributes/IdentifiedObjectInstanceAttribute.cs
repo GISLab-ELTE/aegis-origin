@@ -17,6 +17,9 @@ using System;
 
 namespace ELTE.AEGIS.Management
 {
+    /// <summary>
+    /// Indicates that the class implements an identified object.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public class IdentifiedObjectInstanceAttribute : Attribute
     {

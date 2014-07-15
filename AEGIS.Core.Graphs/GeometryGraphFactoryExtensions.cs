@@ -41,6 +41,35 @@ namespace ELTE.AEGIS
         /// Creates a graph.
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>An empty graph using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(vertexEqualityComparer, edgeEqualityComparer);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>An empty graph with the specified metadata using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(vertexEqualityComparer, edgeEqualityComparer, metadata);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>An empty graph with the specified metadata.</returns>
         public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IDictionary<String, Object> metadata)
@@ -67,9 +96,40 @@ namespace ELTE.AEGIS
         /// Creates a graph.
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <returns>A graph containing the specified coordinates as vertices using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEnumerable<Coordinate> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(coordinates, vertexEqualityComparer, edgeEqualityComparer);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and the metadata using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEnumerable<Coordinate> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(coordinates, vertexEqualityComparer, edgeEqualityComparer, metadata);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
         /// <param name="coordinates">The sequence of coodinates.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A graph containing the specified coordinates as vertices and the specified metadata.</returns>
+        /// <returns>A graph containing the specified coordinates as vertices and the metadata.</returns>
         public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEnumerable<Coordinate> coordinates, IDictionary<String, Object> metadata)
         {
             EnsureFactory(factory);
@@ -88,6 +148,37 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(coordinates);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <param name="coordinates">The sequence of edge sequences.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and edges using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEnumerable<IEnumerable<Coordinate>> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(coordinates, vertexEqualityComparer, edgeEqualityComparer);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <param name="coordinates">The sequence of edge sequences.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and edges using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IEnumerable<IEnumerable<Coordinate>> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(coordinates, vertexEqualityComparer, edgeEqualityComparer, metadata);
         }
 
         /// <summary>
@@ -114,6 +205,20 @@ namespace ELTE.AEGIS
             EnsureFactory(factory);
 
             return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(other);
+        }
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>A graph that matches <param name="other" /> using the specified comparers.</returns>
+        public static IGeometryGraph CreateGraph(this IGeometryFactory factory, IGeometryGraph other, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+        {
+            EnsureFactory(factory);
+
+            return factory.GetFactory<IGeometryGraphFactory>().CreateGraph(other, vertexEqualityComparer, edgeEqualityComparer);
         }
 
         #endregion
@@ -200,8 +305,6 @@ namespace ELTE.AEGIS
         }
 
         #endregion
-
-        
 
         #region Private static methods
 

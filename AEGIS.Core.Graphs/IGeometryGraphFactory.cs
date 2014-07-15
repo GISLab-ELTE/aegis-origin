@@ -34,10 +34,28 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a graph.
         /// </summary>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>An empty graph using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>An empty graph with the specified metadata using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
         /// <param name="metadata">The metadata.</param>
         /// <returns>An empty graph with the specified metadata.</returns>
         IGeometryGraph CreateGraph(IDictionary<String, Object> metadata);
-
+        
         /// <summary>
         /// Creates a graph.
         /// </summary>
@@ -49,8 +67,27 @@ namespace ELTE.AEGIS
         /// Creates a graph.
         /// </summary>
         /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>A graph containing the specified coordinates as vertices using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A graph containing the specified coordinates as vertices and the specified metadata.</returns>
+        /// <returns>A graph containing the specified coordinates as vertices and the metadata using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and the metadata.</returns>
         IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates, IDictionary<String, Object> metadata);
 
         /// <summary>
@@ -64,15 +101,44 @@ namespace ELTE.AEGIS
         /// Creates a graph.
         /// </summary>
         /// <param name="coordinates">The sequence of edge sequences.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and edges using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEnumerable<IEnumerable<Coordinate>> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="coordinates">The sequence of edge sequences.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A graph containing the specified coordinates as vertices and edges and the specified metadata.</returns>
+        /// <returns>A graph containing the specified coordinates as vertices and edges and the metadata using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IEnumerable<IEnumerable<Coordinate>> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="coordinates">The sequence of edge sequences.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>A graph containing the specified coordinates as vertices and edges and the metadata.</returns>
         IGeometryGraph CreateGraph(IEnumerable<IEnumerable<Coordinate>> coordinates, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a graph.
         /// </summary>
+        /// <param name="other">The other geometry graph.</param>
         /// <returns>A graph that matches <param name="other" />.</returns>
         IGeometryGraph CreateGraph(IGeometryGraph other);
+
+        /// <summary>
+        /// Creates a graph.
+        /// </summary>
+        /// <param name="other">The other geometry graph.</param>
+        /// <param name="vertexEqualityComparer">The vertex comparer.</param>
+        /// <param name="edgeEqualityComparer">The edge comparer.</param>
+        /// <returns>A graph that matches <param name="other" /> using the specified comparers.</returns>
+        IGeometryGraph CreateGraph(IGeometryGraph other, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer);
 
         #endregion
 

@@ -24,12 +24,18 @@ namespace ELTE.AEGIS.Operations
     public enum ExecutionMode
     {
         /// <summary>
-        /// The operation replaces the source with the result.
+        /// The operation places all results within the source.
         /// </summary>
         InPlace = 1,
+
         /// <summary>
-        /// The operation does not modify the source.
+        /// The operation creates all results in a new object and does not modify the source.
         /// </summary>
-        OutPlace = 2
+        OutPlace = 2,
+
+        /// <summary>
+        /// The operation can place all results in either the source or in a new object.
+        /// </summary>
+        Any
     }
 }

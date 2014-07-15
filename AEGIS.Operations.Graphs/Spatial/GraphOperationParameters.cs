@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spatial
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances for graph operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationParameter))]
+    [OperationParameterCollection]
     public class GraphOperationParameters
     {
         #region Query fields
@@ -191,6 +192,5 @@ namespace ELTE.AEGIS.Operations.Spatial
         }
 
         #endregion
-
     }
 }

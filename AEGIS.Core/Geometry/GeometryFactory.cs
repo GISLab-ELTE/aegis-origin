@@ -648,7 +648,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The empty geometry collection.</returns>
         public virtual IGeometryCollection<IGeometry> CreateGeometryCollection()
         {
-            return new GeometryList(this, null);
+            return new GeometryList<IGeometry>(this, null);
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The empty geometry collection with the specified metadata.</returns>
         public virtual IGeometryCollection<IGeometry> CreateGeometryCollection(IDictionary<String, Object> metadata)
         {
-            return new GeometryList(this, metadata);
+            return new GeometryList<IGeometry>(this, metadata);
         }
 
         /// <summary>
@@ -668,7 +668,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The geometry collection containing the specified geometries.</returns>
         public virtual IGeometryCollection<IGeometry> CreateGeometryCollection(IEnumerable<IGeometry> geometries)
         {
-            return new GeometryList(geometries, this, null);
+            return new GeometryList<IGeometry>(geometries, this, null);
         }
 
         /// <summary>
@@ -679,7 +679,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The geometry collection containing the specified geometries and metadata.</returns>
         public virtual IGeometryCollection<IGeometry> CreateGeometryCollection(IEnumerable<IGeometry> geometries, IDictionary<String, Object> metadata)
         {
-            return new GeometryList(geometries, this, metadata);
+            return new GeometryList<IGeometry>(geometries, this, metadata);
         }
         /// <summary>
         /// Creates a geometry collection.
@@ -689,7 +689,57 @@ namespace ELTE.AEGIS.Geometry
         /// <exception cref="System.ArgumentNullException">The other geometry collection is null.</exception>
         public virtual IGeometryCollection<IGeometry> CreateGeometryCollection(IGeometryCollection<IGeometry> other)
         {
-            return new GeometryList(other, this, other.Metadata);
+            return new GeometryList<IGeometry>(other, this, other.Metadata);
+        }
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <returns>The empty geometry collection.</returns>
+        public virtual IGeometryCollection<T> CreateGeometryCollection<T>() where T : IGeometry
+        {
+            return new GeometryList<T>(this, null);
+        }
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The empty geometry collection with the specified metadata.</returns>
+        public virtual IGeometryCollection<T> CreateGeometryCollection<T>(IDictionary<String, Object> metadata) where T : IGeometry
+        {
+            return new GeometryList<T>(this, metadata);
+        }
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="geometries">The source geometries.</param>
+        /// <returns>The geometry collection containing the specified geometries.</returns>
+        public virtual IGeometryCollection<T> CreateGeometryCollection<T>(IEnumerable<T> geometries) where T : IGeometry
+        {
+            return new GeometryList<T>(geometries, this, null);
+        }
+
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="geometries">The source geometries.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The geometry collection containing the specified geometries and metadata.</returns>
+        public virtual IGeometryCollection<T> CreateGeometryCollection<T>(IEnumerable<T> geometries, IDictionary<String, Object> metadata) where T : IGeometry
+        {
+            return new GeometryList<T>(geometries, this, metadata);
+        }
+        /// <summary>
+        /// Creates a geometry collection.
+        /// </summary>
+        /// <param name="other">The other geometry collection.</param>
+        /// <returns>A geometry collection that matches <paramref name="other" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The other geometry collection is null.</exception>
+        public virtual IGeometryCollection<T> CreateGeometryCollection<T>(IGeometryCollection<T> other) where T : IGeometry
+        {
+            return new GeometryList<T>(other, this, other.Metadata);
         }
 
         #endregion

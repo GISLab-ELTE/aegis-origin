@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances for spectral operations.
     /// </summary>
-    [IdentifiedObjectCollection(typeof(OperationParameter))]
+    [OperationParameterCollection]
     public static class SpectralOperationParameters
     {
         #region Query fields
@@ -95,6 +96,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _filterSize;
         private static OperationParameter _filterWeight;
         private static OperationParameter _gammaValue;
+        private static OperationParameter _gaussianStandardDeviation;
         private static OperationParameter _histogramMatchFunction;
         private static OperationParameter _histogramMatchValues;
         private static OperationParameter _indexOfBlueBand;
@@ -227,17 +229,17 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Size of the filter kernel.
+        /// Radius of the filter.
         /// </summary>
-        public static OperationParameter FilterSize
+        public static OperationParameter FilterRadius
         {
             get
             {
                 return _filterSize ?? (_filterSize =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223205", "Size of the filter kernel",
-                                                                      "The size (number of columns and rows) of the filter kernel. The size must be a positive odd number.", null,
-                                                                      Conditions.IsPositive(),
-                                                                      Conditions.IsOdd())
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223205", "Radius of the filter",
+                                                                      "The radius of the filter determining the number of neighbouring pixels to be convoluted by the filter. The radius must be a positive number.", null, 
+                                                                      1,
+                                                                      Conditions.IsPositive())
                     );
             }
         }
@@ -272,6 +274,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Gaussian standard deviation.
+        /// </summary>
+        public static OperationParameter GaussianStandardDeviation
+        {
+            get
+            {
+                return _gaussianStandardDeviation ?? (_gaussianStandardDeviation =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223104", "Gaussian standard deviation",
+                                                                       "The standard deviation value for the Gaussian blur filter.", null, 1)
+                );
+            }
+        }
+
+        /// <summary>
         /// Histogram match function.
         /// </summary>
         public static OperationParameter HistogramMatchFunction
@@ -279,7 +295,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _histogramMatchFunction ?? (_histogramMatchFunction =
-                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223123", "Histogram match function",
+                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223271", "Histogram match function",
                                                                                     "The function that is matched against the current raster histogram.", null)
                     );
             }

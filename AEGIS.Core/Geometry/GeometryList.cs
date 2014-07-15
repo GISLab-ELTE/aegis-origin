@@ -21,87 +21,10 @@ using System.Linq;
 namespace ELTE.AEGIS.Geometry
 {
     /// <summary>
-    /// Represents a list of geometries in spatial coordinate space.
-    /// </summary>
-    public class GeometryList : GeometryList<IGeometry>, IGeometryCollection
-    {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="referenceSystem">The reference system.</param>
-        /// <param name="metadata">The metadata.</param>
-        public GeometryList(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="capacity">The number of elements that the list can initially store.</param>
-        /// <param name="referenceSystem">The reference system.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The capacity is less than 0.</exception>
-        public GeometryList(Int32 capacity, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(capacity, referenceSystem, metadata)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="source">The source collection of geometries.</param>
-        /// <param name="referenceSystem">The reference system.</param>
-        /// <param name="metadata">The metadata.</param>
-        public GeometryList(IEnumerable<IGeometry> source, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(source, referenceSystem, metadata)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="factory">The factory of the geometry list.</param>
-        /// <param name="referenceSystem">The reference system.</param>
-        /// <param name="metadata">The metadata.</param>
-        public GeometryList(IGeometryFactory factory, IDictionary<String, Object> metadata)
-            : base(factory, metadata)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="capacity">The number of elements that the list can initially store.</param>
-        /// <param name="factory">The factory of the geometry list.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The capacity is less than 0.</exception>
-        public GeometryList(Int32 capacity, IGeometryFactory factory, IDictionary<String, Object> metadata)
-            : base(capacity, factory, metadata)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeometryList" /> class.
-        /// </summary>
-        /// <param name="source">The source collection of geometries.</param>
-        /// <param name="factory">The factory of the geometry list.</param>
-        /// <param name="metadata">The metadata.</param>
-        public GeometryList(IEnumerable<IGeometry> source, IGeometryFactory factory, IDictionary<String, Object> metadata)
-            : base(source, factory, metadata)
-        {
-        }
-
-        #endregion
-    }
-
-    /// <summary>
     /// Represents a generic list of geometries in spatial coordinate space.
     /// </summary>
     /// <typeparam name="T">The type of geometries in the list.</typeparam>
-    public class GeometryList<T> : Geometry, IGeometryCollection<T>, IList<T> where T : class, IGeometry
+    public class GeometryList<T> : Geometry, IGeometryCollection<T>, IList<T> where T : IGeometry
     {
         #region Public types
 
@@ -321,7 +244,7 @@ namespace ELTE.AEGIS.Geometry
         public virtual T this[Int32 index]
         {
             get { return _geometries[index]; }
-            set 
+            set
             {
                 if (index < 0)
                     throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
@@ -330,11 +253,11 @@ namespace ELTE.AEGIS.Geometry
                 if (value == null)
                     throw new InvalidOperationException("The value is null.");
 
-                if (_geometries[index] != value)
-                {
-                    _geometries[index] = value;
-                    OnGeometryChanged();
-                }
+                if (_geometries[index].Equals(value))
+                    return;
+
+                _geometries[index] = value;
+                OnGeometryChanged();
             }
         }
 
@@ -678,7 +601,7 @@ namespace ELTE.AEGIS.Geometry
             list._size = _size;
             for (Int32 i = 0; i < _size; i++)
             {
-                list._geometries[i] = _geometries[i].Clone() as T;
+                list._geometries[i] = (T)_geometries[i].Clone();
             }
 
             return list;

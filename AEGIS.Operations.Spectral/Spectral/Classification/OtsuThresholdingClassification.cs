@@ -14,7 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using Otsu's method.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213121", "Otsu thresholding")]
+    [OperationClass("AEGIS::213121", "Otsu thresholding")]
     public class OtsuThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

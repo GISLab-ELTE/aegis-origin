@@ -302,12 +302,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
             try
             {
                 IReferenceSystem referenceSystem = ReadGeometryReferenceSystem();
-                IRaster raster = ReadRasterContent(referenceSystem);
                 IDictionary<String, Object> metadata = ReadGeometryMetadata();
+
+                ISpectralGeometry spectralGeometry = ReadSpectralContent(referenceSystem, metadata);
                 
                 _subImageIndex++;
 
-                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster.Mapper, metadata);
+                return spectralGeometry;
             }
             catch (Exception ex)
             {
@@ -460,12 +461,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Reads the raster of the geometry.
+        /// Reads the spectral content of the geometry.
         /// </summary>
         /// <param name="referenceSystem">The reference system.</param>
-        /// <returns>The raster of the geometry.</returns>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The spectral geometry.</returns>
         /// <exception cref="System.NotSupportedException">Compression is not supported.</exception>
-        private IRaster ReadRasterContent(IReferenceSystem referenceSystem)
+        private ISpectralGeometry ReadSpectralContent(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
         {
             // read raster 
             TiffPhotometricInterpretation photometricInterpretation = (TiffPhotometricInterpretation)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][262][0]);
@@ -488,33 +490,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 format = (TiffSampleFormat)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][339][0]);
             }
 
-            IRaster raster = null;
+            ISpectralGeometry spectralGeometry = null;
 
             // create the raster based on the format
             switch (format)
             { 
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    raster = ResolveFactory(referenceSystem).GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateRaster(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    raster = ResolveFactory(referenceSystem).GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateFloatRaster(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper, metadata);
                     break;
             }
 
             // determine whether the image is stripped or tiled
             if (_imageFileDirectories[_subImageIndex].ContainsKey(273))
             {
-                ReadRasterContentFromStrips(raster, compression, format);
+                ReadRasterContentFromStrips(spectralGeometry.Raster, compression, format);
             }
 
             if (_imageFileDirectories[_subImageIndex].ContainsKey(324))
             {
-                ReadRasterContentFromTiles(raster, compression, format);
+                ReadRasterContentFromTiles(spectralGeometry.Raster, compression, format);
             }
               
-            return raster;
+            return spectralGeometry;
         }
 
         /// <summary>

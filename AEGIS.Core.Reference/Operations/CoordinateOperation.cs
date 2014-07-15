@@ -35,6 +35,15 @@ namespace ELTE.AEGIS.Reference.Operations
     /// </remarks>
     public abstract class CoordinateOperation<SourceType, ResultType> : IdentifiedObject
     {
+        #region Private fields
+
+        /// <summary>
+        /// Defines an empty collection of parameters. This field is read-only.
+        /// </summary>
+        private readonly static Dictionary<CoordinateOperationParameter, Object> EmptyParameters = new Dictionary<CoordinateOperationParameter, Object>();
+
+        #endregion
+
         #region Protected fields
 
         protected readonly CoordinateOperationMethod _method;

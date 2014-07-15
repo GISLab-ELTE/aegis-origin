@@ -1,4 +1,4 @@
-﻿/// <copyright file="BoxFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="CustomFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,23 +13,23 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Numerics;
-using ELTE.AEGIS.Management;
 
-namespace ELTE.AEGIS.Operations.Spectral.Filter
+namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represnts a box filter transformation.
+    /// Represents a filter transformation using custom kernel, factor and offset values.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213202", "Box filter")]
-    public class BoxFilterTransformation : FilterTransformation
+    [OperationClass("AEGIS::213200", "Custom filter")]
+    public class CustomFilterTransformation : FilterTransformation
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="CustomFilterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -47,13 +47,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public BoxFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public CustomFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="CustomFilterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -72,17 +72,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Filter
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public BoxFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.BoxFilter, parameters)
+        public CustomFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.CustomFilter, parameters)
         {
-            _filterSize = Convert.ToInt32(_parameters[SpectralOperationParameters.FilterSize]);
-
-            if (_filterSize < 1 || _filterSize % 2 == 0)
-                throw new ArgumentException("The value of a parameter (" + SpectralOperationParameters.FilterSize.Name + ") is not within the expected range.", "parameters");
-
-            _filterFactor = _filterSize * _filterSize;
-            _filterKernel = new Matrix(_filterSize, _filterSize, 1);
-            _filterOffset = 0;
+            _filter = new Filter(GetParameter<Matrix>(SpectralOperationParameters.FilterKernel),
+                                 Convert.ToDouble(GetParameter(SpectralOperationParameters.FilterFactor)),
+                                 Convert.ToDouble(GetParameter(SpectralOperationParameters.FilterOffset)));
         }
 
         #endregion

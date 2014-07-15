@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized differential indices (NDxI) of raster geometries.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::213511", "Normalized difference index (NDxI) computation")]
+    [OperationClass("AEGIS::213511", "Normalized difference index (NDxI) computation")]
     public class NormalizedDifferenceIndexComputation : SpectralTransformation
     {
         #region Private fields
