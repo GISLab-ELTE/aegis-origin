@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionException.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="FileSystemEntryType.cs" />
     <Compile Include="FileSystems\LocalFileSystem.cs" />

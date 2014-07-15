@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionExceptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapefile\ShapefileReaderTest.cs" />
     <Compile Include="Shapefile\ShapefileWriterTest.cs" />
