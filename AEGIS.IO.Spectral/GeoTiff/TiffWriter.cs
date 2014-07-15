@@ -116,10 +116,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
             switch ((geometry as ISpectralGeometry).Raster.Representation)
             { 
                 case RasterRepresentation.Integer:
-                    WriteRasterContent((geometry as ISpectralGeometry).Raster, out startPosition, out endPosition);
+                    WriteSpectralContent((geometry as ISpectralGeometry).Raster, out startPosition, out endPosition);
                     break;
                 case RasterRepresentation.Floating:
-                    WriteRasterContent((geometry as ISpectralGeometry).Raster as IFloatRaster, out startPosition, out endPosition);
+                    WriteSpectralContent((geometry as ISpectralGeometry).Raster as IFloatRaster, out startPosition, out endPosition);
                     break;
             }
 
@@ -169,22 +169,25 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(305, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
             imageFileDirectory.Add(306, new Object[] { DateTime.UtcNow.ToString() }); // date time
 
-            if (geometry.Metadata.ContainsKey("DocumentName"))
-                imageFileDirectory.Add(269, new Object[] { geometry.Metadata["DocumentName"] });
-            if (geometry.Metadata.ContainsKey("ImageDescription"))
-                imageFileDirectory.Add(270, new Object[] { geometry.Metadata["ImageDescription"] });
-            if (geometry.Metadata.ContainsKey("Make"))
-                imageFileDirectory.Add(271, new Object[] { geometry.Metadata["Make"] });
-            if (geometry.Metadata.ContainsKey("Model"))
-                imageFileDirectory.Add(272, new Object[] { geometry.Metadata["Model"] });
-            if (geometry.Metadata.ContainsKey("PageName"))
-                imageFileDirectory.Add(285, new Object[] { geometry.Metadata["PageName"] });
-            if (geometry.Metadata.ContainsKey("Artist"))
-                imageFileDirectory.Add(307, new Object[] { geometry.Metadata["Artist"] });
-            if (geometry.Metadata.ContainsKey("HostComputer"))
-                imageFileDirectory.Add(308, new Object[] { geometry.Metadata["HostComputer"] });
-            if (geometry.Metadata.ContainsKey("Copyright"))
-                imageFileDirectory.Add(33432, new Object[] { geometry.Metadata["Copyright"] });
+            if (geometry.Metadata != null)
+            {
+                if (geometry.Metadata.ContainsKey("DocumentName"))
+                    imageFileDirectory.Add(269, new Object[] { geometry.Metadata["DocumentName"] });
+                if (geometry.Metadata.ContainsKey("ImageDescription"))
+                    imageFileDirectory.Add(270, new Object[] { geometry.Metadata["ImageDescription"] });
+                if (geometry.Metadata.ContainsKey("Make"))
+                    imageFileDirectory.Add(271, new Object[] { geometry.Metadata["Make"] });
+                if (geometry.Metadata.ContainsKey("Model"))
+                    imageFileDirectory.Add(272, new Object[] { geometry.Metadata["Model"] });
+                if (geometry.Metadata.ContainsKey("PageName"))
+                    imageFileDirectory.Add(285, new Object[] { geometry.Metadata["PageName"] });
+                if (geometry.Metadata.ContainsKey("Artist"))
+                    imageFileDirectory.Add(307, new Object[] { geometry.Metadata["Artist"] });
+                if (geometry.Metadata.ContainsKey("HostComputer"))
+                    imageFileDirectory.Add(308, new Object[] { geometry.Metadata["HostComputer"] });
+                if (geometry.Metadata.ContainsKey("Copyright"))
+                    imageFileDirectory.Add(33432, new Object[] { geometry.Metadata["Copyright"] });
+            }
 
             return imageFileDirectory;
         }
@@ -305,13 +308,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
             _baseStream.Seek(_currentImageFileDirectoryStartPosition, SeekOrigin.Begin);
             _baseStream.Write(bytes, 0, bytes.Length);
         }
+
         /// <summary>
-        /// Writes the content of the raster.
+        /// Writes the spectral content of the geometry.
         /// </summary>
         /// <param name="raster">The raster.</param>
         /// <param name="startPosition">The start position.</param>
         /// <param name="endPosition">The end position.</param>
-        private void WriteRasterContent(IRaster raster, out UInt32 startPosition, out UInt32 endPosition)
+        private void WriteSpectralContent(IRaster raster, out UInt32 startPosition, out UInt32 endPosition)
         {
             // mark the starting position of the strip
             startPosition = (UInt32)_baseStream.Position;
@@ -389,13 +393,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // mark the ending position of the strip
             endPosition = (UInt32)_baseStream.Position;
         }
+
         /// <summary>
-        /// Writes the content of the raster.
+        /// Writes the spectral content of the geometry.
         /// </summary>
         /// <param name="raster">The raster.</param>
         /// <param name="startPosition">The start position.</param>
         /// <param name="endPosition">The end position.</param>
-        private void WriteRasterContent(IFloatRaster raster, out UInt32 startPosition, out UInt32 endPosition)
+        private void WriteSpectralContent(IFloatRaster raster, out UInt32 startPosition, out UInt32 endPosition)
         {
             // mark the starting position of the strip
             startPosition = (UInt32)_baseStream.Position;
