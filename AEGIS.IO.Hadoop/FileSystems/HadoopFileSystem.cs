@@ -12,7 +12,7 @@ namespace ELTE.AEGIS.IO.FileSystems
     /// <summary>
     /// Represents a HDFS file system.
     /// </summary>
-    public class HdfsFileSystem : FileSystem
+    public class HadoopFileSystem : FileSystem
     {
         #region Private types
         private enum FileSystemEntryType { File, Directory }
@@ -69,12 +69,12 @@ namespace ELTE.AEGIS.IO.FileSystems
 
         #region Public constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="HdfsFileSystem"/> class.
+        /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
         /// </summary>
         /// <param name="hostName">The HDFS hostname.</param>
         /// <param name="hdfsUsername">The HDFS username.</param>
         /// <param name="portNumber">The HDFS port.</param>
-        public HdfsFileSystem(String hostName, String portNumber, String hdfsUsername)
+        public HadoopFileSystem(String hostName, String portNumber, String hdfsUsername)
         {
             HostName = hostName;
             PortNumber = portNumber;
