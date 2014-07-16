@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AEGIS.Core.Reference">
-      <HintPath>..\..\FiltersExample\packages\AEGIS.Core.Reference.dll</HintPath>
-    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -55,6 +52,10 @@
     <ProjectReference Include="..\AEGIS.Core.Graphs\AEGIS.Core.Graphs.csproj">
       <Project>{ff03243f-3d48-440f-ae8a-195fe93837f1}</Project>
       <Name>AEGIS.Core.Graphs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
+      <Project>{bbf043a5-9195-43b3-8e01-459b5e66f136}</Project>
+      <Name>AEGIS.Core.Reference</Name>
     </ProjectReference>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
       <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
