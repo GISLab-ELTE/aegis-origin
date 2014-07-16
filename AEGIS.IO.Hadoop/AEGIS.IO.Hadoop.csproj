@@ -46,6 +46,15 @@
     <Compile Include="Storage\HadoopFileSystem.cs" />
     <Compile Include="Storage\HadoopRemoteException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storage\Operation\HadoopBooleanOperationResult.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Storage\Operation\HadoopFileListingOperationResult.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Storage\Operation\HadoopFileStatusOperationResult.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Storage\Operation\HadoopFileSystemOperation.cs" />
     <Compile Include="Storage\Operation\HadoopFileSystemOperationResult.cs" />
   </ItemGroup>
