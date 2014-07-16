@@ -13,11 +13,10 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.IO.FileSystems;
 using System;
 using System.IO;
 
-namespace ELTE.AEGIS.IO
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Represents a file system.

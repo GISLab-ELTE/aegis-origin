@@ -13,10 +13,10 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.IO.FileSystems;
+using ELTE.AEGIS.IO.Storage;
 using NUnit.Framework;
 
-namespace ELTE.AEGIS.Tests.IO.FileSystems
+namespace ELTE.AEGIS.Tests.IO.Storage
 {
     /// <summary>
     /// Test fixture for class <see cref="HadoopRemoteException"/>.

@@ -1,14 +1,10 @@
-﻿using ELTE.AEGIS.IO.FileSystems;
+﻿using ELTE.AEGIS.IO.Storage;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ELTE.AEGIS.Tests.IO.FileSystems
+namespace ELTE.AEGIS.Tests.IO.Storage
 {
     [TestFixture]
     class HadoopFileSystemTest

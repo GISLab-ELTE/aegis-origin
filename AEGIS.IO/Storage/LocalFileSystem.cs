@@ -17,7 +17,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace ELTE.AEGIS.IO.FileSystems
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Represents the local file system.

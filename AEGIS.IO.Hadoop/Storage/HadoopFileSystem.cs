@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ELTE.AEGIS.IO.FileSystems
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Represents a HDFS file system.

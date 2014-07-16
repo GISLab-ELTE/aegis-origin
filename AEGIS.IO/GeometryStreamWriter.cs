@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.IO.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

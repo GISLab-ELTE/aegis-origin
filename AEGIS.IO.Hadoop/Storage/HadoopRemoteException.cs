@@ -16,7 +16,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ELTE.AEGIS.IO.FileSystems
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Represents the exception that is thrown remotely by the Hadoop distributed file system.

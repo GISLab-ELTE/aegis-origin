@@ -13,7 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-namespace ELTE.AEGIS.IO
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Defines file system entry types.

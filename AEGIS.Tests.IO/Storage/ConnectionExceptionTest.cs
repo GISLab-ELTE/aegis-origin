@@ -13,11 +13,11 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.IO;
+using ELTE.AEGIS.IO.Storage;
 using NUnit.Framework;
 using System;
 
-namespace ELTE.AEGIS.Tests.IO
+namespace ELTE.AEGIS.Tests.IO.Storage
 {
     /// <summary>
     /// Test fixture for class <see cref="ConnectionException"/>.

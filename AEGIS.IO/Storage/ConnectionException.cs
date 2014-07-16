@@ -16,7 +16,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ELTE.AEGIS.IO
+namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
     /// Represents the exception that is thrown in case of connection error.

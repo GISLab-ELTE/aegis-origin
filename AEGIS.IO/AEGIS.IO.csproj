@@ -43,10 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionException.cs" />
-    <Compile Include="FileSystem.cs" />
-    <Compile Include="FileSystemEntryType.cs" />
-    <Compile Include="FileSystems\LocalFileSystem.cs" />
+    <Compile Include="Storage\ConnectionException.cs" />
+    <Compile Include="Storage\FileSystem.cs" />
+    <Compile Include="Storage\FileSystemEntryType.cs" />
+    <Compile Include="Storage\LocalFileSystem.cs" />
     <Compile Include="GeometryStreamFormat.cs" />
     <Compile Include="GeometryStreamFormats.cs" />
     <Compile Include="GeometryStreamParameter.cs" />

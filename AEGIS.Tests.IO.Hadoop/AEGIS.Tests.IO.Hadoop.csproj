@@ -45,8 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSystems\HadoopFileSystemTest.cs" />
-    <Compile Include="FileSystems\HadoopRemoteExceptionTest.cs" />
+    <Compile Include="Storage\HadoopFileSystemTest.cs" />
+    <Compile Include="Storage\HadoopRemoteExceptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

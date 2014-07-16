@@ -39,8 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSystems\HadoopFileSystem.cs" />
-    <Compile Include="FileSystems\HadoopRemoteException.cs" />
+    <Compile Include="Storage\HadoopFileSystem.cs" />
+    <Compile Include="Storage\HadoopRemoteException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
