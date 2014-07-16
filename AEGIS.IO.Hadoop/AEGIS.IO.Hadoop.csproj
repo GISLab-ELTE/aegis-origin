@@ -49,14 +49,19 @@
     <Compile Include="Storage\Operation\HadoopBooleanOperationResult.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Storage\Operation\HadoopCreateDirectoryOperation.cs" />
+    <Compile Include="Storage\Operation\HadoopDeleteOperation.cs" />
+    <Compile Include="Storage\Operation\HadoopFileListingOperation.cs" />
     <Compile Include="Storage\Operation\HadoopFileListingOperationResult.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Storage\Operation\HadoopFileStatusOperation.cs" />
     <Compile Include="Storage\Operation\HadoopFileStatusOperationResult.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Storage\Operation\HadoopFileSystemOperation.cs" />
     <Compile Include="Storage\Operation\HadoopFileSystemOperationResult.cs" />
+    <Compile Include="Storage\Operation\HadoopRenameOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
