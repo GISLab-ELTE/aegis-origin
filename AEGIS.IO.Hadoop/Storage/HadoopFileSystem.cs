@@ -73,6 +73,12 @@ namespace ELTE.AEGIS.IO.Storage
         /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
         public override Boolean IsContentWritingSupported { get { return true; } }
 
+        /// <summary>
+        /// Gets the authentication used by the file system.
+        /// </summary>
+        /// <value>The authentication used by the file system.</value>
+        public override IFileSystemAuthentication Authentication { get { return null; } }
+
         #endregion
 
         #region Public properties
@@ -99,13 +105,14 @@ namespace ELTE.AEGIS.IO.Storage
         #endregion
 
         #region Public constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
         /// </summary>
         /// <param name="hostName">The HDFS hostname.</param>
         /// <param name="hdfsUsername">The HDFS username.</param>
         /// <param name="portNumber">The HDFS port.</param>
-        public HadoopFileSystem(String hostName, String portNumber, String hdfsUsername)
+        public HadoopFileSystem(String hostName, String portNumber, String hdfsUsername) : base(new Uri("http://" + hostName + ":" + portNumber))
         {
             HostName = hostName;
             PortNumber = portNumber;
@@ -113,6 +120,7 @@ namespace ELTE.AEGIS.IO.Storage
 
             _urlRoot = "http://" + HostName + ":" + PortNumber + WebHdfsContextRoot;
         }
+
         #endregion
 
         #region FileSystem public methods

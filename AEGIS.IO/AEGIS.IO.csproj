@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Storage\Authentication\AnonymousFileSystemAuthentication.cs" />
+    <Compile Include="Storage\FileSystemAuthenticationType.cs" />
+    <Compile Include="Storage\IFileSystemAuthentication.cs" />
     <Compile Include="Storage\ConnectionException.cs" />
     <Compile Include="Storage\FileSystem.cs" />
     <Compile Include="Storage\FileSystemEntryType.cs" />

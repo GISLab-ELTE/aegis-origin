@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.IO.Storage.Authentication;
 using System;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,20 @@ namespace ELTE.AEGIS.IO.Storage
     /// </summary>
     public class LocalFileSystem : FileSystem
     {
+        #region Private static fields
+
+        /// <summary>
+        /// The URI of the localhost. This field is read-only.
+        /// </summary>
+        private static readonly Uri LocalhostUri = new Uri("file://localhost/");
+
+        /// <summary>
+        /// The anyonymous authentication. This field is read-only.
+        /// </summary>
+        private static readonly IFileSystemAuthentication AnyonymousAuthentication = new AnonymousFileSystemAuthentication();
+
+        #endregion
+
         #region FileSystem public properties
 
         /// <summary>
@@ -86,6 +101,21 @@ namespace ELTE.AEGIS.IO.Storage
         /// </summary>
         /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
         public override Boolean IsContentWritingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets the authentication used by the file system.
+        /// </summary>
+        /// <value>The authentication used by the file system.</value>
+        public override IFileSystemAuthentication Authentication { get { return AnyonymousAuthentication; } }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LocalFileSystem"/> class.
+        /// </summary>
+        public LocalFileSystem() : base(LocalhostUri) { }
 
         #endregion
 

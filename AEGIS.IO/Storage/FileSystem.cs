@@ -279,6 +279,31 @@ namespace ELTE.AEGIS.IO.Storage
         /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
         public abstract Boolean IsContentWritingSupported { get; }
 
+        /// <summary>
+        /// Gets the authentication used by the file system.
+        /// </summary>
+        /// <value>The authentication used by the file system.</value>
+        public abstract IFileSystemAuthentication Authentication { get; }
+
+        /// <summary>
+        /// Gets the location of the file system.
+        /// </summary>
+        /// <value>The URI of the file system location.</value>
+        public Uri Location { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSystem"/> class.
+        /// </summary>
+        /// <param name="location">The URI of the file system host.</param>
+        protected FileSystem(Uri location)
+        {
+            Location = location;
+        }
+
         #endregion
 
         #region Public methods
