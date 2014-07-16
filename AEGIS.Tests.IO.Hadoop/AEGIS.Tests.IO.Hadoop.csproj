@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Storage\Authentication\HadoopAnonymousAuthenticationTest.cs" />
+    <Compile Include="Storage\Authentication\HadoopUsernameAuthenticationTest.cs" />
     <Compile Include="Storage\HadoopFileSystemTest.cs" />
     <Compile Include="Storage\HadoopRemoteExceptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

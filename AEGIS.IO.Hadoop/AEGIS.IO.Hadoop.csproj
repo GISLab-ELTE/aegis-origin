@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Storage\Authentication\HadoopAnonymousAuthentication.cs" />
+    <Compile Include="Storage\Authentication\IHadoopFileSystemAuthentication.cs" />
+    <Compile Include="Storage\Authentication\HadoopUsernameAuthentication.cs" />
     <Compile Include="Storage\HadoopFileSystem.cs" />
     <Compile Include="Storage\HadoopRemoteException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
