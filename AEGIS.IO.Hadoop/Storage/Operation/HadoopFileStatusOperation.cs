@@ -103,14 +103,15 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         {
             HadoopFileStatusOperationResult result = new HadoopFileStatusOperationResult
             {
-                Request = Path + OperationRequest + "&" + Authentication.Request,
-                AccessTime = new DateTime(1970, 1, 1) + TimeSpan.FromTicks(obj.Value<Int64>("accessTime")),
-                ModificationTime = new DateTime(1970, 1, 1) + TimeSpan.FromTicks(obj.Value<Int64>("modificationTime")),
-                Length = obj.Value<Int64>("length"),
-                BlockSize = obj.Value<Int64>("blockSize"),
+                Request = CompleteRequest, 
+                Name = obj.Value<JObject>("FileStatus").Value<String>("pathSuffix"),
+                AccessTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(obj.Value<JObject>("FileStatus").Value<Int64>("accessTime") / 1000),
+                ModificationTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(obj.Value<JObject>("FileStatus").Value<Int64>("modificationTime") / 1000),
+                Length = obj.Value<JObject>("FileStatus").Value<Int64>("length"),
+                BlockSize = obj.Value<JObject>("FileStatus").Value<Int64>("blockSize"),
             };
 
-            switch (obj.Value<String>("type"))
+            switch (obj.Value<JObject>("FileStatus").Value<String>("type"))
             {
                 case "FILE":
                     result.EntryType = FileSystemEntryType.File;

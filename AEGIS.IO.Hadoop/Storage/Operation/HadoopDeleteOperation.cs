@@ -113,7 +113,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         {
             return new HadoopBooleanOperationResult
             {
-                Request = Path + OperationRequest + "&" + Authentication.Request,
+                Request = CompleteRequest,
                 Success = obj.Value<Boolean>("boolean")
             };
         }

@@ -112,6 +112,24 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <value>The request of the operation.</value>
         protected abstract String OperationRequest { get; }
 
+        /// <summary>
+        /// Gets the complete request of the operation.
+        /// </summary>
+        /// <value>The complete request indluding the path, operation and authentication.</value>
+        protected String CompleteRequest
+        {
+            get
+            {
+                switch (Authentication.AutenticationType)
+                {
+                    case FileSystemAuthenticationType.UserCredentials:
+                        return String.Format("{0}?{1}&{2}", Path, OperationRequest, Authentication.Request);
+                    default:
+                        return String.Format("{0}?{1}", Path, OperationRequest);
+                }
+            }
+        }
+
         #endregion
 
         #region Constructors and destructor
@@ -222,18 +240,16 @@ namespace ELTE.AEGIS.IO.Storage.Operation
 
             // execute operation
 
-            String requestUri = String.Format("{0}?{1}&{2}", Path, OperationRequest, Authentication.Request);
-
             switch (RequestType)
             {
                 case HttpRequestType.Put:
-                    message = await _client.PutAsync(requestUri, null);
+                    message = await _client.PutAsync(CompleteRequest, null);
                     break;
                 case HttpRequestType.Get:
-                    message = await _client.GetAsync(requestUri);
+                    message = await _client.GetAsync(CompleteRequest);
                     break;
                 case HttpRequestType.Delete:
-                    message = await _client.DeleteAsync(requestUri);
+                    message = await _client.DeleteAsync(CompleteRequest);
                     break;
             }
 
@@ -254,8 +270,9 @@ namespace ELTE.AEGIS.IO.Storage.Operation
                 case HttpStatusCode.BadRequest: // excepted error cases
                 case HttpStatusCode.Unauthorized:
                 case HttpStatusCode.Forbidden:
+                case HttpStatusCode.NotFound:
                 case HttpStatusCode.InternalServerError:
-                    throw CreateRemoteException(contentObject);
+                    throw CreateRemoteException(contentObject.Value<JObject>("RemoteException"));
                 default: // unexpected error cases
                     throw new HttpRequestException("The remote address returned with an invalid response.");
             }
