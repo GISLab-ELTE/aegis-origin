@@ -127,7 +127,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to create.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             if (File.Exists(path))
@@ -189,7 +189,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>A stream that provides read/write access to the file specified in path.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -207,7 +207,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             if (!overwrite && Exists(path))
@@ -252,7 +252,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>A stream in the specified mode and path, with the specified access.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path does not exist.
         /// or
@@ -282,7 +282,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -343,7 +343,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -358,7 +358,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             // determine whether the specified path is a directory or file
@@ -426,9 +426,9 @@ namespace ELTE.AEGIS.IO.Storage
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.
+        /// The source path is empty, or consists only of whitespace characters.
         /// or
-        /// The destination path is empty.
+        /// The destination path is empty, or consists only of whitespace characters.
         /// or
         /// The source and destination paths are equal.
         /// or
@@ -450,9 +450,9 @@ namespace ELTE.AEGIS.IO.Storage
                 throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);
             if (destinationPath == null)
                 throw new ArgumentNullException("destinationPath", MessageDestinationPathIsNull);
-            if (String.IsNullOrEmpty(sourcePath))
+            if (String.IsNullOrWhiteSpace(sourcePath))
                 throw new ArgumentException(MessageSourcePathIsEmpty, "sourcePath");
-            if (String.IsNullOrEmpty(destinationPath))
+            if (String.IsNullOrWhiteSpace(destinationPath))
                 throw new ArgumentException(MessageDestinationPathIsEmpty, "destinationPath");
 
             if (sourcePath.Equals(destinationPath))
@@ -502,9 +502,9 @@ namespace ELTE.AEGIS.IO.Storage
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.
+        /// The source path is empty, or consists only of whitespace characters.
         /// or
-        /// The destination path is empty.
+        /// The destination path is empty, or consists only of whitespace characters.
         /// or
         /// The source and destination paths are equal.
         /// or
@@ -530,9 +530,9 @@ namespace ELTE.AEGIS.IO.Storage
                 throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);
             if (destinationPath == null)
                 throw new ArgumentNullException("destinationPath", MessageDestinationPathIsNull);
-            if (String.IsNullOrEmpty(sourcePath))
+            if (String.IsNullOrWhiteSpace(sourcePath))
                 throw new ArgumentException(MessageSourcePathIsEmpty, "sourcePath");
-            if (String.IsNullOrEmpty(destinationPath))
+            if (String.IsNullOrWhiteSpace(destinationPath))
                 throw new ArgumentException(MessageDestinationPathIsEmpty, "destinationPath");
 
             if (sourcePath.Equals(destinationPath))
@@ -623,7 +623,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>A string containing the root information.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -634,7 +634,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -662,7 +662,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>The string containing the full path to the parent directory.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -675,7 +675,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -717,7 +717,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>The full directory name for <paramref name="path" />.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -727,7 +727,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -751,7 +751,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>The file name and file extension for <paramref name="path" />.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// </exception>
@@ -759,7 +759,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -779,7 +779,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>The file name without file extension for <paramref name="path" />.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// </exception>
@@ -787,7 +787,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
             
             try
@@ -831,7 +831,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>An array containing the full paths to all directories.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -849,7 +849,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -893,7 +893,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>An array containing the full paths to all files.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -911,7 +911,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
@@ -955,7 +955,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <returns>An array containing the full paths to all file system entries.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The path is in an invalid format.
         /// or
@@ -973,7 +973,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
-            if (String.IsNullOrEmpty(path))
+            if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
             try
