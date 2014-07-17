@@ -16,6 +16,7 @@
 using ELTE.AEGIS.IO.Storage.Authentication;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -40,9 +41,9 @@ namespace ELTE.AEGIS.IO.Storage.Operation
             Put,
 
             /// <summary>
-            /// PUSH.
+            /// POST.
             /// </summary>
-            Push,
+            Post,
 
             /// <summary>
             /// GET.
@@ -58,6 +59,11 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #endregion
 
         #region Private fields
+
+        /// <summary>
+        /// The HTTP content.
+        /// </summary>
+        private HttpContent _content;
 
         /// <summary>
         /// The HTTP client performing the operations.
@@ -139,7 +145,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// </summary>
         protected HadoopFileSystemOperation()
         {
-            _client = new HttpClient(new WebRequestHandler { AllowAutoRedirect = true }, true);
+            _client = new HttpClient(new WebRequestHandler { AllowAutoRedirect = false }, true);
             _disposeClient = false;
             _disposed = false;
         }
@@ -173,13 +179,15 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// Initializes a new instance of the <see cref="HadoopFileSystemOperation"/> class.
         /// </summary>
         /// <param name="client">The HTTP client.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <exception cref="System.ArgumentNullException">The client is null.</exception>
-        protected HadoopFileSystemOperation(HttpClient client)
+        protected HadoopFileSystemOperation(HttpClient client, HttpContent content)
         {
             if (client == null)
                 throw new ArgumentNullException("client", "The client is null.");
 
             _client = client;
+            _content = content; 
             _disposeClient = false;
             _disposed = false;
         }
@@ -188,6 +196,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// Initializes a new instance of the <see cref="HadoopFileSystemOperation" /> class.
         /// </summary>
         /// <param name="client">The HTTP client.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <param name="path">The path of the operation.</param>
         /// <param name="authentication">The authentication.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -198,8 +207,8 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        protected HadoopFileSystemOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication)
-            : this(client)
+        protected HadoopFileSystemOperation(HttpClient client, HttpContent content, String path, IHadoopFileSystemAuthentication authentication)
+            : this(client, content)
         {
             if (path == null)
                 throw new ArgumentNullException("path", "The path is null.");
@@ -227,10 +236,11 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <summary>
         /// Executes the operation asyncronously.
         /// </summary>
+        /// <param name="content">The content.</param>
         /// <returns>The result of the operation.</returns>
-        /// <exception cref="HadoopRemoteException">The remote address returned with an exception.</exception>
-        /// <exception cref="System.Net.Http.HttpRequestException">The remote address returned with an invalid response.</exception>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="System.Net.Http.HttpRequestException">The remote address returned with an invalid response.</exception>
+        /// <exception cref="HadoopRemoteException">The remote address returned with an exception.</exception>
         public async Task<HadoopFileSystemOperationResult> ExecuteAsync()
         {
             if (_disposed)
@@ -238,30 +248,48 @@ namespace ELTE.AEGIS.IO.Storage.Operation
 
             HttpResponseMessage message = null;
 
-            // execute operation
-
+            // execute operation (without content)
             switch (RequestType)
             {
                 case HttpRequestType.Put:
                     message = await _client.PutAsync(CompleteRequest, null);
                     break;
+                case HttpRequestType.Post:
+                    message = await _client.PostAsync(CompleteRequest, null);
+                    break;
                 case HttpRequestType.Get:
-                    message = await _client.GetAsync(CompleteRequest);
+                    message = await _client.GetAsync(CompleteRequest, HttpCompletionOption.ResponseHeadersRead);
                     break;
                 case HttpRequestType.Delete:
                     message = await _client.DeleteAsync(CompleteRequest);
                     break;
             }
 
-            // parse the message
-            JObject contentObject = JObject.Parse(await message.Content.ReadAsStringAsync());
-
-            message.Dispose();
+            // some operations result in redirect to data node
+            if (message.StatusCode == HttpStatusCode.TemporaryRedirect)
+            {
+                // execute the operation on the data node (with content)
+                switch (RequestType)
+                {
+                    case HttpRequestType.Put:
+                        message = await _client.PutAsync(message.Headers.Location, _content);
+                        break;
+                    case HttpRequestType.Post:
+                        message = await _client.PutAsync(message.Headers.Location, _content);
+                        break;
+                    case HttpRequestType.Get:
+                        message = await _client.GetAsync(message.Headers.Location, HttpCompletionOption.ResponseHeadersRead);
+                        break;
+                    case HttpRequestType.Delete:
+                        message = await _client.DeleteAsync(message.Headers.Location);
+                        break;
+                }
+            }
 
             // handle successful request
             if (message.IsSuccessStatusCode)
             {
-                return CreateResult(contentObject);
+                return await CreateResultAsync(message.Content);
             }
 
             // handle unsuccessful request
@@ -272,7 +300,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
                 case HttpStatusCode.Forbidden:
                 case HttpStatusCode.NotFound:
                 case HttpStatusCode.InternalServerError:
-                    throw CreateRemoteException(contentObject.Value<JObject>("RemoteException"));
+                    throw await CreateRemoteExceptionAsync(message.Content);
                 default: // unexpected error cases
                     throw new HttpRequestException("The remote address returned with an invalid response.");
             }
@@ -296,11 +324,11 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Protected methods
 
         /// <summary>
-        /// Creates the result for the specified JSON object.
+        /// Creates the result for the specified content asyncronously.
         /// </summary>
-        /// <param name="obj">The content JSON object.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <returns>The produced operation result.</returns>
-        protected abstract HadoopFileSystemOperationResult CreateResult(JObject obj);
+        protected abstract Task<HadoopFileSystemOperationResult> CreateResultAsync(HttpContent content);
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -322,13 +350,15 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Private methods
 
         /// <summary>
-        /// Creates the remote exeption for the specified JSON object.
+        /// Creates the remote exeption for the specified content asyncronously.
         /// </summary>
-        /// <param name="obj">The content JSON object.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <returns>The produced remote exception.</returns>
-        private HadoopRemoteException CreateRemoteException(JObject obj)
+        private async Task<HadoopRemoteException> CreateRemoteExceptionAsync(HttpContent content)
         {
-            return new HadoopRemoteException(obj.Value<String>("message"), obj.Value<String>("exception"), obj.Value<String>("javaClassName"));
+            JObject contentObject = JObject.Parse(await content.ReadAsStringAsync()).Value<JObject>("RemoteException");
+
+            return new HadoopRemoteException(contentObject.Value<String>("message"), contentObject.Value<String>("exception"), contentObject.Value<String>("javaClassName"));
         }
 
         #endregion

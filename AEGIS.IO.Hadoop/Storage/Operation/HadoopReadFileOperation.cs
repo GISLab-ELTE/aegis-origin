@@ -1,4 +1,4 @@
-﻿/// <copyright file="HadoopCreateDirectoryOperation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="HadoopReadFileOperation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -22,9 +22,9 @@ using System.Threading.Tasks;
 namespace ELTE.AEGIS.IO.Storage.Operation
 {
     /// <summary>
-    /// Represents a Hadoop file system operation for creating a directory.
+    ///  Represents a Hadoop file system operation for reading files.
     /// </summary>
-    public class HadoopCreateDirectoryOperation : HadoopFileSystemOperation
+    public class HadoopReadFileOperation : HadoopFileSystemOperation
     {
         #region Protected HadoopFileSystemOperation properties
 
@@ -34,7 +34,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <value>The HTTP type of the request used for execution.</value>
         protected override HttpRequestType RequestType
         {
-            get { return HttpRequestType.Put; }
+            get { return HttpRequestType.Get; }
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <value>The request of the operation.</value>
         protected override String OperationRequest
         {
-            get { return "op=MKDIRS"; }
+            get { return "op=OPEN"; }
         }
 
         #endregion
@@ -51,12 +51,12 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopCreateDirectoryOperation"/> class.
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
         /// </summary>
-        public HadoopCreateDirectoryOperation() { }
+        public HadoopReadFileOperation() { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopCreateDirectoryOperation"/> class.
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="authentication">The authentication.</param>
@@ -66,21 +66,20 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        public HadoopCreateDirectoryOperation(String path, IHadoopFileSystemAuthentication authentication) : base(path, authentication) { }
+        public HadoopReadFileOperation(String path, IHadoopFileSystemAuthentication authentication) : base(path, authentication) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopCreateDirectoryOperation"/> class.
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
         /// </summary>
-        /// <param name="client">The HTTP client.</param>
         /// <exception cref="System.ArgumentNullException">The client is null.</exception>
-        public HadoopCreateDirectoryOperation(HttpClient client) : base(client, null) { }
+        public HadoopReadFileOperation(HttpClient client) : base(client, null) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopCreateDirectoryOperation"/> class.
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
         /// </summary>
-        /// <param name="client">The HTTP client.</param>
         /// <param name="path">The path.</param>
         /// <param name="authentication">The authentication.</param>
+        /// <param name="recursive">A value indicating whether the deletion is recursive.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The client is null.
         /// or
@@ -89,7 +88,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        public HadoopCreateDirectoryOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication) : base(client, null, path, authentication) { }
+        public HadoopReadFileOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication) : base(client, null, path, authentication) { }
 
         #endregion
 
@@ -102,10 +101,10 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <returns>The produced operation result.</returns>
         protected async override Task<HadoopFileSystemOperationResult> CreateResultAsync(HttpContent content)
         {
-            return new HadoopBooleanOperationResult
+            return new HadoopFileStreamingOperationResult
             {
-                Request = CompleteRequest,
-                Success = JObject.Parse(await content.ReadAsStringAsync()).Value<Boolean>("boolean")
+                Request = CompleteRequest, 
+                FileStream = await content.ReadAsStreamAsync()
             };
         }
 

@@ -17,6 +17,7 @@ using ELTE.AEGIS.IO.Storage.Authentication;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage.Operation
 {
@@ -97,7 +98,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// Initializes a new instance of the <see cref="HadoopRenameOperation"/> class.
         /// </summary>
         /// <exception cref="System.ArgumentNullException">The client is null.</exception>
-        public HadoopRenameOperation(HttpClient client) : base(client) { }
+        public HadoopRenameOperation(HttpClient client) : base(client, null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopRenameOperation"/> class.
@@ -120,7 +121,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The destination path is empty.
         /// </exception>
         public HadoopRenameOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication, String destination)
-            : base(client, path, authentication)
+            : base(client, null, path, authentication)
         {
             if (destination == null)
                 throw new ArgumentNullException("destination", "The destination path is null.");
@@ -135,16 +136,16 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Protected HadoopFileSystemOperation methods
 
         /// <summary>
-        /// Creates the result for the specified JSON object.
+        /// Creates the result for the specified content asyncronously.
         /// </summary>
-        /// <param name="obj">The content JSON object.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <returns>The produced operation result.</returns>
-        protected override HadoopFileSystemOperationResult CreateResult(JObject obj)
+        protected async override Task<HadoopFileSystemOperationResult> CreateResultAsync(HttpContent content)
         {
             return new HadoopBooleanOperationResult
             {
                 Request = CompleteRequest,
-                Success = obj.Value<Boolean>("boolean")
+                Success = JObject.Parse(await content.ReadAsStringAsync()).Value<Boolean>("boolean")
             };
         }
 

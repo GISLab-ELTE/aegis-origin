@@ -59,9 +59,12 @@
     <Compile Include="Storage\Operation\HadoopFileStatusOperationResult.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Storage\Operation\HadoopFileStreamingOperationResult.cs" />
     <Compile Include="Storage\Operation\HadoopFileSystemOperation.cs" />
     <Compile Include="Storage\Operation\HadoopFileSystemOperationResult.cs" />
+    <Compile Include="Storage\Operation\HadoopReadFileOperation.cs" />
     <Compile Include="Storage\Operation\HadoopRenameOperation.cs" />
+    <Compile Include="Storage\Operation\HadoopWriteFileOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">

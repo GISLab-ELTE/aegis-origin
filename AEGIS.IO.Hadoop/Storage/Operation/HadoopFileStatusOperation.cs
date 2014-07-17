@@ -17,6 +17,7 @@ using ELTE.AEGIS.IO.Storage.Authentication;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage.Operation
 {
@@ -72,7 +73,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// </summary>
         /// <param name="client">The HTTP client.</param>
         /// <exception cref="System.ArgumentNullException">The client is null.</exception>
-        public HadoopFileStatusOperation(HttpClient client) : base(client) { }
+        public HadoopFileStatusOperation(HttpClient client) : base(client, null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopFileStatusOperation"/> class.
@@ -88,30 +89,32 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        public HadoopFileStatusOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication) : base(client, path, authentication) { }
+        public HadoopFileStatusOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication) : base(client, null, path, authentication) { }
 
         #endregion
 
         #region Protected HadoopFileSystemOperation methods
 
         /// <summary>
-        /// Creates the result for the specified JSON object.
+        /// Creates the result for the specified content asyncronously.
         /// </summary>
-        /// <param name="obj">The content JSON object.</param>
+        /// <param name="content">The HTTP content.</param>
         /// <returns>The produced operation result.</returns>
-        protected override HadoopFileSystemOperationResult CreateResult(JObject obj)
+        protected async override Task<HadoopFileSystemOperationResult> CreateResultAsync(HttpContent content)
         {
+            JObject contentObject = JObject.Parse(await content.ReadAsStringAsync()).Value<JObject>("FileStatus");
+
             HadoopFileStatusOperationResult result = new HadoopFileStatusOperationResult
             {
                 Request = CompleteRequest, 
-                Name = obj.Value<JObject>("FileStatus").Value<String>("pathSuffix"),
-                AccessTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(obj.Value<JObject>("FileStatus").Value<Int64>("accessTime") / 1000),
-                ModificationTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(obj.Value<JObject>("FileStatus").Value<Int64>("modificationTime") / 1000),
-                Length = obj.Value<JObject>("FileStatus").Value<Int64>("length"),
-                BlockSize = obj.Value<JObject>("FileStatus").Value<Int64>("blockSize"),
+                Name = contentObject.Value<String>("pathSuffix"),
+                AccessTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(contentObject.Value<Int64>("accessTime") / 1000),
+                ModificationTime = new DateTime(1970, 1, 1) + TimeSpan.FromSeconds(contentObject.Value<Int64>("modificationTime") / 1000),
+                Length = contentObject.Value<Int64>("length"),
+                BlockSize = contentObject.Value<Int64>("blockSize"),
             };
 
-            switch (obj.Value<JObject>("FileStatus").Value<String>("type"))
+            switch (contentObject.Value<String>("type"))
             {
                 case "FILE":
                     result.EntryType = FileSystemEntryType.File;
