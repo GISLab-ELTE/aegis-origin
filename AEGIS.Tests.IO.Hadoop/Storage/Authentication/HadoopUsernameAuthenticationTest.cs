@@ -21,7 +21,7 @@ using System;
 namespace ELTE.AEGIS.Tests.IO.Storage.Authentication
 {
     /// <summary>
-    /// Test fixture for class <see cref="HadoopRemoteException"/>.
+    /// Test fixture for class <see cref="HadoopUsernameAuthentication"/>.
     /// </summary>
     [TestFixture]
     public class HadoopUsernameAuthenticationTest
@@ -32,7 +32,7 @@ namespace ELTE.AEGIS.Tests.IO.Storage.Authentication
         /// Test case for the constructor.
         /// </summary>
         [TestCase]
-        public void UserNameAuthenticationConstructorTest()
+        public void HadoopUserNameAuthenticationConstructorTest()
         { 
             // test case 1: accepted username
 
