@@ -17,6 +17,7 @@ using ELTE.AEGIS.IO.Storage.Authentication;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage.Operation
@@ -26,6 +27,22 @@ namespace ELTE.AEGIS.IO.Storage.Operation
     /// </summary>
     public class HadoopReadFileOperation : HadoopFileSystemOperation
     {
+        #region Public properties
+
+        /// <summary>
+        /// Gets or sets the offset.
+        /// </summary>
+        /// <value>The zero-based byte offset at which the reading from the file begins.</value>
+        public Int64 Offset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the length.
+        /// </summary>
+        /// <value>The number of bytes read from the file. If the length is zero, the entire content of the file will be read.</value>
+        public Int64 Length { get; set; }
+
+        #endregion
+
         #region Protected HadoopFileSystemOperation properties
 
         /// <summary>
@@ -43,7 +60,18 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <value>The request of the operation.</value>
         protected override String OperationRequest
         {
-            get { return "op=OPEN"; }
+            get
+            {
+                StringBuilder requestBuilder = new StringBuilder("op=OPEN");
+
+                if (Offset > 0)
+                    requestBuilder.Append("&offset=" + Offset);
+
+                if (Length > 0)
+                    requestBuilder.Append("&length=" + Length);
+
+                return requestBuilder.ToString();
+            }
         }
 
         #endregion
@@ -56,7 +84,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         public HadoopReadFileOperation() { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="authentication">The authentication.</param>
@@ -66,7 +94,38 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        public HadoopReadFileOperation(String path, IHadoopFileSystemAuthentication authentication) : base(path, authentication) { }
+        public HadoopReadFileOperation(String path, IHadoopFileSystemAuthentication authentication)
+            : base(path, authentication)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation" /> class.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="authentication">The authentication.</param>
+        /// <param name="offset">The zero based byte offset in the file.</param>
+        /// <param name="length">The number of bytes to be read.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The offset is less than 0.
+        /// or
+        /// The length is less than 0.
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The path is null.
+        /// or
+        /// The authentication is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The path is empty.</exception>
+        public HadoopReadFileOperation(String path, IHadoopFileSystemAuthentication authentication, Int64 offset, Int64 length) : base(path, authentication) 
+        {
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset", "The offset is less than 0.");
+            if (length < 0)
+                throw new ArgumentOutOfRangeException("length", "The length is less than 0.");
+
+            Offset = offset;
+            Length = length;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
@@ -79,7 +138,6 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="authentication">The authentication.</param>
-        /// <param name="recursive">A value indicating whether the deletion is recursive.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The client is null.
         /// or
@@ -88,7 +146,41 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// The authentication is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The path is empty.</exception>
-        public HadoopReadFileOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication) : base(client, null, path, authentication) { }
+        public HadoopReadFileOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication)
+            : base(client, null, path, authentication)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HadoopReadFileOperation"/> class.
+        /// </summary>
+        /// <param name="client">The HTTP client.</param>
+        /// <param name="path">The path.</param>
+        /// <param name="authentication">The authentication.</param>
+        /// <param name="offset">The zero based byte offset in the file.</param>
+        /// <param name="length">The number of bytes to be read.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The offset is less than 0.
+        /// or
+        /// The length is less than 0.
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The client is null.
+        /// or
+        /// The path is null.
+        /// or
+        /// The authentication is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The path is empty.</exception>
+        public HadoopReadFileOperation(HttpClient client, String path, IHadoopFileSystemAuthentication authentication, Int64 offset, Int64 length) : base(client, null, path, authentication)
+        {
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException("offset", "The offset is less than 0.");
+            if (length < 0)
+                throw new ArgumentOutOfRangeException("length", "The length is less than 0.");
+
+            Offset = offset;
+            Length = length;
+        }
 
         #endregion
 
