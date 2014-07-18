@@ -23,6 +23,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage
 {
@@ -315,16 +316,86 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperation operation;
 
-                // execute the operation
+                // create operation
                 if (_client != null)
-                    result = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, _authentication);
                 else
-                    result = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, _authentication);
 
+                // execute operation
+                HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
+
+                // process the result
                 if (!(result as HadoopBooleanOperationResult).Success)
-                    throw new ArgumentException(MessagePathNotExists);
+                    throw new ArgumentException(MessagePathNotExists, "path");
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "WebApplicationException":
+                            return; // the directory already exists
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Creates the directory asnychronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to create.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public override async void CreateDirectoryAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                HadoopFileSystemOperation operation;
+
+                // create operation
+                if (_client != null)
+                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                else
+                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, _authentication);
+
+                // execute operation
+                HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
+
+                // process the result
+                if (!(result as HadoopBooleanOperationResult).Success)
+                    throw new ArgumentException(MessagePathNotExists, "path");
             }
             catch (AggregateException ex)
             {
@@ -366,12 +437,41 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Opens a stream on the specified path with read/write access.
+        /// Opens a stream on the specified path.
+        /// </summary>
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
         /// <param name="access">A value that specifies the operations that can be performed on the file.</param>
-        /// <returns>A stream in the specified mode and path, with read/write access.</returns>
+        /// <returns>A stream in the specified mode and path, with the specified access.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The path is a directory.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// or
+        /// The file access is invalid.
+        /// or
+        /// The specified file mode and file access combination is invalid.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">
+        /// The file on path is read-only.
+        /// or
+        /// The caller does not have the required permission for the path.
+        /// </exception>
         /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
         public override Stream OpenFile(String path, FileMode mode, FileAccess access)
         {
             if (path == null)
@@ -383,15 +483,103 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperation operation;
 
-                // execute the operation
-
+                // create operation
                 if (_client != null)
-                    result = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, _authentication);
                 else
-                    result = new HadoopReadFileOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, _authentication);
 
+                // execute operation
+                HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
+
+                // process the result                
+                return (result as HadoopFileStreamingOperationResult).FileStream;
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Opens a stream asyncronously on the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file to open.</param>
+        /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+        /// <param name="access">A value that specifies the operations that can be performed on the file.</param>
+        /// <returns>A stream in the specified mode and path, with the specified access.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The path is a directory.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// or
+        /// The file access is invalid.
+        /// or
+        /// The specified file mode and file access combination is invalid.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">
+        /// The file on path is read-only.
+        /// or
+        /// The caller does not have the required permission for the path.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public override async Task<Stream> OpenFileAsync(String path, FileMode mode, FileAccess access)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            // TODO: process write operations
+
+            try
+            {
+                HadoopFileSystemOperation operation;
+
+                // create operation
+                if (_client != null)
+                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                else
+                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, _authentication);
+
+                // execute operation
+                HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
+
+                // process the result                
                 return (result as HadoopFileStreamingOperationResult).FileStream;
             }
             catch (AggregateException ex)
@@ -447,16 +635,88 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperation operation;
 
-                // execute the operation
+                // create operation
                 if (_client != null)
-                    result = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, _authentication, true).ExecuteAsync().Result;
+                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, _authentication, true);
                 else
-                    result = new HadoopDeleteOperation(Location.ToString() + RootPath + path, _authentication, true).ExecuteAsync().Result;
+                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, _authentication, true);
 
+                // execute operation
+                HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
+
+                // process the result                
                 if (!(result as HadoopBooleanOperationResult).Success)
-                    throw new ArgumentException("The path does not exist.");
+                    throw new ArgumentException(MessagePathNotExists, "path");
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Deletes the filesystem entry located at the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the entry to delete.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The file system entry on the specified path is currently in use.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override void DeleteAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                HadoopFileSystemOperation operation;
+
+                // create operation
+                if (_client != null)
+                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, _authentication, true);
+                else
+                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, _authentication, true);
+
+                // execute operation
+                HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
+
+                // process the result                
+                if (!(result as HadoopBooleanOperationResult).Success)
+                    throw new ArgumentException(MessagePathNotExists, "path");
             }
             catch (AggregateException ex)
             {
@@ -532,16 +792,20 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperation operation;
 
-                // execute the operation
+                // create operation
                 if (_client != null)
-                    result = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, _authentication, destinationPath).ExecuteAsync().Result;
+                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
                 else
-                    result = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, _authentication, destinationPath).ExecuteAsync().Result;
+                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
 
+                // execute operation
+                HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
+
+                // process the result                
                 if (!(result as HadoopBooleanOperationResult).Success)
-                    throw new ArgumentException(MessageSourcePathNotExists, "path");
+                    throw new ArgumentException(MessagePathNotExists, "sourcePath");
             }
             catch (AggregateException ex)
             {
@@ -551,10 +815,99 @@ namespace ELTE.AEGIS.IO.Storage
                     switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
                     {
                         case "IllegalArgumentException":
-                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                            throw new ArgumentException(MessagePathInvalidFormat, "sourcePath", ex);
                         case "FileNotFoundException":
                         case "NotFoundException":
-                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                            throw new ArgumentException(MessagePathNotExists, "sourcePath", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, sourcePath, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        // <summary>
+        /// Moves a filesystem entry asyncronously to a new location.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file or directory to move.</param>
+        /// <param name="destinationPath">The path to the new location for the entry.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source path is null.
+        /// or
+        /// The destination path is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The source path is empty, or consists only of whitespace characters.
+        /// or
+        /// The destination path is empty, or consists only of whitespace characters.
+        /// or
+        /// The source and destination paths are equal.
+        /// or
+        /// The source path does not exist.
+        /// or
+        /// The destination path already exists.
+        /// or
+        /// The source path is in an invalid format.
+        /// or
+        /// The destination path is in an invalid format.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override void MoveAsync(String sourcePath, String destinationPath)
+        {
+            if (sourcePath == null)
+                throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);
+            if (destinationPath == null)
+                throw new ArgumentNullException("destinationPath", MessageDestinationPathIsNull);
+            if (String.IsNullOrWhiteSpace(sourcePath))
+                throw new ArgumentException(MessageSourcePathIsEmpty, "sourcePath");
+            if (String.IsNullOrWhiteSpace(destinationPath))
+                throw new ArgumentException(MessageDestinationPathIsEmpty, "destinationPath");
+
+            if (sourcePath.Equals(destinationPath))
+                throw new ArgumentException(MessageSourceDestinationPathEqual, "destinationPath");
+
+            if (Exists(destinationPath))
+                throw new ArgumentException(MessageDestinationPathExists, "destinationPath");
+
+            try
+            {
+                HadoopFileSystemOperation operation;
+
+                // create operation
+                if (_client != null)
+                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+                else
+                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+
+                // execute operation
+                HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
+
+                // process the result                
+                if (!(result as HadoopBooleanOperationResult).Success)
+                    throw new ArgumentException(MessagePathNotExists, "sourcePath");
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "sourcePath", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "sourcePath", ex);
                         case "SecurityException":
                             throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
                         case "IOException":
@@ -597,13 +950,52 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                return true;
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            return false;
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Asyncronously determines whether the specified path exists.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, otherwise, <c>false</c>.</returns>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<Boolean> ExistsAsync(String path)
+        {
+            if (path == null)
+                return false;
+            if (String.IsNullOrWhiteSpace(path))
+                return false;
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
 
                 return true;
             }
@@ -648,14 +1040,55 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                // process the result
+                return (result as HadoopFileStatusOperationResult).EntryType == FileSystemEntryType.Directory;
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            return false;
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
 
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Asyncronously determines whether the specified path is an existing directory.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, and is a directory, otherwise, <c>false</c>.</returns>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<Boolean> IsDirectoryAsync(String path)
+        {
+            if (path == null)
+                return false;
+            if (String.IsNullOrWhiteSpace(path))
+                return false;
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
+
+                // process the result
                 return (result as HadoopFileStatusOperationResult).EntryType == FileSystemEntryType.Directory;
             }
             catch (AggregateException ex)
@@ -699,15 +1132,55 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                // process the result
+                return (result as HadoopFileStatusOperationResult).EntryType == FileSystemEntryType.File;
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            return false;
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
 
-                // check the result
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Asyncronously determines whether the specified path is an existing file.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, and is a file, otherwise, <c>false</c>.</returns>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<Boolean> IsFileAsync(String path)
+        {
+            if (path == null)
+                return false;
+            if (String.IsNullOrWhiteSpace(path))
+                return false;
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
+
+                // process the result
                 return (result as HadoopFileStatusOperationResult).EntryType == FileSystemEntryType.File;
             }
             catch (AggregateException ex)
@@ -758,8 +1231,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
         /// or
-        /// The path is in an invalid format.
-        /// or
         /// The path does not exist.
         /// </exception>
         /// <exception cref="ConnectionException">
@@ -782,12 +1253,70 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                // the path exists, take the directory part
+                if (path.LastIndexOf(DirectorySeparator) == 0)
+                    return DirectorySeparator.ToString();
                 else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                    return path.Substring(0, path.LastIndexOf(DirectorySeparator));
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            throw new ArgumentException(MessagePathNotExists, "path");
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the path of the parent directory for the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>The string containing the full path to the parent directory.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String> GetParentAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            // in case the root directory is queried, the return value is null
+            if (path.Length == 1 && path[0] == DirectorySeparator)
+                return null;
+
+            path = path.TrimEnd(DirectorySeparator);
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
 
                 // the path exists, take the directory part
                 if (path.LastIndexOf(DirectorySeparator) == 0)
@@ -847,16 +1376,78 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
-
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
                 // the path exists, take the directory part
                 switch ((result as HadoopFileStatusOperationResult).EntryType)
                 { 
+                    case FileSystemEntryType.Directory:
+                        return path;
+                    default:
+                        if (path.LastIndexOf(DirectorySeparator) == 0)
+                            return DirectorySeparator.ToString();
+                        else
+                            return path.Substring(0, path.LastIndexOf(DirectorySeparator));
+                }
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            throw new ArgumentException(MessagePathNotExists, "path");
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the full directory name for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>The full directory name for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String> GetDirectoryAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            if (path.Length > 1)
+                path = path.TrimEnd(DirectorySeparator);
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
+
+                // the path exists, take the directory part
+                switch ((result as HadoopFileStatusOperationResult).EntryType)
+                {
                     case FileSystemEntryType.Directory:
                         return path;
                     default:
@@ -897,9 +1488,12 @@ namespace ELTE.AEGIS.IO.Storage
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
         /// or
-        /// The path is in an invalid format.
-        /// or
         /// The path does not exist.
+        /// </exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
         /// </exception>
         public override String GetFileName(String path)
         {
@@ -910,12 +1504,65 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                // the path exists, take the file part
+                switch ((result as HadoopFileStatusOperationResult).EntryType)
+                {
+                    case FileSystemEntryType.Directory:
+                        return String.Empty;
+                    default:
+                        return path.Substring(path.LastIndexOf(DirectorySeparator));
+                }
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            throw new ArgumentException(MessagePathNotExists, "path");
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the file name and file extension for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The file name and file extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String> GetFileNameAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
 
                 // the path exists, take the file part
                 switch ((result as HadoopFileStatusOperationResult).EntryType)
@@ -968,12 +1615,70 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                HadoopFileSystemOperationResult result = GetFileEntryStatusAsync(path).Result;
 
-                if (_client != null)
-                    result = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
+                // the path exists, take the file part
+                switch ((result as HadoopFileStatusOperationResult).EntryType)
+                {
+                    case FileSystemEntryType.Directory:
+                        return String.Empty;
+                    default:
+                        // take the file name part
+                        String fileName = path.Substring(path.LastIndexOf(DirectorySeparator));
+                        return fileName.Substring(0, fileName.LastIndexOf('.'));
+                }
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                        case "SecurityException":
+                            throw new ArgumentException(MessagePathNotExists, "path");
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the file name without file extension for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The file name without file extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String> GetFileNameWithoutExtensionAsync(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                HadoopFileSystemOperationResult result = await GetFileEntryStatusAsync(path);
 
                 // the path exists, take the file part
                 switch ((result as HadoopFileStatusOperationResult).EntryType)
@@ -1047,47 +1752,12 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                List<HadoopFileStatusOperationResult> result = GetFileEntryStatusListAsync(path, searchPattern, recursive).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileListingOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-
-                // correct the path
-                if (path.Last() != DirectorySeparator)
-                    path += DirectorySeparator;
-
-                // filter and convert the result
-                List<String> pathList = (result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => path + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)).ToList();
-
-                // in case of recursive listing, all subdirectories need to be listed
-                if (recursive)
-                {
-                    // enqueue the starting directories
-                    Queue<String> directories = new Queue<String>((result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => path + fileResult.Name));
-
-                    while (directories.Count > 0)
-                    {
-                        String directoryPath = directories.Dequeue();
-
-                        // execute the operation on the internal directory
-                        if (_client != null)
-                            result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-                        else
-                            result = new HadoopFileListingOperation(Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-
-
-                        pathList.AddRange((result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)));
-
-                        foreach (String innerDirectory in (result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name))
-                            directories.Enqueue(innerDirectory);
-                    }
-                }
-
-                // sort the result
-                return pathList.OrderBy(pathItem => pathItem).ToArray();
+                // filter, convert and sort the result
+                return result.Where(fileStatusResult => fileStatusResult.EntryType == FileSystemEntryType.Directory).
+                              Select(fileStatusResult => fileStatusResult.Path).
+                              OrderBy(resultPath => resultPath).ToArray();
             }
             catch (AggregateException ex)
             {
@@ -1113,6 +1783,72 @@ namespace ELTE.AEGIS.IO.Storage
                     throw ex.InnerException;
                 }
                 
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the directories located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all directories.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String[]> GetDirectoriesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                List<HadoopFileStatusOperationResult> result = await GetFileEntryStatusListAsync(path, searchPattern, recursive);
+
+                // filter, convert and sort the result
+                return result.Where(fileStatusResult => fileStatusResult.EntryType == FileSystemEntryType.Directory).
+                              Select(fileStatusResult => fileStatusResult.Path).
+                              OrderBy(resultPath => resultPath).ToArray();
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+                // handle the search pattern match exception
+                else if (ex.InnerException is ArgumentException)
+                {
+                    throw ex.InnerException;
+                }
+
                 // handle unexpected exceptions
                 throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
             }
@@ -1148,47 +1884,78 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                List<HadoopFileStatusOperationResult> result = GetFileEntryStatusListAsync(path, searchPattern, recursive).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileListingOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-
-                // correct the path
-                if (path.Last() != DirectorySeparator)
-                    path += DirectorySeparator;
-
-                // filter and convert the result
-                List<String> pathList = (result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.File).Select(fileResult => path + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)).ToList();
-
-                // in case of recursive listing, all subdirectories need to be listed
-                if (recursive)
+                // filter, convert and sort the result
+                return result.Where(fileStatusResult => fileStatusResult.EntryType == FileSystemEntryType.File).
+                              Select(fileStatusResult => fileStatusResult.Path).
+                              OrderBy(resultPath => resultPath).ToArray();
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
                 {
-                    // enqueue the starting directories
-                    Queue<String> directories = new Queue<String>((result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => path + fileResult.Name));
-
-                    while (directories.Count > 0)
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
                     {
-                        String directoryPath = directories.Dequeue();
-
-                        // execute the operation on the internal directory
-                        if (_client != null)
-                            result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-                        else
-                            result = new HadoopFileListingOperation(Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-
-
-                        pathList.AddRange((result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.File).Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)));
-
-                        foreach (String innerDirectory in (result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name))
-                            directories.Enqueue(innerDirectory);
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
                     }
                 }
+                // handle the search pattern match exception
+                else if (ex.InnerException is ArgumentException)
+                {
+                    throw ex.InnerException;
+                }
 
-                // sort the result
-                return pathList.OrderBy(pathItem => pathItem).ToArray();
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Returns the files located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all files.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String[]> GetFilesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                List<HadoopFileStatusOperationResult> result = await GetFileEntryStatusListAsync(path, searchPattern, recursive);
+
+                // filter, convert and sort the result
+                return result.Where(fileStatusResult => fileStatusResult.EntryType == FileSystemEntryType.File).
+                              Select(fileStatusResult => fileStatusResult.Path).
+                              OrderBy(resultPath => resultPath).ToArray();
             }
             catch (AggregateException ex)
             {
@@ -1249,47 +2016,10 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                HadoopFileSystemOperationResult result;
+                List<HadoopFileStatusOperationResult> result = GetFileEntryStatusListAsync(path, searchPattern, recursive).Result;
 
-                // execute the operation
-                if (_client != null)
-                    result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-                else
-                    result = new HadoopFileListingOperation(Location.ToString() + RootPath + path, _authentication).ExecuteAsync().Result;
-
-                // correct the path
-                if (path.Last() != DirectorySeparator)
-                    path += DirectorySeparator;
-
-                // filter and convert the result
-                List<String> pathList = (result as HadoopFileListingOperationResult).StatusList.Select(fileResult => path + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)).ToList();
-
-                // in case of recursive listing, all subdirectories need to be listed
-                if (recursive)
-                {
-                    // enqueue the starting directories
-                    Queue<String> directories = new Queue<String>((result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => path + fileResult.Name));
-
-                    while (directories.Count > 0)
-                    {
-                        String directoryPath = directories.Dequeue();
-
-                        // execute the operation on the internal directory
-                        if (_client != null)
-                            result = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-                        else
-                            result = new HadoopFileListingOperation(Location.ToString() + RootPath + directoryPath, _authentication).ExecuteAsync().Result;
-
-
-                        pathList.AddRange((result as HadoopFileListingOperationResult).StatusList.Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name).Where(pathItem => IsMatch(pathItem, searchPattern)));
-
-                        foreach (String innerDirectory in (result as HadoopFileListingOperationResult).StatusList.Where(fileResult => fileResult.EntryType == FileSystemEntryType.Directory).Select(fileResult => directoryPath + DirectorySeparator + fileResult.Name))
-                            directories.Enqueue(innerDirectory);
-                    }
-                }
-
-                // filter and sort the result
-                return pathList.OrderBy(pathItem => pathItem).ToArray();
+                // convert and sort the result
+                return result.Select(fileStatusResult => fileStatusResult.Path).OrderBy(resultPath => resultPath).ToArray();
             }
             catch (AggregateException ex)
             {
@@ -1318,6 +2048,167 @@ namespace ELTE.AEGIS.IO.Storage
                 // handle unexpected exceptions
                 throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
             }
+        }
+
+        /// <summary>
+        /// Returns the file system entries located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async override Task<String[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                List<HadoopFileStatusOperationResult> result = await GetFileEntryStatusListAsync(path, searchPattern, recursive);
+
+                // convert and sort the result
+                return result.Select(fileStatusResult => fileStatusResult.Path).OrderBy(resultPath => resultPath).ToArray();
+            }
+            catch (AggregateException ex)
+            {
+                // handle remote file system exceptions
+                if (ex.InnerException is HadoopRemoteException)
+                {
+                    switch ((ex.InnerException as HadoopRemoteException).ExceptionName)
+                    {
+                        case "IllegalArgumentException":
+                            throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+                        case "FileNotFoundException":
+                        case "NotFoundException":
+                            throw new ArgumentException(MessagePathNotExists, "path", ex);
+                        case "SecurityException":
+                            throw new UnauthorizedAccessException(MessagePathUnauthorized, ex);
+                        case "IOException":
+                            throw new ConnectionException(MessageNoConnectionToPath, path, ex);
+                    }
+                }
+                // handle the search pattern match exception
+                else if (ex.InnerException is ArgumentException)
+                {
+                    throw ex.InnerException;
+                }
+
+                // handle unexpected exceptions
+                throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Returns the file status for the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The file status for the specified path.</returns>
+        private async Task<HadoopFileStatusOperationResult> GetFileEntryStatusAsync(String path)
+        {
+            HadoopFileSystemOperation operation;
+
+            // create operation
+            if (_client != null)
+                operation = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication);
+            else
+                operation = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication);
+
+            // execute operation
+            return (await operation.ExecuteAsync()) as HadoopFileStatusOperationResult;
+        }
+
+        /// <summary>
+        ///  Returns the file status list for the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The file status list for the specified path.</returns>
+        private async Task<List<HadoopFileStatusOperationResult>> GetFileEntryStatusListAsync(String path, String searchPattern, Boolean recursive)
+        {
+            HadoopFileSystemOperation operation;
+
+            // create operation
+            if (_client != null)
+                operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, _authentication);
+            else
+                operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path, _authentication);
+
+            // execute operation
+            HadoopFileListingOperationResult result = (await operation.ExecuteAsync()) as HadoopFileListingOperationResult;
+
+            // correct the path
+            if (path.Last() != DirectorySeparator)
+                path += DirectorySeparator;
+
+            // filter the result
+            List<HadoopFileStatusOperationResult> statusList = (result as HadoopFileListingOperationResult).StatusList.
+                                                                   Select(status => { status.Path = path + status.Name; return status; }).
+                                                                   Where(status => IsMatch(status.Path, searchPattern)).ToList();
+
+            // in case of recursive listing, all subdirectories need to be listed
+            if (recursive)
+            {
+                // enqueue the starting directories
+                Queue<String> directories = new Queue<String>((result as HadoopFileListingOperationResult).StatusList.
+                                                                  Where(status => status.EntryType == FileSystemEntryType.Directory).
+                                                                  Select(status => path + status.Name));
+
+                while (directories.Count > 0)
+                {
+                    String directoryPath = directories.Dequeue();
+
+
+                    // create operation for the inner directory
+                    if (_client != null)
+                        operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + directoryPath, _authentication);
+                    else
+                        operation = new HadoopFileListingOperation(Location.ToString() + RootPath + directoryPath, _authentication);
+
+                    try
+                    {
+                        // execute operation for inner directory
+                        result = (await operation.ExecuteAsync()) as HadoopFileListingOperationResult;
+                    }
+                    catch (HadoopRemoteException)
+                    {
+                        // in case of any error, the reading should continue with the next directory
+                        continue;
+                    }
+
+                    // filter the result
+                    statusList.AddRange((result as HadoopFileListingOperationResult).StatusList.
+                                            Select(status => { status.Path = directoryPath + DirectorySeparator + status.Name; return status; }).
+                                            Where(status => IsMatch(status.Path, searchPattern)));
+
+                    // add inner directories to the queue
+                    foreach (String innerDirectory in (result as HadoopFileListingOperationResult).StatusList.
+                                                          Where(status => status.EntryType == FileSystemEntryType.Directory).
+                                                          Select(status => directoryPath + DirectorySeparator + status.Name))
+                        directories.Enqueue(innerDirectory);
+                }
+            }
+
+            // filter and sort the result
+            return statusList;
         }
 
         #endregion

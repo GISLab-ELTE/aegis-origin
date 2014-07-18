@@ -143,13 +143,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
                 Assert.Inconclusive();
 
 
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.CreateDirectory(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.CreateDirectory(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.CreateDirectory("InvalidPath"));
-
-
             // new directory
 
             Assert.IsFalse(fileSystem.Exists(_directoryPath));
@@ -183,6 +176,13 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             Assert.IsTrue(fileSystem.Exists(_directoryPath + "/InternalDirectory"));
 
             fileSystem.Delete(_directoryPath);
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.CreateDirectory(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.CreateDirectory(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.CreateDirectory("InvalidPath"));
         }
 
         /// <summary>
@@ -222,14 +222,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
                 Assert.Inconclusive();
 
 
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.Delete(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.Delete(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.Delete("InvalidPath"));
-            Assert.Throws<ArgumentException>(() => fileSystem.Delete("/NotExistingPath"));
-
-
             // existing path
 
             fileSystem.CreateDirectory(_directoryPath);
@@ -241,6 +233,14 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
             Assert.IsFalse(fileSystem.Exists(_directoryPath));
             Assert.IsFalse(fileSystem.IsDirectory(_directoryPath));
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.Delete(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.Delete(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.Delete("InvalidPath"));
+            Assert.Throws<ArgumentException>(() => fileSystem.Delete("/NotExistingPath"));
         }
 
         /// <summary>
@@ -251,16 +251,17 @@ namespace ELTE.AEGIS.Tests.IO.Storage
         {
             HadoopFileSystem fileSystem = new HadoopFileSystem(_hostname, _portNumber, _authentication);
 
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectoryRoot(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectoryRoot(String.Empty));
-
 
             // valid parameters 
 
             Assert.AreEqual("/", fileSystem.GetDirectoryRoot("/"));
             Assert.AreEqual("/", fileSystem.GetDirectoryRoot(_directoryPath));
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectoryRoot(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectoryRoot(String.Empty));
         }
 
         /// <summary>
@@ -275,14 +276,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
                 Assert.Inconclusive();
 
 
-            // exceptions
-            
-            Assert.Throws<ArgumentNullException>(() => fileSystem.GetParent(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetParent(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetParent(":"));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetParent("/NotExistingPath/"));
-            
-
             // valid parameters
 
             fileSystem.CreateDirectory(_directoryPath);
@@ -295,6 +288,14 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             Assert.AreEqual(_directoryPath, fileSystem.GetParent(_directoryPath + "/InternalDirectory/"));
 
             fileSystem.Delete(_directoryPath);
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.GetParent(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetParent(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetParent(":"));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetParent("/NotExistingPath/"));            
         }
 
         /// <summary>
@@ -309,14 +310,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
                 Assert.Inconclusive();
 
 
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectory(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory(":"));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory("/NotExistingPath/"));
-
-
             // valid parameters
 
             fileSystem.CreateDirectory(_directoryPath);
@@ -328,6 +321,14 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             Assert.AreEqual(_directoryPath + "/InternalDirectory", fileSystem.GetDirectory(_directoryPath + "/InternalDirectory"));
 
             fileSystem.Delete(_directoryPath);
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectory(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory(":"));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectory("/NotExistingPath/"));
         }
 
         /// <summary>
@@ -352,14 +353,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
             if (!fileSystem.IsConnected)
                 Assert.Inconclusive();
-
-
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectories(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories(":"));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories("/NotExistingPath/"));
 
 
             // empty directory
@@ -405,6 +398,14 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
 
             fileSystem.Delete(_directoryPath);
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.GetDirectories(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories(":"));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetDirectories("/NotExistingPath/"));
         }
 
         /// <summary>
@@ -417,14 +418,6 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
             if (!fileSystem.IsConnected)
                 Assert.Inconclusive();
-
-
-            // exceptions
-
-            Assert.Throws<ArgumentNullException>(() => fileSystem.GetFileSystemEntries(null));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries(String.Empty));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries(":"));
-            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries("/NotExistingPath/"));
 
 
             // empty directory
@@ -469,6 +462,15 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
 
             fileSystem.Delete(_directoryPath);
+
+
+            // exceptions
+
+            Assert.Throws<ArgumentNullException>(() => fileSystem.GetFileSystemEntries(null));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries(String.Empty));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries(":"));
+            Assert.Throws<ArgumentException>(() => fileSystem.GetFileSystemEntries("/NotExistingPath/"));
+
         }
         
         #endregion
