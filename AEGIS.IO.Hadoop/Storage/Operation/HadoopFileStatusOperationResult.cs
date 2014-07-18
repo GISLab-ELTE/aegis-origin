@@ -25,6 +25,13 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Public properties
 
         /// <summary>
+        /// Gets the path of the entry.
+        /// </summary>
+        /// <value>The full path of the entry.</value>
+
+        public String Path { get; set; }
+
+        /// <summary>
         /// Gets the name of the entry.
         /// </summary>
         /// <value>The name of the entry.</value>
@@ -73,15 +80,17 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// Initializes a new instance of the <see cref="HadoopBooleanOperationResult" /> class.
         /// </summary>
         /// <param name="request">The request of the operation.</param>
+        /// <param name="path">The path of the entry.</param>
         /// <param name="name">The name of the entry.</param>
         /// <param name="accessTime">The time of the last access.</param>
         /// <param name="modificationTime">The time of the last modification.</param>
         /// <param name="length">The length of the file.</param>
         /// <param name="blockSize">The size of the block.</param>
         /// <param name="entryType">the type of the entry.</param>
-        public HadoopFileStatusOperationResult(String request, String name, DateTime accessTime, DateTime modificationTime, Int64 length, Int64 blockSize, FileSystemEntryType entryType)
+        public HadoopFileStatusOperationResult(String request, String path, String name, DateTime accessTime, DateTime modificationTime, Int64 length, Int64 blockSize, FileSystemEntryType entryType)
             : base(request) 
         {
+            Path = path;
             Name = name;
             AccessTime = accessTime;
             ModificationTime = modificationTime;
