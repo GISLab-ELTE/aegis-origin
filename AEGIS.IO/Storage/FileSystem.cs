@@ -710,9 +710,9 @@ namespace ELTE.AEGIS.IO.Storage
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.
+        /// The source path is empty, or consists only of whitespace characters.
         /// or
-        /// The destination path is empty.
+        /// The destination path is empty, or consists only of whitespace characters.
         /// or
         /// The source and destination paths are equal.
         /// or
@@ -785,9 +785,9 @@ namespace ELTE.AEGIS.IO.Storage
         /// The destination path is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The source path is empty.
+        /// The source path is empty, or consists only of whitespace characters.
         /// or
-        /// The destination path is empty.
+        /// The destination path is empty, or consists only of whitespace characters.
         /// or
         /// The source and destination paths are equal.
         /// or
