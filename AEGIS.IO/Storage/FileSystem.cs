@@ -15,6 +15,7 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage
 {
@@ -332,6 +333,32 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void CreateDirectory(String path);
 
         /// <summary>
+        /// Creates the directory asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to create.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The specified path is a file.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public virtual async void CreateDirectoryAsync(String path)
+        {
+            await Task.Run(() => CreateDirectory(path));
+        }
+
+        /// <summary>
         /// Creates or overwrites a file on the specified path.
         /// </summary>
         /// <param name="path">The path of a file to create.</param>
@@ -359,6 +386,33 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
+        /// Creates or overwrites a file on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file to create.</param>
+        /// <returns>A stream that provides read/write access to the file specified in path.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path already exists.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async Task<Stream> CreateFileAsync(String path)
+        {
+            return await CreateFileAsync(path, true);
+        }
+
+        /// <summary>
         /// Creates or overwrites a file on the specified path.
         /// </summary>
         /// <param name="path">The path of a file to create.</param>
@@ -380,6 +434,32 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract Stream CreateFile(String path, Boolean overwrite);
+
+        /// <summary>
+        /// Creates or overwrites a file asyncronously on the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file to create.</param>
+        /// <param name="overwrite">A value that specifies whether the file should be overwritten in case it exists.</param>
+        /// <returns>A stream that provides read/write access to the file specified in path.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public virtual async Task<Stream> CreateFileAsync(String path, Boolean overwrite)
+        {
+            return await Task.Run(() => CreateFile(path, overwrite));
+        }
 
         /// <summary>
         /// Opens a stream on the specified path with read/write access.
@@ -414,6 +494,41 @@ namespace ELTE.AEGIS.IO.Storage
         public Stream OpenFile(String path, FileMode mode)
         {
             return OpenFile(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite);
+        }
+
+        /// <summary>
+        /// Opens a stream asyncronously on the specified path with read/write access.
+        /// <param name="path">The path of a file to open.</param>
+        /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+        /// <returns>A stream in the specified mode and path, with read/write access.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The path is a directory.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">
+        /// The file on path is read-only.
+        /// or
+        /// The caller does not have the required permission for the path.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async Task<Stream> OpenFileAsync(String path, FileMode mode)
+        {
+            return await OpenFileAsync(path, mode, FileAccess.ReadWrite);
         }
 
         /// <summary>
@@ -455,6 +570,47 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract Stream OpenFile(String path, FileMode mode, FileAccess access);
 
         /// <summary>
+        /// Opens a stream asyncronously on the specified path.
+        /// </summary>
+        /// <param name="path">The path of a file to open.</param>
+        /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+        /// <param name="access">A value that specifies the operations that can be performed on the file.</param>
+        /// <returns>A stream in the specified mode and path, with the specified access.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The path is a directory.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The file mode is invalid.
+        /// or
+        /// The file access is invalid.
+        /// or
+        /// The specified file mode and file access combination is invalid.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">
+        /// The file on path is read-only.
+        /// or
+        /// The caller does not have the required permission for the path.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public virtual async Task<Stream> OpenFileAsync(String path, FileMode mode, FileAccess access)
+        {
+            return await Task.Run(() => OpenFile(path, mode, access));
+        }
+
+        /// <summary>
         /// Deletes the filesystem entry located at the specified path.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
@@ -478,6 +634,34 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract void Delete(String path);
+
+        /// <summary>
+        /// Deletes the filesystem entry located at the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the entry to delete.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The file system entry on the specified path is currently in use.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual void DeleteAsync(String path)
+        {
+            await Task.Run(() => Delete(path));
+        }
 
         /// <summary>
         /// Moves a filesystem entry to a new location.
@@ -516,6 +700,45 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void Move(String sourcePath, String destinationPath);
 
         /// <summary>
+        /// Moves a filesystem entry asyncronously to a new location.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file or directory to move.</param>
+        /// <param name="destinationPath">The path to the new location for the entry.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source path is null.
+        /// or
+        /// The destination path is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The source path is empty.
+        /// or
+        /// The destination path is empty.
+        /// or
+        /// The source and destination paths are equal.
+        /// or
+        /// The source path does not exist.
+        /// or
+        /// The destination path already exists.
+        /// or
+        /// The source path is in an invalid format.
+        /// or
+        /// The destination path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual void MoveAsync(String sourcePath, String destinationPath)
+        {
+            await Task.Run(() => Move(sourcePath, destinationPath));
+        }
+
+        /// <summary>
         /// Copies an existing filesystem entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
@@ -552,6 +775,45 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void Copy(String sourcePath, String destinationPath);
 
         /// <summary>
+        /// Copies an existing filesystem entry asyncronously to a new location.
+        /// </summary>
+        /// <param name="sourcePath">The source path.</param>
+        /// <param name="destinationPath">The destination path.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source path is null.
+        /// or
+        /// The destination path is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The source path is empty.
+        /// or
+        /// The destination path is empty.
+        /// or
+        /// The source and destination paths are equal.
+        /// or
+        /// The source path does not exist.
+        /// or
+        /// The destination path already exists.
+        /// or
+        /// The source path is in an invalid format.
+        /// or
+        /// The destination path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for either the source or the destination path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual void CopyAsync(String sourcePath, String destinationPath)
+        {
+            await Task.Run(() => Copy(sourcePath, destinationPath));
+        }
+
+        /// <summary>
         /// Determines whether the specified path exists.
         /// </summary>
         /// <param name="path">The path to check.</param>
@@ -563,6 +825,22 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract Boolean Exists(String path);
+
+        /// <summary>
+        /// Asyncronously determines whether the specified path exists.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<Boolean> ExistsAsync(String path)
+        {
+            return await Task.Run(() => Exists(path));
+        }
 
         /// <summary>
         /// Determines whether the specified path is an existing directory.
@@ -578,6 +856,22 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract Boolean IsDirectory(String path);
 
         /// <summary>
+        /// Asyncronously determines whether the specified path is an existing directory.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, and is a directory, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<Boolean> IsDirectoryAsync(String path)
+        {
+            return await Task.Run(() => IsDirectory(path));
+        }
+
+        /// <summary>
         /// Determines whether the specified path is an existing file.
         /// </summary>
         /// <param name="path">The path to check.</param>
@@ -589,6 +883,22 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract Boolean IsFile(String path);
+
+        /// <summary>
+        /// Asyncronously determines whether the specified path is an existing file.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path exists, and is a file, otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<Boolean> IsFileAsync(String path)
+        {
+            return await Task.Run(() => IsFile(path));
+        }
 
         /// <summary>
         /// Returns the root information for the specified path.
@@ -611,6 +921,31 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract String GetDirectoryRoot(String path);
+
+        /// <summary>
+        /// Returns the root information for the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>A string containing the root information.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The source path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetDirectoryRootAsync(String path)
+        {
+            return await Task.Run(() => GetDirectoryRoot(path));
+        }
 
         /// <summary>
         /// Returns the path of the parent directory for the specified path.
@@ -637,6 +972,33 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetParent(String path);
 
         /// <summary>
+        /// Returns the path of the parent directory for the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>The string containing the full path to the parent directory.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetParentAsync(String path)
+        {
+            return await Task.Run(() => GetParent(path));
+        }
+
+        /// <summary>
         /// Returns the full directory name for a specified path.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
@@ -660,6 +1022,32 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetDirectory(String path);
 
         /// <summary>
+        /// Returns the full directory name for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file or directory.</param>
+        /// <returns>The full directory name for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetDirectoryAsync(String path)
+        {
+            return await Task.Run(() => GetDirectory(path));
+        }
+
+        /// <summary>
         /// Returns the file name and file extension for a specified path.
         /// </summary>
         /// <param name="path">The path of a file.</param>
@@ -679,6 +1067,30 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract String GetFileName(String path);
+
+        /// <summary>
+        /// Returns the file name and file extension for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The file name and file extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetFileNameAsync(String path)
+        {
+            return await Task.Run(() => GetFileName(path));
+        }
 
         /// <summary>
         /// Returns the file name without file extension for a specified path.
@@ -702,6 +1114,30 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetFileNameWithoutExtension(String path);
 
         /// <summary>
+        /// Returns the file name without file extension for a specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The file name without file extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetFileNameWithoutExtensionAsync(String path)
+        {
+            return await Task.Run(() => GetFileNameWithoutExtension(path));
+        }
+
+        /// <summary>
         /// Returns the path to the root directories of the file system.
         /// </summary>
         /// <returns>The array containing the path to the root directories in the file system.</returns>
@@ -713,6 +1149,22 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract String[] GetRootDirectories();
+
+        /// <summary>
+        /// Returns the path to the root directories of the file system asyncronously.
+        /// </summary>
+        /// <returns>The array containing the path to the root directories in the file system.</returns>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String[]> GetRootDirectoriesAsync()
+        {
+            return await Task.Run(() => GetRootDirectories());
+        }
 
         /// <summary>
         /// Returns the directories located on the specified path.
@@ -741,6 +1193,35 @@ namespace ELTE.AEGIS.IO.Storage
         public String[] GetDirectories(String path)
         {
             return GetDirectories(path, "*", false);
+        }
+
+        /// <summary>
+        /// Returns the directories located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <returns>An array containing the full paths to all directories.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async Task<String[]> GetDirectoriesAsync(String path)
+        {
+            return await GetDirectoriesAsync(path, "*", false);
         }
 
         /// <summary>
@@ -774,6 +1255,39 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetDirectories(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
+        /// Returns the directories located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all directories.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String[]> GetDirectoriesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            return await Task.Run(() => GetDirectories(path));
+        }
+
+        /// <summary>
         /// Returns the files located on the specified path.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
@@ -800,6 +1314,35 @@ namespace ELTE.AEGIS.IO.Storage
         public String[] GetFiles(String path)
         {
             return GetFiles(path, "*", false);
+        }
+
+        /// <summary>
+        /// Returns the files located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <returns>An array containing the full paths to all files.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async Task<String[]> GetFilesAsync(String path)
+        {
+            return await GetFilesAsync(path, "*", false);
         }
 
         /// <summary>
@@ -833,6 +1376,39 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetFiles(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
+        /// Returns the files located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all files.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String[]> GetFilesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            return await Task.Run(() => GetFiles(path));
+        }
+
+        /// <summary>
         /// Returns the file system entries located on the specified path.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
@@ -859,6 +1435,35 @@ namespace ELTE.AEGIS.IO.Storage
         public String[] GetFileSystemEntries(String path)
         {
             return GetFileSystemEntries(path, "*", false);
+        }
+
+        /// <summary>
+        /// Returns the file system entries located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async Task<String[]> GetFileSystemEntriesAsync(String path)
+        {
+            return await GetFileSystemEntriesAsync(path, "*", false);
         }
 
         /// <summary>
@@ -890,6 +1495,39 @@ namespace ELTE.AEGIS.IO.Storage
         /// No connection is available to the file system.
         /// </exception>
         public abstract String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive);
+
+        /// <summary>
+        /// Returns the file system entries located on the specified path asyncronously.
+        /// </summary>
+        /// <param name="path">The path of the directory to search.</param>
+        /// <param name="searchPattern">The search string to match against the names of files in path.</param>
+        /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
+        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path exceeds the maximum length supported by the file system.
+        /// or
+        /// The path does not exist.
+        /// or
+        /// The specified path is a file.
+        /// or
+        /// The search pattern is an invalid format.
+        /// </exception>
+        /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
+        {
+            return await Task.Run(() => GetFileSystemEntries(path));
+        }
 
         #endregion
     }
