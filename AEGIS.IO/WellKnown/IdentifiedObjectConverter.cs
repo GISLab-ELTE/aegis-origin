@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -500,7 +500,7 @@ namespace ELTE.AEGIS.IO.WellKnown
                     String linearUnitText = text.Substring(6, text.Length - 7);
                     UnitOfMeasurement linearUnit = ComputeLinearUnit(linearUnitText);
 
-                    coordinateSystem = new CoordinateSystem(CoordinateSystem.GenerateRandomIdentifier(), "User-defined", 
+                    coordinateSystem = new CoordinateSystem(CoordinateSystem.UserDefinedIdentifier, CoordinateSystem.UserDefinedName, 
                                                             CoordinateSystemType.Ellipsoidal,
                                                             CoordinateSystemAxisFactory.GeodeticLatitude(angularUnit),
                                                             CoordinateSystemAxisFactory.GeodeticLongitude(angularUnit),
@@ -519,13 +519,13 @@ namespace ELTE.AEGIS.IO.WellKnown
                             return referenceSystem;
                     }
 
-                    coordinateSystem = new CoordinateSystem(CoordinateSystem.GenerateRandomIdentifier(), "User-defined", 
+                    coordinateSystem = new CoordinateSystem(CoordinateSystem.UserDefinedIdentifier, CoordinateSystem.UserDefinedName, 
                                                             CoordinateSystemType.Ellipsoidal,
                                                             CoordinateSystemAxisFactory.GeodeticLatitude(angularUnit),
                                                             CoordinateSystemAxisFactory.GeodeticLongitude(angularUnit));
                 }
 
-                return new GeographicCoordinateReferenceSystem(CoordinateSystem.GenerateRandomIdentifier(), referenceSystemName, coordinateSystem, datum, AreasOfUse.World);
+                return new GeographicCoordinateReferenceSystem(GeographicCoordinateReferenceSystem.UserDefinedIdentifier, referenceSystemName, coordinateSystem, datum, AreasOfUse.World);
             }
             catch
             {
@@ -626,11 +626,12 @@ namespace ELTE.AEGIS.IO.WellKnown
                 Int32 unitBracketCloseIndex = FindClosingBracket(referenceSystemText, 5, delim);
                 UnitOfMeasurement linearUnit = ComputeLinearUnit(referenceSystemText.Substring(6, unitBracketCloseIndex - 6));
 
-                CoordinateSystem coordinateSystem = new CoordinateSystem(CoordinateSystem.GenerateRandomIdentifier(), CoordinateSystemType.Cartesian,
+                CoordinateSystem coordinateSystem = new CoordinateSystem(CoordinateSystem.UserDefinedIdentifier, CoordinateSystem.UserDefinedName,
+                                                                         CoordinateSystemType.Cartesian,
                                                                          CoordinateSystemAxisFactory.Easting(linearUnit),
                                                                          CoordinateSystemAxisFactory.Northing(linearUnit));
 
-                return new ProjectedCoordinateReferenceSystem(ProjectedCoordinateReferenceSystem.GenerateRandomIdentifier(), referenceSystemName, geographicReferenceSystem,
+                return new ProjectedCoordinateReferenceSystem(ProjectedCoordinateReferenceSystem.UserDefinedIdentifier, referenceSystemName, geographicReferenceSystem,
                                                               coordinateSystem, AreasOfUse.World, projection);
             }
             catch
@@ -673,7 +674,7 @@ namespace ELTE.AEGIS.IO.WellKnown
                 String unitName = Regex.Replace(splitText[0].Trim('"'), "_", " ");
                 Double baseMultiple = Double.Parse(splitText[1], CultureInfo.InvariantCulture);
     
-                return new UnitOfMeasurement(UnitOfMeasurement.GenerateRandomIdentifier(), unitName, null, baseMultiple, unitQuantityType);
+                return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, unitName, null, baseMultiple, unitQuantityType);
             }
             catch
             {
@@ -706,7 +707,7 @@ namespace ELTE.AEGIS.IO.WellKnown
 
                 Double longitude = Double.Parse(longitudeString, CultureInfo.InvariantCulture);
 
-                return new Meridian(Meridian.GenerateRandomIdentifier(), meridianName, Angle.FromRadian(longitude));
+                return new Meridian(Meridian.UserDefinedIdentifier, meridianName, Angle.FromRadian(longitude));
             }
             catch
             {
@@ -750,7 +751,7 @@ namespace ELTE.AEGIS.IO.WellKnown
                 else
                     throw new InvalidDataException("Invalid geodetic datum text.");
 
-                return new GeodeticDatum(GeodeticDatum.GenerateRandomIdentifier(), datumName, null, null, AreasOfUse.World, ComputeEllipsoid(ellipsoidText), null);
+                return new GeodeticDatum(GeodeticDatum.UserDefinedIdentifier, datumName, null, null, AreasOfUse.World, ComputeEllipsoid(ellipsoidText), null);
             }
             catch (InvalidDataException)
             {

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -402,11 +402,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 GeodeticDatum datum = ComputeGeodeticDatum();
                 UnitOfMeasurement angleUnit = ComputeAngularUnit();
 
-                CoordinateSystem coordinateSystem = new CoordinateSystem(CoordinateSystem.GenerateRandomIdentifier(), "User-defined", CoordinateSystemType.Ellipsoidal,
+                CoordinateSystem coordinateSystem = new CoordinateSystem(CoordinateSystem.UserDefinedIdentifier, CoordinateSystem.UserDefinedName, 
+                                                                         CoordinateSystemType.Ellipsoidal,
                                                                          CoordinateSystemAxisFactory.GeodeticLatitude(angleUnit),
                                                                          CoordinateSystemAxisFactory.GeodeticLongitude(angleUnit));
 
-                return new GeographicCoordinateReferenceSystem(GeographicCoordinateReferenceSystem.GenerateRandomIdentifier(), "Used-defined", citation, null, null, coordinateSystem, datum, null);
+                return new GeographicCoordinateReferenceSystem(GeographicCoordinateReferenceSystem.UserDefinedIdentifier, GeographicCoordinateReferenceSystem.UserDefinedName, 
+                                                               citation, null, null, coordinateSystem, datum, null);
             }
 
             throw new InvalidDataException("Geographic coordinate reference system code is invalid.");
@@ -429,7 +431,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 Ellipsoid ellipsoid = ComputeEllipsoid();
                 Meridian primeMeridian = ComputePrimeMeridian();
 
-                return new GeodeticDatum(GeodeticDatum.GenerateRandomIdentifier(), "User-defined", null, null, null, ellipsoid, primeMeridian);
+                return new GeodeticDatum(GeodeticDatum.UserDefinedIdentifier, GeodeticDatum.UserDefinedName, null, null, null, ellipsoid, primeMeridian);
             }
 
             throw new InvalidDataException("Geodetic datum code is invalid.");
@@ -455,12 +457,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 if (_currentGeoKeys.ContainsKey(2058))
                 {
                     Double semiMinorAxis = Convert.ToDouble(_currentGeoKeys[2058]);
-                    return Ellipsoid.FromSemiMinorAxis(Ellipsoid.GenerateRandomIdentifier(), "User-defined", semiMajorAxis, semiMinorAxis);
+                    return Ellipsoid.FromSemiMinorAxis(Ellipsoid.UserDefinedIdentifier, Ellipsoid.UserDefinedName, semiMajorAxis, semiMinorAxis);
                 }
                 else
                 {
                     Double inverseFlattening = Convert.ToDouble(_currentGeoKeys[2059]);
-                    return Ellipsoid.FromInverseFlattening(Ellipsoid.GenerateRandomIdentifier(), "User-defined", semiMajorAxis, inverseFlattening);
+                    return Ellipsoid.FromInverseFlattening(Ellipsoid.UserDefinedIdentifier, Ellipsoid.UserDefinedName, semiMajorAxis, inverseFlattening);
                 }
             }
 
@@ -487,7 +489,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 Double longitude = Convert.ToDouble(_currentGeoKeys[2061]);
                 UnitOfMeasurement angleUnit = ComputeAngularUnit();
 
-                return new Meridian(Meridian.GenerateRandomIdentifier(), "User-defined", new Angle(longitude, angleUnit));
+                return new Meridian(Meridian.UserDefinedIdentifier, Meridian.UserDefinedName, new Angle(longitude, angleUnit));
             }
 
             throw new InvalidDataException("Prime meridian code is invalid.");
@@ -512,7 +514,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2053]);
 
-                return new UnitOfMeasurement(UnitOfMeasurement.GenerateRandomIdentifier(), "User-defined", String.Empty, unitSize, UnitQuantityType.Length);
+                return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Length);
             }
 
             throw new InvalidDataException("Linear unit code is invalid.");
@@ -537,7 +539,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
 
-                return new UnitOfMeasurement(UnitOfMeasurement.GenerateRandomIdentifier(), "User-defined", String.Empty, unitSize, UnitQuantityType.Angle);
+                return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Angle);
             }
 
             throw new InvalidDataException("Angular unit code is invalid.");
@@ -562,7 +564,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
 
-                return new UnitOfMeasurement(UnitOfMeasurement.GenerateRandomIdentifier(), "User-defined", String.Empty, unitSize, UnitQuantityType.Angle);
+                return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Angle);
             }
 
             throw new InvalidDataException("Azimuth unit code is invalid.");
@@ -585,7 +587,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 GeographicCoordinateReferenceSystem baseReferenceSystem = ComputeGeographicCoordinateReferenceSystem();
                 CoordinateProjection projection = ComputeProjection(baseReferenceSystem.Datum.Ellipsoid);
 
-                return new ProjectedCoordinateReferenceSystem(ProjectedCoordinateReferenceSystem.GenerateRandomIdentifier(), "User-defined", baseReferenceSystem, CoordinateSystems.CartesianENM, baseReferenceSystem.AreaOfUse, projection);
+                return new ProjectedCoordinateReferenceSystem(ProjectedCoordinateReferenceSystem.UserDefinedIdentifier, ProjectedCoordinateReferenceSystem.UserDefinedName, 
+                                                              baseReferenceSystem, CoordinateSystems.CartesianENM, baseReferenceSystem.AreaOfUse, projection);
             }
 
             throw new InvalidDataException("Projected coordinate reference system code is invalid.");
@@ -656,7 +659,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case 27:
                     return CoordinateOperationMethods.TransverseMercatorSouthProjection;
                 case 32767:
-                    return new CoordinateOperationMethod(CoordinateOperationMethod.GenerateRandomIdentifier(), "User-defined", false, ComputeCoordinateOperationParameters().Keys.ToArray());
+                    return new CoordinateOperationMethod(CoordinateOperationMethod.UserDefinedIdentifier, CoordinateOperationMethod.UserDefinedName, 
+                                                         false, ComputeCoordinateOperationParameters().Keys.ToArray());
             }
 
             throw new InvalidDataException("Coordinate operation method code is invalid.");

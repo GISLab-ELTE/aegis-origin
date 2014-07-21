@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,9 +25,24 @@ namespace ELTE.AEGIS
     {
         #region Protected fields
 
+        /// <summary>
+        /// The identifier. This field is read-only.
+        /// </summary>
         protected readonly String _identifier;
+
+        /// <summary>
+        /// The name.
+        /// </summary>
         protected String _name;
+
+        /// <summary>
+        /// The remarks.
+        /// </summary>
         protected String _remarks;
+
+        /// <summary>
+        /// The aliases.
+        /// </summary>
         protected String[] _aliases;
 
         #endregion
@@ -84,7 +99,7 @@ namespace ELTE.AEGIS
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.IdentifiedObject" /> class.
+        /// Initializes a new instance of the <see cref="IdentifiedObject" /> class.
         /// </summary>
         /// <param name="identifier">The identifier.</param>
         /// <param name="name">The name.</param>
@@ -101,7 +116,7 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.IdentifiedObject" /> class.
+        /// Initializes a new instance of the <see cref="IdentifiedObject" /> class.
         /// </summary>
         /// <param name="identifier">The identifier.</param>
         /// <param name="name">The name.</param>
@@ -146,9 +161,7 @@ namespace ELTE.AEGIS
         /// Determines whether the specified <see cref="Object" /> is equal to the current <see cref="IdentifiedObject" />.
         /// </summary>
         /// <param name="obj">The <see cref="Object" /> to compare with the current <see cref="IdentifiedObject" />.</param>
-        /// <returns>
-        /// <c>true</c> if the specified <see cref="Object" /> is equal to the current <see cref="IdentifiedObject" />; otherwise, <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if the specified <see cref="Object" /> is equal to the current <see cref="IdentifiedObject" />; otherwise, <c>false</c>.</returns>
         public override Boolean Equals(Object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -160,9 +173,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Serves as a hash function for a particular type.
         /// </summary>
-        /// <returns>
-        /// A hash code for the current <see cref="IdentifiedObject" />.
-        /// </returns>
+        /// <returns>A hash code for the current <see cref="IdentifiedObject" />.</returns>
         public override Int32 GetHashCode()
         {
             return _identifier.GetHashCode() ^ Name.GetHashCode() ^ 925409699;
@@ -179,16 +190,19 @@ namespace ELTE.AEGIS
 
         #endregion
 
-        #region Public static methods
+        #region Public static properties
 
         /// <summary>
-        /// Generates a random identifier.
+        /// Gets the user-defined identifier.
         /// </summary>
-        /// <returns>A random identifier that is not garanteed to be unique.</returns>
-        public static String GenerateRandomIdentifier()
-        {
-            return "Random::" + new Random().Next(1000000, 9999999); 
-        }
+        /// <returns>An identifier string with AEGIS authority and 999999 code.</returns>
+        public static String UserDefinedIdentifier { get { return "AEGIS::999999"; } }
+
+        /// <summary>
+        /// Gets the user-defined name.
+        /// </summary>
+        /// <returns>A user-defined name string.</returns>
+        public static String UserDefinedName { get { return "User-defined"; } }
 
         #endregion
     }
