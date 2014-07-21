@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -30,6 +30,9 @@ namespace ELTE.AEGIS
     {
         #region Query fields
 
+        /// <summary>
+        /// The array of all unit of measurement instances within the collection.
+        /// </summary>
         private static UnitOfMeasurement[] _all;
 
         #endregion
@@ -72,6 +75,7 @@ namespace ELTE.AEGIS
 
             return All.Where(obj => Regex.IsMatch(obj.Identifier, identifier, RegexOptions.IgnoreCase)).ToList().AsReadOnly();
         }
+
         /// <summary>
         /// Returns all <see cref="UnitOfMeasurement" /> instances matching a specified name.
         /// </summary>

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,8 +25,19 @@ namespace ELTE.AEGIS
     {
         #region Private fields
 
+        /// <summary>
+        /// The symbol. This field is read-only.
+        /// </summary>
         private readonly String _symbol;
+
+        /// <summary>
+        /// The multiple from the SI base unit. This field is read-only.
+        /// </summary>
         private readonly Double _baseMultiple;
+
+        /// <summary>
+        /// The type of the unit. This field is read-only.
+        /// </summary>
         private readonly UnitQuantityType _type;
 
         #endregion
@@ -36,16 +47,19 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets the symbol.
         /// </summary>
+        /// <value>The <see cref="T:System.String"/> containing the symbol of the unit.</value>
         public String Symbol { get { return _symbol; } }
 
         /// <summary>
         /// Gets the multiple from the SI base unit.
         /// </summary>
+        /// <value>The value that is used as multiple when computing the SI base value.</value>
         public Double BaseMultiple { get { return _baseMultiple; } }
 
         /// <summary>
         /// Gets the type of the unit.
         /// </summary>
+        /// <value>The type of the unit.</value>
         public UnitQuantityType Type { get { return _type; } }
 
         #endregion
