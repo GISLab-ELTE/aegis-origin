@@ -1,9 +1,9 @@
-﻿/// <copyright file="CoordinateComparer.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="CoordinateVector.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,7 +25,7 @@ namespace ELTE.AEGIS
     [Serializable]
     public struct CoordinateVector : IEquatable<Coordinate>, IEquatable<CoordinateVector>
     {
-        #region Static instances
+        #region Public static instances
 
         /// <summary>
         /// Represents the null <see cref="CoordinateVector" /> value. This field is constant.
@@ -36,6 +36,9 @@ namespace ELTE.AEGIS
 
         #region Private fields
 
+        /// <summary>
+        /// The X vector.
+        /// </summary>
         private readonly Double _x;
         private readonly Double _y;
         private readonly Double _z;
@@ -45,33 +48,33 @@ namespace ELTE.AEGIS
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the X coordinate.
+        /// Gets or sets the X component.
         /// </summary>
-        /// <value>The X coordinate.</value>
+        /// <value>The X component.</value>
         public Double X { get { return _x; } }
 
         /// <summary>
-        /// Gets or sets the Y coordinate.
+        /// Gets or sets the Y component.
         /// </summary>
-        /// <value>The Y coordinate.</value>
+        /// <value>The Y component.</value>
         public Double Y { get { return _y; } }
 
         /// <summary>
-        /// Gets or sets the Z coordinate.
+        /// Gets or sets the Z component.
         /// </summary>
-        /// <value>The Z coordinate.</value>
+        /// <value>The Z component.</value>
         public Double Z { get { return _z; } }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="CoordinateVector" /> is null.
         /// </summary>
-        /// <value><c>true</c> if all coordinates are 0; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all component are 0; otherwise, <c>false</c>.</value>
         public Boolean IsNull { get { return _x == 0 && _y == 0 && _z == 0; } }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="CoordinateVector" /> is valid.
         /// </summary>
-        /// <value><c>true</c> if all coordinates are numbers; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all component are numbers; otherwise, <c>false</c>.</value>
         public Boolean IsValid { get { return !Double.IsNaN(_x) && !Double.IsNaN(_y) && !Double.IsNaN(_z); } }
 
         /// <summary>
@@ -97,9 +100,9 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Initializes a new instance of the <see cref="CoordinateVector" /> struct.
         /// </summary>
-        /// <param name="x">The X coordinate.</param>
-        /// <param name="y">The Y coordinate.</param>
-        /// <param name="z">The Z coordinate.</param>
+        /// <param name="x">The X component.</param>
+        /// <param name="y">The Y component.</param>
+        /// <param name="z">The Z component.</param>
         public CoordinateVector(Double x, Double y, Double z) 
         {
             _x = x; _y = y; _z = z;

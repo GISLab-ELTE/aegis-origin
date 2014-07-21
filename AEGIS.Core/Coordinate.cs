@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -26,15 +26,15 @@ namespace ELTE.AEGIS
     [Serializable]
     public struct Coordinate : IEquatable<Coordinate>, IEquatable<CoordinateVector>
     {
-        #region Static instances
+        #region Public static instances
 
         /// <summary>
-        /// Represents the empty <see cref="Coordinate" /> value. This field is constant.
+        /// Represents the empty <see cref="Coordinate" /> value. This field is read-only.
         /// </summary>
         public static readonly Coordinate Empty = new Coordinate(0, 0, 0);
 
         /// <summary>
-        /// Represents the undefined <see cref="Coordinate" /> value. This field is constant.
+        /// Represents the undefined <see cref="Coordinate" /> value. This field is read-only.
         /// </summary>
         public static readonly Coordinate Undefined = new Coordinate(Double.NaN, Double.NaN, Double.NaN);
 
@@ -42,8 +42,19 @@ namespace ELTE.AEGIS
 
         #region Private fields
 
+        /// <summary>
+        /// The X component.
+        /// </summary>
         private readonly Double _x;
+
+        /// <summary>
+        /// The Y component.
+        /// </summary>
         private readonly Double _y;
+
+        /// <summary>
+        /// The Z component.
+        /// </summary>
         private readonly Double _z;
 
         #endregion
@@ -51,33 +62,33 @@ namespace ELTE.AEGIS
         #region Public properties
 
         /// <summary>
-        /// Gets the X coordinate.
+        /// Gets the X component.
         /// </summary>
-        /// <value>The X coordinate.</value>
+        /// <value>The X component.</value>
         public Double X { get { return _x; } }
 
         /// <summary>
-        /// Gets the Y coordinate.
+        /// Gets the Y component.
         /// </summary>
-        /// <value>The Y coordinate.</value>
+        /// <value>The Y component.</value>
         public Double Y { get { return _y; } }
 
         /// <summary>
-        /// Gets the Z coordinate.
+        /// Gets the Z component.
         /// </summary>
-        /// <value>The Z coordinate.</value>
+        /// <value>The Z component.</value>
         public Double Z { get { return _z; } }
 
         /// <summary>
         /// Gets a value indicating whether the coordinate is empty.
         /// </summary>
-        /// <value><c>true</c> if all coordinates are <c>0</c>; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all component are <c>0</c>; otherwise, <c>false</c>.</value>
         public Boolean IsEmpty { get { return _z == 0 && _y == 0 && _x == 0; } }
 
         /// <summary>
         /// Gets a value indicating whether the coordinate is valid.
         /// </summary>
-        /// <value><c>true</c> if all coordinates are numbers; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all component are numbers; otherwise, <c>false</c>.</value>
         public Boolean IsValid { get { return !Double.IsNaN(_x) && !Double.IsNaN(_y) && !Double.IsNaN(_z); } }
 
         #endregion
@@ -87,8 +98,8 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Initializes a new instance of the <see cref="Coordinate" /> struct.
         /// </summary>
-        /// <param name="x">The X coordinate.</param>
-        /// <param name="y">The Y coordinate.</param>
+        /// <param name="x">The X component.</param>
+        /// <param name="y">The Y component.</param>
         public Coordinate(Double x, Double y)
         {
             _x = x; _y = y; _z = 0;
@@ -97,9 +108,9 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Initializes a new instance of the <see cref="Coordinate" /> struct.
         /// </summary>
-        /// <param name="x">The X coordinate.</param>
-        /// <param name="y">The Y coordinate.</param>
-        /// <param name="z">The Z coordinate.</param>
+        /// <param name="x">The X component.</param>
+        /// <param name="y">The Y component.</param>
+        /// <param name="z">The Z component.</param>
         public Coordinate(Double x, Double y, Double z) 
         {
             _x = x; _y = y; _z = z;
