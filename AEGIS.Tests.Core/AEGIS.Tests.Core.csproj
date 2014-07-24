@@ -51,6 +51,7 @@
     <Compile Include="Collections\HeapTest.cs" />
     <Compile Include="Collections\SearchTree\AvlTreeTest.cs" />
     <Compile Include="Collections\SearchTree\BinarySearchTreeTest.cs" />
+    <Compile Include="Collections\SparseArrayTest.cs" />
     <Compile Include="CoordinateTest.cs" />
     <Compile Include="Indices\Spatial\RTree\RStarTreeTest.cs" />
     <Compile Include="Indices\Spatial\RTree\RTreeTest.cs" />
