@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -26,15 +26,49 @@ namespace ELTE.AEGIS.Raster.Mask
     {
         #region Private fields
         
+        /// <summary>
+        /// The source raster. This field is read-only.
+        /// </summary>
         private readonly IRaster _source;
+
+        /// <summary>
+        /// The starting row index. This field is read-only.
+        /// </summary>
         private readonly Int32 _rowStart;
-        private readonly Int32 _rowCount;
-        private readonly Int32 _columnCount;
+
+        /// <summary>
+        /// The starting column index. This field is read-only.
+        /// </summary>
         private readonly Int32 _columnStart;
+
+        /// <summary>
+        /// The number of rows. This field is read-only.
+        /// </summary>
+        private readonly Int32 _rowCount;
+
+        /// <summary>
+        /// The number of columns. This field is read-only.
+        /// </summary>
+        private readonly Int32 _columnCount;
+
+        /// <summary>
+        /// The raster mapper. This field is read-only.
+        /// </summary>
         private readonly RasterMapper _mapper;
 
+        /// <summary>
+        /// The list of raster bands.
+        /// </summary>
         private List<IRasterBand> _bands;
+
+        /// <summary>
+        /// The coordinates of the raster.
+        /// </summary>
         private Coordinate[] _coordinates;
+
+        /// <summary>
+        /// The list of histogram values.
+        /// </summary>
         private List<Int32[]> _histogramValues;
 
         #endregion
@@ -267,8 +301,8 @@ namespace ELTE.AEGIS.Raster.Mask
         /// </summary>
         /// <param name="source">The source raster.</param>
         /// <param name="rowStart">The starting row index of a mask.</param>
-        /// <param name="rowCount">The number of rows in the mask.</param>
         /// <param name="columnStart">The starting column index of a mask.</param>
+        /// <param name="rowCount">The number of rows in the mask.</param>
         /// <param name="columnCount">The number of columns in the mask.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -284,7 +318,7 @@ namespace ELTE.AEGIS.Raster.Mask
         /// or
         /// The starting columns index and the column count is greater than the number of rows in the source.
         /// </exception>
-        public MaskedRaster(IRaster source, Int32 rowStart, Int32 rowCount, Int32 columnStart, Int32 columnCount)
+        public MaskedRaster(IRaster source, Int32 rowStart, Int32 columnStart, Int32 rowCount, Int32 columnCount)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -298,13 +332,13 @@ namespace ELTE.AEGIS.Raster.Mask
                 throw new ArgumentOutOfRangeException("columnIndex", "the starting column index is equal to or greater than the number of columns in the source.");
             if (rowStart + rowCount > source.NumberOfRows)
                 throw new ArgumentOutOfRangeException("rowCount", "The starting row index and the row count is greater than the number of rows in the source.");
-            if (columnStart + columnCount > source.NumberOfRows)
+            if (columnStart + columnCount > source.NumberOfColumns)
                 throw new ArgumentOutOfRangeException("columnCount", "The starting columns index and the column count is greater than the number of rows in the source.");
 
             _source = source;
             _rowStart = rowStart;
-            _rowCount = rowCount;
             _columnStart = columnStart;
+            _rowCount = rowCount;
             _columnCount = columnCount;
 
             _bands = Enumerable.Range(0, _source.SpectralResolution).Select(index => new RasterBand(this, index)).ToList<IRasterBand>();
