@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -134,7 +134,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <exception cref="System.ArgumentException">
         /// Only 2D and 3D spatial conversion is supported for Well-Known Binary.;geometryModel
         /// or
-        /// Conversion is not suppported with the specified geometry type.;geometry
+        /// Conversion is not supported with the specified geometry type.;geometry
         /// </exception>
         public static Byte[] ToWellKnownBinary(this IGeometry geometry, ByteOrder byteOrder, GeometryModel geometryModel)
         {
@@ -157,7 +157,7 @@ namespace ELTE.AEGIS.IO.WellKnown
             if (geometry is IMultiPolygon)
                 return ComputeWellKnownBinary(geometry as IMultiPolygon, byteOrder, geometryModel);
 
-            throw new ArgumentException("Conversion is not suppported with the specified geometry type.", "geometry");
+            throw new ArgumentException("Conversion is not supported with the specified geometry type.", "geometry");
         }
 
         #endregion

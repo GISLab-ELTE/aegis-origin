@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -30,7 +30,7 @@ namespace ELTE.AEGIS
         /// <returns>The buffer of the specified <see cref="IGeometry" /> instance.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The distance is negative.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry type.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
         IGeometry Buffer(IGeometry geometry, Double distance);
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace ELTE.AEGIS
         /// <param name="geometry">The geometry.</param>
         /// <returns>The convex hull of the <see cref="IGeometry" /> instance.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry type.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
         IGeometry ConvexHull(IGeometry geometry);
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         IGeometry Difference(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         IGeometry Intersection(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         IGeometry SymmetricDifference(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         IGeometry Union(IGeometry geometry, IGeometry otherGeometry);
     }
 }

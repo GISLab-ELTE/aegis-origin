@@ -97,7 +97,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <param name="identifiedObject">The identified object.</param>
         /// <returns>The WKT representation of the identified object.</returns>
         /// <exception cref="System.ArgumentNullException">The identified object is null.</exception>
-        /// <exception cref="System.ArgumentException">Conversion is not suppported with the specified identified object type.</exception>
+        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified identified object type.</exception>
         public static String ToWellKnownText(IdentifiedObject identifiedObject)
         {
             if (identifiedObject == null)
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.IO.WellKnown
             if (identifiedObject is Meridian)
                 return ComputeText(identifiedObject as Meridian);
 
-            throw new ArgumentException("Conversion is not suppported with the specified identified object type.", "identifiedObject");
+            throw new ArgumentException("Conversion is not supported with the specified identified object type.", "identifiedObject");
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <param name="referenceSystem">The reference system.</param>
         /// <returns>The WKT representation of the reference system.</returns>
         /// <exception cref="System.ArgumentNullException">The reference system is null.</exception>
-        /// <exception cref="System.ArgumentException">Conversion is not suppported with the specified refeence system type.</exception>
+        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified refeence system type.</exception>
         public static String ToWellKnownText(IReferenceSystem referenceSystem)
         {
             if (referenceSystem == null)
@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.IO.WellKnown
             if (referenceSystem is GeographicCoordinateReferenceSystem)
                 return ComputeText(referenceSystem as GeographicCoordinateReferenceSystem);
 
-            throw new ArgumentException("Conversion is not suppported with the specified refeence system type.", "referenceSystem");
+            throw new ArgumentException("Conversion is not supported with the specified refeence system type.", "referenceSystem");
         }
 
         #endregion
@@ -149,10 +149,10 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <param name="text">The text representation of the object.</param>
         /// <returns>The identified object instance.</returns>
         /// <exception cref="System.ArgumentNullException">The text is null.</exception>
-        /// <exception cref="System.ArgumentException">Conversion is not suppported with the specified identified object type.</exception>
+        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified identified object type.</exception>
         /// <exception cref="System.NotSupportedException">Geocentric coordinate reference systems are not supported.</exception>
         /// <exception cref="System.IO.InvalidDataException">The text is invalid.</exception>
-        /// <exception cref="System.ArgumentException">Conversion is not suppported with the specified identified object type.</exception>
+        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified identified object type.</exception>
         public static IdentifiedObject ToIdentifiedObject(String text)
         {
             Delimiter delim;

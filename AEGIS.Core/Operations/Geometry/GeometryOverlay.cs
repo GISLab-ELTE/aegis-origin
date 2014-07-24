@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -32,7 +32,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <returns>The buffer of the specified <see cref="IGeometry" /> instance.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The distance is negative.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry type.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
         public static IGeometry Buffer(this IGeometry geometry, Double distance)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))
@@ -47,7 +47,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <param name="geometry">The geometry.</param>
         /// <returns>The convex hull of the <see cref="IGeometry" /> instance.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry type.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
         public static IGeometry ConvexHull(this IGeometry geometry)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))
@@ -67,7 +67,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static IGeometry Difference(this IGeometry geometry, IGeometry otherGeometry)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static IGeometry Intersection(this IGeometry geometry, IGeometry otherGeometry)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))
@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static IGeometry SymmetricDifference(this IGeometry geometry, IGeometry otherGeometry)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))
@@ -127,7 +127,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static IGeometry Union(this IGeometry geometry, IGeometry otherGeometry)
         {
             using (IGeometryOverlayOperator op = GetOperator(geometry))

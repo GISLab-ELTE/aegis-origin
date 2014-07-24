@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -33,7 +33,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Contains(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Covers(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Crosses(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Disjoint(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Equals(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Intersects(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Overlaps(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace ELTE.AEGIS
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not suppported with the specified geometry types.</exception>
+        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Touches(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.ArgumentException">
         /// The reference system of two geometries are different.
         /// or
-        /// The operation is not suppported with the specified geometry type.
+        /// The operation is not supported with the specified geometry type.
         /// </exception>
         Boolean Within(IGeometry geometry, IGeometry otherGeometry);
     }
