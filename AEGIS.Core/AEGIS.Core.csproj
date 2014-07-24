@@ -51,6 +51,7 @@
     <Compile Include="Algorithms\ShamosHoeyAlgorithm.cs" />
     <Compile Include="Algorithms\WindingNumberAlgorithm.cs" />
     <Compile Include="Angle.cs" />
+    <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SparseArray.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="IGeometryMeasureOperator.cs" />
