@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -69,14 +69,14 @@ namespace ELTE.AEGIS
         /// Returns the outgoing edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The set containing edges with <paramref="vertex"> as source.</returns>
+        /// <returns>The read-only set containing edges with <paramref="vertex"> as source.</returns>
         ISet<IGraphEdge> OutEdges(IGraphVertex vertex);
 
         /// <summary>
         /// Returns the incoming edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The set containing edges with <paramref="vertex"> as target.</returns>
+        /// <returns>The read-only set containing edges with <paramref="vertex"> as target.</returns>
         ISet<IGraphEdge> InEdges(IGraphVertex vertex);
 
         /// <summary>

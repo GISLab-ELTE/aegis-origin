@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -456,22 +456,63 @@ namespace ELTE.AEGIS.Geometry
 
         #region Private fields
 
+        /// <summary>
+        /// The envelope of the gtraph.
+        /// </summary>
         private Envelope _envelope;
+
+        /// <summary>
+        /// The boundary of the graph.
+        /// </summary>
         private IGeometry _boundary;
+
+        /// <summary>
+        /// The metadata.
+        /// </summary>
         private IMetadataCollection _metadata;
 
         #endregion
 
         #region Protected fields
 
+        /// <summary>
+        /// The geometry graph factory.
+        /// </summary>
         protected readonly IGeometryGraphFactory _factory;
+
+        /// <summary>
+        /// The list of vertices.
+        /// </summary>
         protected List<IGraphVertex> _vertexList;
+
+        /// <summary>
+        /// The list of edges.
+        /// </summary>
         protected List<IGraphEdge> _edgeList;
+
+        /// <summary>
+        /// The version of the graph.
+        /// </summary>
         protected Int32 _version;
+
+        /// <summary>
+        /// The adjacency dictionary of the source vertices.
+        /// </summary>
         protected Dictionary<IGraphVertex, HashSet<IGraphEdge>> _adjacencySource;
+
+        /// <summary>
+        /// The adjacency dictionary of the target vertices.
+        /// </summary>
         protected Dictionary<IGraphVertex, HashSet<IGraphEdge>> _adjacencyTarget;
 
+        /// <summary>
+        /// The comparer used for determining the equality of vertices.
+        /// </summary>
         protected IEqualityComparer<IGraphVertex> _vertexEqualityComparer;
+
+        /// <summary>
+        /// The comparer used for determining the equality of edges.
+        /// </summary>
         protected IEqualityComparer<IGraphEdge> _edgeEqualityComparer;
 
         #endregion
@@ -799,15 +840,15 @@ namespace ELTE.AEGIS.Geometry
         /// Returns the outgoing edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The set containing edges with <paramref="vertex"> as source.</returns>
-        public virtual ISet<IGraphEdge> OutEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencySource[vertex] : null; }
+        /// <returns>The read-only set containing edges with <paramref="vertex"> as source.</returns>
+        public virtual ISet<IGraphEdge> OutEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencySource[vertex].AsReadOnly() : null; }
 
         /// <summary>
         /// Returns the incoming edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The set containing edges with <paramref="vertex"> as target.</returns>
-        public virtual ISet<IGraphEdge> InEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencyTarget[vertex] : null; }
+        /// <returns>The read-only set containing edges with <paramref="vertex"> as target.</returns>
+        public virtual ISet<IGraphEdge> InEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencyTarget[vertex].AsReadOnly() : null; }
 
         /// <summary>
         /// Adds a new vertex to a graph.
