@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -27,7 +27,8 @@ namespace ELTE.AEGIS
     /// Represents a manager of all factories.
     /// </summary>
     /// <remarks>
-    /// This type represents a storage of used factories including the default implementation of factory types, and the default factory instances.
+    /// This type realizes a service locator pattern, and represents a storage of factories including the default implementation of factory types, and the default factory instances.
+    /// The type can also be used as base class for all factories which may use internal factories.
     /// </remarks>
     public abstract class Factory : IFactory
     {
@@ -55,8 +56,19 @@ namespace ELTE.AEGIS
 
             #region Private fields
 
-            private readonly Container _defaultContainer;
+            /// <summary>
+            /// The IoC container.
+            /// </summary>
+            private readonly Container _container;
+
+            /// <summary>
+            /// The version of the factory.
+            /// </summary>
             private Int32 _version;
+
+            /// <summary>
+            /// A value indicating whether this instance is disposed.
+            /// </summary>
             private Boolean _disposed;
 
             #endregion
@@ -79,17 +91,17 @@ namespace ELTE.AEGIS
                 MetadataFactory metadataFactory = new MetadataFactory();
                 GeometryFactory geometryFactory = new GeometryFactory(null, metadataFactory);
 
-                _defaultContainer = new Container();
+                _container = new Container();
 
-                _defaultContainer.Register<IMetadataFactory, MetadataFactory>();
-                _defaultContainer.Register<MetadataFactory, MetadataFactory>();
-                _defaultContainer.Register<IGeometryFactory, GeometryFactory>();
-                _defaultContainer.Register<GeometryFactory, GeometryFactory>();
+                _container.Register<IMetadataFactory, MetadataFactory>();
+                _container.Register<MetadataFactory, MetadataFactory>();
+                _container.Register<IGeometryFactory, GeometryFactory>();
+                _container.Register<GeometryFactory, GeometryFactory>();
 
-                _defaultContainer.RegisterInstance<IMetadataFactory>(metadataFactory);
-                _defaultContainer.RegisterInstance<MetadataFactory>(metadataFactory);
-                _defaultContainer.RegisterInstance<IGeometryFactory>(geometryFactory);
-                _defaultContainer.RegisterInstance<GeometryFactory>(geometryFactory);
+                _container.RegisterInstance<IMetadataFactory>(metadataFactory);
+                _container.RegisterInstance<MetadataFactory>(metadataFactory);
+                _container.RegisterInstance<IGeometryFactory>(geometryFactory);
+                _container.RegisterInstance<GeometryFactory>(geometryFactory);
 
                 _version = 0;
             }
@@ -127,10 +139,10 @@ namespace ELTE.AEGIS
                         version = _version;
                         nextVersion = version;
 
-                        if (!_defaultContainer.IsRegisteredInstance(factoryType))
+                        if (!_container.IsRegisteredInstance(factoryType))
                         {
                             // if the instance is not registered
-                            if (!_defaultContainer.IsRegistered(factoryType))
+                            if (!_container.IsRegistered(factoryType))
                             {
                                 // if the contract is not registered
                                 if (factoryType.IsInterface || factoryType.IsAbstract)
@@ -141,24 +153,24 @@ namespace ELTE.AEGIS
                                 }
 
                                 // if the contract is not registered, and can be registered, it should be
-                                _defaultContainer.Register(factoryType, factoryType);
+                                _container.Register(factoryType, factoryType);
 
                                 // also, all interfaces that are not registered, should be
                                 foreach(Type interfaceType in factoryType.GetInterfaces())
                                 {
-                                    if (!_defaultContainer.IsRegistered(interfaceType))
-                                        _defaultContainer.Register(interfaceType, factoryType);
+                                    if (!_container.IsRegistered(interfaceType))
+                                        _container.Register(interfaceType, factoryType);
                                 }
 
                                 Interlocked.Increment(ref _version);
                                 nextVersion++;
                             }
 
-                            _defaultContainer.RegisterInstance(factoryType, _defaultContainer.Resolve(factoryType));
+                            _container.RegisterInstance(factoryType, _container.Resolve(factoryType));
                             // the instance is registered
                         }
 
-                        defaultInstance = _defaultContainer.ResolveInstance(factoryType);
+                        defaultInstance = _container.ResolveInstance(factoryType);
 
                     } while (nextVersion != Interlocked.CompareExchange(ref _version, _version, nextVersion));
 
@@ -194,7 +206,7 @@ namespace ELTE.AEGIS
                         version = _version;
                         nextVersion = version;
 
-                        if (!_defaultContainer.IsRegistered(factoryType))
+                        if (!_container.IsRegistered(factoryType))
                         {
                             if (factoryType.IsInterface || factoryType.IsAbstract)
                             {
@@ -203,14 +215,14 @@ namespace ELTE.AEGIS
                                 continue;
                             }
 
-                            _defaultContainer.Register(factoryType, factoryType);
+                            _container.Register(factoryType, factoryType);
                             // if the contract is not registered, and can be registered, it should be
 
                             Interlocked.Increment(ref _version);
                             nextVersion++;
                         }
 
-                        defaultInstance = _defaultContainer.Resolve(factoryType, parameters);
+                        defaultInstance = _container.Resolve(factoryType, parameters);
 
                     } while (nextVersion != Interlocked.CompareExchange(ref _version, _version, nextVersion));
 
@@ -240,7 +252,7 @@ namespace ELTE.AEGIS
                 do
                 {
                     version = _version;
-                    isRegistered = _defaultContainer.IsRegistered(factoryType);
+                    isRegistered = _container.IsRegistered(factoryType);
 
                 } while (version != Interlocked.CompareExchange(ref _version, version, version));
 
@@ -266,7 +278,7 @@ namespace ELTE.AEGIS
                     do
                     {
                         version = _version;
-                        _defaultContainer.Register(contractType, factoryType, true);
+                        _container.Register(contractType, factoryType, true);
 
                     } while (version != Interlocked.CompareExchange(ref _version, version, version));
                 }
@@ -291,7 +303,7 @@ namespace ELTE.AEGIS
                     do
                     {
                         version = _version;
-                        _defaultContainer.RegisterInstance(contractType, factoryInstance, true);
+                        _container.RegisterInstance(contractType, factoryInstance, true);
 
                     } while (version != Interlocked.CompareExchange(ref _version, version, version));
                 }
@@ -328,9 +340,9 @@ namespace ELTE.AEGIS
                 if (disposing)
                 {
                     // free managed resources
-                    if (_defaultContainer != null)
+                    if (_container != null)
                     {
-                        _defaultContainer.Dispose();
+                        _container.Dispose();
                     }
                 }
             }
@@ -342,6 +354,9 @@ namespace ELTE.AEGIS
 
         #region Private fields
 
+        /// <summary>
+        /// The dictionary of factories.
+        /// </summary>
         private Dictionary<Type, IFactory> _factories;
 
         #endregion
