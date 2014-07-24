@@ -149,6 +149,7 @@ namespace ELTE.AEGIS.Reference.Operations
         private static CoordinateOperationMethod _polarStereographicAProjection;
         private static CoordinateOperationMethod _polarStereographicBProjection;
         private static CoordinateOperationMethod _polarStereographicCProjection;
+        private static CoordinateOperationMethod _popularVisualisationPseudoMercatorProjection;
         private static CoordinateOperationMethod _positionVectorTransformation;
         private static CoordinateOperationMethod _pseudoPlateCareeProjection;
         private static CoordinateOperationMethod _reversiblePolynomial2Transformation;
@@ -1352,6 +1353,25 @@ namespace ELTE.AEGIS.Reference.Operations
                                                       CoordinateOperationParameters.NorthingAtFalseOrigin);
 
                 return _polarStereographicCProjection;
+            }
+        }
+
+        /// <summary>
+        /// Popular Visualisation Pseudo Mercator. 
+        /// </summary>
+        public static CoordinateOperationMethod PopularVisualisationPseudoMercatorProjection
+        {
+            get
+            {
+                if (_popularVisualisationPseudoMercatorProjection == null)
+                    _popularVisualisationPseudoMercatorProjection =
+                        new CoordinateOperationMethod("EPSG::1024", "Popular Visualisation Pseudo Mercator", true,
+                                                      CoordinateOperationParameters.LatitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+
+                return _popularVisualisationPseudoMercatorProjection;
             }
         }
 

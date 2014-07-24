@@ -86,6 +86,7 @@
     <Compile Include="Operations\Projections\PolarStereographicBProjection.cs" />
     <Compile Include="Operations\Projections\PolarStereographicCProjection.cs" />
     <Compile Include="Operations\Projections\PolarStereographicProjection.cs" />
+    <Compile Include="Operations\Projections\PopularVisualisationPseudoMercatorProjection.cs" />
     <Compile Include="Operations\Projections\VerticalPerspectiveOrthographicProjection.cs" />
     <Compile Include="Operations\Projections\VerticalPerspectiveProjection.cs" />
     <Compile Include="ProjectedCoordinateReferenceSystem.cs" />

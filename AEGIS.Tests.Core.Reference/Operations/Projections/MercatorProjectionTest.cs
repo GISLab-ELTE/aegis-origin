@@ -21,13 +21,41 @@ using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Tests.Reference.Operations
 {
+    /// <summary>
+    /// Test fixture for the Mercator projections.
+    /// </summary>
     [TestFixture]
     public class MercatorProjectionTest
     {
+        #region Private fields
+
+        /// <summary>
+        /// Mercator (variant A).
+        /// </summary>
         private MercatorAProjection _projectionA;
+
+        /// <summary>
+        /// Mercator (variant B).
+        /// </summary>
         private MercatorBProjection _projectionB;
+
+        /// <summary>
+        /// Mercator (spherical).
+        /// </summary>
         private MercatorSphericalProjection _projectionSpherical;
 
+        /// <summary>
+        /// Popular Visualisation Pseudo Mercator.
+        /// </summary>
+        private PopularVisualisationPseudoMercatorProjection _projectionPseudo;
+
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
@@ -54,12 +82,30 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             parameters.Add(CoordinateOperationParameters.FalseEasting, Length.FromMetre(0));
             parameters.Add(CoordinateOperationParameters.FalseNorthing, Length.FromMetre(0));
 
-            _projectionSpherical = new MercatorSphericalProjection(String.Empty, "World Spherical Mercator",
-                                                                   Ellipsoid.FromSphere(String.Empty, "Sphere", 6371007),
+            _projectionSpherical = new MercatorSphericalProjection(IdentifiedObject.UserDefinedIdentifier, "World Spherical Mercator",
+                                                                   Ellipsoid.FromSphere(IdentifiedObject.UserDefinedIdentifier, "Sphere", 6371007),
                                                                    parameters, AreasOfUse.World);
+
+            parameters = new Dictionary<CoordinateOperationParameter, Object>();
+            parameters.Add(CoordinateOperationParameters.LatitudeOfNaturalOrigin, Angle.FromDegree(0));
+            parameters.Add(CoordinateOperationParameters.LongitudeOfNaturalOrigin, Angle.FromDegree(0));
+            parameters.Add(CoordinateOperationParameters.FalseEasting, Length.FromMetre(0));
+            parameters.Add(CoordinateOperationParameters.FalseNorthing, Length.FromMetre(0));
+
+            _projectionPseudo = new PopularVisualisationPseudoMercatorProjection(IdentifiedObject.UserDefinedIdentifier, IdentifiedObject.UserDefinedName,
+                                                                                 parameters,
+                                                                                 Ellipsoid.FromSphere(String.Empty, "Sphere", 6378137),
+                                                                                 AreasOfUse.World);
         }
 
-        [TestCase]
+        #endregion
+
+        #region Test methods
+
+        /// <summary>
+        /// Test case for the variant A projection <see cref="Forward"/> method.
+        /// </summary>
+        [Test]
         public void MercatorAProjectionForwardTest()
         {
             GeoCoordinate coordinate = new GeoCoordinate(Angle.FromDegree(-3), Angle.FromDegree(120));
@@ -70,7 +116,10 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Y, transformed.Y, 1);
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the variant A projection <see cref="Reverse"/> method.
+        /// </summary>
+        [Test]
         public void MercatorAProjectionReverseTest()
         {
             GeoCoordinate expected = new GeoCoordinate(Angle.FromDegree(-3), Angle.FromDegree(120));
@@ -80,7 +129,10 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.0001);
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the variant B projection <see cref="Forward"/> method.
+        /// </summary>
+        [Test]
         public void MercatorBProjectionForwardTest()
         {
             GeoCoordinate coordinate = new GeoCoordinate(Angle.FromDegree(53), Angle.FromDegree(53));
@@ -91,7 +143,10 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Y, transformed.Y, 1);
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the variant B projection <see cref="Reverse"/> method.
+        /// </summary>
+        [Test]
         public void MercatorBProjectionReverseTest()
         {
             GeoCoordinate expected = new GeoCoordinate(Angle.FromDegree(53), Angle.FromDegree(53));
@@ -101,7 +156,10 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.0001);
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the spherical projection <see cref="Forward"/> method.
+        /// </summary>
+        [Test]
         public void MercatorSphericalProjectionForwardTest()
         {
             GeoCoordinate coordinate = new GeoCoordinate(Angle.FromDegree(24, 22, 54.433), Angle.FromDegree(-100, 20, 0));
@@ -112,7 +170,10 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Y, transformed.Y, 100);
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the spherical projection <see cref="Reverse"/> method.
+        /// </summary>
+        [Test]
         public void MercatorSphericalProjectionReverseTest()
         {
             GeoCoordinate expected = new GeoCoordinate(Angle.FromDegree(24, 22, 54.433), Angle.FromDegree(-100, 20, 0));
@@ -121,5 +182,34 @@ namespace ELTE.AEGIS.Tests.Reference.Operations
             Assert.AreEqual(expected.Latitude.BaseValue, transformed.Latitude.BaseValue, 0.0001);
             Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.0001);
         }
+
+        /// <summary>
+        /// Test case for the pseudo projection <see cref="Forward"/> method.
+        /// </summary>
+        [Test]
+        public void PopularVisualisationPseudoMercatorProjectionForwardTest()
+        {
+            GeoCoordinate coordinate = new GeoCoordinate(Angle.FromDegree(24, 22, 54.433), Angle.FromDegree(-100, 20, 0));
+            Coordinate expected = new Coordinate(-11169055.58, 2800000);
+            Coordinate transformed = _projectionPseudo.Forward(coordinate);
+
+            Assert.AreEqual(expected.X, transformed.X, 100);
+            Assert.AreEqual(expected.Y, transformed.Y, 100);
+        }
+
+        /// <summary>
+        /// Test case for the pseudo projection <see cref="Reverse"/> method.
+        /// </summary>
+        [Test]
+        public void PopularVisualisationPseudoMercatorProjectionReverseTest()
+        {
+            GeoCoordinate expected = new GeoCoordinate(Angle.FromDegree(24, 22, 54.433), Angle.FromDegree(-100, 20, 0));
+            GeoCoordinate transformed = _projectionSpherical.Reverse(_projectionSpherical.Forward(expected));
+
+            Assert.AreEqual(expected.Latitude.BaseValue, transformed.Latitude.BaseValue, 0.0001);
+            Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.0001);
+        }
+
+        #endregion
     }
 }
