@@ -43,6 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Shapefile\DBaseField.cs" />
+    <Compile Include="Shapefile\DBaseHeader.cs" />
+    <Compile Include="Shapefile\DBaseStreamReader.cs" />
+    <Compile Include="Shapefile\DBaseStreamWriter.cs" />
     <Compile Include="Storage\Authentication\AnonymousFileSystemAuthentication.cs" />
     <Compile Include="Storage\FileSystemAuthenticationType.cs" />
     <Compile Include="Storage\IFileSystemAuthentication.cs" />

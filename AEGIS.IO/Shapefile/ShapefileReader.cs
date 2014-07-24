@@ -65,10 +65,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         private IReferenceSystem _referenceSystem;
         private Envelope _envelope;
 
-        private OleDbConnection _metadataConnection;
-        private OleDbDataReader _metadataReader;
-        private Boolean _metadataInTempFile;
-        private String _metadataTempFilePath;
+        private DBaseStreamReader _metadataReader;
 
         #endregion
 
@@ -197,16 +194,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             // read metadata
             if (_fileSystem.Exists(MetadataFilePath))
-            {
-                metadata = new Dictionary<String, Object>();
-                if (_metadataReader.Read())
-                {
-                    for (int i = 0; i < _metadataReader.FieldCount; i++)
-                    {
-                        metadata[_metadataReader.GetName(i)] = _metadataReader.GetValue(i);
-                    }
-                }
-            }
+                metadata = new Dictionary<String, Object>(_metadataReader.Read()) ?? new Dictionary<String, Object>();
 
             // convert shape
 
@@ -226,26 +214,8 @@ namespace ELTE.AEGIS.IO.Shapefile
                     _metadataReader.Dispose();
                     _metadataReader = null;
                 }
-                if (_metadataConnection != null)
-                {
-                    if (_metadataConnection.State == System.Data.ConnectionState.Open)
-                        _metadataConnection.Close();
-
-                    _metadataConnection.Dispose();
-                    _metadataConnection = null;
-                }
 
                 _shapeIndex = null;
-            }
-
-            if (_metadataInTempFile)
-            {
-                try
-                {
-                    File.Delete(_metadataTempFilePath);
-                }
-                catch { }
-                _metadataInTempFile = false;
             }
 
             base.Dispose(disposing);
@@ -289,25 +259,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             // load metadata for shapes
             if (_fileSystem.Exists(MetadataFilePath))
             {
-                // if the filename is more than 8 long, the dBase manager cannot handle it, thus a temporary file is created
-                if (_baseFileName.Length > 8)
-                {
-                    _metadataTempFilePath = System.IO.Path.GetTempFileName();
-                    _metadataTempFilePath = System.IO.Path.ChangeExtension(_metadataTempFilePath, "dbf");
-                    File.Copy(MetadataFilePath, _metadataTempFilePath);
-
-                    _metadataConnection = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" + System.IO.Path.GetDirectoryName(_metadataTempFilePath) + "\"xtended Properties=dBase IV;User ID=Admin;Password= ;");
-                    _metadataConnection.Open();
-                    _metadataReader = new OleDbCommand("select * from [" + System.IO.Path.GetFileNameWithoutExtension(_metadataTempFilePath) + "]", _metadataConnection).ExecuteReader();
-                    _metadataInTempFile = true;
-                }
-                else
-                {
-                    _metadataConnection = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" + _basePath + "\"xtended Properties=dBase IV;User ID=Admin;Password= ;");
-                    _metadataConnection.Open();
-                    _metadataReader = new OleDbCommand("select * from [" + _baseFileName + ".dbf]", _metadataConnection).ExecuteReader();
-                    _metadataInTempFile = false;
-                }
+                _metadataReader = new DBaseStreamReader(MetadataFilePath);
             }
         }
 

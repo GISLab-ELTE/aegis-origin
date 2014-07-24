@@ -61,6 +61,8 @@ namespace ELTE.AEGIS.IO.Shapefile
         private Envelope _envelope;
         private GeometryModel _geometryModel;
 
+        private DBaseStreamWriter _metadataWriter;
+
         #endregion
 
         #region Private properties
@@ -123,6 +125,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
+                _metadataWriter = new DBaseStreamWriter(MetadataFilePath);
                 _baseStream.Write(new Byte[100], 0, 100); // write empty header 
             }
             catch (Exception ex)
@@ -156,6 +159,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
+                _metadataWriter = new DBaseStreamWriter(MetadataFilePath);
                 _baseStream.Write(new Byte[100], 0, 100); // write empty header 
             }
             catch (Exception ex)
@@ -224,7 +228,10 @@ namespace ELTE.AEGIS.IO.Shapefile
             Byte[] byteArray = shape.ToRecord(_shapeIndex.Count);
 
             _shapeIndex.Add(new ShapeRecordInfo { Offset = (Int32)_baseStream.Position, Length = byteArray.Length });
-            
+
+            IDictionary<String, Object> metadata = geometry.Metadata;
+            _metadataWriter.Write(metadata ?? new Dictionary<String, Object>());
+
             _baseStream.Write(byteArray, 0, byteArray.Length);
         }
 
@@ -241,6 +248,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             if (disposing)
             {
+                _metadataWriter.Dispose();
                 _shapeIndex = null;
             }
 
