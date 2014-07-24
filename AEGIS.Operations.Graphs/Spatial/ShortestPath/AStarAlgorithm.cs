@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -15,21 +15,33 @@
 
 using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 {
     /// <summary>
-    /// Represents a shortest path transformation between two vertices using A* algorithm.
+    /// Represents an operation performing A* algorithm on a graph.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212334", "A* algorithm")]
-    public class AStarAlgorithm : SingleShortestPathAlgorithm
+    [OperationClass("AEGIS::212334", "A* algorithm")]
+    public class AStarAlgorithm : ShortestPathAlgorithm
     {
         #region Private fields
 
-        private readonly Func<Coordinate, Coordinate, Double> _heuristicMetric;
+        /// <summary>
+        /// The heuristic metric.
+        /// </summary>
+        private readonly Func<IGraphVertex, IGraphVertex, Double> _heuristicMetric;
+
+        /// <summary>
+        /// The heuristic limit multiplier.
+        /// </summary>
         private readonly Double _heuristicLimitMultiplier;
+
+        /// <summary>
+        /// The priority queue used for ordering vertices.
+        /// </summary>
         private Heap<Double, IGraphVertex> _priorityQueue;
 
         #endregion
@@ -83,19 +95,8 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         public AStarAlgorithm(IGeometryGraph source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, GraphOperationMethods.AStarAlgorithm, parameters)
         {
-            if (parameters.ContainsKey(GraphOperationParameters.HeuristicMetric))
-            {
-                _heuristicMetric = parameters[GraphOperationParameters.HeuristicMetric] as Func<Coordinate, Coordinate, Double>;
-            }
-            else
-            {
-                _heuristicMetric = (u, v) => Coordinate.Distance(u, v);
-            }
-
-            _heuristicLimitMultiplier = parameters.ContainsKey(GraphOperationParameters.HeuristicMetric) ? Convert.ToDouble(parameters[GraphOperationParameters.HeuristicMetric]) : Convert.ToDouble(GraphOperationParameters.HeuristicLimitMultiplier.DefaultValue);
-
-            _priorityQueue = null;
-            _distance = null;
+            _heuristicMetric = ResolveParameter<Func<IGraphVertex, IGraphVertex, Double>>(GraphOperationParameters.HeuristicMetric);
+            _heuristicLimitMultiplier = Convert.ToDouble(GraphOperationParameters.HeuristicLimitMultiplier);
         }
 
         #endregion
@@ -113,9 +114,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             _distance.Add(_sourceVertex, 0);
             _parent.Add(_sourceVertex, null);
 
-            Double limit = _distanceMetric(_sourceVertex.Coordinate, _targetVertex.Coordinate); // the direct distance used for search space limitation
+            Double limit = _heuristicMetric(_sourceVertex, _targetVertex); // the direct distance used for search space limitation
 
-            while (_priorityQueue.Count > 0 && !_isTargetFound)
+            while (_priorityQueue.Count > 0 && !_isTargetReached)
             {
                 IGraphVertex v = _priorityQueue.RemovePeek();
 
@@ -124,9 +125,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 
                 _finished.Add(v);
 
-                if (_source.VertexComparer.Equals(v, _targetVertex)) // the target node is found
+                if (_source.VertexComparer.Equals(v, _targetVertex)) // the target vertex is found
                 {
-                    _isTargetFound = true;
+                    _isTargetReached = true;
                     return;
                 }
 
@@ -139,16 +140,16 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
                     {
                         if (_distance[v] < limit * _heuristicLimitMultiplier)
                         {
-                            _distance[edge.Target] = _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate);
+                            _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
                             _parent[edge.Target] = v;
-                            _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target.Coordinate, _targetVertex.Coordinate), edge.Target);
+                            _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target, _targetVertex), edge.Target);
                         }
                     }
-                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate))
+                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate);
+                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
                         _parent[edge.Target] = v;
-                        _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target.Coordinate, _targetVertex.Coordinate), edge.Target);
+                        _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target, _targetVertex), edge.Target);
                     }
                 }
             }

@@ -49,8 +49,8 @@
     <Compile Include="Spatial\GraphOperationParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spatial\ShortestPath\AStarAlgorithm.cs" />
-    <Compile Include="Spatial\ShortestPath\DijkstrasSingleShortestPathAlgorithm.cs" />
-    <Compile Include="Spatial\ShortestPath\SingleShortestPathAlgorithm.cs" />
+    <Compile Include="Spatial\ShortestPath\DijkstrasSinglePathAlgorithm.cs" />
+    <Compile Include="Spatial\ShortestPath\ShortestPathAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core.Graphs\AEGIS.Core.Graphs.csproj">

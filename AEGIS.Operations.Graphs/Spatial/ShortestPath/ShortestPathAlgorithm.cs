@@ -1,9 +1,9 @@
-﻿/// <copyright file="SingleShortestPathAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="ShortestPathAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -20,26 +20,53 @@ using System.Linq;
 namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 {
     /// <summary>
-    /// Represents a shortest path transformation between two vertices.
+    /// Represents an operation computing the shortest path between two vertices in a graph.
     /// </summary>
-    public abstract class SingleShortestPathAlgorithm : Operation<IGeometryGraph, IGeometryGraph>
+    public abstract class ShortestPathAlgorithm : Operation<IGeometryGraph, IGeometryGraph>
     {
         #region Protected fields
 
-        protected readonly IGraphVertex _sourceVertex; // operation parameters
+        /// <summary>
+        /// The source vertex. This field is read-only.
+        /// </summary>
+        protected readonly IGraphVertex _sourceVertex;
+
+        /// <summary>
+        /// The target vertex. This field is read-only.
+        /// </summary>
         protected readonly IGraphVertex _targetVertex;
-        protected readonly Func<Coordinate, Coordinate, Double> _distanceMetric;
-        protected Dictionary<IGraphVertex, IGraphVertex> _parent; // utility fields
+
+        /// <summary>
+        /// The metric used to compute distances between coordinates.
+        /// </summary>
+        protected readonly Func<IGraphEdge, Double> _distanceMetric;
+
+        /// <summary>
+        /// The dictionary of parent vertices.
+        /// </summary>
+        protected Dictionary<IGraphVertex, IGraphVertex> _parent;
+
+        /// <summary>
+        /// The dictionary of vertex distances.
+        /// </summary>
         protected Dictionary<IGraphVertex, Double> _distance;
+
+        /// <summary>
+        /// The set of finished vertices.
+        /// </summary>
         protected HashSet<IGraphVertex> _finished;
-        protected Boolean _isTargetFound;
+
+        /// <summary>
+        /// A value indicating whethet the target vertex is reached.
+        /// </summary>
+        protected Boolean _isTargetReached;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SingleShortestPathAlgorithm" /> class.
+        /// Initializes a new instance of the <see cref="ShortestPathAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -48,7 +75,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// <exception cref="System.ArgumentNullException">
         /// The source is null.
         /// or
-        /// method;The method is null.
+        /// The method is null.
         /// or
         /// The method requires parameters which are not specified.
         /// </exception>
@@ -61,23 +88,12 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        protected SingleShortestPathAlgorithm(IGeometryGraph source, IGeometryGraph target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
+        protected ShortestPathAlgorithm(IGeometryGraph source, IGeometryGraph target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            _sourceVertex = parameters[GraphOperationParameters.SourceVertex] as IGraphVertex;
-            _targetVertex = parameters[GraphOperationParameters.TargetVertex] as IGraphVertex;
-
-            if (parameters.ContainsKey(GraphOperationParameters.DistanceMetric))
-            {
-                _distanceMetric = parameters[GraphOperationParameters.DistanceMetric] as Func<Coordinate, Coordinate, Double>;
-            }
-            else
-            {
-                _distanceMetric = (u, v) => Coordinate.Distance(u, v);
-            }
-
-            _parent = null;
-            _distance = null;
+            _sourceVertex = ResolveParameter<IGraphVertex>(GraphOperationParameters.SourceVertex);
+            _targetVertex = ResolveParameter<IGraphVertex>(GraphOperationParameters.TargetVertex);
+            _distanceMetric = ResolveParameter<Func<IGraphEdge, Double>>(GraphOperationParameters.DistanceMetric);
         }
 
         #endregion 
@@ -92,7 +108,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             _parent = new Dictionary<IGraphVertex, IGraphVertex>();
             _distance = new Dictionary<IGraphVertex, Double>();
             _finished = new HashSet<IGraphVertex>();
-            _isTargetFound = false;
+            _isTargetReached = false;
         }
 
         /// <summary>
@@ -100,7 +116,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// </summary>
         protected override void FinalizeResult()
         {
-            if (!_isTargetFound)
+            if (!_isTargetReached)
             {
                 return;
             }

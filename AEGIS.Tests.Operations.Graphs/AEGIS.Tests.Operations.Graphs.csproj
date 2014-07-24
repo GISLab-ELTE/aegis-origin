@@ -48,7 +48,7 @@
     <Compile Include="Conversion\GraphToGeometryConversionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spatial\ShortestPath\AStarAlgorithmTest.cs" />
-    <Compile Include="Spatial\ShortestPath\DijkstrasSingleShortestPathAlgorithmTest.cs" />
+    <Compile Include="Spatial\ShortestPath\DijkstrasSinglePathAlgorithmTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core.Graphs\AEGIS.Core.Graphs.csproj">

@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation for converting <see cref="GeometryGraph" /> instances to <see cref="IGeometry" /> representation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212110", "Graph to geometry conversion")]
+    [OperationClass("AEGIS::212110", "Graph to geometry conversion")]
     public class GraphToGeometryConversion : Operation<IGeometryGraph, IGeometry>
     {
         #region Private types

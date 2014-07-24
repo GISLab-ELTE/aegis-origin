@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,12 +25,31 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
 {
+    /// <summary>
+    /// Test fixture for class <see cref="AStarAlgorithm"/>.
+    /// </summary>
     [TestFixture]
     public class AStarAlgorithmTest
     {
+        #region Private fields
+
+        /// <summary>
+        /// The mock of the reference system.
+        /// </summary>
         private Mock<IReferenceSystem> _referenceSystemMock;
+
+        /// <summary>
+        /// The list of graphs.
+        /// </summary>
         private List<IGeometryGraph> _graphs;
 
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
@@ -74,8 +93,15 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
             _graphs.Add(graph);
         }
 
-        [TestCase]
-        public void AStarAlgorithmInitializeTest()
+        #endregion
+
+        #region Test methods
+
+        /// <summary>
+        /// Test case for the constructor.
+        /// </summary>
+        [Test]
+        public void AStarAlgorithmConstructorTest()
         {
             foreach (IGeometryGraph graph in _graphs)
             { 
@@ -95,10 +121,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
             }
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for the <see cref="Execute"/> method.
+        /// </summary>
+        [Test]
         public void AStarAlgorithmExecuteTest()
         {
-            // test case 1: connected simple graph
+            // connected simple graph
+
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters[GraphOperationParameters.SourceVertex] = _graphs[0].GetNearestVertex(new Coordinate(10, 10));
             parameters[GraphOperationParameters.TargetVertex] = _graphs[0].GetNearestVertex(new Coordinate(10, 20));
@@ -130,7 +160,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
                 vertex = nextVertex;
             }
 
-            // test case 2: disconnected simple graph
+
+            // disconnected simple graph
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters[GraphOperationParameters.SourceVertex] = _graphs[1].GetNearestVertex(new Coordinate(10, 10));
@@ -146,5 +177,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
 
             Assert.IsNull(aStarAlgorithm.Result);
         }
+
+        #endregion
     }
 }

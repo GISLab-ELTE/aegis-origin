@@ -1,9 +1,9 @@
-﻿/// <copyright file="DijkstraSinglePathAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="DijkstrasSingleShortestPathAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -15,19 +15,23 @@
 
 using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 {
     /// <summary>
-    /// Represents a shortest path transformation between two vertices using Dijkstra's algorithm.
+    /// Represents an operation performing Dijkstra's algorithm between two vertices on a graph.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212331", "Dijkstra's algorithm (to target)")]
-    public class DijkstrasSingleShortestPathAlgorithm : SingleShortestPathAlgorithm
+    [OperationClass("AEGIS::212331", "Dijkstra's algorithm (single path)")]
+    public class DijkstrasSinglePathAlgorithm : ShortestPathAlgorithm
     {
         #region Private fileds
 
+        /// <summary>
+        /// The priority queue used for ordering vertices.
+        /// </summary>
         private Heap<Double, IGraphVertex> _priorityQueue;
 
         #endregion
@@ -35,7 +39,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DijkstrasSingleShortestPathAlgorithm" /> class.
+        /// Initializes a new instance of the <see cref="DijkstrasSinglePathAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -53,13 +57,13 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public DijkstrasSingleShortestPathAlgorithm(IGeometryGraph source, IDictionary<OperationParameter, Object> parameters)
+        public DijkstrasSinglePathAlgorithm(IGeometryGraph source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {         
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DijkstrasSingleShortestPathAlgorithm" /> class.
+        /// Initializes a new instance of the <see cref="DijkstrasSinglePathAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -78,10 +82,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public DijkstrasSingleShortestPathAlgorithm(IGeometryGraph source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, GraphOperationMethods.DijkstrasSinlgeShortestPathAlgorithm, parameters)
+        public DijkstrasSinglePathAlgorithm(IGeometryGraph source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, GraphOperationMethods.DijkstrasSinglePathAlgorithm, parameters)
         {
-            _priorityQueue = null;
         }
 
         #endregion
@@ -99,7 +102,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             _distance.Add(_sourceVertex, 0);
             _parent.Add(_sourceVertex, null);
 
-            while (_priorityQueue.Count > 0 && !_isTargetFound)
+            while (_priorityQueue.Count > 0 && !_isTargetReached)
             {
                 IGraphVertex v = _priorityQueue.RemovePeek();
 
@@ -108,9 +111,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 
                 _finished.Add(v);
 
-                if (_source.VertexComparer.Equals(v, _targetVertex))
+                if (_source.VertexComparer.Equals(v, _targetVertex)) // the target vertex is found
                 {
-                    _isTargetFound = true;
+                    _isTargetReached = true;
                     return;
                 }
 
@@ -121,13 +124,13 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 
                     if (!_distance.ContainsKey(edge.Target))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate);
+                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
                         _parent[edge.Target] = v;
                         _priorityQueue.Insert(_distance[edge.Target], edge.Target);
                     }
-                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate))
+                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge.Source.Coordinate, edge.Target.Coordinate);
+                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
                         _parent[edge.Target] = v;
                         _priorityQueue.Insert(_distance[edge.Target], edge.Target);
                     }

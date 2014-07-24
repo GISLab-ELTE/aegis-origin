@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Management;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation for converting geometry to network representation.
     /// </summary>
-    [IdentifiedObjectInstance("AEGIS::212101", "Geometry to network conversion")]
+    [OperationClass("AEGIS::212101", "Geometry to network conversion")]
     public class GeometryToNetworkConversion : GeometryToGraphConversion
     {
         #region Constructors

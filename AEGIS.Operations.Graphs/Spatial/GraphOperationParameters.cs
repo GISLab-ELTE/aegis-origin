@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                     OperationParameter.CreateOptionalParameter<Func<IGraphVertex, IGraphVertex, Double>>(
                         "AEGIS::222311", "Heuristic metric", 
                         "Heuristic metric for traversal methods used for computing the distance between the current vertex and the specified target vertex.", null, 
-                        ((sourceVertex, targetVertex) => Coordinate.Distance(sourceVertex.Coordinate, targetVertex.Coordinate))
+                        ((source, target) => Coordinate.Distance(source.Coordinate, target.Coordinate))
                     ));
             }
         }

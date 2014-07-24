@@ -89,8 +89,8 @@ namespace ELTE.AEGIS.Operations.Spatial
         private static OperationMethod _bellmannFordAlgorithm;
         private static OperationMethod _breathFirstSearch;
         private static OperationMethod _depthFirstSearch;
-        private static OperationMethod _dijkstasAlgorithm;
-        private static OperationMethod _dijkstasSingleShortestPathAlgorithm;
+        private static OperationMethod _dijkstrasAlgorithm;
+        private static OperationMethod _dijkstrasSinglePathAlgorithm;
         private static OperationMethod _floydWarshallAlgorithmMinimalPath;
         private static OperationMethod _floydWarshallAlgorithmTransitiveClosure;
         private static OperationMethod _primsAlgorithm;
@@ -176,11 +176,11 @@ namespace ELTE.AEGIS.Operations.Spatial
         /// <summary>
         /// Dijkstra's algorithm.
         /// </summary>
-        public static OperationMethod DijkstasAlgorithm
+        public static OperationMethod DijkstrasAlgorithm
         {
             get
             {
-                return _dijkstasAlgorithm ?? (_dijkstasAlgorithm =
+                return _dijkstrasAlgorithm ?? (_dijkstrasAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212310", "Dijkstra's algorithm",
                         "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.",
@@ -192,16 +192,16 @@ namespace ELTE.AEGIS.Operations.Spatial
         }
 
         /// <summary>
-        /// Dijkstra's algorithm (single shortest path).
+        /// Dijkstra's algorithm (single path).
         /// </summary>
-        public static OperationMethod DijkstrasSinlgeShortestPathAlgorithm
+        public static OperationMethod DijkstrasSinglePathAlgorithm
         {
             get
             {
-                return _dijkstasSingleShortestPathAlgorithm ?? (_dijkstasSingleShortestPathAlgorithm =
+                return _dijkstrasSinglePathAlgorithm ?? (_dijkstrasSinglePathAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
-                        "AEGIS::212331", "Dijkstra's algorithm (single shortest path)",
-                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.",
+                        "AEGIS::212331", "Dijkstra's algorithm (single path)",
+                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree. This version of the ",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.TargetVertex,
