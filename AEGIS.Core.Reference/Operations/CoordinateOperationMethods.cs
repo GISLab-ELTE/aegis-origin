@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -133,6 +133,8 @@ namespace ELTE.AEGIS.Reference.Operations
         private static CoordinateOperationMethod _lambertConicConformal2SPProjection;
         private static CoordinateOperationMethod _lambertConicConformal2SPBelgiumProjection;
         private static CoordinateOperationMethod _lambertConicNearConformalProjection;
+        private static CoordinateOperationMethod _lambertCylindricalEqualAreaEllipsoidalProjection;
+        private static CoordinateOperationMethod _lambertCylindricalEqualAreaSphericalProjection;
         private static CoordinateOperationMethod _mercatorAProjection;
         private static CoordinateOperationMethod _mercatorBProjection;
         private static CoordinateOperationMethod _mercatorCProjection;
@@ -1075,6 +1077,46 @@ namespace ELTE.AEGIS.Reference.Operations
                                                       CoordinateOperationParameters.FalseNorthing);
 
                 return _lambertConicNearConformalProjection;
+            }
+        }
+
+        /// <summary>
+        /// Lambert Cylindrical Equal Area (ellipsoidal case).
+        /// </summary>
+        public static CoordinateOperationMethod LambertCylindricalEqualAreaEllipsoidalProjection
+        {
+            get
+            {
+                if (_lambertCylindricalEqualAreaEllipsoidalProjection == null)
+                {
+                    _lambertCylindricalEqualAreaEllipsoidalProjection =
+                        new CoordinateOperationMethod("EPSG::9835", "Lambert Cylindrical Equal Area (ellipsoidal case)", true,
+                        CoordinateOperationParameters.LatitudeOf1stStandardParallel,
+                        CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                        CoordinateOperationParameters.FalseEasting,
+                        CoordinateOperationParameters.FalseNorthing);
+                }
+                return _lambertCylindricalEqualAreaEllipsoidalProjection;
+            }
+        }
+
+        /// <summary>
+        /// Lambert Cylindrical Equal Area (spherical case).
+        /// </summary>
+        public static CoordinateOperationMethod LambertCylindricalEqualAreaSphericalProjection
+        {
+            get
+            {
+                if (_lambertCylindricalEqualAreaSphericalProjection == null)
+                {
+                    _lambertCylindricalEqualAreaSphericalProjection = 
+                        new CoordinateOperationMethod("EPSG::9834", "Lambert Cylindrical Equal Area (spherical case)", true,
+                        CoordinateOperationParameters.LatitudeOf1stStandardParallel,
+                        CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                        CoordinateOperationParameters.FalseEasting,
+                        CoordinateOperationParameters.FalseNorthing);
+                }
+                return _lambertCylindricalEqualAreaSphericalProjection;
             }
         }
 

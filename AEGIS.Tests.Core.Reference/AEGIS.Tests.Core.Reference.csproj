@@ -54,6 +54,7 @@
     <Compile Include="Operations\Projections\KrovakProjectionTest.cs" />
     <Compile Include="Operations\Projections\LabordeObliqueMercatorProjectionTest.cs" />
     <Compile Include="Operations\Projections\LambertConicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\LambertCylindricalEqualAreaProjectionTest.cs" />
     <Compile Include="Operations\Projections\MercatorProjectionTest.cs" />
     <Compile Include="Operations\Projections\ModifiedAzimuthalEquidistantProjectionTest.cs" />
     <Compile Include="Operations\Projections\ObliqueStereographicProjectionTest.cs" />

@@ -80,6 +80,8 @@
     <Compile Include="Operations\Conversions\GeocentricToTopocentricConversion.cs" />
     <Compile Include="Operations\Conversions\GeographicToTopocentricConversion.cs" />
     <Compile Include="Operations\Projections\LabordeObliqueMercatorProjection.cs" />
+    <Compile Include="Operations\Projections\LambertCylindricalEqualAreaEllipsoidalProjection.cs" />
+    <Compile Include="Operations\Projections\LambertCylindricalEqualAreaSphericalProjection.cs" />
     <Compile Include="Operations\Projections\ObliqueMercatorProjection.cs" />
     <Compile Include="Operations\Projections\PolarStereographicBProjection.cs" />
     <Compile Include="Operations\Projections\PolarStereographicCProjection.cs" />
