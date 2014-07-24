@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -26,15 +26,37 @@ namespace ELTE.AEGIS.Operations
     /// <typeparam name="SourceType">The type of the result.</typeparam>
     public abstract class Operation<SourceType, ResultType> : IOperation<SourceType, ResultType>
     {
+        #region Private fields
+
+        /// <summary>
+        /// The operation method. This field is read-only.
+        /// </summary>
+        private readonly OperationMethod _method;
+
+        /// <summary>
+        /// The current operation state.
+        /// </summary>
+        private OperationState _state; 
+
+        #endregion
+
         #region Protected fields
 
-        protected readonly OperationMethod _method;
+        /// <summary>
+        /// The parameters of the operation. This field is read-only.
+        /// </summary>
         protected readonly IDictionary<OperationParameter, Object> _parameters;
+
+        /// <summary>
+        /// The source object. This field is read-only.
+        /// </summary>
         protected readonly SourceType _source;
+
+        /// <summary>
+        /// The result object.
+        /// </summary>
         protected ResultType _result;
         
-        protected OperationState _state; 
-
         #endregion
 
         #region IOperation properties
@@ -217,46 +239,57 @@ namespace ELTE.AEGIS.Operations
         protected virtual IOperation<ResultType, SourceType> ComputeReverseOperation() { return null; }
 
         /// <summary>
-        /// Returns the specified parameter value.
+        /// Resolves the specified parameter.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter value.</typeparam>
+        /// <typeparam name="T">The type of the parameter.</typeparam>
         /// <param name="parameter">The parameter.</param>
-        /// <returns>The parameter value of the default value if not found.</returns>
-        protected Object GetParameter(OperationParameter parameter)
+        /// <returns>The specified parameter value or the default value if none specified.</returns>
+        protected Object ResolveParameter(OperationParameter parameter)
         {
-            if (_parameters == null || !_parameters.ContainsKey(parameter))
-                return parameter.DefaultValue;
+            if (_parameters != null && _parameters.ContainsKey(parameter))
+                return _parameters[parameter];
 
-            return _parameters[parameter];
+            return parameter.DefaultValue;
         }
 
         /// <summary>
-        /// Returns the specified parameter value.
+        /// Resolves the specified parameter.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter value.</typeparam>
+        /// <typeparam name="T">The type of the parameter.</typeparam>
         /// <param name="parameter">The parameter.</param>
-        /// <returns>The parameter value of the default value if not found.</returns>
-        protected T GetParameter<T>(OperationParameter parameter)
+        /// <returns>The specified parameter value or the default value if none specified.</returns>
+        protected T ResolveParameter<T>(OperationParameter parameter)
         {
-            if (_parameters == null || !_parameters.ContainsKey(parameter) || !(_parameters[parameter] is T))
-                return (T)parameter.DefaultValue;
+            if (_parameters != null && _parameters.ContainsKey(parameter) && _parameters[parameter] is T)
+                return (T)_parameters[parameter];
 
-            return (T)_parameters[parameter];
+            return (T)parameter.DefaultValue;
         }
 
         /// <summary>
-        /// Returns the specified parameter value.
+        /// Resolves the specified parameter.
         /// </summary>
         /// <typeparam name="T">The type of the parameter value.</typeparam>
         /// <param name="parameter">The parameter.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>The parameter value or the specified default value if not found.</returns>
-        protected T GetParameter<T>(OperationParameter parameter, T defaultValue)
+        protected T ResolveParameter<T>(OperationParameter parameter, T defaultValue)
         {
             if (_parameters == null || !_parameters.ContainsKey(parameter) || !(_parameters[parameter] is T))
                 return defaultValue;
 
             return (T)_parameters[parameter];
+        }
+
+
+        /// <summary>
+        /// Determines whether the specified parameter is porovided.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns><c>true</c> if the parameter is provided; otherwise, <c>false</c>.</returns>
+        protected Boolean IsProvidedParameter(OperationParameter parameter)
+        {
+            return _parameters != null && _parameters.ContainsKey(parameter);
         }
 
         #endregion

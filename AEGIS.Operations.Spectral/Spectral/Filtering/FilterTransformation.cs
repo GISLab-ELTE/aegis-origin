@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -81,7 +81,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         protected FilterTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            _filterRadius = Convert.ToInt32(GetParameter(SpectralOperationParameters.FilterRadius));
+            _filterRadius = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius));
             _radiometricResultionLimits = new UInt64[_source.Raster.SpectralResolution];
 
             if (_sourceBandIndex >= 0)

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -81,6 +81,9 @@ namespace ELTE.AEGIS.Operations.Conversion
         {
             #region Private fields
 
+            /// <summary>
+            /// The edge comparer.
+            /// </summary>
             private CoordinateComparer _comparer;
 
             #endregion
@@ -130,11 +133,13 @@ namespace ELTE.AEGIS.Operations.Conversion
             /// </summary>
             /// <value>The first coordinate.</value>
             public Coordinate First { get; private set; }
+
             /// <summary>
             /// Gets the second coordinate.
             /// </summary>
             /// <value>The second coordinate.</value>
             public Coordinate Second { get; private set; }
+
             /// <summary>
             /// Gets the third coordinate.
             /// </summary>
@@ -261,11 +266,34 @@ namespace ELTE.AEGIS.Operations.Conversion
 
         #region Private fields
 
+        /// <summary>
+        /// The geometry factory used for producing the result. This field is read-only.
+        /// </summary>
         private readonly IGeometryFactory _factory;
+
+        /// <summary>
+        /// The dimension of the result. This field is read-only.
+        /// </summary>
         private readonly Int32 _dimension;
+
+        /// <summary>
+        /// The value indicating whether the geometry metadata is preserved. This field is read-only.
+        /// </summary>
         private readonly Boolean _metadataPreservation;
+
+        /// <summary>
+        /// The set of produced points.
+        /// </summary>
         private HashSet<IPoint> _points;
+
+        /// <summary>
+        /// The set of produced lines.
+        /// </summary>
         private HashSet<ILine> _lines;
+
+        /// <summary>
+        /// The set of produced polygons.
+        /// </summary>
         private HashSet<IPolygon> _polygons;
 
         #endregion
@@ -305,9 +333,9 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GraphToGeometryConversion(IGeometryGraph source, IGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, ConversionMethods.GraphToGeometryConversion, parameters)
         {
-            _factory = GetParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
-            _dimension = Convert.ToInt32(GetParameter(ConversionParameters.GeometryDimension));
-            _metadataPreservation = Convert.ToBoolean(GetParameter(OperationParameters.MetadataPreservation));
+            _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
+            _dimension = Convert.ToInt32(ResolveParameter(ConversionParameters.GeometryDimension));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
         #endregion

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             if (_sourceBandIndex >= 0)
             {
                 _lowerThresholdValues = new Double[] { RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndex)) };
-                _upperThresholdValues = new Double[] { GetParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary) };
+                _upperThresholdValues = new Double[] { ResolveParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary) };
             }
             else
             {
@@ -88,7 +88,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {
                     _lowerThresholdValues[i] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(i));
-                    _upperThresholdValues[i] = GetParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary);
+                    _upperThresholdValues[i] = ResolveParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary);
                 }
             }
         }

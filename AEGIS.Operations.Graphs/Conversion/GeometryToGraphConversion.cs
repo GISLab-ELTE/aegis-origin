@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -28,7 +28,14 @@ namespace ELTE.AEGIS.Operations.Conversion
     {
         #region Protected fields
 
+        /// <summary>
+        /// A value indicating whether edges are added in both direction. This field is read-only.
+        /// </summary>
         protected readonly Boolean _bidirectionalConversion;
+
+        /// <summary>
+        /// The value indicating whether the geometry metadata is preserved. This field is read-only.
+        /// </summary>
         protected readonly Boolean _metadataPreservation;
 
         #endregion
@@ -82,8 +89,8 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GeometryToGraphConversion(IGeometry source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, ConversionMethods.GeometryToGraphConversion, parameters)
         {
-            _bidirectionalConversion = Convert.ToBoolean(GetParameter(ConversionParameters.BidirectionalConversion));
-            _metadataPreservation = Convert.ToBoolean(GetParameter(OperationParameters.MetadataPreservation));
+            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(ConversionParameters.BidirectionalConversion));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
         /// <summary>
@@ -112,8 +119,8 @@ namespace ELTE.AEGIS.Operations.Conversion
         protected GeometryToGraphConversion(IGeometry source, IGeometryGraph target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            _bidirectionalConversion = Convert.ToBoolean(GetParameter(ConversionParameters.BidirectionalConversion));
-            _metadataPreservation = Convert.ToBoolean(GetParameter(OperationParameters.MetadataPreservation));
+            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(ConversionParameters.BidirectionalConversion));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
         #endregion
@@ -125,7 +132,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// </summary>
         protected override void PrepareResult()
         {
-            if (_state == OperationState.Preparing && _result == null)
+            if (State == OperationState.Preparing && _result == null)
                 _result = _source.Factory.CreateGraph(_source.Metadata);
         }
 

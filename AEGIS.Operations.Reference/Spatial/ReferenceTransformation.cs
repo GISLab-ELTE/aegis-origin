@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -30,9 +30,24 @@ namespace ELTE.AEGIS.Operations.Spatial
     {
         #region Private fields
 
+        /// <summary>
+        /// The target reference system. This field is read-only.
+        /// </summary>
         private readonly IReferenceSystem _targetReferenceSystem;
+
+        /// <summary>
+        /// The value indicating whether the geometry metadata is preserved. This field is read-only.
+        /// </summary>
         private readonly Boolean _metadataPreservation;
+
+        /// <summary>
+        /// The geometry factory used for producing the result.
+        /// </summary>
         private IGeometryFactory _factory;
+
+        /// <summary>
+        /// The transformation strategy.
+        /// </summary>
         private ITransformationStrategy _transformation;
 
         #endregion
@@ -47,9 +62,9 @@ namespace ELTE.AEGIS.Operations.Spatial
         public ReferenceTransformation(IGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, ReferenceOperationMethods.ReferenceTransformation, parameters)
         {
-            _targetReferenceSystem = GetParameter<IReferenceSystem>(ReferenceOperationParameters.TargetReferenceSystem);
-            _metadataPreservation = GetParameter<Boolean>(OperationParameters.MetadataPreservation);
-            _factory = GetParameter<IGeometryFactory>(OperationParameters.GeometryFactory);
+            _targetReferenceSystem = ResolveParameter<IReferenceSystem>(ReferenceOperationParameters.TargetReferenceSystem);
+            _metadataPreservation = ResolveParameter<Boolean>(OperationParameters.MetadataPreservation);
+            _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory);
         }
 
         #endregion

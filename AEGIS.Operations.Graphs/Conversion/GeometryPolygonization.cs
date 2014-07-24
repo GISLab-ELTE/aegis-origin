@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -27,9 +27,24 @@ namespace ELTE.AEGIS.Operations.Conversion
     {
         #region Private fields
 
+        /// <summary>
+        /// The geometry factory used for producing the result. This field is read-only.
+        /// </summary>
         private readonly IGeometryFactory _factory;
+
+        /// <summary>
+        /// The value indicating whether the geometry metadata is preserved. This field is read-only.
+        /// </summary>
         private readonly Boolean _metadataPreservation;
+
+        /// <summary>
+        /// The conversion from geometry to geometry network.
+        /// </summary>
         private GeometryToNetworkConversion _networkConversion;
+
+        /// <summary>
+        /// The conversion from geometry graph to geometry.
+        /// </summary>
         private GraphToGeometryConversion _geometryConversion;
 
         #endregion
@@ -45,8 +60,8 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GeometryPolygonization(IGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, ConversionMethods.GeometryPolygonization, parameters)
         {
-            _factory = GetParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
-            _metadataPreservation = Convert.ToBoolean(GetParameter(OperationParameters.MetadataPreservation));
+            _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
         #endregion

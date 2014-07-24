@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -76,8 +76,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             if (_sourceBandIndex >= 0)
             {
-                _lowerThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdBoundary)) };
-                _upperThresholdValues = new Double[] { Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdBoundary)) };
+                _lowerThresholdValues = new Double[] { Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary)) };
+                _upperThresholdValues = new Double[] { Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary)) };
             }
             else
             {
@@ -86,8 +86,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
 
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {
-                    _lowerThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.LowerThresholdBoundary));
-                    _upperThresholdValues[i] = Convert.ToDouble(GetParameter(SpectralOperationParameters.UpperThresholdBoundary));
+                    _lowerThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                    _upperThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
                 }
             }
         }

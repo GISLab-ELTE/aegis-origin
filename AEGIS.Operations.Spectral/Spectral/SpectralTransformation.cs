@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         private class SpectralOperationEntity : ISpectralEntity
         {
-            #region Private constants 
+            #region Private constant fields. 
 
             /// <summary>
             /// Tha maximal number of values that can be read. This field is constant.
@@ -44,11 +44,34 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             #region Private fields
 
+            /// <summary>
+            /// The operation computing the spectral values of the entity. This field is read-only.
+            /// </summary>
             private readonly SpectralTransformation _operation;
+
+            /// <summary>
+            /// The spectral resolution. This field is read-only.
+            /// </summary>
             private readonly Int32 _spectralResolution;
+
+            /// <summary>
+            /// The number of columns. This field is read-only.
+            /// </summary>
             private readonly Int32 _numberOfColumns;
+
+            /// <summary>
+            /// The number of rows. This field is read-only.
+            /// </summary>
             private readonly Int32 _numberOfRows;
+
+            /// <summary>
+            /// The array of radiometric resolutions. This field is read-only.
+            /// </summary>
             private readonly Int32[] _radiometricResolutions;
+
+            /// <summary>
+            /// The representation of the raster. This field is read-only.
+            /// </summary>
             private readonly RasterRepresentation _representation;
 
             #endregion
@@ -619,6 +642,9 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             #region Private static fields
 
+            /// <summary>
+            /// The supported spectral orders.
+            /// </summary>
             private static SpectralDataOrder[] _supportedOrders;
 
             #endregion
@@ -734,7 +760,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The resulting raster.</returns>
         protected IRaster PrepareRasterResult(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
         {
-            if (_state == OperationState.Initialized)
+            if (State == OperationState.Initialized)
             {
                 return new ProxyRasterFactory(new SpectralOperationEntity(this,
                                                                            spectralResolution,

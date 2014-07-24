@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -49,7 +49,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected FunctionBasedThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.FunctionBasedThresholdClassification, parameters)
         {
-            _selectorFunction = GetParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>(SpectralOperationParameters.SpectralSelectorFunction);
+            _selectorFunction = ResolveParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>(SpectralOperationParameters.SpectralSelectorFunction);
         }
 
         #endregion
