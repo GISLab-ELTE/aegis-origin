@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -50,10 +50,29 @@ namespace ELTE.AEGIS.Collections
         {
             #region Private fields
 
+            /// <summary>
+            /// The heap that is enumerated.
+            /// </summary>
             private Heap<TKey, TValue> _localHeap;
+
+            /// <summary>
+            /// The version at which the enumerator was instantiated.
+            /// </summary>
             private Int32 _localVersion;
-            private Int32 _index;
+
+            /// <summary>
+            /// The position of the enumerator.
+            /// </summary>
+            private Int32 _position;
+
+            /// <summary>
+            /// The current item.
+            /// </summary>
             private KeyValuePair<TKey, TValue> _current;
+
+            /// <summary>
+            /// A value indicating whether this instance is disposed.
+            /// </summary>
             private Boolean _disposed;
 
             #endregion
@@ -91,7 +110,7 @@ namespace ELTE.AEGIS.Collections
                 _localHeap = heap;
                 _localVersion = heap._version;
 
-                _index = 0;
+                _position = -1;
                 _current = default(KeyValuePair<TKey, TValue>);
                 _disposed = false;
             }
@@ -121,16 +140,17 @@ namespace ELTE.AEGIS.Collections
                 if (_localVersion != _localHeap._version)
                     throw new InvalidOperationException("The collection was modified after the enumerator was created.");
 
-                if (_index >= _localHeap._size)
+                _position++;
+
+                if (_position >= _localHeap._size)
                 {
-                    _index = _localHeap._size + 1;
+                    _position = _localHeap._size;
                     _current = default(KeyValuePair<TKey, TValue>);
                     return false;
                 }
                 else
                 {
-                    _current = _localHeap._items[_index];
-                    _index++;
+                    _current = _localHeap._items[_position];
                     return true;
                 }
             }
@@ -147,7 +167,7 @@ namespace ELTE.AEGIS.Collections
                 if (_localVersion != _localHeap._version)
                     throw new InvalidOperationException("The collection was modified after the enumerator was created.");
 
-                _index = 0;
+                _position = -1;
                 _current = default(KeyValuePair<TKey, TValue>);
             }
 
@@ -191,15 +211,37 @@ namespace ELTE.AEGIS.Collections
 
         #endregion
 
-        #region Protected fields
+        #region Private fields
 
-        protected const Int32 _defaultCapacity = 4;
-        protected KeyValuePair<TKey, TValue>[] _items;
-        protected Int32 _size;
-        protected Int32 _version;
-        protected IComparer<TKey> _comparer;
+        /// <summary>
+        /// The default capacity. This field is constant.
+        /// </summary>
+        private const Int32 DefaultCapacity = 4;
 
-        protected static KeyValuePair<TKey, TValue>[] _emptyArray = new KeyValuePair<TKey, TValue>[0];
+        /// <summary>
+        /// The items of the heap stored in an array.
+        /// </summary>
+        private KeyValuePair<TKey, TValue>[] _items;
+
+        /// <summary>
+        /// The number of items stored in the heap.
+        /// </summary>
+        private Int32 _size;
+
+        /// <summary>
+        /// The version of the heap.
+        /// </summary>
+        private Int32 _version;
+
+        /// <summary>
+        /// The comparer that is used to determine order of keys for the heap..
+        /// </summary>
+        private readonly IComparer<TKey> _comparer;
+
+        /// <summary>
+        /// The empty array. This field is read-only.
+        /// </summary>
+        private static readonly KeyValuePair<TKey, TValue>[] _emptyArray = new KeyValuePair<TKey, TValue>[0];
 
         #endregion
 
@@ -208,17 +250,13 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// Gets the number of elements actually contained in the heap.
         /// </summary>
-        /// <value>
-        /// The number of elements actually contained in the heap
-        /// </value>
+        /// <value>The number of elements actually contained in the heap.</value>
         public Int32 Count { get { return _size; } }
 
         /// <summary>
         /// Gets or sets the total number of elements the internal data structure can hold without resizing.
         /// </summary>
-        /// <value>
-        /// The number of elements that the heap can contain before resizing is required.
-        /// </value>
+        /// <value>The number of elements that the heap can contain before resizing is required.</value>
         /// <exception cref="System.ArgumentOutOfRangeException">Capacity is set to a value that is less than <see cref="Count" />.</exception>
         public Int32 Capacity { 
             get { return _items.Length; }
@@ -227,9 +265,8 @@ namespace ELTE.AEGIS.Collections
                 if (value != _items.Length)
                 {
                     if (value < _size)
-                    {
                         throw new InvalidOperationException("Capacity is set to a value that is less than Count.");
-                    }
+
                     if (value > 0)
                     {
                         KeyValuePair<TKey, TValue>[] newItems = new KeyValuePair<TKey, TValue>[value];
@@ -258,6 +295,7 @@ namespace ELTE.AEGIS.Collections
             {
                 if (_size == 0)
                     throw new InvalidOperationException("The heap is empty.");
+
                 return _items[0].Value; 
             } 
         }
@@ -309,9 +347,9 @@ namespace ELTE.AEGIS.Collections
         /// <param name="comparer">The <see cref="IComparer{T}" /> implementation to use when comparing keys, or null to use the default <see cref="Comparer{TKey}" /> for the type of the key.</param>
         public Heap(IComparer<TKey> comparer)
         {
-            _items = _emptyArray;
             _size = 0;
             _version = 0;
+            _items = _emptyArray;
 
             _comparer = comparer ?? Comparer<TKey>.Default;
         }
@@ -326,9 +364,9 @@ namespace ELTE.AEGIS.Collections
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
-            _items = new KeyValuePair<TKey, TValue>[_size];
             _size = 0;
             _version = 0;
+            _items = new KeyValuePair<TKey, TValue>[DefaultCapacity];
             _comparer = Comparer<TKey>.Default;
 
             foreach (KeyValuePair<TKey, TValue> element in source)
@@ -376,7 +414,6 @@ namespace ELTE.AEGIS.Collections
             _items = new KeyValuePair<TKey, TValue>[capacity];
             _size = 0;
             _version = 0;
-            _comparer = Comparer<TKey>.Default;
 
             _comparer = comparer ?? Comparer<TKey>.Default;
         }
@@ -485,9 +522,7 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
-        /// <returns>
-        /// An <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> object that can be used to iterate through the collection.
-        /// </returns>
+        /// <returns>An <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> object that can be used to iterate through the collection.</returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return new Enumerator(this);
@@ -496,12 +531,10 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
-        /// <returns>
-        /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
-        /// </returns>
+        /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(this);
+            return GetEnumerator();
         }
 
         #endregion
@@ -516,7 +549,7 @@ namespace ELTE.AEGIS.Collections
         {
             if (_items.Length < min)
             {
-                Int32 newCapacity = _items.Length == 0 ? _defaultCapacity : _items.Length * 2;
+                Int32 newCapacity = _items.Length == 0 ? DefaultCapacity : _items.Length * 2;
 
                 if (newCapacity < min)
                     newCapacity = min;
