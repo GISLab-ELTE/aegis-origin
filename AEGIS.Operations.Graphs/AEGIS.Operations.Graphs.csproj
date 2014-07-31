@@ -52,6 +52,7 @@
     <Compile Include="Spatial\ShortestPath\BellmanFordAlgorithm.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Spatial\ShortestPath\DijkstrasAlgorithm.cs" />
     <Compile Include="Spatial\ShortestPath\DijkstrasSinglePathAlgorithm.cs" />
     <Compile Include="Spatial\ShortestPath\ShortestPathAlgorithm.cs" />
     <Compile Include="Spatial\ShortestPath\ShortestPathTreeAlgorithm.cs">
