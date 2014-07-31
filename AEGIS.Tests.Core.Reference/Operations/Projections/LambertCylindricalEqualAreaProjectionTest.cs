@@ -120,8 +120,8 @@ namespace ELTE.AEGIS.Tests.Reference.Operations.Projections
             GeoCoordinate expected = new GeoCoordinate(Angle.FromDegree(5), Angle.FromDegree(-78));
             GeoCoordinate transformed = _projectionEllipsoidal.Reverse(_projectionEllipsoidal.Forward(expected));
 
-            Assert.AreEqual(expected.Latitude.BaseValue, transformed.Latitude.BaseValue, 0.0001);
-            Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.0001);
+            Assert.AreEqual(expected.Latitude.BaseValue, transformed.Latitude.BaseValue, 0.001);
+            Assert.AreEqual(expected.Longitude.BaseValue, transformed.Longitude.BaseValue, 0.001);
         }
 
         #endregion
