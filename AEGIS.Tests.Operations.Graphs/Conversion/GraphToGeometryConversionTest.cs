@@ -28,8 +28,20 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
     [TestFixture]
     public class GraphToGeometryConversionTest
     {
+        #region Private fields
+
+        /// <summary>
+        /// The mock of the reference system.
+        /// </summary>
         private Mock<IReferenceSystem> _referenceSystemMock;
 
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
@@ -38,8 +50,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             _referenceSystemMock = new Mock<IReferenceSystem>(MockBehavior.Strict);
         }
 
+        #endregion
 
-        [TestCase]
+        #region Test methods
+
+        /// <summary>
+        /// Test case for converting points.
+        /// </summary>
+        [Test]
         public void GraphToGeometryConversionPointsTest()
         {
             Random random = new Random();
@@ -55,7 +73,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             // test case 1: without metadata
 
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 0;
+            parameters[GraphOperationParameters.GeometryDimension] = 0;
 
             GraphToGeometryConversion conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -82,7 +100,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
                 });
 
             parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 0;
+            parameters[GraphOperationParameters.GeometryDimension] = 0;
             parameters[OperationParameters.MetadataPreservation] = true;
 
             conversion = new GraphToGeometryConversion(graph, parameters);
@@ -102,7 +120,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             }
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for converting lines.
+        /// </summary>
+        [Test]
         public void GraphToGeometryConversionLinesTest()
         {
             Random random = new Random();
@@ -124,7 +145,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             // test case 1: only points
 
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 0;
+            parameters[GraphOperationParameters.GeometryDimension] = 0;
 
             GraphToGeometryConversion conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -142,7 +163,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             // test case 2: only lines
 
             parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 1;
+            parameters[GraphOperationParameters.GeometryDimension] = 1;
 
             conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -168,7 +189,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             newCoordinates.ForEach(coordinate => graph.AddVertex(coordinate));
 
             parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 1;
+            parameters[GraphOperationParameters.GeometryDimension] = 1;
 
             conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -195,7 +216,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             }
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for converting polygons.
+        /// </summary>
+        [Test]
         public void GraphToGeometryConversionPolygonsTest()
         {
             // test case 1: single polygon
@@ -221,7 +245,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             graph.AddEdge(graph.GetVertex(coordinates[0]), graph.GetVertex(coordinates[coordinates.Length - 1]));
 
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, object>();
-            parameters[ConversionParameters.GeometryDimension] = 2;
+            parameters[GraphOperationParameters.GeometryDimension] = 2;
 
             GraphToGeometryConversion conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -326,5 +350,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             for (Int32 i = 0; i < coordinates.Length; i++)
                 Assert.IsTrue((result as IPolygon).Shell.Coordinates.Contains(coordinates[i]));
         }
+
+        #endregion
     }
 }

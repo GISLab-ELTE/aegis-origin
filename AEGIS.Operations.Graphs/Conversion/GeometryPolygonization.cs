@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <exception cref="System.ArgumentException">The type of a parameter does not match the type specified by the method.</exception>
         public GeometryPolygonization(IGeometry source, IDictionary<OperationParameter, Object> parameters)
-            : base(source, null, ConversionMethods.GeometryPolygonization, parameters)
+            : base(source, null, GraphOperationMethods.GeometryPolygonization, parameters)
         {
             _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
@@ -74,14 +74,14 @@ namespace ELTE.AEGIS.Operations.Conversion
         protected override void ComputeResult()
         {
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(ConversionParameters.BidirectionalConversion, true);
+            parameters.Add(GraphOperationParameters.BidirectionalConversion, true);
             parameters.Add(OperationParameters.MetadataPreservation, _metadataPreservation);
 
             _networkConversion = new GeometryToNetworkConversion(_source, parameters);
             _networkConversion.Execute();
 
             parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(ConversionParameters.GeometryDimension, 2);
+            parameters.Add(GraphOperationParameters.GeometryDimension, 2);
             parameters.Add(OperationParameters.GeometryFactory, _factory);
             parameters.Add(OperationParameters.MetadataPreservation, _metadataPreservation);
 

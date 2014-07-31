@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Spatial
+namespace ELTE.AEGIS.Operations
 {
     /// <summary>
     /// Represents a collection of known <see cref="OperationMethod" /> instances for graph operations.
@@ -94,6 +94,10 @@ namespace ELTE.AEGIS.Operations.Spatial
         private static OperationMethod _edmondsKarpAlgorithm;
         private static OperationMethod _floydWarshallAlgorithmMinimalPath;
         private static OperationMethod _floydWarshallAlgorithmTransitiveClosure;
+        private static OperationMethod _geometryPolygonization;
+        private static OperationMethod _geometryToGraphConversion;
+        private static OperationMethod _geometryToNetworkConversion;
+        private static OperationMethod _graphToGeometryConversion;
         private static OperationMethod _primsAlgorithm;
         private static OperationMethod _kruskalAlgorithm;
         private static OperationMethod _reverseDeleteAlgorithm;
@@ -140,6 +144,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                     ));
             }
         }
+
         /// <summary>
         /// Breath-first search.
         /// </summary>
@@ -259,6 +264,79 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "AEGIS::212601", "Floyd–Warshall algorithm (for transitive closure)",
                         "Floyd–Warshall algorithm is a graph analysis algorithm for computing the transitive closure of a weighted graph to positive or negative edge weights (but to no negative cycles).",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Geometry polygonization.
+        /// </summary>
+        public static OperationMethod GeometryPolygonization
+        {
+            get
+            {
+                return _geometryPolygonization ?? (_geometryPolygonization =
+                    OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
+                        "AEGIS::212185", "Geometry polygonization",
+                        "Converts geometries of any kind to polygonial representation.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        OperationParameters.GeometryFactory,
+                        OperationParameters.MetadataPreservation
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Geometry to graph conversion.
+        /// </summary>
+        public static OperationMethod GeometryToGraphConversion
+        {
+            get
+            {
+                return _geometryToGraphConversion ?? (_geometryToGraphConversion =
+                    OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
+                        "AEGIS::212185", "Geometry to graph conversion",
+                        "Converts geometries to a single graph representation. The resulting graph can match the original directions of the geometry lines, os can be bidirectional.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        GraphOperationParameters.BidirectionalConversion,
+                        OperationParameters.MetadataPreservation
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Geometry to network conversion.
+        /// </summary>
+        public static OperationMethod GeometryToNetworkConversion
+        {
+            get
+            {
+                return _geometryToNetworkConversion ?? (_geometryToNetworkConversion =
+                     OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
+                        "AEGIS::212101", "Geometry to network conversion",
+                        "Converts geometries to a single network representation. The resulting network can match the original directions of the geometry lines, os can be bidirectional.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        GraphOperationParameters.BidirectionalConversion,
+                        OperationParameters.MetadataPreservation
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Graph to geometry conversion.
+        /// </summary>
+        public static OperationMethod GraphToGeometryConversion
+        {
+            get
+            {
+                return _graphToGeometryConversion ?? (_graphToGeometryConversion =
+                     OperationMethod.CreateMethod<IGeometryGraph, IGeometry>(
+                        "AEGIS::212110", "Graph to geometry conversion",
+                        "Converts a graph to geometry representation. The dimension of the extracted geometries can be limited to points (0), curves (1) and surfaces (2). The factory of the resulting geometries can also be specified.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        GraphOperationParameters.GeometryDimension,
+                        OperationParameters.GeometryFactory,
+                        OperationParameters.MetadataPreservation
                     ));
             }
         }

@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Spatial
+namespace ELTE.AEGIS.Operations
 {
     /// <summary>
     /// Represents a collection of known <see cref="OperationParameter" /> instances for graph operations.
@@ -86,7 +86,9 @@ namespace ELTE.AEGIS.Operations.Spatial
 
         #region Private static fields
 
+        private static OperationParameter _bidirectionalConversion;
         private static OperationParameter _capacityMetric;
+        private static OperationParameter _geometryDimesion;
         private static OperationParameter _heuristicMetric;
         private static OperationParameter _heuristicLimitMultiplier;
         private static OperationParameter _sourceVertex;
@@ -96,6 +98,22 @@ namespace ELTE.AEGIS.Operations.Spatial
         #endregion
 
         #region Public static methods
+
+        /// <summary>
+        /// Bidirectional conversion.
+        /// </summary>
+        public static OperationParameter BidirectionalConversion
+        {
+            get
+            {
+                return _bidirectionalConversion ?? (_bidirectionalConversion =
+                    OperationParameter.CreateOptionalParameter<Boolean>(
+                        "AEGIS::222101", "Bidirectional conversion",
+                        "A value indication whether the conversion should keep the line directions of the original geometry, or should the lines be directed in both ways.", null,
+                        true
+                    ));
+            }
+        }
 
         /// <summary>
         /// Capacity metric.
@@ -109,6 +127,23 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "AEGIS::222302", "Capacity metric",
                         "Capacity metric for edges.", null,
                         (edge => 1)
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Geometry dimension.
+        /// </summary>
+        public static OperationParameter GeometryDimension
+        {
+            get
+            {
+                return _geometryDimesion ?? (_geometryDimesion =
+                    OperationParameter.CreateOptionalParameter<Int32>(
+                        "222160", "Geometry dimension",
+                        "A value indicating the dimension limit of the resulting geometry. The value must be between 0 and 2.", null,
+                        2,
+                        Conditions.IsBetween(0, 2)
                     ));
             }
         }

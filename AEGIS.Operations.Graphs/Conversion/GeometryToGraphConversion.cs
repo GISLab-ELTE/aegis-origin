@@ -87,9 +87,9 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
         public GeometryToGraphConversion(IGeometry source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, ConversionMethods.GeometryToGraphConversion, parameters)
+            : base(source, target, GraphOperationMethods.GeometryToGraphConversion, parameters)
         {
-            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(ConversionParameters.BidirectionalConversion));
+            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(GraphOperationParameters.BidirectionalConversion));
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
@@ -119,7 +119,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         protected GeometryToGraphConversion(IGeometry source, IGeometryGraph target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(ConversionParameters.BidirectionalConversion));
+            _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(GraphOperationParameters.BidirectionalConversion));
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 

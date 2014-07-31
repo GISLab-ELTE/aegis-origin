@@ -73,7 +73,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
         public GeometryToNetworkConversion(IGeometry source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, ConversionMethods.GeometryToNetworkConversion, parameters)
+            : base(source, target, GraphOperationMethods.GeometryToNetworkConversion, parameters)
         {
         }
 

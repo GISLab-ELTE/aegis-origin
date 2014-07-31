@@ -332,10 +332,10 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
         public GraphToGeometryConversion(IGeometryGraph source, IGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, ConversionMethods.GraphToGeometryConversion, parameters)
+            : base(source, target, GraphOperationMethods.GraphToGeometryConversion, parameters)
         {
             _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
-            _dimension = Convert.ToInt32(ResolveParameter(ConversionParameters.GeometryDimension));
+            _dimension = Convert.ToInt32(ResolveParameter(GraphOperationParameters.GeometryDimension));
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
         }
 
