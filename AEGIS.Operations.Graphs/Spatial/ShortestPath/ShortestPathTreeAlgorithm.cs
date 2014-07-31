@@ -31,9 +31,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         protected readonly IGraphVertex _sourceVertex;
 
         /// <summary>
-        /// The distance metric parameter.
+        /// The metric used to compute the weight of edges.
         /// </summary>
-        protected readonly Func<IGraphEdge, Double> _distanceMetric;
+        protected readonly Func<IGraphEdge, Double> _weightMetric;
 
         /// <summary>
         /// The dictionary of parent vertices.
@@ -81,7 +81,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             : base(source, target, method, parameters)
         {
             _sourceVertex = ResolveParameter<IGraphVertex>(GraphOperationParameters.SourceVertex);
-            _distanceMetric = ResolveParameter<Func<IGraphEdge, Double>>(GraphOperationParameters.DistanceMetric);
+            _weightMetric = ResolveParameter<Func<IGraphEdge, Double>>(GraphOperationParameters.WeightMetric);
         }
 
         #endregion
@@ -93,8 +93,8 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// </summary>
         protected override void PrepareResult() 
         {
-            _parent = new Dictionary<IGraphVertex, IGraphVertex>();
-            _distance = new Dictionary<IGraphVertex, Double>();
+            _parent = new Dictionary<IGraphVertex, IGraphVertex>(_source.VertexComparer);
+            _distance = new Dictionary<IGraphVertex, Double>(_source.VertexComparer);
             _isValidPath = true;
         }
 
@@ -110,26 +110,29 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
                 return;
             }
             
-            // generate a network from the path
+            // generate a graph from the path
             if (_result == null)
-                _result = _source.Factory.CreateNetwork();
+                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
 
             _parent.Remove(_sourceVertex); // removing the source, we really don't want an edge between a vertex and a null.
-            foreach (KeyValuePair<IGraphVertex, IGraphVertex> vertexPair in _parent)
+            foreach (IGraphVertex vertex in _parent.Keys)
             {
-                IMetadataCollection metadata = _result.Factory.CreateMetadata();
-                metadata["Distance"] = _distance[vertexPair.Key];
+                IGraphVertex sourceVertex = _result.GetVertex(_parent[vertex].Coordinate);
+                IGraphVertex targetVertex = _result.GetVertex(vertex.Coordinate);
 
-                if (!_result.Contains(vertexPair.Key)) // child
+                if (sourceVertex == null)
                 {
-                    _result.AddVertex(vertexPair.Key.Coordinate);
-                }
-                if (!_result.Contains(vertexPair.Value)) // parent
-                {
-                    _result.AddVertex(vertexPair.Value.Coordinate);
+                    sourceVertex = _result.AddVertex(_parent[vertex].Coordinate);
+                    sourceVertex["Distance"] = _distance[_parent[vertex]];
                 }
 
-                _result.AddEdge(vertexPair.Value, vertexPair.Key, metadata);
+                if (targetVertex == null)
+                {
+                    targetVertex = _result.AddVertex(vertex.Coordinate);
+                    targetVertex["Distance"] = _distance[vertex];
+                }
+
+                _result.AddEdge(sourceVertex, targetVertex);
             }
         }
 

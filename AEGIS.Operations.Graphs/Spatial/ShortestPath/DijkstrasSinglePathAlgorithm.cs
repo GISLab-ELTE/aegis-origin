@@ -104,34 +104,31 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 
             while (_priorityQueue.Count > 0 && !_isTargetReached)
             {
-                IGraphVertex v = _priorityQueue.RemovePeek();
+                IGraphVertex currentVertex = _priorityQueue.RemovePeek();
 
-                if (_finished.Contains(v))
-                    return;
+                _finished.Add(currentVertex);
 
-                _finished.Add(v);
-
-                if (_source.VertexComparer.Equals(v, _targetVertex)) // the target vertex is found
+                if (_source.VertexComparer.Equals(currentVertex, _targetVertex)) // the target vertex is found
                 {
                     _isTargetReached = true;
                     return;
                 }
 
-                foreach (IGraphEdge edge in _source.OutEdges(v))
+                foreach (IGraphEdge edge in _source.OutEdges(currentVertex))
                 {
                     if (_finished.Contains(edge.Target))
                         continue;
 
                     if (!_distance.ContainsKey(edge.Target))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
-                        _parent[edge.Target] = v;
+                        _distance[edge.Target] = _distance[currentVertex] + _weightMetric(edge);
+                        _parent[edge.Target] = currentVertex;
                         _priorityQueue.Insert(_distance[edge.Target], edge.Target);
                     }
-                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge))
+                    else if (_distance[edge.Target] > _distance[currentVertex] + _weightMetric(edge))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
-                        _parent[edge.Target] = v;
+                        _distance[edge.Target] = _distance[currentVertex] + _weightMetric(edge);
+                        _parent[edge.Target] = currentVertex;
                         _priorityQueue.Insert(_distance[edge.Target], edge.Target);
                     }
                 }

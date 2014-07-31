@@ -104,13 +104,13 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
                             continue;
                         }
 
-                        _distance[edge.Target] = _distance[edge.Source] + _distanceMetric(edge);
+                        _distance[edge.Target] = _distance[edge.Source] + _weightMetric(edge);
                         _parent[edge.Target] = edge.Source;
                         hasChanged = true;
                     }
-                    else if (_distance.ContainsKey(edge.Source) && _distance[edge.Target] > _distance[edge.Source] + _distanceMetric(edge))
+                    else if (_distance.ContainsKey(edge.Source) && _distance[edge.Target] > _distance[edge.Source] + _weightMetric(edge))
                     {
-                        _distance[edge.Target] = _distance[edge.Source] + _distanceMetric(edge);
+                        _distance[edge.Target] = _distance[edge.Source] + _weightMetric(edge);
                         _parent[edge.Target] = edge.Source;
                         hasChanged = true;
                     }

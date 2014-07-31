@@ -115,7 +115,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,                          
                         GraphOperationParameters.SourceVertex, 
                         GraphOperationParameters.TargetVertex,
-                        GraphOperationParameters.DistanceMetric,
+                        GraphOperationParameters.WeightMetric,
                         GraphOperationParameters.HeuristicMetric,                                        
                         GraphOperationParameters.HeuristicLimitMultiplier
                     ));
@@ -135,7 +135,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "Computes shortest paths from a single source vertex to all of the other vertices in a weighted directed graph.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
-                        GraphOperationParameters.DistanceMetric
+                        GraphOperationParameters.WeightMetric
                     ));
             }
         }
@@ -186,7 +186,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
-                        GraphOperationParameters.DistanceMetric
+                        GraphOperationParameters.WeightMetric
                     ));
             }
         }
@@ -205,7 +205,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.TargetVertex,
-                        GraphOperationParameters.DistanceMetric
+                        GraphOperationParameters.WeightMetric
                     ));
             }
         }
@@ -222,7 +222,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "AEGIS::212317", "Floyd–Warshall algorithm (for minimal path)",
                         "Floyd–Warshall algorithm is a graph analysis algorithm for finding shortest paths in a weighted graph to positive or negative edge weights (but to no negative cycles).",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
-                        GraphOperationParameters.DistanceMetric
+                        GraphOperationParameters.WeightMetric
                     ));
             }
         }
@@ -256,7 +256,7 @@ namespace ELTE.AEGIS.Operations.Spatial
                         "Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a connected weighted undirected graph.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
-                        GraphOperationParameters.DistanceMetric
+                        GraphOperationParameters.WeightMetric
                     ));
             }
         }

@@ -96,7 +96,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             : base(source, target, GraphOperationMethods.AStarAlgorithm, parameters)
         {
             _heuristicMetric = ResolveParameter<Func<IGraphVertex, IGraphVertex, Double>>(GraphOperationParameters.HeuristicMetric);
-            _heuristicLimitMultiplier = Convert.ToDouble(GraphOperationParameters.HeuristicLimitMultiplier);
+            _heuristicLimitMultiplier = Convert.ToDouble(ResolveParameter(GraphOperationParameters.HeuristicLimitMultiplier));
         }
 
         #endregion
@@ -114,41 +114,38 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             _distance.Add(_sourceVertex, 0);
             _parent.Add(_sourceVertex, null);
 
-            Double limit = _heuristicMetric(_sourceVertex, _targetVertex); // the direct distance used for search space limitation
+            Double limit = _heuristicMetric(_sourceVertex, _targetVertex) * _heuristicLimitMultiplier; // the direct distance used for search space limitation
 
             while (_priorityQueue.Count > 0 && !_isTargetReached)
             {
-                IGraphVertex v = _priorityQueue.RemovePeek();
+                IGraphVertex currentVertex = _priorityQueue.RemovePeek();
 
-                if (_finished.Contains(v))
-                    return;
+                _finished.Add(currentVertex);
 
-                _finished.Add(v);
-
-                if (_source.VertexComparer.Equals(v, _targetVertex)) // the target vertex is found
+                if (_source.VertexComparer.Equals(currentVertex, _targetVertex)) // the target vertex is found
                 {
                     _isTargetReached = true;
                     return;
                 }
 
-                foreach (IGraphEdge edge in _source.OutEdges(v))
+                foreach (IGraphEdge edge in _source.OutEdges(currentVertex))
                 {
                     if (_finished.Contains(edge.Target))
                         continue;
 
                     if (!_distance.ContainsKey(edge.Target))
                     {
-                        if (_distance[v] < limit * _heuristicLimitMultiplier)
+                        if (_distance[currentVertex] < limit * _heuristicLimitMultiplier)
                         {
-                            _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
-                            _parent[edge.Target] = v;
+                            _distance[edge.Target] = _distance[currentVertex] + _weightMetric(edge);
+                            _parent[edge.Target] = currentVertex;
                             _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target, _targetVertex), edge.Target);
                         }
                     }
-                    else if (_distance[edge.Target] > _distance[v] + _distanceMetric(edge))
+                    else if (_distance[edge.Target] > _distance[currentVertex] + _weightMetric(edge))
                     {
-                        _distance[edge.Target] = _distance[v] + _distanceMetric(edge);
-                        _parent[edge.Target] = v;
+                        _distance[edge.Target] = _distance[currentVertex] + _weightMetric(edge);
+                        _parent[edge.Target] = currentVertex;
                         _priorityQueue.Insert(_distance[edge.Target] + _heuristicMetric(edge.Target, _targetVertex), edge.Target);
                     }
                 }

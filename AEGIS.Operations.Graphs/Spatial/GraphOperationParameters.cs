@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Spatial
 
         #region Private static fields
 
-        private static OperationParameter _distanceMetric;          
+        private static OperationParameter _capacityMetric;
         private static OperationParameter _heuristicMetric;
         private static OperationParameter _heuristicLimitMultiplier;
         private static OperationParameter _sourceVertex;
@@ -98,21 +98,21 @@ namespace ELTE.AEGIS.Operations.Spatial
         #region Public static methods
 
         /// <summary>
-        /// Distance metric.
+        /// Capacity metric.
         /// </summary>
-        public static OperationParameter DistanceMetric
+        public static OperationParameter CapacityMetric
         {
             get
             {
-                return _distanceMetric ?? (_distanceMetric =
-                    OperationParameter.CreateOptionalParameter<Func<IGraphEdge, Double>>(
-                        "AEGIS::222302", "Distance metric", 
-                        "Distance metric for traversal methods.", null,
-                        (edge => Coordinate.Distance(edge.Source.Coordinate, edge.Target.Coordinate))
+                return _capacityMetric ?? (_capacityMetric =
+                    OperationParameter.CreateOptionalParameter<Func<IGraphEdge, Int32>>(
+                        "AEGIS::222302", "Capacity metric",
+                        "Capacity metric for edges.", null,
+                        (edge => 1)
                     ));
             }
         }
-        
+
         /// <summary>
         /// Heuristic metric.
         /// </summary>
@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _heuristicMetric ?? (_heuristicMetric =
                     OperationParameter.CreateOptionalParameter<Func<IGraphVertex, IGraphVertex, Double>>(
-                        "AEGIS::222311", "Heuristic metric", 
+                        "AEGIS::222305", "Heuristic metric", 
                         "Heuristic metric for traversal methods used for computing the distance between the current vertex and the specified target vertex.", null, 
                         ((source, target) => Coordinate.Distance(source.Coordinate, target.Coordinate))
                     ));
@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _sourceVertex ?? (_sourceVertex =
                     OperationParameter.CreateRequiredParameter<IGraphVertex>(
-                        "AEGIS::222305", "Source vertex", 
+                        "AEGIS::222361", "Source vertex", 
                         "Source graph vertex for traversal methods.", null
                     ));
             }
@@ -170,7 +170,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _targetVertex ?? (_targetVertex =
                     OperationParameter.CreateRequiredParameter<IGraphVertex>(
-                        "AEGIS::222306", "Target vertex", 
+                        "AEGIS::222362", "Target vertex", 
                         "Target graph vertex for traversal methods.", null
                     ));
             }
@@ -185,8 +185,9 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _weightMetric ?? (_weightMetric =
                     OperationParameter.CreateOptionalParameter<Func<IGraphEdge, Double>>(
-                        "AEGIS::222301", "Weight metric", 
-                        "Weight metric for traversal methods.", null
+                        "AEGIS::222301", "Weight metric",
+                        "Weight metric for edges used by traversal methods.", null,
+                        (edge => Coordinate.Distance(edge.Source.Coordinate, edge.Target.Coordinate))
                     ));
             }
         }

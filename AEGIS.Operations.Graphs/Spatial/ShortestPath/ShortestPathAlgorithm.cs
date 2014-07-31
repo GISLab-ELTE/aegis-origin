@@ -37,9 +37,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         protected readonly IGraphVertex _targetVertex;
 
         /// <summary>
-        /// The metric used to compute distances between coordinates.
+        /// The metric used to compute the weight of edges.
         /// </summary>
-        protected readonly Func<IGraphEdge, Double> _distanceMetric;
+        protected readonly Func<IGraphEdge, Double> _weightMetric;
 
         /// <summary>
         /// The dictionary of parent vertices.
@@ -93,7 +93,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         {
             _sourceVertex = ResolveParameter<IGraphVertex>(GraphOperationParameters.SourceVertex);
             _targetVertex = ResolveParameter<IGraphVertex>(GraphOperationParameters.TargetVertex);
-            _distanceMetric = ResolveParameter<Func<IGraphEdge, Double>>(GraphOperationParameters.DistanceMetric);
+            _weightMetric = ResolveParameter<Func<IGraphEdge, Double>>(GraphOperationParameters.WeightMetric);
         }
 
         #endregion 
@@ -105,9 +105,9 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// </summary>
         protected override void PrepareResult()
         {
-            _parent = new Dictionary<IGraphVertex, IGraphVertex>();
-            _distance = new Dictionary<IGraphVertex, Double>();
-            _finished = new HashSet<IGraphVertex>();
+            _parent = new Dictionary<IGraphVertex, IGraphVertex>(_source.VertexComparer);
+            _distance = new Dictionary<IGraphVertex, Double>(_source.VertexComparer);
+            _finished = new HashSet<IGraphVertex>(_source.VertexComparer);
             _isTargetReached = false;
         }
 
@@ -116,27 +116,27 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// </summary>
         protected override void FinalizeResult()
         {
+            // if the target is not reached, there is no result
             if (!_isTargetReached)
             {
+                _result = null;
                 return;
             }
 
             // generate a network from the path
             if (_result == null)
-                _result = _source.Factory.CreateNetwork();
+                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
 
-            IGraphVertex current = _targetVertex;
-            _result.AddVertex(current.Coordinate);
+            IGraphVertex currentVertex = _targetVertex;
+            _result.AddVertex(currentVertex.Coordinate)["Distance"] = _distance[currentVertex];
 
-            while (_parent.ContainsKey(current) && !_source.VertexComparer.Equals(_sourceVertex, current))
+            // add the path leading from source to target
+            while (_parent.ContainsKey(currentVertex) && !_source.VertexComparer.Equals(_sourceVertex, currentVertex))
             {
-                IMetadataCollection metadata = _result.Factory.CreateMetadata();
-                metadata["Distance"] = _distance[current];
+                _result.AddVertex(_parent[currentVertex].Coordinate)["Distance"] = _distance[_parent[currentVertex]];
+                _result.AddEdge(_parent[currentVertex].Coordinate, currentVertex.Coordinate);
 
-                _result.AddVertex(_parent[current].Coordinate);
-                _result.AddEdge(_parent[current].Coordinate, current.Coordinate, metadata);
-
-                current = _parent[current];
+                currentVertex = _parent[currentVertex];
             }
         }
 
