@@ -91,6 +91,7 @@ namespace ELTE.AEGIS.Operations.Spatial
         private static OperationMethod _depthFirstSearch;
         private static OperationMethod _dijkstrasAlgorithm;
         private static OperationMethod _dijkstrasSinglePathAlgorithm;
+        private static OperationMethod _edmondsKarpAlgorithm;
         private static OperationMethod _floydWarshallAlgorithmMinimalPath;
         private static OperationMethod _floydWarshallAlgorithmTransitiveClosure;
         private static OperationMethod _primsAlgorithm;
@@ -201,11 +202,30 @@ namespace ELTE.AEGIS.Operations.Spatial
                 return _dijkstrasSinglePathAlgorithm ?? (_dijkstrasSinglePathAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212331", "Dijkstra's algorithm (single path)",
-                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree. This version of the ",
+                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree. This version of the algorithm computes the shortest single path between two verices.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.TargetVertex,
                         GraphOperationParameters.WeightMetric
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Edmonds-Karp algorithm.
+        /// </summary>
+        public static OperationMethod EdmondsKarpAlgorithm
+        {
+            get
+            {
+                return _edmondsKarpAlgorithm ?? (_edmondsKarpAlgorithm =
+                    OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
+                        "AEGIS::212710", "Edmonds-Karp algorithm",
+                        "The Edmonds–Karp algorithm is an implementation of the Ford–Fulkerson method for computing the maximum flow in a graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        GraphOperationParameters.SourceVertex,
+                        GraphOperationParameters.TargetVertex,
+                        GraphOperationParameters.CapacityMetric
                     ));
             }
         }

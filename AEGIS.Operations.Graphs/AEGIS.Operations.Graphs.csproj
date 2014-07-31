@@ -48,6 +48,8 @@
     <Compile Include="Spatial\GraphOperationMethods.cs" />
     <Compile Include="Spatial\GraphOperationParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spatial\MaximumFlow\EdmondsKarpAlgorithm.cs" />
+    <Compile Include="Spatial\MaximumFlow\MaximumFlowComputation.cs" />
     <Compile Include="Spatial\ShortestPath\AStarAlgorithm.cs" />
     <Compile Include="Spatial\ShortestPath\BellmanFordAlgorithm.cs">
       <SubType>Code</SubType>
