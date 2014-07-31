@@ -454,6 +454,15 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
+        #region Private static fields
+
+        /// <summary>
+        /// The empty edge set. This field is read-only.
+        /// </summary>
+        private static readonly ISet<IGraphEdge> EmptyEdgeSet = new HashSet<IGraphEdge>();
+
+        #endregion
+
         #region Private fields
 
         /// <summary>
@@ -841,14 +850,14 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="vertex">The vertex.</param>
         /// <returns>The read-only set containing edges with <paramref="vertex"> as source.</returns>
-        public virtual ISet<IGraphEdge> OutEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencySource[vertex].AsReadOnly() : null; }
+        public virtual ISet<IGraphEdge> OutEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencySource[vertex].AsReadOnly() : EmptyEdgeSet.AsReadOnly(); }
 
         /// <summary>
         /// Returns the incoming edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
         /// <returns>The read-only set containing edges with <paramref="vertex"> as target.</returns>
-        public virtual ISet<IGraphEdge> InEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencyTarget[vertex].AsReadOnly() : null; }
+        public virtual ISet<IGraphEdge> InEdges(IGraphVertex vertex) { return Contains(vertex) ? _adjacencyTarget[vertex].AsReadOnly() : EmptyEdgeSet.AsReadOnly(); }
 
         /// <summary>
         /// Adds a new vertex to a graph.
