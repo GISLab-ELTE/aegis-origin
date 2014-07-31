@@ -26,7 +26,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
 {
     /// <summary>
-    /// Test fixture for class <see cref="AStarAlgorithm"/>.
+    /// Test fixture for class <see cref="AStarAlgorithm" />.
     /// </summary>
     [TestFixture]
     public class AStarAlgorithmTest
@@ -39,9 +39,25 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         private Mock<IReferenceSystem> _referenceSystemMock;
 
         /// <summary>
-        /// The list of graphs.
+        /// The source graph.
         /// </summary>
-        private List<IGeometryGraph> _graphs;
+        private IGeometryGraph _sourceGraph;
+
+        /// <summary>
+        /// The result graph.
+        /// </summary>
+        private IGeometryGraph _resultGraph;
+
+        /// <summary>
+        /// The source vertex.
+        /// </summary>
+        private IGraphVertex _sourceVertex;
+
+        /// <summary>
+        /// The target vertex.
+        /// </summary>
+        private IGraphVertex _targetVertex;
+
 
         #endregion
 
@@ -55,42 +71,55 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         {
             _referenceSystemMock = new Mock<IReferenceSystem>(MockBehavior.Strict);
 
-            _graphs = new List<IGeometryGraph>();
+            _sourceGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
 
-            // connected simple graph
-            IGeometryGraph graph = new GeometryNetwork(_referenceSystemMock.Object, null);
-            IGraphVertex v1 = graph.AddVertex(new Coordinate(10, 10));
-            IGraphVertex v2 = graph.AddVertex(new Coordinate(20, 10));
-            IGraphVertex v3 = graph.AddVertex(new Coordinate(20, 20));
-            IGraphVertex v4 = graph.AddVertex(new Coordinate(10, 20));
+            // vertices
+            IGraphVertex vertex1 = _sourceGraph.AddVertex(new Coordinate(0, 0));
+            IGraphVertex vertex2 = _sourceGraph.AddVertex(new Coordinate(1, 0));
+            IGraphVertex vertex3 = _sourceGraph.AddVertex(new Coordinate(1, 1));
+            IGraphVertex vertex4 = _sourceGraph.AddVertex(new Coordinate(2, 1));
+            IGraphVertex vertex5 = _sourceGraph.AddVertex(new Coordinate(1, 2));
+            IGraphVertex vertex6 = _sourceGraph.AddVertex(new Coordinate(0, 2));
 
-            graph.AddEdge(v1, v2);
-            graph.AddEdge(v2, v3);
-            graph.AddEdge(v1, v3);
-            graph.AddEdge(v3, v4);
-            graph.AddEdge(v3, v2);
-            graph.AddEdge(v3, v1);
-            graph.AddEdge(v2, v3);
-            graph.AddEdge(v3, v2);
-            graph.AddEdge(v2, v1);
-            graph.AddEdge(v4, v3);
-            graph.AddEdge(v4, v1);
+            // forward edges
+            _sourceGraph.AddEdge(vertex1, vertex2, CreateWeightMetadata(7));
+            _sourceGraph.AddEdge(vertex1, vertex3, CreateWeightMetadata(9));
+            _sourceGraph.AddEdge(vertex1, vertex6, CreateWeightMetadata(14));
+            _sourceGraph.AddEdge(vertex2, vertex3, CreateWeightMetadata(10));
+            _sourceGraph.AddEdge(vertex2, vertex4, CreateWeightMetadata(15));
+            _sourceGraph.AddEdge(vertex3, vertex4, CreateWeightMetadata(11));
+            _sourceGraph.AddEdge(vertex3, vertex6, CreateWeightMetadata(2));
+            _sourceGraph.AddEdge(vertex4, vertex5, CreateWeightMetadata(6));
+            _sourceGraph.AddEdge(vertex5, vertex6, CreateWeightMetadata(9));
 
-            _graphs.Add(graph);
+            // reverse edges
+            _sourceGraph.AddEdge(vertex2, vertex1, CreateWeightMetadata(7));
+            _sourceGraph.AddEdge(vertex3, vertex1, CreateWeightMetadata(9));
+            _sourceGraph.AddEdge(vertex6, vertex1, CreateWeightMetadata(14));
+            _sourceGraph.AddEdge(vertex3, vertex2, CreateWeightMetadata(10));
+            _sourceGraph.AddEdge(vertex4, vertex2, CreateWeightMetadata(15));
+            _sourceGraph.AddEdge(vertex4, vertex3, CreateWeightMetadata(11));
+            _sourceGraph.AddEdge(vertex6, vertex3, CreateWeightMetadata(2));
+            _sourceGraph.AddEdge(vertex5, vertex4, CreateWeightMetadata(6));
+            _sourceGraph.AddEdge(vertex6, vertex5, CreateWeightMetadata(9));
 
-            // disconnected simple graph
-            graph = new GeometryNetwork(_referenceSystemMock.Object, null);
-            v1 = graph.AddVertex(new Coordinate(10, 10));
-            v2 = graph.AddVertex(new Coordinate(20, 10));
-            v3 = graph.AddVertex(new Coordinate(20, 20));
-            v4 = graph.AddVertex(new Coordinate(10, 20));
+            // source and target vertices
+            _sourceVertex = vertex1;
+            _targetVertex = vertex5;
 
-            graph.AddEdge(v1, v2);
-            graph.AddEdge(v2, v3);
-            graph.AddEdge(v1, v3);
-            graph.AddEdge(v2, v1);
+            // result graph
+            _resultGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
 
-            _graphs.Add(graph);
+            // vertices
+            vertex1 = _resultGraph.AddVertex(new Coordinate(0, 0), CreateDistanceMetadata(0));
+            vertex3 = _resultGraph.AddVertex(new Coordinate(1, 1), CreateDistanceMetadata(9));
+            vertex5 = _resultGraph.AddVertex(new Coordinate(1, 2), CreateDistanceMetadata(20));
+            vertex6 = _resultGraph.AddVertex(new Coordinate(0, 2), CreateDistanceMetadata(11));
+
+            // edges
+            _resultGraph.AddEdge(vertex1, vertex3);
+            _resultGraph.AddEdge(vertex3, vertex6);
+            _resultGraph.AddEdge(vertex6, vertex5);
         }
 
         #endregion
@@ -98,84 +127,64 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         #region Test methods
 
         /// <summary>
-        /// Test case for the constructor.
-        /// </summary>
-        [Test]
-        public void AStarAlgorithmConstructorTest()
-        {
-            foreach (IGeometryGraph graph in _graphs)
-            { 
-                IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-                parameters[GraphOperationParameters.SourceVertex] = graph.GetNearestVertex(new Coordinate(10, 10));
-                parameters[GraphOperationParameters.TargetVertex] = graph.GetNearestVertex(new Coordinate(10, 20));
-
-                AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(graph, parameters);
-
-                Assert.AreEqual(GraphOperationMethods.AStarAlgorithm, aStarAlgorithm.Method);
-                Assert.AreEqual(OperationState.Initialized, aStarAlgorithm.State);
-                Assert.AreEqual(false, aStarAlgorithm.IsReversible);
-                Assert.AreEqual(graph, aStarAlgorithm.Source);
-                Assert.AreEqual(graph.GetNearestVertex(new Coordinate(10, 10)), aStarAlgorithm.Parameters[GraphOperationParameters.SourceVertex]);
-                Assert.AreEqual(graph.GetNearestVertex(new Coordinate(10, 20)), aStarAlgorithm.Parameters[GraphOperationParameters.TargetVertex]);
-                Assert.Throws<NotSupportedException>(() => aStarAlgorithm.GetReverseOperation());
-            }
-        }
-
-        /// <summary>
-        /// Test case for the <see cref="Execute"/> method.
+        /// Test case for operation execution.
         /// </summary>
         [Test]
         public void AStarAlgorithmExecuteTest()
         {
-            // connected simple graph
+            Func<IGraphEdge, Double> weightFunction = edge => Convert.ToDouble(edge["Weight"]);
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters[GraphOperationParameters.SourceVertex] = _graphs[0].GetNearestVertex(new Coordinate(10, 10));
-            parameters[GraphOperationParameters.TargetVertex] = _graphs[0].GetNearestVertex(new Coordinate(10, 20));
+            parameters[GraphOperationParameters.SourceVertex] = _sourceVertex;
+            parameters[GraphOperationParameters.TargetVertex] = _targetVertex;
+            parameters[GraphOperationParameters.WeightMetric] = weightFunction;
 
-            AStarAlgorithm aStarAlgorithm = new AStarAlgorithm(_graphs[0], parameters);
+            AStarAlgorithm operation = new AStarAlgorithm(_sourceGraph, parameters);
 
-            Assert.AreEqual(OperationState.Initialized, aStarAlgorithm.State);
+            operation.Execute();
 
-            aStarAlgorithm.Execute();
+            Assert.AreEqual(_resultGraph.VertexCount, operation.Result.VertexCount);
+            Assert.AreEqual(_resultGraph.EdgeCount, operation.Result.EdgeCount);
 
-            Assert.AreEqual(OperationState.Finished, aStarAlgorithm.State);
-
-            List<Coordinate> expectedCoordinates = new List<Coordinate> { new Coordinate(10, 10), new Coordinate(20, 20), new Coordinate(10, 20) };
-
-            Assert.AreEqual(expectedCoordinates.Count, aStarAlgorithm.Result.VertexCount);
-            Assert.AreEqual(expectedCoordinates.Count - 1, aStarAlgorithm.Result.EdgeCount);
-
-            IGraphVertex vertex = aStarAlgorithm.Result.GetVertex(expectedCoordinates[0]);
-            Assert.IsNotNull(vertex);
-
-            for (Int32 i = 1; i < expectedCoordinates.Count; i++)
+            foreach (IGraphVertex resultVertex in operation.Result.Vertices)
             {
-                IGraphVertex nextVertex = aStarAlgorithm.Result.GetVertex(expectedCoordinates[i]);
+                IGraphVertex vertex = _resultGraph.GetVertex(resultVertex.Coordinate);
 
-                Assert.IsNotNull(nextVertex);
-                Assert.AreEqual(1, aStarAlgorithm.Result.OutEdges(vertex).Count());
-                Assert.IsTrue(aStarAlgorithm.Result.OutEdges(vertex).Any(edge => edge.Target == nextVertex));
+                Assert.IsNotNull(vertex);
+                Assert.AreEqual(vertex["Distance"], resultVertex["Distance"]);
 
-                vertex = nextVertex;
+                Assert.IsTrue(operation.Result.OutEdges(resultVertex).All(edge => _resultGraph.GetAllEdges(edge.Source.Coordinate, edge.Target.Coordinate).Count == 1));
             }
+        }
 
+        #endregion
 
-            // disconnected simple graph
+        #region  Private methods
 
-            parameters = new Dictionary<OperationParameter, Object>();
-            parameters[GraphOperationParameters.SourceVertex] = _graphs[1].GetNearestVertex(new Coordinate(10, 10));
-            parameters[GraphOperationParameters.TargetVertex] = _graphs[1].GetNearestVertex(new Coordinate(10, 20));
+        /// <summary>
+        /// Creates metadata containing a weight value.
+        /// </summary>
+        /// <param name="weight">The weight.</param>
+        /// <returns>The produced metadata.</returns>
+        private IDictionary<String, Object> CreateWeightMetadata(Double weight)
+        {
+            IDictionary<String, Object> metadata = new Dictionary<String, Object>();
+            metadata["Weight"] = weight;
 
-            aStarAlgorithm = new AStarAlgorithm(_graphs[1], parameters);
+            return metadata;
+        }
 
-            Assert.AreEqual(OperationState.Initialized, aStarAlgorithm.State);
+        /// <summary>
+        /// Creates metadata containing a distance value.
+        /// </summary>
+        /// <param name="distance">The distance.</param>
+        /// <returns>The produced metadata.</returns>
+        private IDictionary<String, Object> CreateDistanceMetadata(Double distance)
+        {
+            IDictionary<String, Object> metadata = new Dictionary<String, Object>();
+            metadata["Distance"] = distance;
 
-            aStarAlgorithm.Execute();
-
-            Assert.AreEqual(OperationState.Finished, aStarAlgorithm.State);
-
-            Assert.IsNull(aStarAlgorithm.Result);
+            return metadata;
         }
 
         #endregion
