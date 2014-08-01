@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         #endregion
 
-        #region FileSystem public properties
+        #region Public FileSystem properties
 
         /// <summary>
         /// Gets the scheme name for this file system.
@@ -113,6 +113,12 @@ namespace ELTE.AEGIS.IO.Storage
         /// </summary>
         /// <value><c>true</c> if file creation, modification and removal operations are supported by the file system; otherwise, <c>false</c>.</value>
         public override Boolean IsContentWritingSupported { get { return true; } }
+
+        /// <summary>
+        /// Gets a value indicating whether the connection to the file system is secure.
+        /// </summary>
+        /// <value><c>true</c> if operations ans credentials are handled in a secure manner; otherwise, <c>false</c>.</value>
+        public override Boolean IsSecureConnection { get { return false; } }
 
         /// <summary>
         /// Gets the authentication used by the file system.
@@ -289,7 +295,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         #endregion
 
-        #region FileSystem public methods
+        #region Public FileSystem methods
 
         /// <summary>
         /// Creates the directory.
@@ -522,7 +528,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Opens a stream asyncronously on the specified path.
+        /// Opens a stream asynchronously on the specified path.
         /// </summary>
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
@@ -675,7 +681,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Deletes the filesystem entry located at the specified path asyncronously.
+        /// Deletes the filesystem entry located at the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -832,7 +838,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         // <summary>
-        /// Moves a filesystem entry asyncronously to a new location.
+        /// Moves a filesystem entry asynchronously to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -1284,7 +1290,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the path of the parent directory for the specified path asyncronously.
+        /// Returns the path of the parent directory for the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>The string containing the full path to the parent directory.</returns>
@@ -1413,7 +1419,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the full directory name for a specified path asyncronously.
+        /// Returns the full directory name for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>The full directory name for <paramref name="path" />.</returns>
@@ -1538,7 +1544,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the file name and file extension for a specified path asyncronously.
+        /// Returns the file name and file extension for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file.</param>
         /// <returns>The file name and file extension for <paramref name="path" />.</returns>
@@ -1651,7 +1657,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the file name without file extension for a specified path asyncronously.
+        /// Returns the file name without file extension for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file.</param>
         /// <returns>The file name without file extension for <paramref name="path" />.</returns>
@@ -1789,7 +1795,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the directories located on the specified path asyncronously.
+        /// Returns the directories located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
@@ -1921,7 +1927,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the files located on the specified path asyncronously.
+        /// Returns the files located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
@@ -2051,7 +2057,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the file system entries located on the specified path asyncronously.
+        /// Returns the file system entries located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
@@ -2119,7 +2125,7 @@ namespace ELTE.AEGIS.IO.Storage
         #region Private methods
 
         /// <summary>
-        /// Returns the file status for the specified path asyncronously.
+        /// Returns the file status for the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>The file status for the specified path.</returns>
@@ -2138,7 +2144,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        ///  Returns the file status list for the specified path asyncronously.
+        ///  Returns the file status list for the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>The file status list for the specified path.</returns>

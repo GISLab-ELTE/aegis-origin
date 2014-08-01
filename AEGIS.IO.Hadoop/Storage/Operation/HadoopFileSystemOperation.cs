@@ -234,7 +234,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Public methods
 
         /// <summary>
-        /// Executes the operation asyncronously.
+        /// Executes the operation asynchronously.
         /// </summary>
         /// <param name="content">The content.</param>
         /// <returns>The result of the operation.</returns>
@@ -324,7 +324,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Protected methods
 
         /// <summary>
-        /// Creates the result for the specified content asyncronously.
+        /// Creates the result for the specified content asynchronously.
         /// </summary>
         /// <param name="content">The HTTP content.</param>
         /// <returns>The produced operation result.</returns>
@@ -350,7 +350,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Private methods
 
         /// <summary>
-        /// Creates the remote exeption for the specified content asyncronously.
+        /// Creates the remote exeption for the specified content asynchronously.
         /// </summary>
         /// <param name="content">The HTTP content.</param>
         /// <returns>The produced remote exception.</returns>

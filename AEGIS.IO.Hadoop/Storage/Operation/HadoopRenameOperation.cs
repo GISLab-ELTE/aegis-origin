@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Protected HadoopFileSystemOperation methods
 
         /// <summary>
-        /// Creates the result for the specified content asyncronously.
+        /// Creates the result for the specified content asynchronously.
         /// </summary>
         /// <param name="content">The HTTP content.</param>
         /// <returns>The produced operation result.</returns>

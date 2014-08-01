@@ -39,7 +39,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         #endregion
 
-        #region FileSystem public properties
+        #region Public FileSystem properties
 
         /// <summary>
         /// Gets the scheme name for this file system.
@@ -103,6 +103,12 @@ namespace ELTE.AEGIS.IO.Storage
         public override Boolean IsContentWritingSupported { get { return true; } }
 
         /// <summary>
+        /// Gets a value indicating whether the connection to the file system is secure.
+        /// </summary>
+        /// <value><c>true</c> if operations ans credentials are handled in a secure manner; otherwise, <c>false</c>.</value>
+        public override Boolean IsSecureConnection { get { return true; } }
+
+        /// <summary>
         /// Gets the authentication used by the file system.
         /// </summary>
         /// <value>The authentication used by the file system.</value>
@@ -119,7 +125,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         #endregion
 
-        #region FileSystem public methods
+        #region Public FileSystem methods
 
         /// <summary>
         /// Creates the directory.

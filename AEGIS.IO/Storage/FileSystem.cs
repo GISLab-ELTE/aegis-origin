@@ -281,6 +281,12 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract Boolean IsContentWritingSupported { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the connection to the file system is secure.
+        /// </summary>
+        /// <value><c>true</c> if operations ans credentials are handled in a secure manner; otherwise, <c>false</c>.</value>
+        public abstract Boolean IsSecureConnection { get; }
+
+        /// <summary>
         /// Gets the authentication used by the file system.
         /// </summary>
         /// <value>The authentication used by the file system.</value>
@@ -333,7 +339,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void CreateDirectory(String path);
 
         /// <summary>
-        /// Creates the directory asyncronously.
+        /// Creates the directory asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to create.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -386,7 +392,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Creates or overwrites a file on the specified path asyncronously.
+        /// Creates or overwrites a file on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file to create.</param>
         /// <returns>A stream that provides read/write access to the file specified in path.</returns>
@@ -436,7 +442,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract Stream CreateFile(String path, Boolean overwrite);
 
         /// <summary>
-        /// Creates or overwrites a file asyncronously on the specified path.
+        /// Creates or overwrites a file asynchronously on the specified path.
         /// </summary>
         /// <param name="path">The path of a file to create.</param>
         /// <param name="overwrite">A value that specifies whether the file should be overwritten in case it exists.</param>
@@ -497,7 +503,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Opens a stream asyncronously on the specified path with read/write access.
+        /// Opens a stream asynchronously on the specified path with read/write access.
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
         /// <returns>A stream in the specified mode and path, with read/write access.</returns>
@@ -570,7 +576,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract Stream OpenFile(String path, FileMode mode, FileAccess access);
 
         /// <summary>
-        /// Opens a stream asyncronously on the specified path.
+        /// Opens a stream asynchronously on the specified path.
         /// </summary>
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
@@ -636,7 +642,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void Delete(String path);
 
         /// <summary>
-        /// Deletes the filesystem entry located at the specified path asyncronously.
+        /// Deletes the filesystem entry located at the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -700,7 +706,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void Move(String sourcePath, String destinationPath);
 
         /// <summary>
-        /// Moves a filesystem entry asyncronously to a new location.
+        /// Moves a filesystem entry asynchronously to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -775,7 +781,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract void Copy(String sourcePath, String destinationPath);
 
         /// <summary>
-        /// Copies an existing filesystem entry asyncronously to a new location.
+        /// Copies an existing filesystem entry asynchronously to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
@@ -923,7 +929,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetDirectoryRoot(String path);
 
         /// <summary>
-        /// Returns the root information for the specified path asyncronously.
+        /// Returns the root information for the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>A string containing the root information.</returns>
@@ -972,7 +978,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetParent(String path);
 
         /// <summary>
-        /// Returns the path of the parent directory for the specified path asyncronously.
+        /// Returns the path of the parent directory for the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>The string containing the full path to the parent directory.</returns>
@@ -1022,7 +1028,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetDirectory(String path);
 
         /// <summary>
-        /// Returns the full directory name for a specified path asyncronously.
+        /// Returns the full directory name for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
         /// <returns>The full directory name for <paramref name="path" />.</returns>
@@ -1069,7 +1075,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetFileName(String path);
 
         /// <summary>
-        /// Returns the file name and file extension for a specified path asyncronously.
+        /// Returns the file name and file extension for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file.</param>
         /// <returns>The file name and file extension for <paramref name="path" />.</returns>
@@ -1114,7 +1120,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String GetFileNameWithoutExtension(String path);
 
         /// <summary>
-        /// Returns the file name without file extension for a specified path asyncronously.
+        /// Returns the file name without file extension for a specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of a file.</param>
         /// <returns>The file name without file extension for <paramref name="path" />.</returns>
@@ -1151,7 +1157,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetRootDirectories();
 
         /// <summary>
-        /// Returns the path to the root directories of the file system asyncronously.
+        /// Returns the path to the root directories of the file system asynchronously.
         /// </summary>
         /// <returns>The array containing the path to the root directories in the file system.</returns>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
@@ -1196,7 +1202,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the directories located on the specified path asyncronously.
+        /// Returns the directories located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <returns>An array containing the full paths to all directories.</returns>
@@ -1255,7 +1261,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetDirectories(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
-        /// Returns the directories located on the specified path asyncronously.
+        /// Returns the directories located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
@@ -1317,7 +1323,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the files located on the specified path asyncronously.
+        /// Returns the files located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <returns>An array containing the full paths to all files.</returns>
@@ -1376,7 +1382,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetFiles(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
-        /// Returns the files located on the specified path asyncronously.
+        /// Returns the files located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
@@ -1438,7 +1444,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Returns the file system entries located on the specified path asyncronously.
+        /// Returns the file system entries located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <returns>An array containing the full paths to all file system entries.</returns>
@@ -1497,7 +1503,7 @@ namespace ELTE.AEGIS.IO.Storage
         public abstract String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
-        /// Returns the file system entries located on the specified path asyncronously.
+        /// Returns the file system entries located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
