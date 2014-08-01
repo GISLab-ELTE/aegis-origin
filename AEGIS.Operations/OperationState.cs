@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -21,11 +21,6 @@ namespace ELTE.AEGIS.Operations
     public enum OperationState
     {
         /// <summary>
-        /// The operation is checking the arguments.
-        /// </summary>
-        Initializing,
-
-        /// <summary>
         /// The operation is ready to be executed.
         /// </summary>
         Initialized,
@@ -36,7 +31,7 @@ namespace ELTE.AEGIS.Operations
         Preparing,
 
         /// <summary>
-        /// The operations is computing the result.
+        /// The operation is computing the result.
         /// </summary>
         Executing,
 
@@ -46,8 +41,18 @@ namespace ELTE.AEGIS.Operations
         Finalizing,
 
         /// <summary>
-        /// The operation is complete.
+        /// The operation is complete with result.
         /// </summary>
-        Finished
+        FinishedWithResult,
+
+        /// <summary>
+        /// The operation is complete, but no result is produced.
+        /// </summary>
+        FinishedWithoutResult,
+
+        /// <summary>
+        /// The operation aborted.
+        /// </summary>
+        Aborted
     }
 }

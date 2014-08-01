@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.Operations
 {
@@ -36,7 +37,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// The current operation state.
         /// </summary>
-        private OperationState _state; 
+        private OperationState _state;
 
         #endregion
 
@@ -129,8 +130,6 @@ namespace ELTE.AEGIS.Operations
         /// </exception>
         protected Operation(SourceType source, ResultType target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
         {
-            _state = OperationState.Initializing;
-
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
             if (method == null)
@@ -190,25 +189,57 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Executes the operation.
         /// </summary>
+        /// <exception cref="System.InvalidOperationException">Execution is already performed on the operation.</exception>
         public void Execute()
         {
-            _state = OperationState.Preparing;
-            PrepareResult();
-            _state = OperationState.Executing;
-            ComputeResult();
-            _state = OperationState.Finalizing;
-            FinalizeResult();
-            _state = OperationState.Finished;
+            if (_state == OperationState.Preparing || _state == OperationState.Executing || _state == OperationState.Finalizing)
+                throw new InvalidOperationException("Execution is already performed on the operation.");
+
+            // if the result has already been computed, reset
+            if (_state == OperationState.FinishedWithResult)
+                ResetResult();
+
+            try
+            {
+                _state = OperationState.Preparing;
+                PrepareResult();
+                _state = OperationState.Executing;
+                ComputeResult();
+                _state = OperationState.Finalizing;
+                FinalizeResult();
+
+                if (CheckResult())
+                    _state = OperationState.FinishedWithResult;
+                else
+                    _state = OperationState.FinishedWithoutResult;
+            }
+            finally
+            {
+                _state = OperationState.Aborted;
+            }
+        }
+
+        /// <summary>
+        /// Executes the operation asynchronously.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException">Execution is already performed on the operation.</exception>
+        public async void ExecuteAsync()
+        {
+            if (_state == OperationState.Preparing || _state == OperationState.Executing || _state == OperationState.Finalizing)
+                throw new InvalidOperationException("Execution is already performed on the operation.");
+
+            await Task.Run(() => Execute());
         }
 
         /// <summary>
         /// Gets the reverse operation.
         /// </summary>
         /// <returns>The reverse operation.</returns>
+        /// <exception cref="System.NotSupportedException">The operation is not reversible.</exception>
         public IOperation<ResultType, SourceType> GetReverseOperation()
         {
             if (!Method.IsReversible)
-                throw new NotSupportedException("Operation is not reversible.");
+                throw new NotSupportedException("The operation is not reversible.");
 
             return ComputeReverseOperation();
         }
@@ -216,6 +247,14 @@ namespace ELTE.AEGIS.Operations
         #endregion
 
         #region Protected methods
+
+        /// <summary>
+        /// Resets the result object.
+        /// </summary>
+        protected virtual void ResetResult()
+        {
+            _result = default(ResultType);
+        }
 
         /// <summary>
         /// Prepares the result of the operation.
@@ -231,6 +270,12 @@ namespace ELTE.AEGIS.Operations
         /// Finalizes the result of the operation.
         /// </summary>
         protected virtual void FinalizeResult() { }
+
+        /// <summary>
+        /// Checks the result object.
+        /// </summary>
+        /// <rereturns><c>true</c> if the result is valid; otherwise <c>false</c>.</rereturns>
+        protected virtual Boolean CheckResult() { return !ReferenceEquals(_result, default(ResultType)); }
 
         /// <summary>
         /// Computes the reverse operation.
@@ -280,7 +325,6 @@ namespace ELTE.AEGIS.Operations
 
             return (T)_parameters[parameter];
         }
-
 
         /// <summary>
         /// Determines whether the specified parameter is porovided.
