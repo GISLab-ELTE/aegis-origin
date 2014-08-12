@@ -479,7 +479,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
             Int32 imageLength = Convert.ToInt32(_imageFileDirectories[_subImageIndex][257][0]);
             Int32 imageWidth = Convert.ToInt32(_imageFileDirectories[_subImageIndex][256][0]);
 
-            SpectralRange[] spectralRanges = ReadRasterSpectralRangeData();
             Int32[] radiometricResolutions = ReadRasterRadiometricResolutionData();
             RasterMapper mapper = ReadRasterToModelSpaceMapping();
 
@@ -497,11 +496,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             { 
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, spectralRanges, mapper, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterRepresentation.Floating, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, metadata);
                     break;
             }
 
@@ -572,10 +571,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                             raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                             break;
                         case TiffSampleFormat.SignedInteger:
-                            (raster as IFloatRaster).SetValues(rowIndex, columnIndex, ReadSignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                            raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                             break;
                         case TiffSampleFormat.Floating:
-                            (raster as IFloatRaster).SetValues(rowIndex, columnIndex, ReadFloatValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                            raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                             break;
                     }
 
@@ -667,10 +666,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                                     raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                                     break;
                                 case TiffSampleFormat.SignedInteger:
-                                    (raster as IFloatRaster).SetValues(rowIndex, columnIndex, ReadSignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                                    raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                                     break;
                                 case TiffSampleFormat.Floating:
-                                    (raster as IFloatRaster).SetValues(rowIndex, columnIndex, ReadFloatValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                                    raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
                                     break;
                             }
                         }

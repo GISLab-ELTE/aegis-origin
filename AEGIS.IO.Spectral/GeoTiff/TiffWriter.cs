@@ -113,15 +113,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             UInt32 startPosition = 0, endPosition = 0;
 
             // perform writing based on representation
-            switch ((geometry as ISpectralGeometry).Raster.Representation)
-            { 
-                case RasterRepresentation.Integer:
-                    WriteSpectralContent((geometry as ISpectralGeometry).Raster, out startPosition, out endPosition);
-                    break;
-                case RasterRepresentation.Floating:
-                    WriteSpectralContent((geometry as ISpectralGeometry).Raster as IFloatRaster, out startPosition, out endPosition);
-                    break;
-            }
+            WriteSpectralContent((geometry as ISpectralGeometry).Raster, out startPosition, out endPosition);
 
             TiffImageFileDirectory imageFileDirectory = ComputeImageFileDirectory(geometry as ISpectralGeometry, startPosition, endPosition);
             WriteImageFileDirectory(imageFileDirectory);
@@ -144,11 +136,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             // compute photometric interpretation
             TiffPhotometricInterpretation photometricInterpretation;
-            if (geometry.Raster.SpectralResolution == 3 && geometry.Raster.SpectralRanges.SequenceEqual(SpectralRanges.RGB))
-                photometricInterpretation = TiffPhotometricInterpretation.RGB;
+            
             // TODO: compute different values...
-            else
-                photometricInterpretation = TiffPhotometricInterpretation.BlackIsZero;
+            photometricInterpretation = TiffPhotometricInterpretation.BlackIsZero;
 
             // add raster properties
             imageFileDirectory.Add(262, new Object[] { (UInt16)photometricInterpretation }); // photometric interpretation
@@ -162,7 +152,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(273, new Object[] { startPosition }); // strip offsets
             imageFileDirectory.Add(279, new Object[] { (UInt32)(endPosition - startPosition) }); // strip byte counts
             imageFileDirectory.Add(258, geometry.Raster.RadiometricResolutions.Select(resolution => (UInt16)resolution).Cast<Object>().ToArray() ); // bits per sample
-            imageFileDirectory.Add(277, new Object[] { (UInt32)geometry.Raster.SpectralResolution }); // samples per pixel
+            imageFileDirectory.Add(277, new Object[] { (UInt32)geometry.Raster.NumberOfBands }); // samples per pixel
             imageFileDirectory.Add(339, new Object[] { (UInt16)(geometry.Raster.Representation == RasterRepresentation.Integer ? TiffSampleFormat.UnsignedInteger : TiffSampleFormat.Floating ) }); // sample format
 
             // add metadata
@@ -320,7 +310,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // mark the starting position of the strip
             startPosition = (UInt32)_baseStream.Position;
 
-            Int32 numberOfBytes = (Int32)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.SpectralResolution * raster.NumberOfRows * raster.NumberOfColumns;
+            Int32 numberOfBytes = (Int32)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns;
             Int32 numberOfBytesLeft = numberOfBytes;
 
             if (numberOfBytes % 2 != 0) // correct the number of bytes
@@ -334,7 +324,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                 {
                     // write the values for each band into the buffer
-                    for (Int32 bandIndex = 0; bandIndex < raster.SpectralResolution; bandIndex++)
+                    for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                     {
                         Int32 radiometricResolution = raster.RadiometricResolutions[bandIndex];
                         UInt64 value = raster.GetValue(rowIndex, columnIndex, bandIndex);
@@ -363,74 +353,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
                         {
                             EndianBitConverter.CopyBytes((UInt32)value, bytes, byteIndex);
                             byteIndex += 4;
-                        }
-                        else
-                        {
-                            // TODO: support other resolutions
-                            throw new NotSupportedException("Radiometric resolution is not supported.");
-                        }
-
-                        if (byteIndex == bytes.Length)
-                        {
-                            // write the buffer to the file
-                            _baseStream.Write(bytes, 0, byteIndex);
-                            byteIndex = 0;
-
-                            numberOfBytesLeft -= byteIndex;
-                            // the final array of bytes should not be the number of bytes left
-                            if (numberOfBytes > NumberOfWritableBytes && numberOfBytesLeft > 0 && numberOfBytesLeft < NumberOfWritableBytes)
-                                bytes = new Byte[numberOfBytesLeft % 2 == 0 ? numberOfBytesLeft : numberOfBytesLeft + 1];
-                        }
-                    }
-                }
-
-            // if any values are left
-            if (numberOfBytesLeft > 0)
-            {
-                _baseStream.Write(bytes, 0, byteIndex);
-            }
-
-            // mark the ending position of the strip
-            endPosition = (UInt32)_baseStream.Position;
-        }
-
-        /// <summary>
-        /// Writes the spectral content of the geometry.
-        /// </summary>
-        /// <param name="raster">The raster.</param>
-        /// <param name="startPosition">The start position.</param>
-        /// <param name="endPosition">The end position.</param>
-        private void WriteSpectralContent(IFloatRaster raster, out UInt32 startPosition, out UInt32 endPosition)
-        {
-            // mark the starting position of the strip
-            startPosition = (UInt32)_baseStream.Position;
-
-            Int32 numberOfBytes = (Int32)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.SpectralResolution * raster.NumberOfRows * raster.NumberOfColumns;
-            Int32 numberOfBytesLeft = numberOfBytes;
-
-            if (numberOfBytes % 2 != 0) // correct the number of bytes
-                numberOfBytes++;
-
-            Byte[] bytes = new Byte[numberOfBytes < NumberOfWritableBytes ? numberOfBytes : NumberOfWritableBytes];
-            Int32 byteIndex = 0;
-
-            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
-                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
-                {
-                    // write the values for each band into the buffer
-                    for (Int32 bandIndex = 0; bandIndex < raster.SpectralResolution; bandIndex++)
-                    {
-                        Int32 radiometricResolution = raster.RadiometricResolutions[bandIndex];
-                        Double value = raster.GetValue(rowIndex, columnIndex, bandIndex);                        
-                        if (radiometricResolution <= 32)
-                        {
-                            EndianBitConverter.CopyBytes((Single)value, bytes, byteIndex);
-                            byteIndex += 4;
-                        }
-                        else if (radiometricResolution == 64)
-                        {
-                            EndianBitConverter.CopyBytes(value, bytes, byteIndex);
-                            byteIndex += 8;
                         }
                         else
                         {

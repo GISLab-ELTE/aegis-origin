@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -17,6 +17,7 @@ using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Reflectance
 {
@@ -87,10 +88,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             }
             else
             {
-                if (source.Raster.SpectralRanges.Contains(SpectralRanges.Red))
-                    _indexOfRedBand = source.Raster.SpectralRanges.IndexOf(SpectralRanges.Red);
-                else
-                    _indexOfRedBand = 0;
+                _indexOfRedBand = 0;
             }
 
             if (parameters != null && parameters.ContainsKey(SpectralOperationParameters.IndexOfNearInfraredBand))
@@ -99,10 +97,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             }
             else
             {
-                if (source.Raster.SpectralRanges.Contains(SpectralRanges.NearInfrared))
-                    _indexOfNearInfraredBand = source.Raster.SpectralRanges.IndexOf(SpectralRanges.NearInfrared);
-                else
-                    _indexOfNearInfraredBand = 1;
+                _indexOfNearInfraredBand = 1;
             }
 
             if (parameters != null && parameters.ContainsKey(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand))
@@ -111,10 +106,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             }
             else
             {
-                if (source.Raster.SpectralRanges.Contains(SpectralRanges.ShortWavelengthInfrared))
-                    _indexOfShortWaveInfraredBand = source.Raster.SpectralRanges.IndexOf(SpectralRanges.ShortWavelengthInfrared);
-                else
-                    _indexOfShortWaveInfraredBand = 2;
+                _indexOfShortWaveInfraredBand = 2;
             }
 
 
@@ -153,20 +145,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             switch (_source.Raster.Representation)
             {
                 case RasterRepresentation.Floating:
-                    IFloatRaster source = _source.Raster as IFloatRaster;
                     switch (bandIndex)
                     {
                         case 0:
-                            swir = source.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            nir = source.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
+                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                             return (swir - nir) / (swir + nir);
                         case 1:
-                            nir = source.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            red = source.GetValue(rowIndex, columnIndex, _indexOfRedBand);
+                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
                             return (nir - red) / (nir + red);
                         case 2:
-                            swir = source.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            red = source.GetValue(rowIndex, columnIndex, _indexOfRedBand);
+                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
+                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
                             return (swir - red) / (swir + red);
                     }
                     break;
@@ -214,11 +205,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             switch (_source.Raster.Representation)
             {
                 case RasterRepresentation.Floating:
-                    IFloatRaster source = _source.Raster as IFloatRaster;
-
-                    swir = source.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand) / 10.587413 * n61;
-                    nir = source.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) / 1.721458 * n57;
-                    red = source.GetValue(rowIndex, columnIndex, _indexOfRedBand) / 2.702960 * n21;
+                    swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand) / 10.587413 * n61;
+                    nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand) / 1.721458 * n57;
+                    red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand) / 2.702960 * n21;
 
                     return new Double[] { red, nir, swir };
                 case RasterRepresentation.Integer:
@@ -241,13 +230,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// </summary>
         protected override void PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(PrepareRasterResult(3,
+            _result = _source.Factory.CreateSpectralGeometry(_source,
+                                                             PrepareRasterResult(RasterRepresentation.Floating,
+                                                                                 3,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 _source.Raster.RadiometricResolutions,
-                                                                                 _source.Raster.SpectralRanges,
-                                                                                 _source.Raster.Mapper,
-                                                                                 RasterRepresentation.Floating), _source);
+                                                                                 Enumerable.Repeat(64, 3).ToArray(),
+                                                                                 _source.Raster.Mapper),
+                                                             _source.ImagingScene);
         }
 
         #endregion

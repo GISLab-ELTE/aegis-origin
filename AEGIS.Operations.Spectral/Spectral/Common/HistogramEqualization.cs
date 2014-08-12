@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -101,11 +101,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public HistogramEqualization(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.HistogramEqualization, parameters)
         {
-            _cumulativeDistributionValues = new Double[_source.Raster.SpectralResolution][];
-            _cumulativeDistributionMinimums = new Double[_source.Raster.SpectralResolution];
-            _cumulativeDistributionMaximums = new Double[_source.Raster.SpectralResolution];
-            _radiometricResolutionExponents = new Double[_source.Raster.SpectralResolution];
-            _radiometricValueLimits = new UInt32[_source.Raster.SpectralResolution];
+            _cumulativeDistributionValues = new Double[_source.Raster.NumberOfBands][];
+            _cumulativeDistributionMinimums = new Double[_source.Raster.NumberOfBands];
+            _cumulativeDistributionMaximums = new Double[_source.Raster.NumberOfBands];
+            _radiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
+            _radiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
 
             if (_sourceBandIndex >= 0)
             {
@@ -113,7 +113,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             }
             else
             {
-                for (Int32 i = 0; i < _source.Raster.SpectralResolution; i++)
+                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
                     ComputeParameters(i);
             }
         }

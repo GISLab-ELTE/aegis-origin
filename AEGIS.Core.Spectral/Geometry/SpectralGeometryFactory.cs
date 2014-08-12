@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -16,6 +16,7 @@
 using ELTE.AEGIS.Raster;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Geometry
 {
@@ -27,8 +28,15 @@ namespace ELTE.AEGIS.Geometry
     {
         #region Private fields
 
-        private IGeometryFactory _geometryFactory;
-        private IRasterFactory _rasterFactory;
+        /// <summary>
+        /// The geometry factory. This field is read-only.
+        /// </summary>
+        private readonly IGeometryFactory _geometryFactory;
+
+        /// <summary>
+        /// The raster factory. This field is read-only.
+        /// </summary>
+        private readonly IRasterFactory _rasterFactory;
 
         #endregion
 
@@ -48,30 +56,421 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region Factory methods for raster geometries
+        #region Factory methods for spectral geometries
 
         /// <summary>
-        /// Creates a spectral geometry to match a specified geometry.
+        /// Creates a spectral geometry.
         /// </summary>
-        /// <param name="raster">The raster.</param>
-        /// <param name="source">The source.</param>
-        /// <returns>The spectral geometry that matches <paramref name="source" /> and contains the specified raster data.</returns>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a raster image for the specified service.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="service">The service.</param>
+        /// <param name="mapper">The raster mapper.</param>
+        /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
-        /// The source is null.
+        /// The geometry is null.
+        /// or
+        /// The raster service is null.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRasterService service, RasterMapper mapper)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(service, mapper), null);
+        }
+
+        /// <summary>
+        /// Creates a raster image for the specified service.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="service">The service.</param>
+        /// <param name="mapper">The raster mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The geometry is null.
+        /// or
+        /// The raster service is null.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRasterService service, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralGeometry(geometry, _rasterFactory.CreateRaster(service, mapper), scene);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="raster">The raster.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The geometry is null.
         /// or
         /// The raster is null.
         /// </exception>
-        public virtual ISpectralGeometry CreateSpectralGeometry(IRaster raster, IGeometry source)
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRaster raster)
         {
+            return CreateSpectralGeometry(geometry, raster, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="raster">The raster.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral geometry.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The geometry is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        public ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRaster raster, ImagingScene scene)
+        {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
 
-            if (source is IPolygon)
+            if (geometry is IPolygon)
             {
-                IPolygon sourcePolygon = source as IPolygon;
-                return new SpectralPolygon(this, raster, sourcePolygon.Shell, sourcePolygon.Holes, sourcePolygon.Metadata);
+                return new SpectralPolygon(this, (geometry as IPolygon).Shell, (geometry as IPolygon).Holes, raster, scene, geometry.Metadata);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Creates a spectral geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="other">The other raster image.</param>
+        /// <returns>The produced spectral geometry matching <paramref name="other"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">The other geometry is null.</exception>
+        public ISpectralGeometry CreateSpectralGeometry(ISpectralGeometry other)
+        {
+            if (other == null)
+                throw new ArgumentNullException("other", "The other geometry is null.");
+
+            if (other is IPolygon)
+            {
+                return new SpectralPolygon(this, (other as IPolygon).Shell, (other as IPolygon).Holes, other.Raster, other.ImagingScene, other.Metadata);
             }
 
             return null;
@@ -84,1578 +483,2197 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster)
-        {
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The raster mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null,  null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation)
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation)
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, null);
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(_rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster image.</param>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IDictionary<String, Object> metadata)
+        public ISpectralPolygon CreateSpectralPolygon(IRaster raster)
         {
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(raster, null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
+        /// <param name="raster">The raster image.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IDictionary<String, Object> metadata)
+        public ISpectralPolygon CreateSpectralPolygon(IRaster raster, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(raster, null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IRaster raster, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(raster, scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(raster.Coordinates, null, raster, scene, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
         {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A spectral polygon containing the specified raster data.</returns>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IDictionary<String, Object> metadata)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, raster.Coordinates, null, metadata);
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, null, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
         /// or
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell)
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster)
         {
-            return new SpectralPolygon(this, raster, shell, null, null);
+            return CreateSpectralPolygon(shell, null, raster, null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <returns>A spectral polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
+        /// <param name="shell">The shell.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
         /// or
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, IDictionary<String, Object> metadata)
         {
-            return new SpectralPolygon(this, raster, shell, holes, null);
+            return CreateSpectralPolygon(shell, null, raster, null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns,radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <returns>A polygon containing the specified raster data and coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, null);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <param name="shell">The shell.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
         /// or
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, ImagingScene scene)
         {
-            return new SpectralPolygon(this, raster, shell, null, metadata);
+            return CreateSpectralPolygon(shell, null, raster, scene, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, null, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
         /// or
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata)
         {
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
+            return CreateSpectralPolygon(shell, null, raster, scene, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
+        /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions,spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="shell">The coordinates of the shell.</param>
-        /// <param name="holes">The coordinates of the holes.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>A polygon containing the specified raster data, coordinates and metadata.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
-        {
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, shell, holes, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="raster">The raster data.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The raster is null.
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
         /// or
-        /// The source polygon is null.
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
         /// </exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IRaster raster, IPolygon source)
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(RasterMapper mapper, RasterRepresentation representation, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IPolygon source)
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IPolygon source)
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, IPolygon source)
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <param name="source">The source polygon.</param>
-        /// <returns>A polygon that matches <paramref name="source" /> and contains the specified raster data.</returns>
-        /// <exception cref="System.ArgumentNullException">The source polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation, IPolygon source)
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            IRaster raster = _rasterFactory.CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolution, spectralRanges, mapper, representation);
-            return new SpectralPolygon(this, raster, source.Shell, source.Holes, source.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
-        /// <param name="other">The other polygon.</param>
-        /// <returns>A spectral polygon that matches <paramref name="other" />.</returns>
-        /// <exception cref="System.ArgumentNullException">The other spectral polygon is null.</exception>
-        public virtual ISpectralPolygon CreateSpectralPolygon(ISpectralPolygon other)
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
         {
-            if (other == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            return new SpectralPolygon(this, other.Raster.Clone() as IRaster, other.Shell, other.Holes, other.Metadata);
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
         }
 
-        #endregion        
-    
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The number of radiometric resolutions does not match the number of bands.
+        /// </exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, _rasterFactory.CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper), scene, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster)
+        {
+            return CreateSpectralPolygon(shell, holes, raster, null, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, IDictionary<String, Object> metadata)
+        {
+            return CreateSpectralPolygon(shell, holes, raster, null, metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, ImagingScene scene)
+        {
+            return CreateSpectralPolygon(shell, holes, raster, scene, null);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="shell">The shell.</param>
+        /// <param name="holes">The holes.</param>
+        /// <param name="raster">The raster image.</param>
+        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The raster is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata)
+        {
+            return new SpectralPolygon(this, shell, holes, raster, scene, metadata);
+        }
+
+        #endregion
+
+
+
+
+
         #region Protected Factory methods
 
         /// <summary>

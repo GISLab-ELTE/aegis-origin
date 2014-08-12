@@ -1,9 +1,9 @@
-﻿/// <copyright file="IRasterBand.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterBand.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -63,12 +63,6 @@ namespace ELTE.AEGIS.Raster
         public IList<Int32> HistogramValues { get { return _raster.HistogramValues[_bandIndex]; } }
 
         /// <summary>
-        /// Gets the spectral range of the band.
-        /// </summary>
-        /// <value>The spectral range of the band.</value>
-        public SpectralRange SpectralRange { get { return _raster.SpectralRanges[_bandIndex]; } }
-
-        /// <summary>
         /// Get a value indicating whether the raster band is mapped to coordinate space.
         /// </summary>
         /// <value><c>true</c> if the raster band is mapped to coordinate spacet; otherwise, <c>false</c>.</value>
@@ -99,6 +93,11 @@ namespace ELTE.AEGIS.Raster
         /// <param name="x">The zero-based column index of the value.</param>
         /// <param name="y">The zero-based row index of the value.</param>
         /// <returns>The spectral value located at the specified row and column index.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The raster is not writable.
+        /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The row index is less than 0.
         /// or
@@ -116,7 +115,13 @@ namespace ELTE.AEGIS.Raster
         /// <param name="x">The zero-based column index of the pixel.</param>
         /// <param name="y">The zero-based row index of the pixel.</param>
         /// <value>The spectral value located at the specified coordinate.</value>
-        /// <exception cref="System.NotSupportedException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The raster is not writable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public UInt32 this[Coordinate coordinate] { get { return GetValue(coordinate); } set { SetValue(coordinate, value); } }
 
@@ -133,7 +138,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The band index is less than 0.
         /// or
-        /// The band index is greater than or equal to the spectral resolution of the raster.
+        /// The band index is greater than or equal to the number of bands in the raster.
         /// </exception>
         public RasterBand(IRaster raster, Int32 bandIndex)
         {
@@ -141,8 +146,8 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentNullException("raster", "The raster is null.");
             if (bandIndex < 0)
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-            if (bandIndex >= raster.SpectralResolution)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is greater than or equal to the spectral resolution of the raster.");
+            if (bandIndex >= raster.NumberOfBands)
+                throw new ArgumentOutOfRangeException("bandIndex", "The band index is greater than or equal to the number of bands in the raster.");
 
             _raster = raster;
             _bandIndex = bandIndex;
@@ -158,6 +163,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="rowIndex">The zero-based column index of the value.</param>
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         /// <param name="value">The spectral value.</param>
+        /// <exception cref="System.NotSupportedException">The raster is not writable.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The row index is less than 0.
         /// or
@@ -177,11 +183,52 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <param name="value">The spectral value.</param>
-        /// <exception cref="System.NotSupportedException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not writable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public void SetValue(Coordinate coordinate, UInt32 value)
         {
             _raster.SetValue(coordinate, _bandIndex, value);
+        }
+
+        /// <summary>
+        /// Sets a spectral value at a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based column index of the value.</param>
+        /// <param name="columnIndex">The zero-based row index of the value.</param>
+        /// <param name="value">The spectral value.</param>
+        /// <exception cref="System.NotSupportedException">The raster is not writable.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The row index is less than 0.
+        /// or
+        /// The row index is equal to or greater than the number of rows.
+        /// or
+        /// The column index is less than 0.
+        /// or
+        /// the column index is equal to or greater than the number of columns.
+        /// </exception>
+        public void SetFloatValue(Int32 rowIndex, Int32 columnIndex, Double value)
+        {
+            _raster.SetFloatValue(rowIndex, columnIndex, _bandIndex, value);
+        }
+
+        /// <summary>
+        /// Sets a spectral value at a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="value">The spectral value.</param>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not writable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
+        public void SetFloatValue(Coordinate coordinate, Double value)
+        {
+            _raster.SetFloatValue(coordinate, _bandIndex, value);
         }
 
         /// <summary>
@@ -190,6 +237,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="rowIndex">The zero-based column index of the value.</param>
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         /// <returns>The spectral value located at the specified row and column index.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The row index is less than 0.
         /// or
@@ -209,11 +257,52 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The spectral value located at the specified coordinate.</returns>
-        /// <exception cref="System.NotSupportedException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public UInt32 GetValue(Coordinate coordinate)
         {
             return _raster.GetValue(coordinate, _bandIndex);
+        }
+
+        /// <summary>
+        /// Gets a spectral value at a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based column index of the value.</param>
+        /// <param name="columnIndex">The zero-based row index of the value.</param>
+        /// <returns>The spectral value located at the specified row and column index.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The row index is less than 0.
+        /// or
+        /// The row index is equal to or greater than the number of rows.
+        /// or
+        /// The column index is less than 0.
+        /// or
+        /// the column index is equal to or greater than the number of columns.
+        /// </exception>
+        public Double GetFloatValue(Int32 rowIndex, Int32 columnIndex)
+        {
+            return _raster.GetFloatValue(rowIndex, columnIndex, _bandIndex);
+        }
+
+        /// <summary>
+        /// Gets a spectral value at a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The spectral value located at the specified coordinate.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
+        public Double GetFloatValue(Coordinate coordinate)
+        {
+            return _raster.GetFloatValue(coordinate, _bandIndex);
         }
 
         /// <summary>
@@ -222,6 +311,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="rowIndex">The zero-based column index of the value.</param>
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         /// <returns>The spectral value located at the specified row and column index or in the nearest index if either the row or column indices are out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
         public UInt32 GetNearestValue(Int32 rowIndex, Int32 columnIndex)
         {
             return _raster.GetNearestValue(rowIndex, columnIndex, _bandIndex);
@@ -232,10 +322,41 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The spectral value located at the specified coordinate or at the nearest index if the coordinate is out of range.</returns>
-        /// <exception cref="System.NotSupportedException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
         public UInt32 GetNearestValue(Coordinate coordinate)
         {
             return _raster.GetNearestValue(coordinate, _bandIndex);
+        }
+
+        /// <summary>
+        /// Gets the nearest spectral value to a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based column index of the value.</param>
+        /// <param name="columnIndex">The zero-based row index of the value.</param>
+        /// <returns>The spectral value located at the specified row and column index or in the nearest index if either the row or column indices are out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        public Double GetNearestFloatValue(Int32 rowIndex, Int32 columnIndex)
+        {
+            return _raster.GetNearestFloatValue(rowIndex, columnIndex, _bandIndex);
+        }
+
+        /// <summary>
+        /// Gets the nearest spectral value to a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The spectral value located at the specified coordinate or at the nearest index if the coordinate is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        public Double GetNearestFloatValue(Coordinate coordinate)
+        {
+            return _raster.GetNearestFloatValue(coordinate, _bandIndex);
         }
         
         #endregion

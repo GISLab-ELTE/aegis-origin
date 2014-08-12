@@ -1,9 +1,9 @@
-﻿/// <copyright file="Raster16.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="Raster32.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,8 +27,25 @@ namespace ELTE.AEGIS.Raster
     {
         #region Private fields
 
+        /// <summary>
+        /// The array of spectral values. This field is read-only.
+        /// </summary>
         private readonly UInt32[][] _values;
-        private readonly Int32[][] _histogramValues;
+
+        /// <summary>
+        /// The array of histogram values. This field is read-only.
+        /// </summary>
+        private readonly SparseArray<Int32>[] _histogramValues;
+
+        #endregion
+
+        #region IRaster properties
+
+        /// <summary>
+        /// Gets the representation of the raster.
+        /// </summary>
+        /// <value>The representation of the raster.</value>
+        public override RasterRepresentation Representation { get { return RasterRepresentation.Integer; } }
 
         #endregion
 
@@ -37,7 +55,7 @@ namespace ELTE.AEGIS.Raster
         /// Gets the maximum radiometric resolution.
         /// </summary>
         /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return 16; } }
+        protected override Int32 MaxRadiometricResolution { get { return 32; } }
 
         #endregion
 
@@ -47,14 +65,14 @@ namespace ELTE.AEGIS.Raster
         /// Initializes a new instance of the <see cref="Raster32" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of spectral bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The radiometric resolutions.</param>
         /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
+        /// The number of bands is less than 1.
         /// or
         /// The number of rows is less than 0.
         /// or
@@ -62,42 +80,27 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// Not all radiometric resolution values fall within the predefined range.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of radiometric resolutions does not match the spectral resolution.
-        /// or
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public Raster32(IRasterFactory factory, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
-            : base(factory, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper)
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public Raster32(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+            : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
         {
             // generate empty values for all bands
-            _values = Enumerable.Repeat<UInt32[]>(null, spectralResolution).ToArray();
-            _histogramValues = Enumerable.Repeat<Int32[]>(null, spectralResolution).ToArray();
+            _values = Enumerable.Repeat<UInt32[]>(null, numberOfBands).ToArray();
+            _histogramValues = Enumerable.Repeat<SparseArray<Int32>>(null, numberOfBands).ToArray();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Raster32" /> class.
         /// </summary>
+        /// <param name="factory">The factory.</param>
         /// <param name="spectralValues">The spectral values.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">Not all radiometric resolution values fall within the predefined range.</exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// or
-        /// The number of spectral ranges does not match the number of bands.
-        /// or
-        /// The number of spectral values within the arrays does not match the column and row values.
-        /// or
-        /// Not all matrices within the list of spectral values have the same dimension.
-        /// </exception>
-        public Raster32(IRasterFactory factory, IList<UInt32[]> spectralValues, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
-            : base(factory, spectralValues != null ? spectralValues.Count : 0, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper)
+        private Raster32(IRasterFactory factory, IList<UInt32[]> spectralValues, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+            : base(factory, spectralValues != null ? spectralValues.Count : 0, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
         {
-            if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
-
             // copy values for all bands
             for (Int32 i = 0; i < spectralValues.Count; i++)
             {
@@ -105,12 +108,25 @@ namespace ELTE.AEGIS.Raster
                 Array.Copy(spectralValues[i], _values[i], spectralValues[i].Length);
             }
 
-            _histogramValues = Enumerable.Repeat<Int32[]>(null, spectralValues.Count).ToArray();
+            _histogramValues = Enumerable.Repeat<SparseArray<Int32>>(null, spectralValues.Count).ToArray();
         }
 
         #endregion
 
-        #region IRaster methods
+        #region ICloneable methods
+
+        /// <summary>
+        /// Creates a clone of the <see cref="Raster32" /> instance.
+        /// </summary>
+        /// <returns>The deep copy of the <see cref="Raster32" /> instance.</returns>
+        public override Object Clone()
+        {
+            return new Raster32(Factory, _values, NumberOfRows, NumberOfColumns, _radiometricResolutions, Mapper);
+        }
+
+        #endregion
+
+        #region Protected Raster methods
 
         /// <summary>
         /// Sets the spectral value at a specified index.
@@ -119,38 +135,12 @@ namespace ELTE.AEGIS.Raster
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <param name="spectralValue">The spectral value.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The row index is less than 0.
-        /// or
-        /// The row index is equal to or greater than the number of rows.
-        /// or
-        /// The column index is less than 0.
-        /// or
-        /// The column index is equal to or greater than the number of columns.
-        /// or
-        /// The band index is less than 0.
-        /// or
-        /// The band index is equal to or greater than the number of bands.
-        /// </exception>
-        public override void SetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
+        protected override void ApplySetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
         {
-            if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-            if (rowIndex >= _numberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-            if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-            if (columnIndex >= _numberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-            if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-            if (bandIndex >= _spectralResolution)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-
             // modify the histrogram values if they are already calculated
             if (_histogramValues[bandIndex] != null)
             {
-                _histogramValues[bandIndex][_values[bandIndex][rowIndex * _numberOfRows + columnIndex]]--;
+                _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
                 _histogramValues[bandIndex][(UInt32)spectralValue]++;
             }
 
@@ -160,10 +150,10 @@ namespace ELTE.AEGIS.Raster
                 if (spectralValue == 0)
                     return;
 
-                _values[bandIndex] = new UInt32[_numberOfRows * _numberOfColumns];
+                _values[bandIndex] = new UInt32[NumberOfRows * NumberOfColumns];
             }
 
-            _values[bandIndex][rowIndex * _numberOfColumns + columnIndex] = (UInt32)spectralValue;
+            _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (UInt32)spectralValue;
         }
 
         /// <summary>
@@ -172,38 +162,14 @@ namespace ELTE.AEGIS.Raster
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
-        /// <exception cref="System.ArgumentNullException">The spectral values are not specified.</exception>
-        /// <exception cref="System.ArgumentException">The number of spectral values does not match the spectral resolution of the raster.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The row index is less than 0.
-        /// or
-        /// The row index is equal to or greater than the number of rows.
-        /// or
-        /// The column index is less than 0.
-        /// or
-        /// The column index is equal to or greater than the number of columns.
-        /// </exception>
-        public override void SetValues(Int32 rowIndex, Int32 columnIndex, UInt32[] spectralValues)
+        protected override void ApplySetValues(Int32 rowIndex, Int32 columnIndex, UInt32[] spectralValues)
         {
-            if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
-            if (spectralValues.Length != _spectralResolution)
-                throw new ArgumentException("The number of spectral values does not match the spectral resolution of the raster.", "spectralValues");
-            if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-            if (rowIndex >= _numberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-            if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-            if (columnIndex >= _numberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-
             for (Int32 k = 0; k < spectralValues.Length; k++)
             {
                 // modify the histrogram values if they are already calculated
                 if (_histogramValues[k] != null)
                 {
-                    _histogramValues[k][_values[k][rowIndex * _numberOfRows + columnIndex]]--;
+                    _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;
                     _histogramValues[k][(UInt32)spectralValues[k]]++;
                 }
 
@@ -213,10 +179,68 @@ namespace ELTE.AEGIS.Raster
                     if (spectralValues[k] == 0)
                         continue;
 
-                    _values[k] = new UInt32[_numberOfRows * _numberOfColumns];
+                    _values[k] = new UInt32[NumberOfRows * NumberOfColumns];
                 }
 
-                _values[k][rowIndex * _numberOfColumns + columnIndex] = (UInt32)spectralValues[k];
+                _values[k][rowIndex * NumberOfColumns + columnIndex] = (UInt32)spectralValues[k];
+            }
+        }
+
+        /// <summary>
+        /// Sets the spectral value at a specified index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <param name="spectralValue">The spectral value.</param>
+        protected override void ApplySetFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
+        {
+            // modify the histrogram values if they are already calculated
+            if (_histogramValues[bandIndex] != null)
+            {
+                _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
+                _histogramValues[bandIndex][(UInt32)spectralValue]++;
+            }
+
+            // create the spectral values if the they don't exist
+            if (_values[bandIndex] == null)
+            {
+                if (spectralValue == 0)
+                    return;
+
+                _values[bandIndex] = new UInt32[NumberOfRows * NumberOfColumns];
+            }
+
+            _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (UInt32)spectralValue;
+        }
+
+        /// <summary>
+        /// Sets all spectral values at a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="spectralValues">The array containing the spectral values for each band.</param>
+        protected override void ApplySetFloatValues(Int32 rowIndex, Int32 columnIndex, Double[] spectralValues)
+        {
+            for (Int32 k = 0; k < spectralValues.Length; k++)
+            {
+                // modify the histrogram values if they are already calculated
+                if (_histogramValues[k] != null)
+                {
+                    _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;
+                    _histogramValues[k][(UInt32)spectralValues[k]]++;
+                }
+
+                // create the spectral values if the they don't exist
+                if (_values[k] == null)
+                {
+                    if (spectralValues[k] == 0)
+                        continue;
+
+                    _values[k] = new UInt32[NumberOfRows * NumberOfColumns];
+                }
+
+                _values[k][rowIndex * NumberOfColumns + columnIndex] = (UInt32)spectralValues[k];
             }
         }
 
@@ -227,38 +251,12 @@ namespace ELTE.AEGIS.Raster
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The row index is less than 0.
-        /// or
-        /// The row index is equal to or greater than the number of rows.
-        /// or
-        /// The column index is less than 0.
-        /// or
-        /// The column index is equal to or greater than the number of columns.
-        /// or
-        /// The band index is less than 0.
-        /// or
-        /// The band index is equal to or greater than the number of bands.
-        /// </exception>
-        public override UInt32 GetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        protected override UInt32 ApplyGetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-            if (rowIndex >= _numberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-            if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-            if (columnIndex >= _numberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-            if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-            if (bandIndex >= _spectralResolution)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-
             if (_values[bandIndex] == null)
                 return 0;
 
-            return _values[bandIndex][rowIndex * _numberOfColumns + columnIndex];
+            return _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
         }
 
         /// <summary>
@@ -267,64 +265,43 @@ namespace ELTE.AEGIS.Raster
         /// <param name="rowIndex">The zero-based row index of the values.</param>
         /// <param name="columnIndex">The zero-based column index of the values.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The row index is less than 0.
-        /// or
-        /// The row index is equal to or greater than the number of rows.
-        /// or
-        /// The column index is less than 0.
-        /// or
-        /// The column index is equal to or greater than the number of columns.
-        /// </exception>
-        public override UInt32[] GetValues(Int32 rowIndex, Int32 columnIndex)
+        protected override UInt32[] ApplyGetValues(Int32 rowIndex, Int32 columnIndex)
         {
-            if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-            if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-            if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-            if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-
-            UInt32[] values = new UInt32[_spectralResolution];
+            UInt32[] values = new UInt32[_bands.Length];
             for (Int32 k = 0; k < values.Length; k++)
             {
-                values[k] = (_values[k] == null) ? (UInt32)0 : _values[k][rowIndex * _numberOfColumns + columnIndex];
+                values[k] = (_values[k] == null) ? 0U : _values[k][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
 
         /// <summary>
-        /// Returns the nearest spectral value in a band to a specified row and column index.
+        /// Returns the spectral value at a specified index.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
-        /// <returns>The spectral values for the band at the specified index or the nearest index if either row or column is out of range.</returns>
-        public override UInt32 GetNearestValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        /// <returns>The spectral value at the specified index.</returns>
+        protected override Double ApplyGetFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), _numberOfRows - 1);
-            Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), _numberOfColumns - 1);
+            if (_values[bandIndex] == null)
+                return 0;
 
-            return (_values[bandIndex] == null) ? (UInt32)0 : _values[bandIndex][trueRowIndex * _numberOfColumns + trueColumnIndex];
+            return _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
         }
 
         /// <summary>
-        /// Returns the nearest spectral values in all bands to a specified row and column index.
+        /// Returns all spectral values at a specified row and column index.
         /// </summary>
-        /// <param name="rowIndex">The zero-based column index of the values.</param>
-        /// <param name="k">The zero-based row index of the values.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index or the nearest index if either row or column is out odf range.</returns>
-        public override UInt32[] GetNearestValues(Int32 rowIndex, Int32 columnIndex)
+        /// <param name="rowIndex">The zero-based row index of the values.</param>
+        /// <param name="columnIndex">The zero-based column index of the values.</param>
+        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
+        protected override Double[] ApplyGetFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32[] values = new UInt32[_spectralResolution];
-            Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), _numberOfRows - 1);
-            Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), _numberOfColumns - 1);
-
+            Double[] values = new Double[_bands.Length];
             for (Int32 k = 0; k < values.Length; k++)
             {
-                values[k] = (_values[k] == null) ? (UInt32)0 : _values[k][rowIndex * _numberOfColumns + columnIndex];
+                values[k] = (_values[k] == null) ? 0 : _values[k][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
@@ -339,36 +316,23 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The band index is equal to or greater than the number of bands.
         /// </exception>
-        public override IList<Int32> GetHistogramValues(Int32 bandIndex)
+        protected override IList<Int32> ApplyGetHistogramValues(Int32 bandIndex)
         {
-            if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-            if (bandIndex >= _spectralResolution)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-
             if (_histogramValues[bandIndex] == null)
             {
-                _histogramValues[bandIndex] = new Int32[1UL << _radiometricResolutions[bandIndex]];
-                for (Int32 l = 0; l < _values[bandIndex].Length; l++)
+                _histogramValues[bandIndex] = new SparseArray<Int32>(1L << 32);
+                if (_values[bandIndex] == null)
+                    _histogramValues[bandIndex][0] = NumberOfColumns * NumberOfRows;
+                else
                 {
-                    _histogramValues[bandIndex][_values[bandIndex][l]]++;
+                    for (Int32 l = 0; l < _values[bandIndex].Length; l++)
+                    {
+                        _histogramValues[bandIndex][_values[bandIndex][l]]++;
+                    }
                 }
             }
 
-            return Array.AsReadOnly(_histogramValues[bandIndex]);
-        }
-
-        #endregion
-
-        #region ICloneable methods
-
-        /// <summary>
-        /// Creates a clone of the <see cref="Raster16" /> instance.
-        /// </summary>
-        /// <returns>The deep copy of the <see cref="Raster16" /> instance.</returns>
-        public override Object Clone()
-        {
-            return new Raster32(_factory, _values, _numberOfRows, _numberOfColumns, _radiometricResolutions, _spectralRanges, _mapper);
+            return _histogramValues[bandIndex].AsReadOnly();
         }
 
         #endregion

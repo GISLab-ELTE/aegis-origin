@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -47,71 +47,39 @@ namespace ELTE.AEGIS.Raster
 
         #endregion
 
-        #region Factory methods for floating rasters
+        #region Factory methods for rasters
 
         /// <summary>
-        /// Creates a raster image containing floating point values.
+        /// Creates a raster image.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IFloatRaster CreateFloatRaster(RasterMapper mapper)
-        {
-            return CreateFloatRaster(0, 0, 0, null, null, mapper);
-        }
-
-        /// <summary>
-        /// Creates a raster image containing floating point values.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IFloatRaster CreateFloatRaster(IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            return CreateFloatRaster(0, 0, 0, null, spectralRanges, mapper);
-        }
-
-        /// <summary>
-        /// Creates a raster image containing floating point values.
-        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
+        /// <returns>The produced raster image.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
         /// The number of rows is less than 0.
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public IFloatRaster CreateFloatRaster(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            return CreateFloatRaster(0, numberOfRows, numberOfColumns, null, null, mapper);
+            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
-        /// Creates a raster image containing floating point values.
+        /// Creates a raster image.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IFloatRaster CreateFloatRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
-        {
-            return CreateFloatRaster(spectralResolution, numberOfRows, numberOfColumns, null, null, mapper);
-        }
-
-        /// <summary>
-        /// Creates a raster image containing floating point values.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
+        /// <returns>The produced raster image.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
+        /// The number of bands is less than 1.
         /// or
         /// The number of rows is less than 0.
         /// or
@@ -119,314 +87,252 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than 64.
+        /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public IFloatRaster CreateFloatRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            if (radiometricResolution < 1)
-                throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is less than 1.");
-            if (radiometricResolution > 64)
-                throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is greater than 64.");
-
-            return CreateFloatRaster(spectralResolution, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, spectralResolution).ToArray(), spectralRanges, mapper);
+            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
-        /// Creates a raster image containing floating point values.
+        /// Creates a raster image.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
+        /// <returns>The produced raster image.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
+        /// The number of bands is less than 1.
         /// or
         /// The number of rows is less than 0.
         /// or
         /// The number of columns is less than 0.
         /// or
-        /// One or more of the radiometric resolutions is less than 1.
+        /// One or more radiometric resolutions are less than 1.
         /// or
-        /// One or more of the radiometric resolutions is greater than 64.
+        /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of radiometric resolutions does not match the spectral resolution.
-        /// or
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public virtual IFloatRaster CreateFloatRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
+            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+        }
+
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced raster image.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// </exception>
+        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        {
+            return CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, representation == RasterRepresentation.Floating ? DefaultFloatRadiometricResolution : DefaultRadiometricResolution, mapper);
+        }
+
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced raster image.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than the maximum allowed.
+        /// </exception>
+        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            if (numberOfBands < 1)
+                throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
+
+            if (radiometricResolution < 1)
+                throw new ArgumentOutOfRangeException("radiometricResolutions", "The radiometric resolution is less than 1.");
+            if (radiometricResolution > 64)
+                throw new ArgumentOutOfRangeException("radiometricResolutions", "The radiometric resolution is greater than the maximum allowed.");
+
+            return CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
+        }
+
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <returns>The produced raster image.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The number of bands is less than 1.
+        /// or
+        /// The number of rows is less than 0.
+        /// or
+        /// The number of columns is less than 0.
+        /// or
+        /// One or more radiometric resolutions are less than 1.
+        /// or
+        /// One or more radiometric resolutions are greater than the maximum allowed.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
+        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        {
+            if (numberOfBands < 1)
+                throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
+            if (numberOfRows < 0)
+                throw new ArgumentOutOfRangeException("numberOfRows", "The number of rows is less than 0.");
+            if (numberOfColumns < 0)
+                throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
+            if (radiometricResolutions != null && numberOfBands != radiometricResolutions.Count)
+                throw new ArgumentException("The number of radiometric resolutions does not match the number of bands.", "radiometricResolutions");
+
             if (radiometricResolutions != null && radiometricResolutions.Min() < 1)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more of the radiometric resolutions is less than 1.");
+                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more radiometric resolutions are less than 1.");
             if (radiometricResolutions != null && radiometricResolutions.Max() > 64)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more of the radiometric resolutions is greater than 64.");
+                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more radiometric resolutions are greater than the maximum allowed.");
 
-            Int32 baseRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultRadiometricResolution;
+           Int32 maxRadiometricResolution;
 
-            if (baseRadiometricResolution <= 32)
-                return new FloatRaster32(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
+            switch (representation)
+            {
+                case RasterRepresentation.Any:
+                case RasterRepresentation.Integer:
+                    maxRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultRadiometricResolution;
 
-            return new FloatRaster64(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
+                    if (maxRadiometricResolution <= 8)
+                        return new Raster8(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+
+                    if (maxRadiometricResolution <= 16)
+                        return new Raster16(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+
+                    if (maxRadiometricResolution <= 32)
+                        return new Raster32(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+
+                    return new RasterFloat64(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+
+                case RasterRepresentation.Floating:
+                     maxRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultFloatRadiometricResolution;
+
+                    if (maxRadiometricResolution <= 32)
+                        return new RasterFloat32(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+
+                    return new RasterFloat64(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="other">The other raster image.</param>
+        /// <returns>The produced raster image matching <paramref name="other"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">The other raster is null.</exception>
+        public IRaster CreateRaster(IRaster other)
+        {
+            if (other == null)
+                throw new ArgumentNullException("other", "The other raster is null.");
+
+            IRaster raster = CreateRaster(other.Representation, other.NumberOfBands, other.NumberOfRows, other.NumberOfColumns, other.RadiometricResolutions, other.Mapper);
+
+            switch (raster.Representation)
+            {
+                case RasterRepresentation.Integer:
+                    for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                        for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                            for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                            {
+                                raster.SetValue(rowIndex, columnIndex, bandIndex, raster.GetValue(rowIndex, columnIndex, bandIndex));
+                            }
+                    break;
+                case RasterRepresentation.Floating:
+                    for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                        for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                            for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                            {
+                                raster.SetFloatValue(rowIndex, columnIndex, bandIndex, raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
+                            }
+                    break;
+            }
+
+            return raster;
         }
 
         #endregion
 
-        #region Factory methods for all rasters
+        #region Factory methods for raster services
 
         /// <summary>
-        /// Creates a raster image.
+        /// Creates a raster image for the specified service.
         /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(RasterMapper mapper)
+        /// <param name="service">The service.</param>
+        /// <param name="mapper">The raster mapper.</param>
+        /// <returns>The raster mapper created for the specified service.</returns>
+        public IRaster CreateRaster(IRasterService service, RasterMapper mapper)
         {
-            return CreateRaster(0, 0, 0, null, null, mapper, RasterRepresentation.Integer);
+            return new ProxyRaster(this, service, mapper);
         }
 
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(RasterMapper mapper, RasterRepresentation representation)
-        {
-            return CreateRaster(0, 0, 0, null, null, mapper, representation);  
-        }
+        #endregion
+
+        #region Factory methods for raster masks
 
         /// <summary>
-        /// Creates a raster image.
+        /// Creates a mask on a raster.
         /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            return CreateRaster(0, 0, 0, null, spectralRanges, mapper, RasterRepresentation.Integer);
-        }
-
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
-        {
-            return CreateRaster(0, 0, 0, null, spectralRanges, mapper, representation);
-        }
-
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <param name="rowIndex">The starting row index.</param>
+        /// <param name="columnIndex">The starting column index.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
+        /// <returns>The raster masked by the specified region.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of rows is less than 0.
+        /// The starting row index is less than 0.
         /// or
-        /// The number of columns is less than 0.
-        /// </exception>
-        public IRaster CreateRaster(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
-        {
-            return CreateRaster(0, numberOfRows, numberOfColumns, null, null, mapper, RasterRepresentation.Integer);  
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of rows is less than 0.
+        /// The starting row index is equal to or greater than the number of rows in the source raster.
         /// or
-        /// The number of columns is less than 0.
-        /// </exception>
-        public IRaster CreateRaster(Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation)
-        {
-            return CreateRaster(0, numberOfRows, numberOfColumns, null, null, mapper, representation);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
-        {
-            return CreateRaster(spectralResolution, numberOfRows, numberOfColumns, null, null, mapper, RasterRepresentation.Integer);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
+        /// The starting column index is less than 0.
+        /// or
+        /// The starting column index is equal to or greater than the number of columns in the source raster.
         /// or
         /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// </exception>
-        public IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterRepresentation representation)
-        {
-            return CreateRaster(spectralResolution, numberOfRows, numberOfColumns, null, null, mapper, representation);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        public IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            return CreateRaster(spectralResolution, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, spectralResolution).ToArray(), spectralRanges, mapper, RasterRepresentation.Integer);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
-        /// or
-        /// The number of rows is less than 0.
+        /// or  
+        /// The starting row index and the number of rows is greater than the number of rows in the source raster.
         /// or
         /// The number of columns is less than 0.
         /// or
-        /// The radiometric resolution is less than 1.
-        /// or
-        /// The radiometric resolution is greater than 64.
+        /// The starting columns index and the number of columns is greater than the number of rows in the source raster.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        public IRaster CreateMask(IRaster raster, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
         {
-            if (radiometricResolution < 1)
-                throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is less than 1.");
-            if (radiometricResolution > 64)
-                throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is greater than 32.");
-
-            return CreateRaster(spectralResolution, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, spectralResolution).ToArray(), spectralRanges, mapper, representation);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more of the radiometric resolutions is less than 1.
-        /// or
-        /// One or more of the radiometric resolutions is greater than 64.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of radiometric resolutions does not match the spectral resolution.
-        /// or
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper)
-        {
-            return CreateRaster(spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper, RasterRepresentation.Integer);
-        }
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">Thre representation of the raster.</param>
-        /// <returns>The raster image produced by the factory.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The spectral resolution is less than 0.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more of the radiometric resolutions is less than 1.
-        /// or
-        /// One or more of the radiometric resolutions is greater than 64.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The number of radiometric resolutions does not match the spectral resolution.
-        /// or
-        /// The number of spectral ranges does not match the spectral resolution.
-        /// </exception>
-        public virtual IRaster CreateRaster(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
-        {
-            if (radiometricResolutions != null && radiometricResolutions.Min() < 1)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more of the radiometric resolutions is less than 1.");
-            if (radiometricResolutions != null && radiometricResolutions.Max() > 64)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "One or more of the radiometric resolutions is greater than 64.");
-
-            Int32 baseRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultRadiometricResolution;
-
-            switch (representation)
-            {
-                case RasterRepresentation.Integer:
-                    if (baseRadiometricResolution <= 8)
-                        return new Raster8(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-
-                    if (baseRadiometricResolution <= 16)
-                        return new Raster16(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-
-                    if (baseRadiometricResolution <= 32)
-                        return new Raster32(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-
-                    return new FloatRaster64(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-
-                case RasterRepresentation.Floating:
-                    if (baseRadiometricResolution <= 32)
-                        return new FloatRaster32(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-
-                    return new FloatRaster64(this, spectralResolution, numberOfRows, numberOfColumns, radiometricResolutions, spectralRanges, mapper);
-            }
-            return null;
+            return new MaskedRaster(this, raster, rowIndex, columnIndex, numberOfRows, numberOfColumns);
         }
 
-        #endregion 
-    
+        #endregion
+
         #region Protected Factory methods
 
         /// <summary>

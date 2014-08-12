@@ -82,7 +82,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             : base(source, target, method, parameters)
         {
             _filterRadius = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius));
-            _radiometricResultionLimits = new UInt64[_source.Raster.SpectralResolution];
+            _radiometricResultionLimits = new UInt64[_source.Raster.NumberOfBands];
 
             if (_sourceBandIndex >= 0)
             {
@@ -134,7 +134,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             for (Int32 filterRowIndex = -_filterRadius; filterRowIndex <= _filterRadius; filterRowIndex++)
                 for (Int32 filterColumnIndex = -_filterRadius; filterColumnIndex <= _filterRadius; filterColumnIndex++)
                 {
-                    filteredValue += (_source.Raster as IFloatRaster).GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filter.Kernel[filterRowIndex + _filterRadius, filterColumnIndex + _filterRadius];
+                    filteredValue += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filter.Kernel[filterRowIndex + _filterRadius, filterColumnIndex + _filterRadius];
                 }
             filteredValue = filteredValue / _filter.Factor + _filter.Offset;
 

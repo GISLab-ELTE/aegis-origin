@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             for (Int32 k = 0; k < _filterRadius; k++)
                 for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    filteredValues[index] += _filter.Kernel[k, l] * (_source.Raster as IFloatRaster).GetNearestValue(rowBase + k, columnBase + l, bandIndex);
+                    filteredValues[index] += _filter.Kernel[k, l] * _source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(filteredValues);

@@ -57,8 +57,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             }
             else
             {
-                _lowerThresholdValues = new Double[_source.Raster.SpectralResolution];
-                _upperThresholdValues = new Double[_source.Raster.SpectralResolution];
+                _lowerThresholdValues = new Double[_source.Raster.NumberOfBands];
+                _upperThresholdValues = new Double[_source.Raster.NumberOfBands];
 
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {

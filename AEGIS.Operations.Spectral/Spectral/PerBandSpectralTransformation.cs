@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 _sourceBandIndex = Convert.ToInt32(parameters[SpectralOperationParameters.BandIndex]);
 
-                if (_sourceBandIndex >= source.Raster.SpectralResolution)
+                if (_sourceBandIndex >= source.Raster.NumberOfBands)
                     throw new ArgumentOutOfRangeException("The specified band index parameter or greater or equal to the spectral resoultion of the source.", "parameters");
             }
             else
@@ -80,14 +80,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         {
             if (_sourceBandIndex >= 0)
             {
-                _result = _source.Factory.CreateSpectralGeometry(PrepareRasterResult(1,
+                _result = _source.Factory.CreateSpectralGeometry(_source, 
+                                                                 PrepareRasterResult(_source.Raster.Representation,
+                                                                                     1,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      new Int32[] { _source.Raster.RadiometricResolutions[_sourceBandIndex] },
-                                                                                     new SpectralRange[] { _source.Raster.SpectralRanges[_sourceBandIndex] },
-                                                                                     _source.Raster.Mapper,
-                                                                                     _source.Raster.Representation),
-                                                                                     _source);
+                                                                                     _source.Raster.Mapper));
             }
             else
             {
@@ -106,7 +105,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 {
                     for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
                         for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
-                            (_result.Raster as IFloatRaster).SetValue(i, j, 0, ComputeFloat(i, j, _sourceBandIndex));
+                            _result.Raster.SetFloatValue(i, j, 0, ComputeFloat(i, j, _sourceBandIndex));
                 }
                 else
                 {
@@ -119,14 +118,14 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 if (_result.Raster.Representation == RasterRepresentation.Floating)
                 {
-                    for (Int32 k = 0; k < _source.Raster.SpectralResolution; k++)
+                    for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
                         for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
                             for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
-                                (_result.Raster as IFloatRaster).SetValue(i, j, k, ComputeFloat(i, j, k));
+                                _result.Raster.SetFloatValue(i, j, k, ComputeFloat(i, j, k));
                 }
                 else
                 {
-                    for (Int32 k = 0; k < _source.Raster.SpectralResolution; k++)
+                    for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
                         for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
                             for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
                                 _result.Raster.SetValue(i, j, k, Compute(i, j, k));
@@ -146,8 +145,8 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32[] values = new UInt32[_source.Raster.SpectralResolution];
-            for (Int32 k = 0; k < _source.Raster.SpectralResolution; k++)
+            UInt32[] values = new UInt32[_source.Raster.NumberOfBands];
+            for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
                 values[k] = Compute(rowIndex, columnIndex, k);
 
             return values;
@@ -160,8 +159,8 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
         {
-            Double[] values = new Double[_source.Raster.SpectralResolution];
-            for (Int32 k = 0; k < _source.Raster.SpectralResolution; k++)
+            Double[] values = new Double[_source.Raster.NumberOfBands];
+            for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
                 values[k] = ComputeFloat(rowIndex, columnIndex, k);
 
             return values;

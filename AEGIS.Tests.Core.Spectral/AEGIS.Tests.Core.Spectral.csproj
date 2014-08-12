@@ -47,11 +47,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RasterMapperTest.cs" />
-    <Compile Include="Raster\FloatRaster32Test.cs" />
-    <Compile Include="Raster\FloatRaster64Test.cs" />
-    <Compile Include="Raster\Proxy\ProxyFloatRasterTest.cs" />
-    <Compile Include="Raster\Proxy\ProxyRasterFactoryTest.cs" />
-    <Compile Include="Raster\Proxy\ProxyRasterTest.cs" />
+    <Compile Include="Raster\RasterFloat32Test.cs" />
+    <Compile Include="Raster\RasterFloat64Test.cs" />
+    <Compile Include="Raster\ProxyRasterTest.cs" />
     <Compile Include="Raster\Raster16Test.cs" />
     <Compile Include="Raster\Raster32Test.cs" />
     <Compile Include="Raster\Raster8Test.cs" />

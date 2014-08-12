@@ -81,8 +81,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             }
             else
             {
-                _lowerThresholdValues = new Double[_source.Raster.SpectralResolution];
-                _upperThresholdValues = new Double[_source.Raster.SpectralResolution];
+                _lowerThresholdValues = new Double[_source.Raster.NumberOfBands];
+                _upperThresholdValues = new Double[_source.Raster.NumberOfBands];
 
                 for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
                 {
@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             if (_source.Raster.Representation == RasterRepresentation.Floating)
             {
-                Double value = (_source.Raster as IFloatRaster).GetValue(rowIndex, columnIndex, bandIndex);
+                Double value = _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
                 return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
             }
             else

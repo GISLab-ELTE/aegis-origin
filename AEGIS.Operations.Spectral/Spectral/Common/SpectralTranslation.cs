@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return (_source.Raster as IFloatRaster).GetValue(rowIndex, columnIndex, bandIndex) * _factor + _offset; 
+            return _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor + _offset; 
         }
 
         #endregion

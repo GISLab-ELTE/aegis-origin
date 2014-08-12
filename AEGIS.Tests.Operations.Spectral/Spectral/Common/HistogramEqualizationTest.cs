@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -34,7 +34,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         #region Private fields
 
         /// <summary>
-        /// The raster (mocked).
+        /// The mock of the raster.
         /// </summary>
         private Mock<IRaster> _rasterMock;
 
@@ -58,10 +58,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
-            _rasterMock.Setup(raster => raster.SpectralResolution).Returns(3);
+            _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
             _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
-            _rasterMock.Setup(raster => raster.SpectralRanges).Returns(SpectralRanges.RGB);
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
@@ -74,9 +73,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         #region Test methods
 
         /// <summary>
-        /// Test method for execution.
+        /// Test method for operation execution.
         /// </summary>
-        [TestCase]
+        [Test]
         public void HistogramEqualizationExecuteTest()
         {
             // test case 1: execute for all bands
@@ -86,11 +85,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
-            Assert.AreEqual(_rasterMock.Object.SpectralResolution, operation.Result.Raster.SpectralResolution);
+            Assert.AreEqual(_rasterMock.Object.NumberOfBands, operation.Result.Raster.NumberOfBands);
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
             Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
 
-            for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.SpectralResolution; bandIndex++)
+            for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
                 AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex);
             }
@@ -106,7 +105,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, operation.Result.Raster.SpectralResolution);
+            Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
             Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[0], operation.Result.Raster.RadiometricResolutions[0]);
             Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
 
@@ -149,9 +148,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         {
             if (_histogramValues == null)
             {
-                _histogramValues = new Int32[raster.SpectralResolution][];
+                _histogramValues = new Int32[raster.NumberOfBands][];
 
-                for (Int32 bandIndex = 0; bandIndex < raster.SpectralResolution; bandIndex++)
+                for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                 {
                     _histogramValues[bandIndex] = new Int32[1UL << raster.RadiometricResolutions[bandIndex]];
 

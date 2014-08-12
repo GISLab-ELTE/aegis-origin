@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -18,28 +18,28 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines possible orders for storing spectral data.
+    /// Defines possible orders for storing raster data in services.
     /// </summary>
     [Flags]
-    public enum SpectralDataOrder
+    public enum RasterDataOrder
     {
         /// <summary>
-        /// Represents a dataset supporting all possible orders.
+        /// Represents a service supporting all possible orders.
         /// </summary>
         Unspecified = 0,
 
         /// <summary>
-        /// Represents a dataset with multiple bands of the same pixel following eachother (a.k.a. band sequential).
+        /// Represents a service with multiple bands of the same pixel following eachother (a.k.a. band sequential).
         /// </summary>
         RowColumnBand = 1,
 
         /// <summary>
-        /// Represents a dataset with the bands of the raster following eachother (a.k.a. band interleaved by pixel).
+        /// Represents a service with the bands of the raster following eachother (a.k.a. band interleaved by pixel).
         /// </summary>
         BandRowColumn = 2,
 
         /// <summary>
-        /// Represents a dataset with multiple bands of the same row following eachother (a.k.a. band interleaved by line).
+        /// Represents a service with multiple bands of the same row following eachother (a.k.a. band interleaved by line).
         /// </summary>
         RowBandColumn = 3
     }

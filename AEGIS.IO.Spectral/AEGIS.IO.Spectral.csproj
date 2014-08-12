@@ -51,7 +51,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawImage\EsriRawImageReader.cs" />
     <Compile Include="RawImage\RawImageLayout.cs" />
-    <Compile Include="RawImage\RawImageReader.cs" />
+    <Compile Include="RawImage\RawImageReader.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">

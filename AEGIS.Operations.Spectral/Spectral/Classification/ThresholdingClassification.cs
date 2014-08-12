@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             // decide based on constants
             if (_source.Raster.Representation == RasterRepresentation.Floating)
             {
-                Double value = (_source.Raster as IFloatRaster).GetValue(rowIndex, columnIndex, bandIndex);
+                Double value = _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
                 return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
             }
             else
@@ -100,25 +100,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             // the result will have integer representation in all cases
             if (_sourceBandIndex >= 0)
             {
-                _result = _source.Factory.CreateSpectralGeometry(PrepareRasterResult(1,
+                _result = _source.Factory.CreateSpectralGeometry(_source,
+                                                                 PrepareRasterResult(RasterRepresentation.Integer, 
+                                                                                     1,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      new Int32[] { 8 },
-                                                                                     new SpectralRange[] { _source.Raster.SpectralRanges[_sourceBandIndex] },
-                                                                                    _source.Raster.Mapper,
-                                                                                    RasterRepresentation.Integer),
-                                                                 _source);
+                                                                                     _source.Raster.Mapper), 
+                                                                 _source.ImagingScene);
             }
             else
             {
-                _result = _source.Factory.CreateSpectralGeometry(PrepareRasterResult(_source.Raster.SpectralResolution,
+                _result = _source.Factory.CreateSpectralGeometry(_source,
+                                                                 PrepareRasterResult(RasterRepresentation.Integer, 
+                                                                                     _source.Raster.NumberOfBands,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _source.Raster.SpectralResolution).ToArray(),
-                                                                                     _source.Raster.SpectralRanges,
-                                                                                     _source.Raster.Mapper,
-                                                                                     RasterRepresentation.Integer),
-                                                                 _source);
+                                                                                     Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
+                                                                                     _source.Raster.Mapper),
+                                                                 _source.ImagingScene);
             }
         }
 

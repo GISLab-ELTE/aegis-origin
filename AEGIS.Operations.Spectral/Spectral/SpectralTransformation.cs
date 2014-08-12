@@ -14,7 +14,6 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Numerics;
-using ELTE.AEGIS.Raster.Proxy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +28,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private types
 
         /// <summary>
-        /// Represents the entity of the operation.
+        /// Represents the raster service of the spectral transformation.
         /// </summary>
-        private class SpectralOperationEntity : ISpectralEntity
+        private class SpectralTransformationService : IRasterService
         {
-            #region Private constant fields. 
+            #region Private constant fields
 
             /// <summary>
             /// Tha maximal number of values that can be read. This field is constant.
@@ -50,114 +49,95 @@ namespace ELTE.AEGIS.Operations.Spectral
             private readonly SpectralTransformation _operation;
 
             /// <summary>
-            /// The spectral resolution. This field is read-only.
-            /// </summary>
-            private readonly Int32 _spectralResolution;
-
-            /// <summary>
-            /// The number of columns. This field is read-only.
-            /// </summary>
-            private readonly Int32 _numberOfColumns;
-
-            /// <summary>
-            /// The number of rows. This field is read-only.
-            /// </summary>
-            private readonly Int32 _numberOfRows;
-
-            /// <summary>
             /// The array of radiometric resolutions. This field is read-only.
             /// </summary>
             private readonly Int32[] _radiometricResolutions;
 
-            /// <summary>
-            /// The representation of the raster. This field is read-only.
-            /// </summary>
-            private readonly RasterRepresentation _representation;
-
             #endregion
 
-            #region ISpectralEntity properties
+            #region IRasterService properties
 
             /// <summary>
             /// Gets the number of columns.
             /// </summary>
             /// <value>The number of spectral values contained in a row.</value>
-            public Int32 NumberOfColumns { get { return _spectralResolution; } }
+            public Int32 NumberOfColumns { get; private set; }
 
             /// <summary>
             /// Gets the number of rows.
             /// </summary>
             /// <value>The number of spectral values contained in a column.</value>
-            public Int32 NumberOfRows { get { return _numberOfRows; } }
+            public Int32 NumberOfRows { get; private set; }
 
             /// <summary>
-            /// Gets the spectral resolution of the dataset.
+            /// Gets the number of spectral bands.
             /// </summary>
-            /// <value>The number of spectral bands contained in the dataset.</value>
-            public Int32 SpectralResolution { get { return _spectralResolution; } }
+            /// <value>The number of spectral bands contained in the raster.</value>
+            public Int32 NumberOfBands { get; private set; }
 
             /// <summary>
             /// Gets the radiometric resolutions of the bands in the raster.
             /// </summary>
             /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-            public IList<Int32> RadiometricResolutions { get { return _radiometricResolutions; } }
+            public IList<Int32> RadiometricResolutions { get { return Array.AsReadOnly(_radiometricResolutions); } }
 
             /// <summary>
-            /// Gets a value indicating whether the dataset is readable.
+            /// Gets a value indicating whether the service is readable.
             /// </summary>
-            /// <value><c>true</c> if the dataset is readable; otherwise, <c>false</c>.</value>
+            /// <value><c>true</c> if the service is readable; otherwise, <c>false</c>.</value>
             public Boolean IsReadable { get { return true; } }
 
             /// <summary>
-            /// Gets a value indicating whether the dataset is writable.
+            /// Gets a value indicating whether the service is writable.
             /// </summary>
-            /// <value><c>true</c> if the dataset is writable; otherwise, <c>false</c>.</value>
+            /// <value><c>true</c> if the service is writable; otherwise, <c>false</c>.</value>
             public Boolean IsWritable { get { return false; } }
 
             /// <summary>
-            /// Gets the representation of the dataset.
+            /// Gets the representation of the service.
             /// </summary>
-            /// <value>The representation of the dataset.</value>
-            public RasterRepresentation Representation { get { return _representation; } }
+            /// <value>The representation of the service.</value>
+            public RasterRepresentation Representation { get; private set; }
 
             /// <summary>
             /// Gets the supported read/write orders.
             /// </summary>
             /// <value>The list of supported read/write orders.</value>
-            public IList<SpectralDataOrder> SupportedOrders { get { return Array.AsReadOnly(_supportedOrders); } }
+            public IList<RasterDataOrder> SupportedOrders { get { return Array.AsReadOnly(_supportedOrders); } }
 
             #endregion
 
             #region Constructors
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="SpectralOperationEntity" /> class.
+            /// Initializes a new instance of the <see cref="SpectralTransformationService" /> class.
             /// </summary>
+            /// <param name="representation">The representation.</param>
             /// <param name="operation">The operation.</param>
-            /// <param name="spectralResolution">The spectral resolution.</param>
+            /// <param name="numberOfBands">The number of spectral bands.</param>
             /// <param name="numberOfRows">The number of rows.</param>
             /// <param name="numberOfColumns">The number of columns.</param>
             /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-            /// <param name="representation">The representation.</param>
-            public SpectralOperationEntity(SpectralTransformation operation, Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterRepresentation representation)
+            public SpectralTransformationService(SpectralTransformation operation, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions)
             {
                 _operation = operation;
-                _spectralResolution = spectralResolution;
-                _numberOfColumns = numberOfColumns;
-                _numberOfRows = numberOfRows;
                 _radiometricResolutions = radiometricResolutions.ToArray();
-                _representation = representation;
+
+                NumberOfBands = numberOfBands;
+                NumberOfColumns = numberOfColumns;
+                NumberOfRows = numberOfRows;
+                Representation = representation;
 
                 if (_supportedOrders == null)
-                    _supportedOrders = new SpectralDataOrder[] { SpectralDataOrder.RowColumnBand };
+                    _supportedOrders = new RasterDataOrder[] { RasterDataOrder.RowColumnBand };
             }
 
             #endregion
 
-            #region ISpectralEntity methods for reading integer values
+            #region IRasterService methods for reading integer values
 
             /// <summary>
-            /// Reads the specified spectral value from the dataset.
+            /// Reads the specified spectral value from the service.
             /// </summary>
             /// <param name="rowIndex">The zero-based row index of the value.</param>
             /// <param name="columnIndex">The zero-based column index of the value.</param>
@@ -182,11 +162,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
-            /// <returns>The array containing the sequence of values in the default order of the dataset.</returns>
+            /// <returns>The array containing the sequence of values in the default order of the service.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">
             /// The start index is less than 0.
             /// or
@@ -198,11 +178,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// </exception>
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues)
             {
-                return ReadValueSequence(startIndex, numberOfValues, SpectralDataOrder.RowColumnBand);
+                return ReadValueSequence(startIndex, numberOfValues, RasterDataOrder.RowColumnBand);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
@@ -218,34 +198,34 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// or
             /// The number of values is greater than the maximum number allowed to be read.
             /// </exception>
-            public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
+            public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex <= NumberOfRows * NumberOfColumns * SpectralResolution)
+                if (startIndex <= NumberOfRows * NumberOfColumns * NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
                 if (numberOfValues < 0)
                     throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != SpectralDataOrder.RowColumnBand)
+                if (readOrder != RasterDataOrder.RowColumnBand)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 // compute the row/column/band indices from the start index
                 Int32 columnIndex = 0, rowIndex = 0, bandIndex = 0;
-                rowIndex = startIndex / (NumberOfColumns * SpectralResolution);
-                columnIndex = (startIndex - rowIndex * NumberOfColumns * SpectralResolution) / SpectralResolution;
-                bandIndex = startIndex - rowIndex * NumberOfColumns * SpectralResolution - columnIndex * SpectralResolution;
+                rowIndex = startIndex / (NumberOfColumns * NumberOfBands);
+                columnIndex = (startIndex - rowIndex * NumberOfColumns * NumberOfBands) / NumberOfBands;
+                bandIndex = startIndex - rowIndex * NumberOfColumns * NumberOfBands - columnIndex * NumberOfBands;
 
                 return ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, readOrder);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="rowIndex">The zero-based row index of the first value.</param>
             /// <param name="columnIndex">The zero-based column index of the first value.</param>
             /// <param name="bandIndex">The zero-based band index of the first value.</param>
             /// <param name="numberOfValues">The number of values.</param>
-            /// <returns>The array containing the sequence of values in the default order of the dataset.</returns>
+            /// <returns>The array containing the sequence of values in the default order of the service.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">
             /// The row index is less than 0.
             /// or
@@ -265,11 +245,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// </exception>
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
             {
-                return ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, SpectralDataOrder.RowColumnBand);
+                return ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, RasterDataOrder.RowColumnBand);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="rowIndex">The zero-based row index of the first value.</param>
             /// <param name="columnIndex">The zero-based column index of the first value.</param>
@@ -293,7 +273,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// or
             /// The number of values is less than 0.
             /// </exception>
-            public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
+            public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
@@ -305,15 +285,15 @@ namespace ELTE.AEGIS.Operations.Spectral
                     throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-                if (bandIndex >= SpectralResolution)
+                if (bandIndex >= NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
                 if (numberOfValues < 0)
                     throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != SpectralDataOrder.RowColumnBand)
+                if (readOrder != RasterDataOrder.RowColumnBand)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 // there may be not enough values, or the number may be greater than the maximum allowed
-                UInt32[] values = new UInt32[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * SpectralResolution + (NumberOfColumns - columnIndex) * SpectralResolution + SpectralResolution - bandIndex)];
+                UInt32[] values = new UInt32[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * NumberOfBands + (NumberOfColumns - columnIndex) * NumberOfBands + NumberOfBands - bandIndex)];
 
                 Int32 currentIndex = 0;
                 while (currentIndex < values.Length)
@@ -335,10 +315,10 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             #endregion
 
-            #region ISpectralEntity methods for reading floating point values
+            #region IRasterService methods for reading floating point values
 
             /// <summary>
-            /// Reads the specified spectral value from the dataset.
+            /// Reads the specified spectral value from the service.
             /// </summary>
             /// <param name="rowIndex">The zero-based row index of the value.</param>
             /// <param name="columnIndex">The zero-based column index of the value.</param>
@@ -363,11 +343,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
-            /// <returns>The array containing the sequence of values in the default order of the dataset.</returns>
+            /// <returns>The array containing the sequence of values in the default order of the service.</returns>
             /// <exception cref="System.ArgumentOutOfRangeException">
             /// The start index is less than 0.
             /// or
@@ -377,11 +357,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// </exception>
             public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues)
             {
-                return ReadFloatValueSequence(startIndex, numberOfValues, SpectralDataOrder.RowColumnBand);
+                return ReadFloatValueSequence(startIndex, numberOfValues, RasterDataOrder.RowColumnBand);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
@@ -395,28 +375,28 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// or
             /// The number of values is less than 0.
             /// </exception>
-            public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
+            public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex <= NumberOfRows * NumberOfColumns * SpectralResolution)
+                if (startIndex <= NumberOfRows * NumberOfColumns * NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
                 if (numberOfValues < 0)
                     throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != SpectralDataOrder.RowColumnBand)
+                if (readOrder != RasterDataOrder.RowColumnBand)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 // compute the row/column/band indices from the start index
                 Int32 columnIndex = 0, rowIndex = 0, bandIndex = 0;
-                rowIndex = startIndex / (NumberOfColumns * SpectralResolution);
-                columnIndex = (startIndex - rowIndex * NumberOfColumns * SpectralResolution) / SpectralResolution;
-                bandIndex = startIndex - rowIndex * NumberOfColumns * SpectralResolution - columnIndex * SpectralResolution;
+                rowIndex = startIndex / (NumberOfColumns * NumberOfBands);
+                columnIndex = (startIndex - rowIndex * NumberOfColumns * NumberOfBands) / NumberOfBands;
+                bandIndex = startIndex - rowIndex * NumberOfColumns * NumberOfBands - columnIndex * NumberOfBands;
 
                 return ReadFloatValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, readOrder);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
@@ -431,17 +411,17 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// </exception>
             public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
             {
-                return ReadFloatValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, SpectralDataOrder.RowColumnBand);
+                return ReadFloatValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, RasterDataOrder.RowColumnBand);
             }
 
             /// <summary>
-            /// Reads a sequence of spectral values from the dataset.
+            /// Reads a sequence of spectral values from the service.
             /// </summary>
             /// <param name="rowIndex">The zero-based row index of the first value.</param>
             /// <param name="columnIndex">The zero-based column index of the first value.</param>
             /// <param name="bandIndex">The zero-based band index of the first value.</param>
             /// <param name="numberOfValues">The number of values.</param>
-            /// <returns>The array containing the sequence of values in the default order of the dataset.</returns>
+            /// <returns>The array containing the sequence of values in the default order of the service.</returns>
             /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
             /// <exception cref="System.ArgumentOutOfRangeException">
             /// The row index is less than 0.
@@ -458,7 +438,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// or
             /// The number of values is less than 0.
             /// </exception>
-            public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, SpectralDataOrder readOrder)
+            public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
@@ -470,15 +450,15 @@ namespace ELTE.AEGIS.Operations.Spectral
                     throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-                if (bandIndex >= SpectralResolution)
+                if (bandIndex >= NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
                 if (numberOfValues < 0)
                     throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != SpectralDataOrder.RowColumnBand)
+                if (readOrder != RasterDataOrder.RowColumnBand)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 // there may be not enough values, or the number may be greater than the maximum allowed
-                Double[] values = new Double[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * SpectralResolution + (NumberOfColumns - columnIndex) * SpectralResolution + SpectralResolution - bandIndex)];
+                Double[] values = new Double[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * NumberOfBands + (NumberOfColumns - columnIndex) * NumberOfBands + NumberOfBands - bandIndex)];
 
                 Int32 currentIndex = 0;
                 while (currentIndex < values.Length)
@@ -500,142 +480,142 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             #endregion
 
-            #region ISpectralEntity methods for writing integer values (explicit)
+            #region IRasterService methods for writing integer values (explicit)
 
             /// <summary>
-            /// Writes the specified spectral value to the dataset.
+            /// Writes the specified spectral value to the service.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="bandIndex">The band index.</param>
             /// <param name="spectralValue">The spectral value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the default order.
+            /// Writes the specified spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the specified order.
+            /// Writes the specified spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues, SpectralDataOrder writeOrder)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the default order.
+            /// Writes a sequence of spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the specified order.
+            /// Writes a sequence of spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues, SpectralDataOrder writeOrder)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             #endregion
 
-            #region ISpectralEntity methods for writing integer values (explicit)
+            #region IRasterService methods for writing float values (explicit)
 
             /// <summary>
-            /// Writes the specified spectral value to the dataset.
+            /// Writes the specified spectral value to the service.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="bandIndex">The band index.</param>
             /// <param name="spectralValue">The spectral value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the default order.
+            /// Writes the specified spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 startIndex, Double[] spectralValues)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteFloatValueSequence(Int32 startIndex, Double[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the specified order.
+            /// Writes the specified spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 startIndex, Double[] spectralValues, SpectralDataOrder writeOrder)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteFloatValueSequence(Int32 startIndex, Double[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the default order.
+            /// Writes a sequence of spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the specified order.
+            /// Writes a sequence of spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
-            void ISpectralEntity.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues, SpectralDataOrder writeOrder)
+            /// <exception cref="System.NotSupportedException">The service does not support writing.</exception>
+            void IRasterService.WriteFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service does not support writing.");
             }
 
             #endregion
@@ -645,7 +625,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <summary>
             /// The supported spectral orders.
             /// </summary>
-            private static SpectralDataOrder[] _supportedOrders;
+            private static RasterDataOrder[] _supportedOrders;
 
             #endregion
         }
@@ -675,11 +655,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// or
         /// The value of a parameter is not within the expected range.
         /// or
-        /// The specified source and result are the same objects, but the method does not support in-place operations.;result
+        /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// or
-        /// The source geometry does not contain raster data.;source
+        /// The source geometry does not contain raster data.
         /// or
-        /// The raster representation of the source is not supported by the method.;source
+        /// The raster representation of the source is not supported by the method.
         /// </exception>
         protected SpectralTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
@@ -699,13 +679,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(PrepareRasterResult(_source.Raster.SpectralResolution,
+            _result = _source.Factory.CreateSpectralGeometry(_source, 
+                                                             PrepareRasterResult(_source.Raster.Representation,
+                                                                                 _source.Raster.NumberOfBands,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  _source.Raster.RadiometricResolutions,
-                                                                                 _source.Raster.SpectralRanges,
-                                                                                 _source.Raster.Mapper,
-                                                                                 _source.Raster.Representation), _source);
+                                                                                 _source.Raster.Mapper), 
+                                                             _source.ImagingScene);
         }
 
         /// <summary>
@@ -717,7 +698,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
                     for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
-                        (_result.Raster as IFloatRaster).SetValues(i, j, ComputeFloat(i, j));
+                        _result.Raster.SetFloatValues(i, j, ComputeFloat(i, j));
             }
             else
             {
@@ -734,7 +715,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <summary>
         /// Prepares the raster result of the operation.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The spectral resolution.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
@@ -742,43 +723,33 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="mapper">The mapper.</param>
         /// <param name="representation">The representation.</param>
         /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        protected IRaster PrepareRasterResult(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            return PrepareRasterResult(spectralResolution, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, spectralResolution).ToArray(), spectralRanges, mapper, representation);
+            return PrepareRasterResult(representation, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
         }
 
         /// <summary>
         /// Prepares the raster result of the operation.
         /// </summary>
-        /// <param name="spectralResolution">The spectral resolution.</param>
+        /// <param name="numberOfBands">The spectral resolution.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
         /// <param name="representation">The representation.</param>
         /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(Int32 spectralResolution, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, IList<SpectralRange> spectralRanges, RasterMapper mapper, RasterRepresentation representation)
+        protected IRaster PrepareRasterResult(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (State == OperationState.Initialized)
             {
-                return new ProxyRasterFactory(new SpectralOperationEntity(this,
-                                                                           spectralResolution,
-                                                                           numberOfRows,
-                                                                           numberOfColumns,
-                                                                           radiometricResolutions,
-                                                                           representation)
-                                             ).CreateRaster(spectralRanges, mapper);
+                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(new SpectralTransformationService(this, representation,
+                                                                                                                numberOfBands, numberOfRows, numberOfColumns, 
+                                                                                                                radiometricResolutions), 
+                                                                              mapper);
             }
             else
             {
-                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(spectralResolution,
-                                                                              numberOfRows,
-                                                                              numberOfColumns,
-                                                                              radiometricResolutions,
-                                                                              spectralRanges,
-                                                                              mapper,
-                                                                              representation);
+                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
             }
         }
 

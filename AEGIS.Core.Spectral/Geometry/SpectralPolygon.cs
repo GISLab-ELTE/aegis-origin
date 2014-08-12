@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,9 +25,25 @@ namespace ELTE.AEGIS.Geometry
     {
         #region Private fields
 
+        /// <summary>
+        /// The spectral geometry factory. This field is read-only.
+        /// </summary>
         private readonly ISpectralGeometryFactory _factory;
+
+        /// <summary>
+        /// The polygon. This field is read-only.
+        /// </summary>
         private readonly IPolygon _polygon;
+
+        /// <summary>
+        /// The raster. This field is read-only.
+        /// </summary>
         private readonly IRaster _raster;
+
+        /// <summary>
+        /// The imaging scene data. This field is read-only.
+        /// </summary>
+        private readonly ImagingScene _scene;
 
         #endregion
 
@@ -196,7 +212,7 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region IRasterGeometry properties
+        #region ISpectralGeometry properties
 
         /// <summary>
         /// Gets the raster associated with the geometry.
@@ -205,6 +221,12 @@ namespace ELTE.AEGIS.Geometry
         /// The raster associated with the geometry.
         /// </value>
         public IRaster Raster { get { return _raster; } }
+
+        /// <summary>
+        /// Gets the imaging scene data.
+        /// </summary>
+        /// <value>The imaging scene information of the spectral data.</value>
+        public ImagingScene ImagingScene { get { return _scene; } }
 
         #endregion
 
@@ -222,10 +244,11 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="SpectralPolygon" /> class.
         /// </summary>
-        /// <param name="raster">The raster.</param>
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
         /// <param name="referenceSystem">The reference system.</param>
+        /// <param name="raster">The raster.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The raster is null.
@@ -233,8 +256,7 @@ namespace ELTE.AEGIS.Geometry
         /// The shell is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public SpectralPolygon(IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+        public SpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IReferenceSystem referenceSystem, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -242,6 +264,7 @@ namespace ELTE.AEGIS.Geometry
             _factory = referenceSystem == null ? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>() : AEGIS.Factory.GetInstance<SpectralGeometryFactory>(referenceSystem);
 
             _raster = raster;
+            _scene = scene;
             _polygon = _factory.GetFactory<IGeometryFactory>().CreatePolygon(shell, holes, metadata);
 
             _polygon.GeometryChanged += new EventHandler(Polygon_GeometryChanged);
@@ -251,9 +274,10 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="SpectralPolygon" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="raster">The raster.</param>
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
+        /// <param name="raster">The raster.</param>
+        /// <param name="scene">The imaging scene data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The raster is null.
@@ -261,8 +285,7 @@ namespace ELTE.AEGIS.Geometry
         /// The shell is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        public SpectralPolygon(ISpectralGeometryFactory factory, IRaster raster, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IDictionary<String, Object> metadata)
+        public SpectralPolygon(ISpectralGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -270,6 +293,7 @@ namespace ELTE.AEGIS.Geometry
             _factory = factory ?? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>();
 
             _raster = raster;
+            _scene = scene;
             _polygon = _factory.GetFactory<IGeometryFactory>().CreatePolygon(shell, holes, metadata);
 
             _polygon.GeometryChanged += new EventHandler(Polygon_GeometryChanged);
@@ -344,7 +368,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the spectral polygon instance.</returns>
         public Object Clone()
         {
-            return new SpectralPolygon(_factory, _raster.Clone() as IRaster, _polygon.Shell, _polygon.Holes, _polygon.Metadata);
+            return new SpectralPolygon(_factory, _polygon.Shell, _polygon.Holes, _raster.Clone() as IRaster, _scene, _polygon.Metadata);
         }
 
         #endregion

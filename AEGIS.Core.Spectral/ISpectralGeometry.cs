@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,5 +25,11 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <value>The raster associated with the geometry.</value>
         IRaster Raster { get; }
+
+        /// <summary>
+        /// Gets the imaging scene data.
+        /// </summary>
+        /// <value>The imaging scene information of the spectral data.</value>
+        ImagingScene ImagingScene { get; }
     }
 }

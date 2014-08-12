@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -24,137 +24,119 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
 {
+    /// <summary>
+    /// Test fixture for the <see cref="ConstantBasedThresholdingClassification"/> class.
+    /// </summary>
     [TestFixture]
     public class ConstantBasedThresholdingClassificationTest
     {
-        private Mock<IRaster> _raster;
-        private Mock<IFloatRaster> _floatRaster;
+        #region Private fields
 
+        /// <summary>
+        /// The mock of the raster.
+        /// </summary>
+        private Mock<IRaster> _rasterMock;
+
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
-        public void Initialize()
+        public void SetUp()
         {
-            _raster = new Mock<IRaster>(MockBehavior.Strict);
-            _raster.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
-            _raster.Setup(raster => raster.IsReadable).Returns(true);
-            _raster.Setup(raster => raster.NumberOfRows).Returns(20);
-            _raster.Setup(raster => raster.NumberOfColumns).Returns(15);
-            _raster.Setup(raster => raster.SpectralResolution).Returns(3);
-            _raster.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
-            _raster.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
-            _raster.Setup(raster => raster.SpectralRanges).Returns(SpectralRanges.RGB);
-            _raster.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
-            _raster.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
-            _raster.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                          .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)(rowIndex * columnIndex * bandIndex % 256)));
-
-            _floatRaster = new Mock<IFloatRaster>(MockBehavior.Strict);
-            _floatRaster.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
-            _floatRaster.Setup(raster => raster.IsReadable).Returns(true);
-            _floatRaster.Setup(raster => raster.NumberOfRows).Returns(20);
-            _floatRaster.Setup(raster => raster.NumberOfColumns).Returns(15);
-            _floatRaster.Setup(raster => raster.SpectralResolution).Returns(3);
-            _floatRaster.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
-            _floatRaster.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
-            _floatRaster.Setup(raster => raster.SpectralRanges).Returns(SpectralRanges.RGB);
-            _floatRaster.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
-            _floatRaster.Setup(raster => raster.Representation).Returns(RasterRepresentation.Floating);
-            _floatRaster.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                               .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => rowIndex * columnIndex * bandIndex));
+            _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
+            _rasterMock.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
+            _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
+            _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
+            _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
+            _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
+            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
+            _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
+            _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
+            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
+            _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
+                                              .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)(rowIndex * columnIndex * bandIndex % 256)));
+            _rasterMock.Setup(raster => raster.GetFloatValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
+                                              .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => rowIndex * columnIndex * bandIndex));
         }
 
-        [TestCase]
+        #endregion
+
+        #region Test methods
+
+        /// <summary>
+        /// Test case for operation execution.
+        /// </summary>
+        [Test]
         public void ConstantBasedThresholdingClassificationExecuteTest()
         {
-            // test case 1: integer raster
+            // integer values
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.LowerThresholdBoundary, 100);
             parameters.Add(SpectralOperationParameters.UpperThresholdBoundary, 150);
 
-            ConstantBasedThresholdingClassification operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), parameters);
+            ConstantBasedThresholdingClassification operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             ISpectralGeometry result = operation.Result;
 
-            Assert.AreEqual(_raster.Object.NumberOfRows, result.Raster.NumberOfRows);
-            Assert.AreEqual(_raster.Object.NumberOfColumns, result.Raster.NumberOfColumns);
-            Assert.AreEqual(_raster.Object.SpectralResolution, result.Raster.SpectralResolution);
-            Assert.IsTrue(_raster.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
+            Assert.AreEqual(_rasterMock.Object.NumberOfRows, result.Raster.NumberOfRows);
+            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, result.Raster.NumberOfColumns);
+            Assert.AreEqual(_rasterMock.Object.NumberOfBands, result.Raster.NumberOfBands);
+            Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
             Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
 
-            for (Int32 i = 0; i < result.Raster.SpectralResolution; i++)
+            for (Int32 i = 0; i < result.Raster.NumberOfBands; i++)
                 for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
                     for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
                     {
-                        Assert.AreEqual(_raster.Object.GetValue(j, k, i) >= 100 && _raster.Object.GetValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, i), 0);
+                        Assert.AreEqual(_rasterMock.Object.GetValue(j, k, i) >= 100 && _rasterMock.Object.GetValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, i), 0);
                     }
 
-            // test case 2: floating raster
 
-            operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), parameters);
-            operation.Execute();
+            // integer values with specified band
 
-            result = operation.Result;
-
-            Assert.AreEqual(_floatRaster.Object.NumberOfRows, result.Raster.NumberOfRows);
-            Assert.AreEqual(_floatRaster.Object.NumberOfColumns, result.Raster.NumberOfColumns);
-            Assert.AreEqual(_floatRaster.Object.SpectralResolution, result.Raster.SpectralResolution);
-            Assert.IsTrue(_floatRaster.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
-            Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
-
-            for (Int32 i = 0; i < result.Raster.SpectralResolution; i++)
-                for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
-                    for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
-                    {
-                        Assert.AreEqual(_floatRaster.Object.GetValue(j, k, i) >= 100 && _floatRaster.Object.GetValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, i), 0);
-                    }
-        }
-
-        [TestCase]
-        public void ConstantBasedThresholdingClassificationExecuteForBandTest()
-        {
-            // test case 1: integer raster
-
-            IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.LowerThresholdBoundary, 100);
-            parameters.Add(SpectralOperationParameters.UpperThresholdBoundary, 150);
             parameters.Add(SpectralOperationParameters.BandIndex, 0);
 
-            ConstantBasedThresholdingClassification operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_raster.Object), parameters);
-            operation.Execute();
-
-            ISpectralGeometry result = operation.Result;
-
-            Assert.AreEqual(_raster.Object.NumberOfRows, result.Raster.NumberOfRows);
-            Assert.AreEqual(_raster.Object.NumberOfColumns, result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, result.Raster.SpectralResolution);
-            Assert.AreEqual(_raster.Object.RadiometricResolutions[0], result.Raster.RadiometricResolutions[0]);
-            Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
-
-            for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
-                for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
-                {
-                    Assert.AreEqual(_raster.Object.GetValue(j, k, 0) >= 100 && _raster.Object.GetValue(j, k, 0) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, 0), 0);
-                }
-
-            // test case 2: floating raster
-
-            operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_floatRaster.Object), parameters);
+            operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             result = operation.Result;
 
-            Assert.AreEqual(_floatRaster.Object.NumberOfRows, result.Raster.NumberOfRows);
-            Assert.AreEqual(_floatRaster.Object.NumberOfColumns, result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, result.Raster.SpectralResolution);
-            Assert.AreEqual(_raster.Object.RadiometricResolutions[0], result.Raster.RadiometricResolutions[0]);
+            Assert.AreEqual(_rasterMock.Object.NumberOfRows, result.Raster.NumberOfRows);
+            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, result.Raster.NumberOfColumns);
+            Assert.AreEqual(1, result.Raster.NumberOfBands);
+            Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[0], result.Raster.RadiometricResolutions[0]);
             Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
 
             for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
                 for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
                 {
-                    Assert.AreEqual(_floatRaster.Object.GetValue(j, k, 0) >= 100 && _floatRaster.Object.GetValue(j, k, 0) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, 0), 0);
+                    Assert.AreEqual(_rasterMock.Object.GetValue(j, k, 0) >= 100 && _rasterMock.Object.GetValue(j, k, 0) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, 0), 0);
                 }
+
+
+            // floating point values
+
+            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Floating);
+
+            operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation.Execute();
+
+            result = operation.Result;
+
+            for (Int32 i = 0; i < result.Raster.NumberOfBands; i++)
+                for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
+                    for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
+                    {
+                        Assert.AreEqual(_rasterMock.Object.GetFloatValue(j, k, i) >= 100 && _rasterMock.Object.GetFloatValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetFloatValue(j, k, i), 0);
+                    }
         }
+
+        #endregion
     }
 }
