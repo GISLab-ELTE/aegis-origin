@@ -55,7 +55,7 @@ namespace ELTE.AEGIS.Collections
             /// <summary>
             /// The position of the enumerator.
             /// </summary>
-            private Int32 _position;
+            private Int64 _position;
 
             /// <summary>
             /// The current item.
@@ -65,7 +65,7 @@ namespace ELTE.AEGIS.Collections
             /// <summary>
             /// The inner enumerator used for enumerating the items.
             /// </summary>
-            private IEnumerator<KeyValuePair<Int32, T>> _innerEnumerator;
+            private IEnumerator<KeyValuePair<Int64, T>> _innerEnumerator;
 
             /// <summary>
             /// A value indicating whether this instance is disposed.
@@ -155,9 +155,9 @@ namespace ELTE.AEGIS.Collections
 
                 _position++;
 
-                if (_position >= _localArray._count)
+                if (_position >= _localArray._length)
                 {
-                    _position = _localArray._count;
+                    _position = _localArray._length;
                     _current = default(T);
                     return false;
                 }
@@ -221,16 +221,11 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// The items of the sparse array.
         /// </summary>
-        protected Dictionary<Int32, T> _items;
+        protected Dictionary<Int64, T> _items;
 
         #endregion
 
         #region Private fields
-
-        /// <summary>
-        /// The default capacity of the array. This field is constant.
-        /// </summary>
-        private const Int32 _defaultCapacity = 30;
 
         /// <summary>
         /// The version of the array.
@@ -238,19 +233,19 @@ namespace ELTE.AEGIS.Collections
         private Int32 _version;
 
         /// <summary>
-        /// The number of elements in the array.
+        /// The number of elements in the sparse array.
         /// </summary>
-        private Int32 _count;
+        private Int64 _length;
 
         #endregion
 
         #region ICollection properties
 
         /// <summary>
-        /// Gets the number of elements contained in the array.
+        /// Gets the actual number of elements contained in the array.
         /// </summary>
-        /// <returns>The number of elements contained in the array.</returns>
-        public Int32 Count { get { return _count; } }
+        /// <returns>The actual number of elements contained in the array.</returns>
+        public Int32 Count { get { return _items.Count; } }
 
         /// <summary>
         /// Gets a value indicating whether the array is read-only.
@@ -278,7 +273,7 @@ namespace ELTE.AEGIS.Collections
             {
                 if (index < 0)
                     throw new IndexOutOfRangeException("The index is less than 0.");
-                if (index >= _count)
+                if (index >= _length)
                     throw new IndexOutOfRangeException("The index is equal to or greater than the number of items in the array.");
 
                 T value;
@@ -291,7 +286,74 @@ namespace ELTE.AEGIS.Collections
             {
                 if (index < 0)
                     throw new IndexOutOfRangeException("The index is less than 0.");
-                if (index >= _count)
+                if (index >= _length)
+                    throw new IndexOutOfRangeException("The index is equal to or greater than the number of items in the array.");
+
+                if (_items.ContainsKey(index))
+                    _items[index] = value;
+                else
+                    _items.Add(index, value);
+
+                _version++;
+            }
+        }
+
+        #endregion
+
+        #region Public properties
+
+        /// <summary>
+        /// Gets a 32-bit integer that represents the total number of elements in all the dimensions of the array.
+        /// </summary>
+        /// <value>A 32-bit integer that represents the total number of elements in all the dimensions of the array; <c>0</c> if there are no elements in the array.</value>
+        /// <exception cref="System.OverflowException">The array contains more elements than the maximum value.</exception>
+        public Int32 Length 
+        { 
+            get 
+            {
+                if (_length > Int32.MaxValue)
+                    throw new OverflowException("The array contains more elements than the maximum value.");
+
+                return (Int32)_length; 
+            } 
+        }
+
+        /// <summary>
+        /// Gets a 64-bit integer that represents the total number of elements in all the dimensions of the array.
+        /// </summary>
+        /// <value>A 64-bit integer that represents the total number of elements in all the dimensions of the array; <c>0</c> if there are no elements in the array.</value>
+        public Int64 LongLength { get { return _length; } }
+
+        /// <summary>
+        /// Gets or sets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>The value located at <paramref name="index" />.</returns>
+        /// <exception cref="System.IndexOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is equal to or greater than the number of items in the array.
+        /// </exception>
+        public T this[Int64 index]
+        {
+            get
+            {
+                if (index < 0)
+                    throw new IndexOutOfRangeException("The index is less than 0.");
+                if (index >= _length)
+                    throw new IndexOutOfRangeException("The index is equal to or greater than the number of items in the array.");
+
+                T value;
+                if (!_items.TryGetValue(index, out value))
+                    return default(T);
+
+                return value;
+            }
+            set
+            {
+                if (index < 0)
+                    throw new IndexOutOfRangeException("The index is less than 0.");
+                if (index >= _length)
                     throw new IndexOutOfRangeException("The index is equal to or greater than the number of items in the array.");
 
                 if (_items.ContainsKey(index))
@@ -308,23 +370,18 @@ namespace ELTE.AEGIS.Collections
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SparseArray{T}"/> class.
-        /// </summary>
-        public SparseArray() : this(_defaultCapacity) { }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SparseArray{T}" /> class.
         /// </summary>
-        /// <param name="capacity">The number of elements that the new list can initially store.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The capacity is less than 0.</exception>
-        public SparseArray(Int32 capacity)
+        /// <param name="length">The number of elements that the array can initially store.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The length is less than 0.</exception>
+        public SparseArray(Int64 length)
         {
-            if (capacity < 0)
-                throw new ArgumentOutOfRangeException("capacity", "The capacity is less than 0.");
+            if (length < 0)
+                throw new ArgumentOutOfRangeException("length", "The length is less than 0.");
 
-            _items = new Dictionary<Int32, T>(capacity);
+            _items = new Dictionary<Int64, T>();
             _version = 0;
-            _count = 0;
+            _length = length;
         }
 
         /// <summary>
@@ -333,16 +390,18 @@ namespace ELTE.AEGIS.Collections
         /// <param name="collection">The collection.</param>
         /// <exception cref="System.ArgumentNullException">The collection is null.</exception>
         public SparseArray(IEnumerable<T> collection)
-            : this(_defaultCapacity)
         {
             if (collection == null)
                 throw new ArgumentNullException("collection", "The collection is null.");
+
+            _items = new Dictionary<Int64, T>();
+            _version = 0;
 
             if (collection is IList<T>)
             {
                 IList<T> collectionList = collection as IList<T>;
 
-                _count = collectionList.Count;
+                _length = collectionList.Count;
 
                 for (Int32 i = 0; i < collectionList.Count; i++)
                     if (!AreEqual(collectionList[i], default(T)))
@@ -360,20 +419,20 @@ namespace ELTE.AEGIS.Collections
                     count++;
                 }
 
-                _count = count;
+                _length = count;
             }
         }
 
         #endregion
 
-        #region IList methods
+        #region Public methods
 
         /// <summary>
         /// Determines the index of a specific item in the array.
         /// </summary>
         /// <param name="item">The object to locate in the array.</param>
         /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, <c>-1</c>.</returns>
-        public Int32 IndexOf(T item)
+        public Int64 IndexOf(T item)
         {
             if (AreEqual(item, default(T)))
             {
@@ -386,7 +445,7 @@ namespace ELTE.AEGIS.Collections
             }
             else
             {
-                foreach (KeyValuePair<Int32, T> pair in _items)
+                foreach (KeyValuePair<Int64, T> pair in _items)
                 {
                     if (AreEqual(pair.Value, item))
                         return pair.Key;
@@ -401,11 +460,16 @@ namespace ELTE.AEGIS.Collections
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
         /// <param name="item">The object to insert into the array.</param>
-        public void Insert(Int32 index, T item)
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is equal to or greater than the number of elements in the array.
+        /// </exception>
+        public void Insert(Int64 index, T item)
         {
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
-            if (index >= _count)
+            if (index >= _length)
                 throw new ArgumentOutOfRangeException("index", "The index is equal to or greater than the number of elements in the array.");
 
             UpdateIndices(index, 1);
@@ -415,7 +479,7 @@ namespace ELTE.AEGIS.Collections
                 _items.Add(index, item);
             }
 
-            _count++;
+            _length++;
             _version++;
         }
 
@@ -423,11 +487,16 @@ namespace ELTE.AEGIS.Collections
         /// Removes the array item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
-        public void RemoveAt(Int32 index)
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is equal to or greater than the number of elements in the array.
+        /// </exception>
+        public void RemoveAt(Int64 index)
         {
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
-            if (index >= _count)
+            if (index >= _length)
                 throw new ArgumentOutOfRangeException("index", "The index is equal to or greater than the number of elements in the array.");
 
             if (_items.ContainsKey(index))
@@ -435,7 +504,92 @@ namespace ELTE.AEGIS.Collections
 
             UpdateIndices(index, -1);
 
-            _count--;
+            _length--;
+            _version++;
+        }
+
+        #endregion
+
+        #region IList methods
+
+        /// <summary>
+        /// Determines the index of a specific item in the array.
+        /// </summary>
+        /// <param name="item">The object to locate in the array.</param>
+        /// <returns>The index of <paramref name="item" /> if found in the list; otherwise, <c>-1</c>.</returns>
+        Int32 IList<T>.IndexOf(T item)
+        {
+            if (AreEqual(item, default(T)))
+            {
+                var keys = _items.Keys.ToList();
+                for (Int32 index = 0; index < keys.Count; index++)
+                {
+                    if (index != keys[index])
+                        return index;
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<Int64, T> pair in _items)
+                {
+                    if (AreEqual(pair.Value, item))
+                        return (Int32)pair.Key;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Inserts an item to the array at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+        /// <param name="item">The object to insert into the array.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is equal to or greater than the number of elements in the array.
+        /// </exception>
+        void IList<T>.Insert(Int32 index, T item)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
+            if (index >= _length)
+                throw new ArgumentOutOfRangeException("index", "The index is equal to or greater than the number of elements in the array.");
+
+            UpdateIndices(index, 1);
+
+            if (!AreEqual(item, default(T)))
+            {
+                _items.Add(index, item);
+            }
+
+            _length++;
+            _version++;
+        }
+
+        /// <summary>
+        /// Removes the array item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is equal to or greater than the number of elements in the array.
+        /// </exception>
+        void IList<T>.RemoveAt(Int32 index)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
+            if (index >= _length)
+                throw new ArgumentOutOfRangeException("index", "The index is equal to or greater than the number of elements in the array.");
+
+            if (_items.ContainsKey(index))
+                _items.Remove(index);
+
+            UpdateIndices(index, -1);
+
+            _length--;
             _version++;
         }
 
@@ -450,9 +604,9 @@ namespace ELTE.AEGIS.Collections
         public void Add(T item)
         {
             if (!AreEqual(item, default(T)))
-                _items.Add(Count, item);
+                _items.Add(_length, item);
 
-            _count++;
+            _length++;
             _version++;
         }
 
@@ -462,7 +616,6 @@ namespace ELTE.AEGIS.Collections
         public void Clear()
         {
             _items.Clear();
-            _count = 0;
         }
 
         /// <summary>
@@ -473,7 +626,7 @@ namespace ELTE.AEGIS.Collections
         public Boolean Contains(T item)
         {
             if (AreEqual(item, default(T)))
-                return _count > _items.Count;
+                return _length > _items.Count;
 
             return _items.Values.Contains(item);
         }
@@ -492,13 +645,15 @@ namespace ELTE.AEGIS.Collections
                 throw new ArgumentNullException("array", "The array is null.");
             if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException("arrayIndex", "The array index is less than 0.");
-            if (array.Length - arrayIndex < _count)
+            if (array.Length - arrayIndex < _length)
                 throw new ArgumentException("The number of elements in the source collection is greater than the available space from the array index to the end of the destination array.", "arrayIndex");
+
+            Int64 arrayLongIndex = arrayIndex;
 
             foreach (T item in this)
             {
-                array[arrayIndex] = item;
-                arrayIndex++;
+                array[arrayLongIndex] = item;
+                arrayLongIndex++;
             } 
         }
 
@@ -510,7 +665,7 @@ namespace ELTE.AEGIS.Collections
         /// </returns>
         public Boolean Remove(T item)
         {
-            Int32 index = IndexOf(item);
+            Int64 index = IndexOf(item);
 
             if (index != -1)
             {
@@ -519,7 +674,7 @@ namespace ELTE.AEGIS.Collections
 
                 UpdateIndices(index, -1);
 
-                _count--;
+                _length--;
                 _version++;
 
                 return true;
@@ -535,7 +690,7 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator{TValue}" /> that can be used to iterate through the collection.</returns>
+        /// <returns>A <see cref="IEnumerator{TValue}" /> that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             return new Enumerator(this);
@@ -544,7 +699,7 @@ namespace ELTE.AEGIS.Collections
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.</returns>
+        /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -559,7 +714,7 @@ namespace ELTE.AEGIS.Collections
         /// </summary>
         /// <param name="index">The staring index.</param>
         /// <param name="offset">The offset.</param>
-        private void UpdateIndices(Int32 index, Int32 offset)
+        private void UpdateIndices(Int64 index, Int32 offset)
         {
             _items = _items.ToDictionary(pair => pair.Key < index ? pair.Key : pair.Key + offset, pair => pair.Value);
         }

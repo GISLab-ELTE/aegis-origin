@@ -53,6 +53,17 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
+        /// Returns a read-only list wrapper for the current collection.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="collection">The list.</param>
+        /// <returns>A <see cref="ReadOnlySet{T}"/> that acts as a read-only wrapper around the current <see cref="IList{T}"/>.</returns>
+        public static IList<T> AsReadOnly<T>(this IList<T> collection)
+        {
+            return new ReadOnlyCollection<T>(collection);
+        }
+
+        /// <summary>
         /// Returns a read-only dictionary wrapper for the current collection.
         /// </summary>
         /// <typeparam name="TKey">The type of the key.</typeparam>

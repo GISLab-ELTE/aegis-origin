@@ -60,9 +60,10 @@ namespace ELTE.AEGIS.Tests.Core.Collections
         {
             // no parameters
 
-            SparseArray<Int32> array = new SparseArray<Int32>();
+            SparseArray<Int32> array = new SparseArray<Int32>(0);
 
             Assert.IsFalse(array.IsReadOnly);
+            Assert.AreEqual(0, array.Length);
             Assert.AreEqual(0, array.Count);
 
 
@@ -70,6 +71,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
 
             array = new SparseArray<Int32>(1000);
 
+            Assert.AreEqual(1000, array.Length);
             Assert.AreEqual(0, array.Count);
 
 
@@ -77,9 +79,10 @@ namespace ELTE.AEGIS.Tests.Core.Collections
 
             array = new SparseArray<Int32>(Enumerable.Range(1, 1000));
 
+            Assert.AreEqual(1000, array.Length);
             Assert.AreEqual(1000, array.Count);
 
-            for (Int32 i = 0; i < array.Count; i++)
+            for (Int32 i = 0; i < array.Length; i++)
                 Assert.AreEqual(i + 1, array[i]);
 
 
@@ -87,9 +90,10 @@ namespace ELTE.AEGIS.Tests.Core.Collections
 
             array = new SparseArray<Int32>(_values);
 
-            Assert.AreEqual(_values.Length, array.Count);
+            Assert.IsTrue(_values.Length > array.Count);
+            Assert.AreEqual(_values.Length, array.Length);
 
-            for (Int32 i = 0; i < array.Count; i++)
+            for (Int32 i = 0; i < array.Length; i++)
                 Assert.AreEqual(_values[i], array[i]);
 
 
@@ -97,7 +101,8 @@ namespace ELTE.AEGIS.Tests.Core.Collections
 
             array = new SparseArray<Int32>(Enumerable.Repeat(0, 10));
 
-            Assert.AreEqual(10, array.Count);
+            Assert.AreEqual(10, array.Length);
+            Assert.AreEqual(0, array.Count);
 
             for (Int32 i = 0; i < array.Count; i++)
                 Assert.AreEqual(0, array[i]);
@@ -156,12 +161,12 @@ namespace ELTE.AEGIS.Tests.Core.Collections
         {
             // empty array
 
-            SparseArray<Int32> array = new SparseArray<Int32>();
+            SparseArray<Int32> array = new SparseArray<Int32>(0);
 
             for (Int32 i = 0; i < _values.Length; i++)
                 array.Add(_values[i]);
 
-            Assert.AreEqual(_values.Length, array.Count);
+            Assert.AreEqual(_values.Length, array.Length);
 
             for (Int32 i = 0; i < array.Count; i++)
                 Assert.AreEqual(_values[i], array[i]);
@@ -174,7 +179,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             for (Int32 i = 0; i < _values.Length; i++)
                 array.Add(_values[i]);
 
-            Assert.AreEqual(_values.Length + 10, array.Count);
+            Assert.AreEqual(_values.Length + 10, array.Length);
 
             for (Int32 i = 10; i < array.Count; i++)
                 Assert.AreEqual(_values[i - 10], array[i]);
@@ -188,10 +193,10 @@ namespace ELTE.AEGIS.Tests.Core.Collections
         {
             // empty array
 
-            SparseArray<Int32> array = new SparseArray<Int32>();
+            SparseArray<Int32> array = new SparseArray<Int32>(0);
             array.Clear();
 
-            Assert.AreEqual(0, array.Count);
+            Assert.AreEqual(0, array.Length);
 
 
             // filled array
@@ -200,6 +205,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             array.Clear();
 
             Assert.AreEqual(0, array.Count);
+            Assert.AreEqual(_values.Length, array.Length);
         }
 
         /// <summary>
@@ -258,16 +264,16 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             SparseArray<Int32> array = new SparseArray<Int32>(_values);
 
             Assert.IsFalse(array.Remove(-1));
-            Assert.AreEqual(_values.Length, array.Count);
+            Assert.AreEqual(_values.Length, array.Length);
 
             Assert.IsTrue(array.Remove(0));
-            Assert.AreEqual(_values.Length - 1, array.Count);
+            Assert.AreEqual(_values.Length - 1, array.Length);
 
             Assert.IsTrue(array.Remove(0));
-            Assert.AreEqual(_values.Length - 2, array.Count);
+            Assert.AreEqual(_values.Length - 2, array.Length);
 
             Assert.IsTrue(array.Remove(1));
-            Assert.AreEqual(_values.Length - 3, array.Count);
+            Assert.AreEqual(_values.Length - 3, array.Length);
 
             for (Int32 i = 0; i < array.Count; i++)
                 Assert.AreEqual(_values[3 + i], array[i]);
@@ -298,7 +304,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             array.Insert(3, 0);
             array.Insert(8, -2);
 
-            Assert.AreEqual(_values.Length + 3, array.Count);
+            Assert.AreEqual(_values.Length + 3, array.Length);
 
             Assert.AreEqual(-1, array[1]);
             Assert.AreEqual(1, array[2]);
@@ -310,7 +316,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             // exceptions
 
             Assert.Throws<ArgumentOutOfRangeException>(() => array.Insert(-1, 1));
-            Assert.Throws<ArgumentOutOfRangeException>(() => array.Insert(array.Count, 1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => array.Insert(array.Length, 1));
         }
 
         /// <summary>
@@ -324,7 +330,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             array.RemoveAt(1);
             array.RemoveAt(3);
 
-            Assert.AreEqual(_values.Length - 3, array.Count);
+            Assert.AreEqual(_values.Length - 3, array.Length);
 
             Assert.AreEqual(0, array[0]);
             Assert.AreEqual(2, array[1]);
@@ -335,7 +341,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections
             // exceptions
 
             Assert.Throws<ArgumentOutOfRangeException>(() => array.RemoveAt(-1));
-            Assert.Throws<ArgumentOutOfRangeException>(() => array.RemoveAt(array.Count));
+            Assert.Throws<ArgumentOutOfRangeException>(() => array.RemoveAt(array.Length));
         }
 
         /// <summary>
