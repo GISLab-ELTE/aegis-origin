@@ -104,12 +104,8 @@ namespace ELTE.AEGIS
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        /// <exception cref="System.ArgumentNullException">The device is null.</exception>
         public ImagingScene(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params ImagingSceneBand[] bandData)
         {
-            if (device == null)
-                throw new ArgumentNullException("device", "The device is null.");
-
             Device = device;
             ImagingTime = imagingTime;
             Location = location;
@@ -131,12 +127,8 @@ namespace ELTE.AEGIS
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        /// <exception cref="System.ArgumentNullException">The device is null.</exception>
         public ImagingScene(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<ImagingSceneBand> bandData)
         {
-            if (device == null)
-                throw new ArgumentNullException("device", "The device is null.");
-
             Device = device;
             ImagingTime = imagingTime;
             Location = location;
