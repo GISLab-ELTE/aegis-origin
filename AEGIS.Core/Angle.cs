@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -24,40 +24,40 @@ namespace ELTE.AEGIS
     [Serializable]
     public struct Angle : IEquatable<Angle>, IComparable<Angle>
     {
-        #region Static instances
+        #region Public static instances
 
         /// <summary>
-        /// Represents the zero <see cref="Angle" /> value. This field is constant.
+        /// Represents the zero <see cref="Angle" /> value. This field is read-only.
         /// </summary>
         public static readonly Angle Zero = Angle.FromRadian(0);
 
         /// <summary>
-        /// Represents the unknown <see cref="Angle" /> value. This field is constant.
+        /// Represents the unknown <see cref="Angle" /> value. This field is read-only.
         /// </summary>
         public static readonly Angle Undefined = Angle.FromRadian(Double.NaN);
 
         /// <summary>
-        /// Represents the negative infinite <see cref="Angle" /> value. This field is constant.
+        /// Represents the negative infinite <see cref="Angle" /> value. This field is read-only.
         /// </summary>
         public static readonly Angle NegativeInfinity = Angle.FromRadian(Double.PositiveInfinity);
 
         /// <summary>
-        /// Represents the positive infinite <see cref="Angle" /> value. This field is constant.
+        /// Represents the positive infinite <see cref="Angle" /> value. This field is read-only.
         /// </summary>
         public static readonly Angle PositiveInfinity = Angle.FromRadian(Double.NegativeInfinity);
 
         /// <summary>
-        /// Represents the smallest positive <see cref="Angle" /> value that is greater than zero. This field is constant.
+        /// Represents the smallest positive <see cref="Angle" /> value that is greater than zero. This field is read-only.
         /// </summary>
         public static readonly Angle Epsilon = Angle.FromRadian(Double.Epsilon);
 
         /// <summary>
-        /// Represents the <see cref="Angle" /> value of a half circle. This field is constant.
+        /// Represents the <see cref="Angle" /> value of a half circle. This field is read-only.
         /// </summary>
         public static readonly Angle HalfCircle = Angle.FromDegree(180);
 
         /// <summary>
-        /// Represents the <see cref="Angle" /> value of a circle. This field is constant.
+        /// Represents the <see cref="Angle" /> value of a circle. This field is read-only.
         /// </summary>
         public static readonly Angle Circle = Angle.FromDegree(360);
 
