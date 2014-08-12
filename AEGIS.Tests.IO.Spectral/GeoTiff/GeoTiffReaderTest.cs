@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -21,23 +21,45 @@ using System.IO;
 
 namespace ELTE.AEGIS.Tests.IO.GeoTiff
 {
+    /// <summary>
+    /// Test fixture for the <see cref="GeoTiffReader"/> class.
+    /// </summary>
     [TestFixture]
     public class GeoTiffReaderTest
     {
+        #region Private fields
+
+        /// <summary>
+        /// The array of input file paths.
+        /// </summary>
         private String[] _inputFilePaths;
 
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
             _inputFilePaths = new String[0];
         }
 
-        [TestCase]
+        #endregion
+
+        #region Test methods
+
+        /// <summary>
+        /// Test case for the opening and closing.
+        /// </summary>
+        [Test]
         public void TiffReaderOpenCloseTest()
         {
             foreach (String file in _inputFilePaths)
             {
-                TiffReader tiffReader = new TiffReader(file);
+                GeoTiffReader tiffReader = new GeoTiffReader(file);
 
                 Assert.AreEqual(0, tiffReader.Parameters.Count);
                 Assert.IsNotNull(tiffReader.BaseStream);
@@ -53,12 +75,15 @@ namespace ELTE.AEGIS.Tests.IO.GeoTiff
             }
         }
 
-        [TestCase]
+        /// <summary>
+        /// Test case for reading geometries.
+        /// </summary>
+        [Test]
         public void TiffReaderReadToEndTest()
         {
             foreach (String file in _inputFilePaths)
             {
-                TiffReader tiffReader = new TiffReader(file);
+                GeoTiffReader tiffReader = new GeoTiffReader(file);
 
                 Assert.AreEqual(0, tiffReader.Parameters.Count);
                 Assert.IsNotNull(tiffReader.BaseStream);
@@ -74,5 +99,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoTiff
                 tiffReader.Close();
             }
         }
+
+        #endregion
     }
 }

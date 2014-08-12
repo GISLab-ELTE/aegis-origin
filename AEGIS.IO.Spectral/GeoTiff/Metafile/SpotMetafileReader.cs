@@ -150,13 +150,13 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             String instrument = sceneSourceElement.Element("INSTRUMENT").Value;
             Int32 instrumentIndex = Int32.Parse(sceneSourceElement.Element("INSTRUMENT_INDEX").Value);
 
-            return ImagingDevices.FromName(mission + "-" + missionIndex + " " + instrument + "-" + instrumentIndex).FirstOrDefault();
+            return ImagingDevices.FromName(mission + missionIndex + " " + instrument + instrumentIndex).FirstOrDefault();
         }
 
         /// <summary>
-        /// Reads the imaging information.
+        /// Reads the imaging scene data.
         /// </summary>
-        protected override ImagingScene ReadImagingDataFromStream()
+        protected override ImagingScene ReadImagingSceneFromStream()
         {
             if (_document == null)
                 _document = XDocument.Load(_stream);

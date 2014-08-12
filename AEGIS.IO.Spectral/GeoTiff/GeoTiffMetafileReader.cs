@@ -214,19 +214,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Reads the imaging information stored in the metafile.
+        /// Reads the imaging scene stored in the metafile.
         /// </summary>
-        /// <value>The imaging information.</value>
+        /// <value>The imaging scene data.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
         /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
-        public ImagingScene ReadImagingData()
+        public ImagingScene ReadImagingScene()
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
             try
             {
-                return ReadImagingDataFromStream();
+                return ReadImagingSceneFromStream();
             }
             catch (Exception ex)
             {
@@ -324,7 +324,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Reads the imaging information stored in the metafile stream.
         /// </summary>
         /// <value>The imaging information.</value>
-        protected virtual ImagingScene ReadImagingDataFromStream() { return null; }
+        protected virtual ImagingScene ReadImagingSceneFromStream() { return null; }
 
         /// <summary>
         /// Reads the raster mapping stored in the metafile stream.

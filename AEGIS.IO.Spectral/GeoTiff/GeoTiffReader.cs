@@ -65,7 +65,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
         #region Private fields
 
+        /// <summary>
+        /// The GeoTIFF version.
+        /// </summary>
         private String _geoTiffFormatVersion;
+
+        /// <summary>
+        /// The list of geokeys in the current image.
+        /// </summary>
         private Dictionary<Int16, Object> _currentGeoKeys;
 
         #endregion
@@ -192,12 +199,34 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region TiffReader protected methods
 
         /// <summary>
+        /// Computes the spectral imaging scene data of the geometry.
+        /// </summary>
+        /// <returns>The spectral imaging scene data of the geometry.</returns>
+        protected override ImagingScene ComputeImagingScene()
+        {
+            if (Path == null)
+                return null;
+
+            try
+            {   
+                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                {
+                    return reader.ReadImagingScene();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Reads the metadata of the raster image.
         /// </summary>
         /// <returns>A dictionary containing the metadata of he raster image.</returns>
-        protected override IDictionary<String, Object> ReadGeometryMetadata()
+        protected override IDictionary<String, Object> ComputeMetadata()
         {
-            IDictionary<String, Object> metadata = base.ReadGeometryMetadata();
+            IDictionary<String, Object> metadata = base.ComputeMetadata();
 
             if (_currentGeoKeys == null)
                 return metadata;
@@ -216,7 +245,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Reads the mapping from model space to raster space.
         /// </summary>
         /// <returns>The mapping from model space to raster space.</returns>
-        protected override RasterMapper ReadRasterToModelSpaceMapping()
+        /// <exception cref="System.IO.InvalidDataException">
+        /// Model tiepoints are in invalid format.
+        /// or
+        /// Model transformation parameters are in invalid format.
+        /// </exception>
+        protected override RasterMapper ComputeRasterToModelSpaceMapping()
         {
             if (_currentGeoKeys == null)
                 return null;
@@ -228,22 +262,22 @@ namespace ELTE.AEGIS.IO.GeoTiff
             Double[] modelTransformationArray = null;
 
             // gather information from tags
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(33922))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(33922))
             {
-                modelTiePointsArray = _imageFileDirectories[_subImageIndex][33922].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTiePointsArray = _imageFileDirectories[_currentImageIndex][33922].Select(value => Convert.ToDouble(value)).ToArray();
             }
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(33550))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(33550))
             {
-                modelPixelScaleArray = _imageFileDirectories[_subImageIndex][33550].Select(value => Convert.ToDouble(value)).ToArray();
+                modelPixelScaleArray = _imageFileDirectories[_currentImageIndex][33550].Select(value => Convert.ToDouble(value)).ToArray();
             }
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(34264))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(34264))
             {
-                modelTransformationArray = _imageFileDirectories[_subImageIndex][34264].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTransformationArray = _imageFileDirectories[_currentImageIndex][34264].Select(value => Convert.ToDouble(value)).ToArray();
             }
             // for GeoTIFF 0.2, IntergraphMatrixTag (33920) may contain the transformation values
-            if (modelTransformationArray == null && _imageFileDirectories[_subImageIndex].ContainsKey(33920))
+            if (modelTransformationArray == null && _imageFileDirectories[_currentImageIndex].ContainsKey(33920))
             {
-                modelTransformationArray = _imageFileDirectories[_subImageIndex][33920].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTransformationArray = _imageFileDirectories[_currentImageIndex][33920].Select(value => Convert.ToDouble(value)).ToArray();
             }
 
             // compute with model tie points
@@ -296,13 +330,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             throw new InvalidDataException("Model space data is in invalid format.");
         }
+
         /// <summary>
         /// Reads the reference system of the raster image.
         /// </summary>
-        /// <returns>
-        /// The reference system of the raster image.
-        /// </returns>
-        protected override IReferenceSystem ReadGeometryReferenceSystem()
+        /// <returns>The reference system of the raster image.</returns>
+        protected override IReferenceSystem ComputeReferenceSystem()
         {
             ComputeGeoKeys();
 
@@ -340,12 +373,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Computes the geo keys for the current raster.
         /// </summary>
-        /// <exception cref="System.IO.InvalidDataException">Stream content is corrupted.</exception>
+        /// <exception cref="System.IO.InvalidDataException">Geo key data is in an invalid format.</exception>
         private void ComputeGeoKeys()
         {
             try
             {
-                if (!_imageFileDirectories[_subImageIndex].ContainsKey(34735))
+                if (!_imageFileDirectories[_currentImageIndex].ContainsKey(34735))
                 {
                     _currentGeoKeys = null;
                     return;
@@ -353,33 +386,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 _currentGeoKeys = new Dictionary<Int16, Object>();
 
-                _geoTiffFormatVersion = _imageFileDirectories[_subImageIndex][34735][0] + "." + _imageFileDirectories[_subImageIndex][34735][1] + "." + _imageFileDirectories[_subImageIndex][34735][2];
+                _geoTiffFormatVersion = _imageFileDirectories[_currentImageIndex][34735][0] + "." + _imageFileDirectories[_currentImageIndex][34735][1] + "." + _imageFileDirectories[_currentImageIndex][34735][2];
                 Int32 offset, count;
 
-                for (Int16 i = 4; i < _imageFileDirectories[_subImageIndex][34735].Length; i += 4)
+                for (Int16 i = 4; i < _imageFileDirectories[_currentImageIndex][34735].Length; i += 4)
                 {
-                    switch (Convert.ToInt32(_imageFileDirectories[_subImageIndex][34735][1 + i]))
+                    switch (Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][1 + i]))
                     {
                         case 0:
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_subImageIndex][34735][i]), Convert.ToInt16(_imageFileDirectories[_subImageIndex][34735][3 + i]));
+                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][3 + i]));
                             break;
                         case 34736:
-                            offset = Convert.ToInt32(_imageFileDirectories[_subImageIndex][34735][3 + i]);
-                            Double doubleValue = Convert.ToDouble(_imageFileDirectories[_subImageIndex][34736][offset]);
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_subImageIndex][34735][i]), doubleValue);
+                            offset = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][3 + i]);
+                            Double doubleValue = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][34736][offset]);
+                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), doubleValue);
                             break;
                         case 34737:
-                            count = Convert.ToInt32(_imageFileDirectories[_subImageIndex][34735][2 + i]);
-                            offset = Convert.ToInt32(_imageFileDirectories[_subImageIndex][34735][3 + i]);
+                            count = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][2 + i]);
+                            offset = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][3 + i]);
                             // strings are concatenated to a single value using the | (pipe) character, so they are split, and the ending character is removed
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_subImageIndex][34735][i]), Convert.ToString(_imageFileDirectories[_subImageIndex][34737][0]).Substring(offset, count - 1));
+                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), Convert.ToString(_imageFileDirectories[_currentImageIndex][34737][0]).Substring(offset, count - 1));
                             break;
                     }
                 }
             }
             catch
             {
-                throw new InvalidDataException("Geo key data is in invalid format.");
+                throw new InvalidDataException("Geo key data is in an invalid format.");
             }
         }
 

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -46,14 +46,28 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
         #region Protected fields
 
+        /// <summary>
+        /// The list of image file directories.
+        /// </summary>
         protected List<TiffImageFileDirectory> _imageFileDirectories;
-        protected Int32 _subImageIndex;
+
+        /// <summary>
+        /// The index of the current image.
+        /// </summary>
+        protected Int32 _currentImageIndex;
 
         #endregion
 
         #region Private fields
 
+        /// <summary>
+        /// The byte order of the file.
+        /// </summary>
         private ByteOrder _byteOrder;
+
+        /// <summary>
+        /// The offset of the image file directory within the file.
+        /// </summary>
         private UInt32 _imageFileDirectoryOffset;
 
         #endregion
@@ -286,34 +300,84 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Returns a value indicating whether the end of the stream is reached.
         /// </summary>
         /// <returns><c>true</c> if the end of the stream is reached; otherwise <c>false</c>.</returns>
-        protected override Boolean GetEndOfStream() { return _subImageIndex == _imageFileDirectories.Count; }
+        protected override Boolean GetEndOfStream() { return _currentImageIndex == _imageFileDirectories.Count; }
 
         /// <summary>
         /// Apply the read operation for a geometry.
         /// </summary>
         /// <returns>The geometry read from the stream.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// Stream format is not supported.
+        /// or
+        /// Compression is not supported.
+        /// </exception>
         protected override IGeometry ApplyReadGeometry()
         {
-            if (_imageFileDirectories[_subImageIndex][258].Min() != _imageFileDirectories[_subImageIndex][258].Max())
+            if (_imageFileDirectories[_currentImageIndex][258].Min() != _imageFileDirectories[_currentImageIndex][258].Max())
+                throw new NotSupportedException("Stream format is not supported.");
+
+            // check whether the content is readable
+            TiffCompression compression = (TiffCompression)Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][259][0]);
+
+            if (compression != TiffCompression.None)
+                throw new NotSupportedException("Compression is not supported.");
+
+            // create the geometry
+            ISpectralGeometry spectralGeometry = null;
+
+            // read additional geometry data
+            IReferenceSystem referenceSystem = ComputeReferenceSystem();
+            IDictionary<String, Object> metadata = ComputeMetadata();
+            ImagingScene imagingScene = ComputeImagingScene();
+
+            // read additional raster data
+            Int32[] radiometricResolutions = ComputeRadiometricResolutionData();
+            RasterMapper mapper = ComputeRasterToModelSpaceMapping();
+
+            // compute the raster dimensions
+            Int32 imageLength = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][257][0]);
+            Int32 imageWidth = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][256][0]);
+
+            // check the sample format
+            TiffSampleFormat format = TiffSampleFormat.UnsignedInteger;
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(339))
             {
-                throw new InvalidDataException("Stream format is not supported.");
+                format = (TiffSampleFormat)Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][339][0]);
             }
 
-            try
+            // create the raster based on the format
+            switch (format)
             {
-                IReferenceSystem referenceSystem = ReadGeometryReferenceSystem();
-                IDictionary<String, Object> metadata = ReadGeometryMetadata();
-
-                ISpectralGeometry spectralGeometry = ReadSpectralContent(referenceSystem, metadata);
-                
-                _subImageIndex++;
-
-                return spectralGeometry;
+                case TiffSampleFormat.UnsignedInteger:
+                case TiffSampleFormat.Undefined:
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, imagingScene, metadata);
+                    break;
+                case TiffSampleFormat.SignedInteger:
+                case TiffSampleFormat.Floating:
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, imagingScene, metadata);
+                    break;
             }
-            catch (Exception ex)
+
+            // read content based on the layout
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(273))
             {
-                throw new InvalidDataException("Stream content is invalid.", ex);
+                // strip layout
+                ReadRasterContentFromStrips(spectralGeometry.Raster, compression, format);
             }
+            else if (_imageFileDirectories[_currentImageIndex].ContainsKey(324))
+            {
+                // tiled layout
+                ReadRasterContentFromTiles(spectralGeometry.Raster, compression, format);
+            }
+            else
+            {
+                // unknown layout
+                throw new NotSupportedException("Stream format is not supported.");
+            }
+
+            _currentImageIndex++;
+
+            return spectralGeometry;
         }
 
         #endregion
@@ -358,11 +422,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 }
 
                 _baseStream.Seek(4, SeekOrigin.Begin);
-                _subImageIndex = 0;
+                _currentImageIndex = 0;
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream reading.", ex);
+                throw new IOException(MessageContentReadError, ex);
             }
         }
 
@@ -461,76 +525,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Reads the spectral content of the geometry.
-        /// </summary>
-        /// <param name="referenceSystem">The reference system.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The spectral geometry.</returns>
-        /// <exception cref="System.NotSupportedException">Compression is not supported.</exception>
-        private ISpectralGeometry ReadSpectralContent(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-        {
-            // read raster 
-            TiffPhotometricInterpretation photometricInterpretation = (TiffPhotometricInterpretation)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][262][0]);
-            TiffCompression compression = (TiffCompression)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][259][0]);
-
-            if (compression != TiffCompression.None)
-                throw new NotSupportedException("Compression is not supported.");
-
-            Int32 imageLength = Convert.ToInt32(_imageFileDirectories[_subImageIndex][257][0]);
-            Int32 imageWidth = Convert.ToInt32(_imageFileDirectories[_subImageIndex][256][0]);
-
-            Int32[] radiometricResolutions = ReadRasterRadiometricResolutionData();
-            RasterMapper mapper = ReadRasterToModelSpaceMapping();
-
-            // check the sample format
-            TiffSampleFormat format = TiffSampleFormat.UnsignedInteger;
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(339))
-            {
-                format = (TiffSampleFormat)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][339][0]);
-            }
-
-            ISpectralGeometry spectralGeometry = null;
-
-            // create the raster based on the format
-            switch (format)
-            { 
-                case TiffSampleFormat.UnsignedInteger:
-                case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, metadata);
-                    break;
-                case TiffSampleFormat.SignedInteger:
-                case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterRepresentation.Floating, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, metadata);
-                    break;
-            }
-
-            // determine whether the image is stripped or tiled
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(273))
-            {
-                ReadRasterContentFromStrips(spectralGeometry.Raster, compression, format);
-            }
-
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(324))
-            {
-                ReadRasterContentFromTiles(spectralGeometry.Raster, compression, format);
-            }
-              
-            return spectralGeometry;
-        }
-
-        /// <summary>
         /// Reads the raster of the geometry stored in strips.
         /// </summary>
         /// <param name="raster">The raster.</param>
         /// <param name="compression">The compression.</param>
         /// <param name="format">The format.</param>
-        /// <exception cref="System.NotSupportedException">Compression is not supported.</exception>
         private void ReadRasterContentFromStrips(IRaster raster, TiffCompression compression, TiffSampleFormat format)
         {
-            Int32 rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_subImageIndex][278][0]);
+            Int32 rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][278][0]);
             Int32 numberOfStrips = (Int32)Math.Ceiling((Single)raster.NumberOfRows / rowsPerStrip);
-            UInt32[] stripOffsets = _imageFileDirectories[_subImageIndex][273].Cast<UInt32>().ToArray();
-            UInt32[] stripByteCounts = _imageFileDirectories[_subImageIndex][279].Cast<UInt32>().ToArray();
+            UInt32[] stripOffsets = _imageFileDirectories[_currentImageIndex][273].Cast<UInt32>().ToArray();
+            UInt32[] stripByteCounts = _imageFileDirectories[_currentImageIndex][279].Cast<UInt32>().ToArray();
             
             // fit the maximum number of readable bytes to the radiometric resolution
             UInt32 numberOfReadableBytes = NumberOfReadableBytes;
@@ -612,10 +617,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.NotSupportedException">Compression is not supported.</exception>
         private void ReadRasterContentFromTiles(IRaster raster, TiffCompression compression, TiffSampleFormat format)
         {
-            UInt32[] tileOffsets = _imageFileDirectories[_subImageIndex][324].Cast<UInt32>().ToArray();
-            UInt32[] tileByteCounts = _imageFileDirectories[_subImageIndex][325].Cast<UInt32>().ToArray();
-            Int32 tileWidth = Convert.ToInt32(_imageFileDirectories[_subImageIndex][322][0]);
-            Int32 tileLength = Convert.ToInt32(_imageFileDirectories[_subImageIndex][323][0]);
+            UInt32[] tileOffsets = _imageFileDirectories[_currentImageIndex][324].Cast<UInt32>().ToArray();
+            UInt32[] tileByteCounts = _imageFileDirectories[_currentImageIndex][325].Cast<UInt32>().ToArray();
+            Int32 tileWidth = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][322][0]);
+            Int32 tileLength = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][323][0]);
 
             Int32 tilesAcross = (raster.NumberOfColumns + tileWidth - 1) / tileWidth;
             Int32 tilesDown = (raster.NumberOfRows + tileLength - 1) / tileLength;
@@ -772,6 +777,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 else
                 {
                     // TODO: support other resolutions
+
                     throw new NotSupportedException("Radiometric resolution is not supported.");
                 }
             }
@@ -807,6 +813,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 else
                 {
                     // TODO: support other resolutions
+
                     throw new NotSupportedException("Radiometric resolution is not supported.");
                 }
             }
@@ -815,52 +822,22 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Reads the spectral range data of the raster.
+        /// Computes the radiometric resolutions.
         /// </summary>
-        /// <returns>An array containing the sppectral ranges of the raster.</returns>
-        private SpectralRange[] ReadRasterSpectralRangeData()
-        {
-            TiffPhotometricInterpretation photometricInterpretation = (TiffPhotometricInterpretation)Convert.ToUInt16(_imageFileDirectories[_subImageIndex][262][0]);
-            UInt16 samplesPerPixel = 1;
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(277))
-                samplesPerPixel = Convert.ToUInt16(_imageFileDirectories[_subImageIndex][277][0]);
-
-            SpectralRange[] ranges = null;
-            switch (photometricInterpretation)
-            {
-                case TiffPhotometricInterpretation.RGB:
-                    if (samplesPerPixel == 3) 
-                        // the RGB interpretation is only correct when there are 3 samples per pixel
-                        ranges = SpectralRanges.RGB;
-                    else
-                        ranges = Enumerable.Repeat<SpectralRange>(null, samplesPerPixel).ToArray();
-                    break;
-                default:
-                    ranges = Enumerable.Repeat<SpectralRange>(null, samplesPerPixel).ToArray();
-                    break;
-            }
-            // TODO: process other interpretations
-
-            return ranges;
-        }
-
-        /// <summary>
-        /// Reads the radiometric resolutions of the raster image.
-        /// </summary>
-        /// <returns>An array containing the radiometrix resolutions of the raster image.</returns>
-        private Int32[] ReadRasterRadiometricResolutionData()
+        /// <returns>An array containing the radiometric resolutions of the raster.</returns>
+        private Int32[] ComputeRadiometricResolutionData()
         {
             UInt16 samplesPerPixel = 1, bitsPerSample = 1;
 
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(277))
-                samplesPerPixel = Convert.ToUInt16(_imageFileDirectories[_subImageIndex][277][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(277))
+                samplesPerPixel = Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][277][0]);
 
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(258))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(258))
             {
-                if (_imageFileDirectories[_subImageIndex][258].Length == samplesPerPixel)
-                    return _imageFileDirectories[_subImageIndex][258].Select(value => Convert.ToInt32(value)).ToArray();
+                if (_imageFileDirectories[_currentImageIndex][258].Length == samplesPerPixel)
+                    return _imageFileDirectories[_currentImageIndex][258].Select(value => Convert.ToInt32(value)).ToArray();
                 else
-                    bitsPerSample = Convert.ToUInt16(_imageFileDirectories[_subImageIndex][258][0]);
+                    bitsPerSample = Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][258][0]);
             }
 
             return Enumerable.Repeat<Int32>(bitsPerSample, samplesPerPixel).ToArray();
@@ -871,50 +848,59 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Protected methods
 
         /// <summary>
-        /// Reads the metadata of the raster geometry.
+        /// Computes the spectral imaging scene data of the geometry.
         /// </summary>
-        /// <returns>A dictionary containing the metadata of he raster geometry.</returns>
-        protected virtual IDictionary<String, Object> ReadGeometryMetadata()
-        {
-            Dictionary<String, Object> metadata = new Dictionary<String, Object>();
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(269))
-                metadata.Add("DocumentName", _imageFileDirectories[_subImageIndex][269][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(270))
-                metadata.Add("ImageDescription", _imageFileDirectories[_subImageIndex][270][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(271))
-                metadata.Add("Make", _imageFileDirectories[_subImageIndex][271][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(272))
-                metadata.Add("Model", _imageFileDirectories[_subImageIndex][272][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(285))
-                metadata.Add("PageName", _imageFileDirectories[_subImageIndex][285][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(305))
-                metadata.Add("Software", _imageFileDirectories[_subImageIndex][305][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(306))
-                metadata.Add("DateTime", _imageFileDirectories[_subImageIndex][306][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(307))
-                metadata.Add("Artist", _imageFileDirectories[_subImageIndex][307][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(308))
-                metadata.Add("HostComputer", _imageFileDirectories[_subImageIndex][308][0]);
-            if (_imageFileDirectories[_subImageIndex].ContainsKey(33432))
-                metadata.Add("Copyright", _imageFileDirectories[_subImageIndex][33432][0]);
-
-            return metadata;
-        }     
-   
-        /// <summary>
-        /// Reads the mapping from model space to raster space.
-        /// </summary>
-        /// <returns>The mapping from model space to raster space.</returns>
-        protected virtual RasterMapper ReadRasterToModelSpaceMapping()
+        /// <returns>The spectral imaging scene data of the geometry.</returns>
+        protected virtual ImagingScene ComputeImagingScene()
         {
             return null;
         }
 
         /// <summary>
-        /// Reads the reference system of the raster geometry.
+        /// Computes the metadata of the geometry.
         /// </summary>
-        /// <returns>The reference system of the raster geometry.</returns>
-        protected virtual IReferenceSystem ReadGeometryReferenceSystem()
+        /// <returns>A dictionary containing the metadata of the geometry.</returns>
+        protected virtual IDictionary<String, Object> ComputeMetadata()
+        {
+            Dictionary<String, Object> metadata = new Dictionary<String, Object>();
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(269))
+                metadata.Add("DocumentName", _imageFileDirectories[_currentImageIndex][269][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(270))
+                metadata.Add("ImageDescription", _imageFileDirectories[_currentImageIndex][270][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(271))
+                metadata.Add("Make", _imageFileDirectories[_currentImageIndex][271][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(272))
+                metadata.Add("Model", _imageFileDirectories[_currentImageIndex][272][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(285))
+                metadata.Add("PageName", _imageFileDirectories[_currentImageIndex][285][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(305))
+                metadata.Add("Software", _imageFileDirectories[_currentImageIndex][305][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(306))
+                metadata.Add("DateTime", _imageFileDirectories[_currentImageIndex][306][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(307))
+                metadata.Add("Artist", _imageFileDirectories[_currentImageIndex][307][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(308))
+                metadata.Add("HostComputer", _imageFileDirectories[_currentImageIndex][308][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(33432))
+                metadata.Add("Copyright", _imageFileDirectories[_currentImageIndex][33432][0]);
+
+            return metadata;
+        }     
+   
+        /// <summary>
+        /// Computes the mapping from model space to raster space.
+        /// </summary>
+        /// <returns>The mapping from model space to raster space.</returns>
+        protected virtual RasterMapper ComputeRasterToModelSpaceMapping()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Computes the reference system of the geometry.
+        /// </summary>
+        /// <returns>The reference system of the geometry.</returns>
+        protected virtual IReferenceSystem ComputeReferenceSystem()
         {
             return null;
         }
