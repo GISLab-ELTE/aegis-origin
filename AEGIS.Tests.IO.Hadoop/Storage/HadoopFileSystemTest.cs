@@ -23,7 +23,7 @@ using System.Net.Http;
 namespace ELTE.AEGIS.Tests.IO.Storage
 {
     /// <summary>
-    /// Test fixture for class <see cref="HadoopFileSystem"/>.
+    /// Test fixture for the <see cref="HadoopFileSystem"/> class.
     /// </summary>
     [TestFixture]
     public class HadoopFileSystemTest
@@ -113,7 +113,9 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
             fileSystem = new HadoopFileSystem(_hostname, _portNumber, _authentication);
 
-            Assert.IsTrue(fileSystem.IsConnected);
+            if (!fileSystem.IsConnected)
+                Assert.Inconclusive();
+
             Assert.AreEqual(_authentication, fileSystem.Authentication);
 
 
