@@ -39,6 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeoTiff\GeoTiffMetafilePathOption.cs" />
+    <Compile Include="GeoTiff\GeoTiffMetafileReader.cs" />
+    <Compile Include="GeoTiff\GeoTiffMetafileReaderFactory.cs" />
+    <Compile Include="GeoTiff\Metafile\SpotMetafileReader.cs" />
+    <Compile Include="GeoTiff\Metafile\XElementExtensions.cs" />
     <Compile Include="SpectralGeometryStreamFormats.cs" />
     <Compile Include="SpectralGeometryStreamParameters.cs" />
     <Compile Include="GeoTiff\GeoTiffReader.cs" />
