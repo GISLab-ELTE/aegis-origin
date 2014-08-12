@@ -198,8 +198,15 @@ namespace ELTE.AEGIS.Geometry
                 throw new ArgumentNullException("shell", "The shell is null.");
 
             // initalize shell
-            _shell = _factory.CreateLinearRing(shell.Coordinates); // create new shell instance
-            _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
+            try
+            {
+                _shell = _factory.CreateLinearRing(shell); // create new shell instance
+                _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("The shell is empty.", "shell");
+            }
 
             // initialize holes
             _holes = new List<ILinearRing>();
