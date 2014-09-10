@@ -123,10 +123,13 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// </summary>
         /// <param name="matrix">The matrix of which the decompomposition is computed.</param>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public LUDecomposition(Matrix matrix)
         {
             if (matrix == null)
                 throw new ArgumentNullException("matrix", "The matrix is null.");
+            if (!matrix.IsSquare)
+                throw new ArgumentException("The matrix is not square.", "matrix");
 
             _matrix = matrix;
             _numberOfRows = matrix.NumberOfRows;
@@ -150,8 +153,8 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
 
             Matrix pivotMatrix = Pivotize();
 
-            _l = MatrixFactory.CreateIdentity(_numberOfRows, Math.Min(_numberOfRows, _numberOfColumns));
-            _u = new Matrix(Math.Min(_numberOfRows, _numberOfColumns), _numberOfColumns);
+            _l = MatrixFactory.CreateIdentity(_numberOfRows, Math.Max(_numberOfRows, _numberOfColumns));
+            _u = new Matrix(Math.Max(_numberOfRows, _numberOfColumns), _numberOfColumns);
 
             for (Int32 i = 0; i < _numberOfRows; i++)
                 for (Int32 j = 0; j < _numberOfColumns; j++)
@@ -272,6 +275,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <param name="matrix">The matrix.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public static Matrix Decompose(Matrix matrix)
         {
             LUDecomposition luDecomposition = new LUDecomposition(matrix);
@@ -287,6 +291,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <param name="l">The L (lower triangular) matrix.</param>
         /// <param name="u">The U (upper triangular) matrix.</param>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public static void Decompose(Matrix matrix, out Matrix l, out Matrix u)
         {
             LUDecomposition luDecomposition = new LUDecomposition(matrix);
@@ -301,6 +306,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <param name="matrix">The matrix.</param>
         /// <returns>The determinant of the specified matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public static Double ComputeDeterminant(Matrix matrix)
         {
             LUDecomposition luDecomposition = new LUDecomposition(matrix);
@@ -313,14 +319,16 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// </summary>
         /// <param name="matrix">The matrix.</param>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public static Matrix Invert(Matrix matrix)
         {
             if (matrix == null)
                 throw new ArgumentNullException("matrix", "The matrix is null.");
 
-            Matrix inverse = new Matrix(matrix.NumberOfColumns, matrix.NumberOfRows);
             LUDecomposition luDecomposition = new LUDecomposition(matrix);
             luDecomposition.Compute();
+
+            Matrix inverse = new Matrix(matrix.NumberOfColumns, matrix.NumberOfRows);
 
             for (int i = 0; i < matrix.NumberOfRows; ++i)
             {
@@ -343,8 +351,27 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <param name="a">The left side of the equation represented by a matrix.</param>
         /// <param name="b">The right side of the equation represented by a vector.</param>
         /// <returns>The vector containing the unknown variables of the equation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The matrix is null.
+        /// or
+        /// The vector is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The matrix is not square.
+        /// or
+        /// The size of the matrix dow not match the size fo the vector.
+        /// </exception>
         public static Vector SolveEquation(Matrix a, Vector b)
         {
+            if (a == null)
+                throw new ArgumentNullException("a", "The matrix is null.");
+            if (b == null)
+                throw new ArgumentNullException("b", "The vector is null.");
+            if (!a.IsSquare)
+                throw new ArgumentException("The matrix is not square.", "a");
+            if (a.NumberOfRows != b.Size)
+                throw new ArgumentException("The size of the matrix dow not match the size fo the vector.", "b");
+
             LUDecomposition luDecomposition = new LUDecomposition(a);
             luDecomposition.Compute();
             return SolveEquation(luDecomposition, b);
