@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -39,11 +39,49 @@ namespace ELTE.AEGIS.Algorithms
         public static UInt32 RadiometricResolutionMax(Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
-                throw new ArgumentException("The radiometric resolution is less than 1.", "radiometricResolution");
-            if (radiometricResolution > 32)
-                throw new ArgumentException("The radiometric resolution is geater than 32.", "radiometricResolution");
+                return 0;
+            if (radiometricResolution >= 32)
+                return UInt32.MaxValue;
 
-            return Convert.ToUInt32(1UL << radiometricResolution) - 1;
+            return (1U << radiometricResolution) - 1;
+        }
+
+        /// <summary>
+        /// Restricts the specified spectral value for the a radiometric resolution.
+        /// </summary>
+        /// <param name="spectralValue">The spectral value.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <returns></returns>
+        public static UInt32 Restrict(UInt32 spectralValue, Int32 radiometricResolution)
+        {
+            if (radiometricResolution < 1)
+                return 0;
+            if (radiometricResolution >= 32)
+                return spectralValue;
+
+            if (spectralValue > (1U << radiometricResolution) - 1)
+                return 1U << radiometricResolution - 1;
+
+            return spectralValue;
+        }
+
+        /// <summary>
+        /// Restricts the specified spectral value for a radiometric resolution.
+        /// </summary>
+        /// <param name="spectralValue">The spectral value.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <returns>The value restricted for the specified radiometric resolution.</returns>
+        public static UInt32 Restrict(Double spectralValue, Int32 radiometricResolution)
+        {
+            if (radiometricResolution < 1)
+                return 0;
+            if (spectralValue < 0)
+                return 0;
+
+            if (radiometricResolution >= 32)
+                return Convert.ToUInt32(Math.Min(spectralValue, UInt32.MaxValue));
+
+            return Convert.ToUInt32(Math.Min(spectralValue, (1UL << radiometricResolution) - 1));
         }
 
         #endregion
