@@ -108,14 +108,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if ((geometry as ISpectralGeometry).Raster == null)
                 return;
 
-            WriteFileHeader();
+            WriteHeader();
 
             UInt32 startPosition = 0, endPosition = 0;
 
-            // perform writing based on representation
-            WriteSpectralContent((geometry as ISpectralGeometry).Raster, out startPosition, out endPosition);
+            TiffCompression compression = TiffCompression.None; // TODO: support other compressions
+            TiffSampleFormat sampleFormat = (geometry as ISpectralGeometry).Raster.Representation == RasterRepresentation.Floating ? TiffSampleFormat.Floating : TiffSampleFormat.UnsignedInteger;
 
-            TiffImageFileDirectory imageFileDirectory = ComputeImageFileDirectory(geometry as ISpectralGeometry, startPosition, endPosition);
+            // perform writing based on representation
+            WriteRasterContentToStrip((geometry as ISpectralGeometry).Raster, compression, sampleFormat, out startPosition, out endPosition);
+
+            TiffImageFileDirectory imageFileDirectory = ComputeImageFileDirectory(geometry as ISpectralGeometry, compression, sampleFormat, startPosition, endPosition);
             WriteImageFileDirectory(imageFileDirectory);
         }
 
@@ -127,10 +130,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Computes the image file directory of a geometry.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
+        /// <param name="compression">The compression.</param>
+        /// <param name="format">The sample format.</param>
         /// <param name="startPosition">The starting position of the raster content within the stream.</param>
         /// <param name="endPosition">The ending position of the raster content within the stream.</param>
         /// <returns>The computed image file directory.</returns>
-        protected virtual TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, UInt32 startPosition, UInt32 endPosition)
+        protected virtual TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format, UInt32 startPosition, UInt32 endPosition)
         {
             TiffImageFileDirectory imageFileDirectory = new TiffImageFileDirectory();
 
@@ -142,7 +147,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             // add raster properties
             imageFileDirectory.Add(262, new Object[] { (UInt16)photometricInterpretation }); // photometric interpretation
-            imageFileDirectory.Add(259, new Object[] { (UInt16)TiffCompression.None }); // compression
+            imageFileDirectory.Add(259, new Object[] { (UInt16)compression }); // compression
             imageFileDirectory.Add(257, new Object[] { (UInt32)geometry.Raster.NumberOfRows }); // image length
             imageFileDirectory.Add(256, new Object[] { (UInt32)geometry.Raster.NumberOfColumns }); // image width
             imageFileDirectory.Add(296, new Object[] { (UInt16)2 }); // resolution unit
@@ -153,7 +158,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(279, new Object[] { (UInt32)(endPosition - startPosition) }); // strip byte counts
             imageFileDirectory.Add(258, geometry.Raster.RadiometricResolutions.Select(resolution => (UInt16)resolution).Cast<Object>().ToArray() ); // bits per sample
             imageFileDirectory.Add(277, new Object[] { (UInt32)geometry.Raster.NumberOfBands }); // samples per pixel
-            imageFileDirectory.Add(339, new Object[] { (UInt16)(geometry.Raster.Representation == RasterRepresentation.Integer ? TiffSampleFormat.UnsignedInteger : TiffSampleFormat.Floating ) }); // sample format
+            imageFileDirectory.Add(339, new Object[] { (UInt16)format }); // sample format
 
             // add metadata
             imageFileDirectory.Add(305, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
@@ -187,9 +192,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Private methods
 
         /// <summary>
-        /// Writes the file header.
+        /// Writes the header.
         /// </summary>
-        private void WriteFileHeader()
+        private void WriteHeader()
         {
             if (_fileHeaderWritten)
                 return;
@@ -215,6 +220,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             _fileHeaderWritten = true;
         }
+
         /// <summary>
         /// Writes an image file directory to the stream.
         /// </summary>
@@ -300,12 +306,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Writes the spectral content of the geometry.
+        /// Writes the raster of the geometry into a strip.
         /// </summary>
         /// <param name="raster">The raster.</param>
-        /// <param name="startPosition">The start position.</param>
-        /// <param name="endPosition">The end position.</param>
-        private void WriteSpectralContent(IRaster raster, out UInt32 startPosition, out UInt32 endPosition)
+        /// <param name="compression">The compression.</param>
+        /// <param name="format">The sample format.</param>
+        /// <param name="startPosition">The starting position of the strip.</param>
+        /// <param name="endPosition">The ending position of the strip.</param>
+        private void WriteRasterContentToStrip(IRaster raster, TiffCompression compression, TiffSampleFormat format, out UInt32 startPosition, out UInt32 endPosition)
         {
             // mark the starting position of the strip
             startPosition = (UInt32)_baseStream.Position;
@@ -326,38 +334,16 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     // write the values for each band into the buffer
                     for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                     {
-                        Int32 radiometricResolution = raster.RadiometricResolutions[bandIndex];
-                        UInt64 value = raster.GetValue(rowIndex, columnIndex, bandIndex);
-                        if (radiometricResolution < 8 && 8 % radiometricResolution == 0)
+                        switch (format)
                         {
-                            bitIndex -= radiometricResolution;
-                            bytes[byteIndex] += (Byte)(value << bitIndex);
-
-                            if (bitIndex == 0)
-                            {
-                                bitIndex = 8;
-                                byteIndex++;
-                            }
-                        }
-                        else if (radiometricResolution == 8)
-                        {
-                            bytes[byteIndex] = (Byte)value;
-                            byteIndex++;
-                        }
-                        else if (radiometricResolution == 16)
-                        {
-                            EndianBitConverter.CopyBytes((UInt16)value, bytes, byteIndex);
-                            byteIndex += 2;
-                        }
-                        else if (radiometricResolution == 32)
-                        {
-                            EndianBitConverter.CopyBytes((UInt32)value, bytes, byteIndex);
-                            byteIndex += 4;
-                        }
-                        else
-                        {
-                            // TODO: support other resolutions
-                            throw new NotSupportedException("Radiometric resolution is not supported.");
+                            case TiffSampleFormat.Undefined:
+                            case TiffSampleFormat.UnsignedInteger:
+                                WriteUnsignedIntergerValue(raster.GetValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolutions[bandIndex], bytes, ref byteIndex, ref bitIndex);
+                                break;
+                            case TiffSampleFormat.SignedInteger:
+                            case TiffSampleFormat.Floating:
+                                WriteFloatValue(raster.GetFloatValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolutions[bandIndex], bytes, ref byteIndex, ref bitIndex);
+                                break;
                         }
 
                         if (byteIndex == bytes.Length)
@@ -382,6 +368,78 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             // mark the ending position of the strip
             endPosition = (UInt32)_baseStream.Position;
+        }
+
+        /// <summary>
+        /// Writes the specified unsigned interger value to the array.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="radiometricResolution">The radiometric resolution of the value.</param>
+        /// <param name="bytes">The byte array.</param>
+        /// <param name="byteIndex">The zero-based byte index in the array.</param>
+        /// <param name="bitIndex">The zero-based bit index in the array.</param>
+        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
+        private void WriteUnsignedIntergerValue(UInt32 value, Int32 radiometricResolution, Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex)
+        {
+            if (radiometricResolution == 8)
+            {
+                bytes[byteIndex] = (Byte)value;
+                byteIndex++;
+            }
+            else if (radiometricResolution == 16)
+            {
+                EndianBitConverter.CopyBytes((UInt16)value, bytes, byteIndex);
+                byteIndex += 2;
+            }
+            else if (radiometricResolution == 32)
+            {
+                EndianBitConverter.CopyBytes(value, bytes, byteIndex);
+                byteIndex += 4;
+            }
+            else if (radiometricResolution < 8 && 8 % radiometricResolution == 0)
+            {
+                bitIndex -= radiometricResolution;
+                bytes[byteIndex] += (Byte)(value << bitIndex);
+
+                if (bitIndex == 0)
+                {
+                    bitIndex = 8;
+                    byteIndex++;
+                }
+            }
+            else 
+            {
+                // TODO: support other resolutions
+                throw new NotSupportedException("Radiometric resolution is not supported.");
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified floating point value to the array.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="radiometricResolution">The radiometric resolution of the value.</param>
+        /// <param name="bytes">The byte array.</param>
+        /// <param name="byteIndex">The zero-based byte index in the array.</param>
+        /// <param name="bitIndex">The zero-based bit index in the array.</param>
+        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
+        private void WriteFloatValue(Double value, Int32 radiometricResolution, Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex)
+        {
+            if (radiometricResolution == 32)
+            {
+                EndianBitConverter.CopyBytes((Single)value, bytes, byteIndex);
+                byteIndex += 4;
+            }
+            else if (radiometricResolution == 64)
+            {
+                EndianBitConverter.CopyBytes(value, bytes, byteIndex);
+                byteIndex += 8;
+            }
+            else 
+            {
+                // TODO: support other resolutions
+                throw new NotSupportedException("Radiometric resolution is not supported.");
+            }
         }
 
         #endregion

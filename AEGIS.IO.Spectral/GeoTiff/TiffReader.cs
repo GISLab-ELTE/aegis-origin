@@ -686,8 +686,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Reads the unsigned integer values from the array.
         /// </summary>
         /// <param name="bytes">The byte array.</param>
-        /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
-        /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
+        /// <param name="byteIndex">The zero-based byte index in the array.</param>
+        /// <param name="bitIndex">The zero-based bit index in the array.</param>
         /// <param name="radiometricResolutions">The radiometric resolutions.</param>
         /// <returns>The unsigned integer values representing a pixel.</returns>
         /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
@@ -803,12 +803,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 if (radiometricResolutions[i] == 32)
                 {
                     values[i] = EndianBitConverter.ToSingle(bytes, byteIndex, _byteOrder);
-                    byteIndex += 2;
+                    byteIndex += 4;
                 }
                 else if (radiometricResolutions[i] == 64)
                 {
                     values[i] = EndianBitConverter.ToDouble(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
+                    byteIndex += 8;
                 }
                 else
                 {
