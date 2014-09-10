@@ -1,9 +1,9 @@
-﻿/// <copyright file="RasterMapper.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterCoordinate.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -18,53 +18,45 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a type mapping raster coordinates to geometry coordinates.
+    /// Represents a geometry space coordinate of a specified raster space location.
     /// </summary>
-    public struct RasterMapping
+    public class RasterCoordinate
     {
-        #region Private fields
-
-        private readonly Int32 _rowIndex;
-        private readonly Int32 _columnIndex;
-        private readonly Coordinate _coordinate;
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
         /// Gets the row index.
         /// </summary>
         /// <value>The zero-based row index.</value>
-        public Int32 RowIndex { get { return _rowIndex; } }
+        public Int32 RowIndex { get; private set; }
 
         /// <summary>
         /// Gets the column index.
         /// </summary>
         /// <value>The zero-based column index.</value>
-        public Int32 ColumnIndex { get { return _columnIndex; } }
+        public Int32 ColumnIndex { get; private set; }
 
         /// <summary>
         /// Gets the coordinate.
         /// </summary>
         /// <value>The coordinate mapped to the specified row and column indices.</value>
-        public Coordinate Coordinate { get { return _coordinate; } }
+        public Coordinate Coordinate { get; private set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RasterMapping" /> struct.
+        /// Initializes a new instance of the <see cref="RasterCoordinate" /> struct.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index.</param>
         /// <param name="columnIndex">The zero-based column index.</param>
         /// <param name="coordinate">The coordinate.</param>
-        public RasterMapping(Int32 rowIndex, Int32 columnIndex, Coordinate coordinate)
+        public RasterCoordinate(Int32 rowIndex, Int32 columnIndex, Coordinate coordinate)
         {
-            _rowIndex = rowIndex;
-            _columnIndex = columnIndex;
-            _coordinate = coordinate;
+            RowIndex = rowIndex;
+            ColumnIndex = columnIndex;
+            Coordinate = coordinate;
         }
 
         #endregion

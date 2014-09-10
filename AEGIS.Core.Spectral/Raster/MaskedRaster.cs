@@ -94,7 +94,7 @@ namespace ELTE.AEGIS.Raster
         /// The starting columns index and the number of columns is greater than the number of columns in the source.
         /// </exception>
         public MaskedRaster(IRasterFactory factory, IRaster source, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
-            : base(factory, GetNumberOfBands(source), numberOfRows, numberOfColumns, GetRadiometricResolutions(source), GetMapper(source, rowIndex, columnIndex, numberOfRows, numberOfColumns))
+            : base(factory, GetNumberOfBands(source), numberOfRows, numberOfColumns, GetRadiometricResolutions(source), ComputeMapper(source, rowIndex, columnIndex))
         {
             if (rowIndex < 0)
                 throw new ArgumentOutOfRangeException("rowIndex", "The starting row index is less than 0.");
@@ -271,6 +271,7 @@ namespace ELTE.AEGIS.Raster
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
+
             return source.NumberOfBands;
         }
 
@@ -284,11 +285,12 @@ namespace ELTE.AEGIS.Raster
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
+
             return source.RadiometricResolutions;
         }
 
         /// <summary>
-        /// Returns the raster mapper of the specified source.
+        /// Computes the raster mapper of the mask.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="rowStart">The starting row index of a mask.</param>
@@ -297,7 +299,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="numberOfColumns">The number of columns in the mask.</param>
         /// <returns>The raster mapper of the specified source.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static RasterMapper GetMapper(IRaster source, Int32 rowStart, Int32 columnStart, Int32 numberOfRows, Int32 numberOfColumns)
+        private static RasterMapper ComputeMapper(IRaster source, Int32 rowStart, Int32 columnStart)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -306,15 +308,8 @@ namespace ELTE.AEGIS.Raster
                 return null;
             else
             {
-                RasterMapping[] mappings = new RasterMapping[]
-                {
-                    new RasterMapping(rowStart, columnStart, source.Mapper.MapCoordinate(rowStart, columnStart)),
-                    new RasterMapping(rowStart, columnStart + numberOfColumns, source.Mapper.MapCoordinate(rowStart, columnStart + numberOfColumns)),
-                    new RasterMapping(rowStart + numberOfRows, columnStart + numberOfColumns, source.Mapper.MapCoordinate(rowStart + numberOfRows, columnStart + numberOfColumns)),
-                    new RasterMapping(rowStart + numberOfRows, columnStart, source.Mapper.MapCoordinate(rowStart + numberOfRows, columnStart))
-                };
-
-                return RasterMapper.FromMappings(mappings, source.Mapper.Mode);
+                // the mask is a translation of the source
+                return RasterMapper.FromMapper(source.Mapper, source.Mapper.MapCoordinate(rowStart, columnStart), source.Mapper.Scale);
             }
         }
 

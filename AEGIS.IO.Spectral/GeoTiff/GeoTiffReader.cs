@@ -286,20 +286,18 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 if (modelTiePointsArray.Length % 6 != 0)
                     throw new InvalidDataException("Model tiepoints are in invalid format.");
 
-                // transformation is specified by tiepoints
-                if (modelTiePointsArray.Length > 0)
+                if (modelTiePointsArray.Length > 6) // transformation is specified by tiepoints
                 {
-                    RasterMapping[] mappings = new RasterMapping[modelTiePointsArray.Length / 6];
+                    RasterCoordinate[] coordinates = new RasterCoordinate[modelTiePointsArray.Length / 6];
 
                     for (Int32 i = 0; i < modelTiePointsArray.Length; i += 6)
                     {
-                        mappings[i / 6] = new RasterMapping(Convert.ToInt32(modelTiePointsArray[i]), Convert.ToInt32(modelTiePointsArray[i + 1]), new Coordinate(modelTiePointsArray[i + 3], modelTiePointsArray[i + 4], modelTiePointsArray[i + 5]));
+                        coordinates[i / 6] = new RasterCoordinate(Convert.ToInt32(modelTiePointsArray[i]), Convert.ToInt32(modelTiePointsArray[i + 1]), new Coordinate(modelTiePointsArray[i + 3], modelTiePointsArray[i + 4], modelTiePointsArray[i + 5]));
                     }
 
-                    return RasterMapper.FromMappings(mappings, mode);
+                    return RasterMapper.FromCoordinates(mode, coordinates);
                 }
-                // transformation is specified by single tiepoint and scale
-                else
+                else // transformation is specified by single tiepoint and scale
                 {
                     Coordinate rasterSpaceCoordinate = new Coordinate(modelTiePointsArray[0], modelTiePointsArray[1], modelTiePointsArray[2]);
                     Coordinate modelSpaceCoordinate = new Coordinate(modelTiePointsArray[3], modelTiePointsArray[4], modelTiePointsArray[5]);
@@ -307,12 +305,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     Double scaleY = modelPixelScaleArray[1];
                     Double scaleZ = modelPixelScaleArray[2];
 
-                    return RasterMapper.FromTransformation(modelSpaceCoordinate.X - rasterSpaceCoordinate.X * scaleX,
+                    return RasterMapper.FromTransformation(mode, 
+                                                           modelSpaceCoordinate.X - rasterSpaceCoordinate.X * scaleX,
                                                            modelSpaceCoordinate.Y + rasterSpaceCoordinate.Y * scaleY,
                                                            modelSpaceCoordinate.Z - rasterSpaceCoordinate.Z * scaleZ,
-                                                           scaleX, scaleY, scaleZ, mode);
+                                                           scaleX, scaleY, scaleZ);
                 }
             }
+
             // compute with transformation values
             if (modelTransformationArray != null)
             {
@@ -325,7 +325,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     {
                         transformation[i, j] = modelTransformationArray[i * 4 + j];
                     }
-                return RasterMapper.FromTransformation(transformation, mode);
+                return RasterMapper.FromTransformation(mode, transformation);
             }
 
             throw new InvalidDataException("Model space data is in invalid format.");

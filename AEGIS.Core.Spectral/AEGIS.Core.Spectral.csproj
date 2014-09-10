@@ -56,10 +56,10 @@
     <Compile Include="ISpectralPolygon.cs" />
     <Compile Include="IRasterService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RasterCoordinate.cs" />
     <Compile Include="SpectralGeometryFactoryExtensions.cs" />
     <Compile Include="RasterMapMode.cs" />
     <Compile Include="RasterMapper.cs" />
-    <Compile Include="RasterMapping.cs" />
     <Compile Include="RasterRepresentation.cs" />
     <Compile Include="Raster\RasterFloat32.cs" />
     <Compile Include="Raster\RasterFloat64.cs" />

@@ -78,6 +78,8 @@ namespace ELTE.AEGIS.Tests.Raster
 
         #endregion
 
+        #region Test methods
+
         /// <summary>
         /// Test case for the constructor.
         /// </summary>
@@ -103,15 +105,15 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // successful construction with mapping
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
             Assert.IsTrue(raster.IsMapped);
             Assert.AreEqual(mapper, raster.Mapper);
             Assert.AreEqual(new Coordinate(1000, 1000), raster.Coordinates[0]);
-            Assert.AreEqual(new Coordinate(1200, 1150), raster.Coordinates[1]);
-            Assert.AreEqual(new Coordinate(1200, 1000), raster.Coordinates[2]);
-            Assert.AreEqual(new Coordinate(1000, 1150), raster.Coordinates[3]);
+            Assert.AreEqual(new Coordinate(1150, 1200), raster.Coordinates[1]);
+            Assert.AreEqual(new Coordinate(1000, 1200), raster.Coordinates[2]);
+            Assert.AreEqual(new Coordinate(1150, 1000), raster.Coordinates[3]);
 
             // argument null exception
 
@@ -147,7 +149,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // coordinate based
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
@@ -178,7 +180,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // coordinate based
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
@@ -211,7 +213,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // test case 2: coordinate based
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
@@ -251,7 +253,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // test case 2: coordinate based
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
@@ -287,7 +289,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // test case 2: coordinate based
 
-            RasterMapper mapper = RasterMapper.FromTransformation(1000, 1000, 0, 10, 10, 1, RasterMapMode.ValueIsCoordinate);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
@@ -298,5 +300,7 @@ namespace ELTE.AEGIS.Tests.Raster
                     raster[new Coordinate(x, y)] = new UInt32[] { 0, 1, 2 };
                 }
         }
+
+        #endregion
     }
 }

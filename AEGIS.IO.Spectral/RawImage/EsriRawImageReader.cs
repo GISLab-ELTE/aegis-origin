@@ -255,7 +255,7 @@ namespace ELTE.AEGIS.IO.RawImage
                 _bytesSkipped = 0;
 
                 if (vectorX != 0 && vectorY != 0)
-                    _mapper = RasterMapper.FromTransformation(upperLeftX, upperLeftY, 0, vectorX, vectorY, 0, RasterMapMode.ValueIsCoordinate);
+                    _mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, upperLeftX, upperLeftY, 0, vectorX, vectorY, 0);
             }
         }
         /// <summary>

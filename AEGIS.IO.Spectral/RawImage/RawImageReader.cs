@@ -701,13 +701,13 @@ namespace ELTE.AEGIS.IO.RawImage
 
             // set raster mapping if all parameters are available
             if (parameters.ContainsKey(SpectralGeometryStreamParameters.TieCoordinate) && parameters.ContainsKey(SpectralGeometryStreamParameters.ColumnDimension) && parameters.ContainsKey(SpectralGeometryStreamParameters.RowDimension))
-                _mapper = RasterMapper.FromTransformation(ResolveParameter<Coordinate>(SpectralGeometryStreamParameters.TieCoordinate).X,
+                _mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate,
+                                                          ResolveParameter<Coordinate>(SpectralGeometryStreamParameters.TieCoordinate).X,
                                                           ResolveParameter<Coordinate>(SpectralGeometryStreamParameters.TieCoordinate).Y,
                                                           0,
                                                           ResolveParameter<Double>(SpectralGeometryStreamParameters.ColumnDimension),
                                                           ResolveParameter<Double>(SpectralGeometryStreamParameters.RowDimension),
-                                                          1,
-                                                          RasterMapMode.ValueIsCoordinate);
+                                                          1);
         }
 
         /// <summary>

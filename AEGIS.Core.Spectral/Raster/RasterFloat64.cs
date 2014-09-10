@@ -49,7 +49,7 @@ namespace ELTE.AEGIS.Raster
         /// Gets the maximum radiometric resolution.
         /// </summary>
         /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return 32; } }
+        protected override Int32 MaxRadiometricResolution { get { return 64; } }
 
         #endregion
 

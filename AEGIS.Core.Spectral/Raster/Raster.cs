@@ -109,10 +109,11 @@ namespace ELTE.AEGIS.Raster
                 if (_coordinates == null)
                 {
                     if (Mapper == null)
-                        _coordinates = Enumerable.Repeat(Coordinate.Empty, 4).ToArray();
+                        _coordinates = Enumerable.Repeat(Coordinate.Undefined, 4).ToArray();
                     else
                     {
                         _coordinates = new Coordinate[4];
+
                         _coordinates[0] = Mapper.MapCoordinate(0, 0);
                         _coordinates[2] = Mapper.MapCoordinate(NumberOfRows, 0);
                         _coordinates[1] = Mapper.MapCoordinate(NumberOfRows, NumberOfColumns);

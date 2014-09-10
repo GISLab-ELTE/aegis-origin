@@ -22,15 +22,16 @@ using System.Linq;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a type performing affine mapping between geometry and raster space.
+    /// Represents a type performing mapping between raster space and geometry space.
     /// </summary>
     public class RasterMapper : IEquatable<RasterMapper>
     {
         #region Private fields
 
-        private readonly RasterMapMode _mode;
-        private readonly Matrix _tranformationToGeometry;
-        private readonly Matrix _tranformationToRaster;
+        /// <summary>
+        /// The hash code of the current object.
+        /// </summary>
+        private Int32 _hashCode;
 
         #endregion
 
@@ -40,17 +41,29 @@ namespace ELTE.AEGIS
         /// Gets the mapping mode.
         /// </summary>
         /// <value>The value indicating whether the coordinates are mapped to the center or the upper left corner of the raster pixel.</value>
-        public RasterMapMode Mode { get { return _mode; } }
+        public RasterMapMode Mode { get; private set; }
 
         /// <summary>
-        /// Gets the tie coordinate of the geometry space.
+        /// Gets the translation coordinate.
         /// </summary>
-        /// <value>The coordinate located at the upper left corner of the raster.</value>
-        public Coordinate TieCoordinate
+        /// <value>The tie coordinate located at the upper left corner of the raster.</value>
+        public Coordinate Translation
         {
             get
             {
-                return new Coordinate(_tranformationToGeometry[0, 3], _tranformationToGeometry[1, 3], _tranformationToGeometry[2, 3]);
+                return new Coordinate(TransformationToGeometry[0, 3], TransformationToGeometry[1, 3], TransformationToGeometry[2, 3]);
+            }
+        }
+
+        /// <summary>
+        /// Gets the scale vector.
+        /// </summary>
+        /// <value>The vector containing the scale in all dimensions.</value>
+        public CoordinateVector Scale
+        {
+            get
+            {
+                return new CoordinateVector(TransformationToGeometry[0, 0], TransformationToGeometry[1, 1], TransformationToGeometry[2, 2]);
             }
         }
 
@@ -62,7 +75,7 @@ namespace ELTE.AEGIS
         {
             get
             {
-                return _tranformationToGeometry[0, 0];
+                return ColumnVector.Length;
             }
         }
 
@@ -74,7 +87,7 @@ namespace ELTE.AEGIS
         {
             get
             {
-                return _tranformationToGeometry[1, 1];
+                return RowVector.Length;
             }
         }
 
@@ -106,19 +119,13 @@ namespace ELTE.AEGIS
         /// Gets the transformation matrix used for computing geometry coordinates.
         /// </summary>
         /// <value>A 4x4 matrix used for computing geometry coordinates from raster coordinates.</value>
-        public Matrix TransformationToGeometry
-        {
-            get { return _tranformationToGeometry; }
-        }
+        public Matrix TransformationToGeometry { get; private set; }
 
         /// <summary>
         /// Gets the transformation matrix used for computing raster coordinates.
         /// </summary>
         /// <value>A 4x4 matrix used for computing raster coordinates from geometry coordinates.</value>
-        public Matrix TransformationToRaster
-        {
-            get { return _tranformationToRaster; }
-        }
+        public Matrix TransformationToRaster { get; private set; }
 
         #endregion
 
@@ -127,17 +134,42 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Initializes a new instance of the <see cref="RasterMapper" /> class.
         /// </summary>
-        /// <param name="transformation">The transformation from raster space to geometry space.</param>
         /// <param name="mode">The rster mapping mode.</param>
+        /// <param name="transformation">The transformation from raster space to geometry space.</param>
         /// <exception cref="System.ArgumentNullException">The transformation is null.</exception>
-        public RasterMapper(Matrix transformation, RasterMapMode mode)
+        /// <exception cref="System.ArgumentException">
+        /// The number of columns in the transformation is not equal to 4.
+        /// or
+        /// The number of rows in the transformation is not equal to 4.
+        /// or
+        /// The transformation contains invalid values.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The specified transformation is not supported.</exception>
+        public RasterMapper(RasterMapMode mode, Matrix transformation)
         {
             if (transformation == null)
                 throw new ArgumentNullException("transformation", "The transformation is null.");
+            if (transformation.NumberOfColumns != 4)
+                throw new ArgumentException("The number of columns in the transformation is not equal to 4.", "transformation");
+            if (transformation.NumberOfRows != 4)
+                throw new ArgumentException("The number of rows in the transformation is not equal to 4.", "transformation");
+            
+            // check for invalid values
+            if (transformation.Any(value => Double.IsNaN(value) || Double.IsInfinity(value)))
+                throw new ArgumentException("The transformation contains invalid values.", "transformation");
+            if (transformation[3, 0] != 0 || transformation[3, 1] != 0 || transformation[3, 2] != 0 || transformation[3, 3] != 1)
+                throw new ArgumentException("The transformation contains invalid values.", "transformation");
 
-            _tranformationToGeometry = transformation;
-            _tranformationToRaster = transformation.Invert();
-            _mode = mode;
+            // check for unsupported transformation
+            if (transformation[0, 0] == 0 || transformation[1, 1] == 0 || 
+                transformation[2, 0] != 0 || transformation[2, 1] != 0 || 
+                transformation[0, 2] != 0 || transformation[1, 2] != 0)
+                throw new NotSupportedException("The specified transformation is not supported.");
+
+            Mode = mode;
+            TransformationToGeometry = transformation;
+
+            TransformationToRaster = transformation.Invert();
         }
 
         #endregion
@@ -153,20 +185,25 @@ namespace ELTE.AEGIS
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Int32 rowIndex, Int32 columnIndex)
         {
-            Vector result;
-            switch (_mode)
-            {
-                case RasterMapMode.ValueIsArea:
-                    result = _tranformationToGeometry * new Vector(rowIndex + 0.5, columnIndex + 0.5, 0, 1);
-                    break;
-                default:
-                    result = _tranformationToGeometry * new Vector(rowIndex, columnIndex, 0, 1);
-                    break;
-            }
+            Vector result = TransformationToGeometry * new Vector(columnIndex, rowIndex, 0, 1);
 
             return new Coordinate(result[0], result[1], result[2]);
         }
 
+        /// <summary>
+        /// Maps the coordinate at a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the coordinate.</param>
+        /// <param name="columnIndex">The zero-based column index of the coordinate.</param>
+        /// <returns>The coordinate located at the upper left corner of the specified index.</returns>
+        /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
+        public Coordinate MapCoordinate(Double rowIndex, Double columnIndex)
+        {
+            Vector result = TransformationToGeometry * new Vector(columnIndex, rowIndex, 0, 1);
+
+            return new Coordinate(result[0], result[1], result[2]);
+        }
+        
         /// <summary>
         /// Maps the raster coordinate at a specified geometry coordinate.
         /// </summary>
@@ -175,18 +212,24 @@ namespace ELTE.AEGIS
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         public void MapRaster(Coordinate coordinate, out Int32 rowIndex, out Int32 columnIndex)
         {
-            Vector result = _tranformationToRaster * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
-            switch (_mode)
-            {
-                case RasterMapMode.ValueIsArea:
-                    rowIndex = Convert.ToInt32(result[0] - 0.5);
-                    columnIndex = Convert.ToInt32(result[1] - 0.5);
-                    break;
-                default:
-                    rowIndex = Convert.ToInt32(result[0]);
-                    columnIndex = Convert.ToInt32(result[1]);
-                    break;
-            }
+            Vector result = TransformationToRaster * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+
+            columnIndex = Convert.ToInt32(result[0]);
+            rowIndex = Convert.ToInt32(result[1]);
+        }
+
+        /// <summary>
+        /// Maps the raster coordinate at a specified geometry coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="rowIndex">The zero-based column index of the value.</param>
+        /// <param name="columnIndex">The zero-based row index of the value.</param>
+        public void MapRaster(Coordinate coordinate, out Double rowIndex, out Double columnIndex)
+        {
+            Vector result = TransformationToRaster * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+
+            columnIndex = result[0];
+            rowIndex = result[1];
         }
 
         #endregion
@@ -203,7 +246,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return _mode.Equals(other._mode) && _tranformationToGeometry.Equals(other._tranformationToGeometry);
+            return Mode.Equals(other.Mode) && TransformationToGeometry.SequenceEqual(other.TransformationToGeometry);
         }
 
         #endregion
@@ -220,7 +263,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
 
-            return (obj is RasterMapper) && _mode.Equals((obj as RasterMapper)._mode) && _tranformationToGeometry.Equals((obj as RasterMapper)._tranformationToGeometry);
+            return (obj is RasterMapper) && Mode.Equals((obj as RasterMapper).Mode) && TransformationToGeometry.SequenceEqual((obj as RasterMapper).TransformationToGeometry);
         }
 
         /// <summary>
@@ -229,7 +272,15 @@ namespace ELTE.AEGIS
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override Int32 GetHashCode()
         {
-            return _mode.GetHashCode() ^ _tranformationToGeometry.GetHashCode() ^ 674502721;
+            if (_hashCode == 0)
+            {
+                _hashCode = Mode.GetHashCode();
+                foreach (Double value in TransformationToGeometry)
+                    _hashCode ^= value.GetHashCode();
+                _hashCode ^= 674502721;
+            }
+
+            return _hashCode;
         }
 
         #endregion
@@ -237,30 +288,181 @@ namespace ELTE.AEGIS
         #region Public static factory methods
 
         /// <summary>
-        /// Creates a raster mapper from the transformation.
+        /// Creates a raster mapper raster coordinates.
         /// </summary>
-        /// <param name="transformation">The transformation from raster space to geometry space.</param>
         /// <param name="mode">The raster mapping mode.</param>
-        /// <returns>The raster mapper based on the specified transformation.</returns>
-        /// <exception cref="System.ArgumentNullException">The transformation is null.</exception>
-        public static RasterMapper FromTransformation(Matrix transformation, RasterMapMode mode)
+        /// <param name="coordinates">The coordinates.</param>
+        /// <returns>The raster mapper created by linear interpolation of the coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The array of coordinates is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of coordinates with distinct column index is less than 2.
+        /// or
+        /// The number of coordinates with distinct row index is less than 2.
+        /// </exception>
+        public static RasterMapper FromCoordinates(RasterMapMode mode, params RasterCoordinate[] coordinates)
         {
-            return new RasterMapper(transformation, mode);
+            if (coordinates == null)
+                throw new ArgumentNullException("The array of coordinates is null.", "coordinates");
+            if (coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().Count() < 2)
+                throw new ArgumentException("The number of coordinates with distinct column index is less than 2.", "coordinates");
+            if (coordinates.Select(coordinate => coordinate.RowIndex).Distinct().Count() < 2)
+                throw new ArgumentException("The number of coordinates with distinct row index is less than 2.", "coordinates");
+
+            // compute linear equation system in both dimensions
+
+            Int32[] columnIndices = coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().ToArray();
+            Int32[] rowIndices = coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().ToArray();
+
+            Matrix matrix = new Matrix(coordinates.Length, 3);
+            Vector vectorX = new Vector(coordinates.Length);
+            Vector vectorY = new Vector(coordinates.Length);
+
+            for (Int32 coordinateIndex = 0; coordinateIndex < coordinates.Length; coordinateIndex++)
+            { 
+                matrix[coordinateIndex, 0] = coordinates[coordinateIndex].ColumnIndex;
+                matrix[coordinateIndex, 1] = coordinates[coordinateIndex].RowIndex;
+                matrix[coordinateIndex, 2] = 1;
+
+                vectorX[coordinateIndex] = coordinates[coordinateIndex].Coordinate.X;
+                vectorY[coordinateIndex] = coordinates[coordinateIndex].Coordinate.Y;
+            }
+
+            // solve equation using least squares method
+            Vector resultX = LUDecomposition.SolveEquation(matrix.Transpone() * matrix, matrix.Transpone() * vectorX);
+            Vector resultY = LUDecomposition.SolveEquation(matrix.Transpone() * matrix, matrix.Transpone() * vectorY);
+
+            // merge the results into a matrix
+            Matrix transformation = new Matrix(4, 4);
+            transformation[0, 0] = resultX[0];
+            transformation[0, 1] = resultX[1];
+            transformation[0, 3] = resultX[2];
+            transformation[1, 0] = resultY[0];
+            transformation[1, 1] = resultY[1];
+            transformation[1, 3] = resultY[2];
+            transformation[3, 3] = 1;
+
+            return new RasterMapper(mode, transformation);
         }
 
         /// <summary>
-        /// Creates a raster mapper from the transformation.
+        /// Creates a raster mapper from another mapper.
         /// </summary>
+        /// <param name="mapper">The source raster mapper.</param>
+        /// <param name="transformation">The transformation from raster space to geometry space.</param>
+        /// <returns>The raster mapper based on the specified transformation.</returns>
+        /// <exception cref="System.ArgumentNullException">The transformation is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of columns in the transformation is not equal to 4.
+        /// or
+        /// The number of rows in the transformation is not equal to 4.
+        /// or
+        /// The transformation contains invalid values.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The specified transformation is not supported.</exception>
+        public static RasterMapper FromMapper(RasterMapper mapper, Matrix transformation)
+        {
+            if (transformation == null)
+                throw new ArgumentNullException("transformation", "The transformation is null.");
+            if (transformation.NumberOfColumns != 4)
+                throw new ArgumentException("The number of columns in the transformation is not equal to 4.", "transformation");
+            if (transformation.NumberOfRows != 4)
+                throw new ArgumentException("The number of rows in the transformation is not equal to 4.", "transformation");
+
+            // check for invalid values
+            if (transformation.Any(value => Double.IsNaN(value) || Double.IsInfinity(value)))
+                throw new ArgumentException("The transformation contains invalid values.", "transformation");
+            if (transformation[3, 0] != 0 || transformation[3, 1] != 0 || transformation[3, 2] != 0 || transformation[3, 3] != 1)
+                throw new ArgumentException("The transformation contains invalid values.", "transformation");
+
+            // check for unsupported transformation
+            if (transformation[0, 0] == 0 || transformation[1, 1] == 0 ||
+                transformation[2, 0] != 0 || transformation[2, 1] != 0 ||
+                transformation[0, 2] != 0 || transformation[1, 2] != 0)
+                throw new NotSupportedException("The specified transformation is not supported.");
+
+            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
+        }
+
+        /// <summary>
+        /// Creates a raster mapper from another mapper.
+        /// </summary>
+        /// <param name="mapper">The source raster mapper.</param>
+        /// <param name="translation">The translation coordinate.</param>
+        /// <param name="scale">The scale vector.</param>
+        /// <returns>The raster mapper based on the specified transformation.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// The translation is invalid.
+        /// or
+        /// The scale is invalid.
+        /// or
+        /// The scale of the X dimension is equal to 0.
+        /// or
+        /// The scale of the Y dimension is equal to 0.
+        /// </exception>
+        public static RasterMapper FromMapper(RasterMapper mapper, Coordinate translation, CoordinateVector scale)
+        {
+            if (!translation.IsValid)
+                throw new ArgumentException("The translation is invalid.", "translation");
+            if (!scale.IsValid)
+                throw new ArgumentException("The scale is invalid.", "scale");
+            if (scale.X == 0)
+                throw new ArgumentException("The scale of the X dimension is equal to 0.", "scale");
+            if (scale.Y == 0)
+                throw new ArgumentException("The scale of the Y dimension is equal to 0.", "scale");
+
+            Matrix transformation = new Matrix(4, 4);
+            transformation[0, 0] = scale.X;
+            transformation[1, 1] = scale.Y;
+            transformation[2, 2] = scale.Z;
+            transformation[0, 3] = translation.X;
+            transformation[1, 3] = translation.Y;
+            transformation[2, 3] = translation.Z;
+            transformation[3, 3] = 1;
+
+            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
+        }
+
+        /// <summary>
+        /// Creates a raster mapper from another mapper.
+        /// </summary>
+        /// <param name="mapper">The source raster mapper.</param>
         /// <param name="translationX">The translation in X dimension.</param>
         /// <param name="translationY">The translation in Y dimension.</param>
         /// <param name="translationZ">The translation in Z dimension.</param>
         /// <param name="scaleX">The scale in X dimension.</param>
         /// <param name="scaleY">The scale in Y dimension.</param>
         /// <param name="scaleZ">The scale in Z dimension.</param>
-        /// <param name="mode">The raster mapping mode.</param>
-        /// <returns>The raster mapper based on the specified transformation.</returns>
-        public static RasterMapper FromTransformation(Double translationX, Double translationY, Double translationZ, Double scaleX, Double scaleY, Double scaleZ, RasterMapMode mode)
+        /// <returns>
+        /// The raster mapper based on the specified transformation.
+        /// </returns>
+        /// <exception cref="System.ArgumentException">
+        /// The translation of the X dimension is not a number.
+        /// or
+        /// The translation of the Y dimension is not a number.
+        /// or
+        /// The translation of the Z dimension is not a number.
+        /// or
+        /// The scale of the X dimension is not a number or is equal to 0.
+        /// or
+        /// The scale of the Y dimension is not a number or is equal to 0.
+        /// or
+        /// The scale of the Z dimension is not a number.
+        /// </exception>
+        public static RasterMapper FromMapper(RasterMapper mapper, Double translationX, Double translationY, Double translationZ, Double scaleX, Double scaleY, Double scaleZ)
         {
+            if (Double.IsNaN(translationX))
+                throw new ArgumentException("The translation of the X dimension is not a number.", "translationX");
+            if (Double.IsNaN(translationY))
+                throw new ArgumentException("The translation of the Y dimension is not a number.", "translationY");
+            if (Double.IsNaN(translationZ))
+                throw new ArgumentException("The translation of the Z dimension is not a number.", "translationZ");
+            if (Double.IsNaN(scaleX) || scaleX == 0)
+                throw new ArgumentException("The scale of the X dimension is not a number or is equal to 0.", "scaleX");
+            if (Double.IsNaN(scaleY) || scaleY == 0)
+                throw new ArgumentException("The scale of the Y dimension is not a number or is equal to 0.", "scaleY");
+            if (Double.IsNaN(scaleZ))
+                throw new ArgumentException("The scale of the Z dimension is not a number.", "scaleZ");
+
             Matrix transformation = new Matrix(4, 4);
             transformation[0, 0] = scaleX;
             transformation[1, 1] = scaleY;
@@ -268,30 +470,119 @@ namespace ELTE.AEGIS
             transformation[0, 3] = translationX;
             transformation[1, 3] = translationY;
             transformation[2, 3] = translationZ;
+            transformation[3, 3] = 1;
 
-            return new RasterMapper(transformation, mode);
+            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
         }
 
         /// <summary>
-        /// Creates a raster mapper from the raster and geometry coordinates.
+        /// Creates a raster mapper from the transformation.
         /// </summary>
-        /// <param name="mappings">The mappings (in clockwise order).</param>
         /// <param name="mode">The raster mapping mode.</param>
-        /// <returns>The raster mapper based on the specified mappings.</returns>
-        /// <exception cref="System.ArgumentNullException">The list of mappings is null.</exception>
-        public static RasterMapper FromMappings(IList<RasterMapping> mappings, RasterMapMode mode)
+        /// <param name="transformation">The transformation from raster space to geometry space.</param>
+        /// <returns>The raster mapper based on the specified transformation.</returns>
+        /// <exception cref="System.ArgumentNullException">The transformation is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of columns in the transformation is not equal to 4.
+        /// or
+        /// The number of rows in the transformation is not equal to 4.
+        /// or
+        /// The transformation contains invalid values.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The specified transformation is not supported.</exception>
+        public static RasterMapper FromTransformation(RasterMapMode mode, Matrix transformation)
         {
-            if (mappings == null)
-                throw new ArgumentNullException("mappings", "The list of mappings is null.");
+            return new RasterMapper(mode, transformation);
+        }
 
-            // TODO: add mapping count checking
+        /// <summary>
+        /// Creates a raster mapper from the transformation.
+        /// </summary>
+        /// <param name="mode">The raster mapping mode.</param>
+        /// <param name="translation">The translation coordinate.</param>
+        /// <param name="scale">The scale vector.</param>
+        /// <returns>The raster mapper based on the specified transformation.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// The translation is invalid.
+        /// or
+        /// The scale is invalid.
+        /// or
+        /// The scale of the X dimension is equal to 0.
+        /// or
+        /// The scale of the Y dimension is equal to 0.
+        /// </exception>
+        public static RasterMapper FromTransformation(RasterMapMode mode, Coordinate translation, CoordinateVector scale)
+        {
+            if (!translation.IsValid)
+                throw new ArgumentException("The translation is invalid.", "translation");
+            if (!scale.IsValid)
+                throw new ArgumentException("The scale is invalid.", "scale");
+            if (scale.X == 0)
+                throw new ArgumentException("The scale of the X dimension is equal to 0.", "scale");
+            if (scale.Y == 0)
+                throw new ArgumentException("The scale of the Y dimension is equal to 0.", "scale");
 
-            Vector[] rasterVectors = mappings.Select(mapping => new Vector(mapping.RowIndex, mapping.ColumnIndex, 0, 1)).ToArray();
-            Vector[] coordianteVectors = mappings.Select(mapping => new Vector(mapping.Coordinate.X, mapping.Coordinate.Y, mapping.Coordinate.Z, 1)).ToArray();
+            Matrix transformation = new Matrix(4, 4);
+            transformation[0, 0] = scale.X;
+            transformation[1, 1] = scale.Y;
+            transformation[2, 2] = scale.Z;
+            transformation[0, 3] = translation.X;
+            transformation[1, 3] = translation.Y;
+            transformation[2, 3] = translation.Z;
+            transformation[3, 3] = 1;
 
-            // TODO: add matrix creation
+            return new RasterMapper(mode, transformation);
+        }
 
-            return null;
+        /// <summary>
+        /// Creates a raster mapper from the transformation.
+        /// </summary>
+        /// <param name="mode">The raster mapping mode.</param>
+        /// <param name="translationX">The translation in X dimension.</param>
+        /// <param name="translationY">The translation in Y dimension.</param>
+        /// <param name="translationZ">The translation in Z dimension.</param>
+        /// <param name="scaleX">The scale in X dimension.</param>
+        /// <param name="scaleY">The scale in Y dimension.</param>
+        /// <param name="scaleZ">The scale in Z dimension.</param>
+        /// <returns>The raster mapper based on the specified transformation.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// The translation of the X dimension is not a number.
+        /// or
+        /// The translation of the Y dimension is not a number.
+        /// or
+        /// The translation of the Z dimension is not a number.
+        /// or
+        /// The scale of the X dimension is not a number or is equal to 0.
+        /// or
+        /// The scale of the Y dimension is not a number or is equal to 0.
+        /// or
+        /// The scale of the Z dimension is not a number.
+        /// </exception>
+        public static RasterMapper FromTransformation(RasterMapMode mode, Double translationX, Double translationY, Double translationZ, Double scaleX, Double scaleY, Double scaleZ)
+        {
+            if (Double.IsNaN(translationX))
+                throw new ArgumentException("The translation of the X dimension is not a number.", "translationX");
+            if (Double.IsNaN(translationY))
+                throw new ArgumentException("The translation of the Y dimension is not a number.", "translationY");
+            if (Double.IsNaN(translationZ))
+                throw new ArgumentException("The translation of the Z dimension is not a number.", "translationZ");
+            if (Double.IsNaN(scaleX) || scaleX == 0)
+                throw new ArgumentException("The scale of the X dimension is not a number or is equal to 0.", "scaleX");
+            if (Double.IsNaN(scaleY) || scaleY == 0)
+                throw new ArgumentException("The scale of the Y dimension is not a number or is equal to 0.", "scaleY");
+            if (Double.IsNaN(scaleZ))
+                throw new ArgumentException("The scale of the Z dimension is not a number.", "scaleZ");
+
+            Matrix transformation = new Matrix(4, 4);
+            transformation[0, 0] = scaleX;
+            transformation[1, 1] = scaleY;
+            transformation[2, 2] = scaleZ;
+            transformation[0, 3] = translationX;
+            transformation[1, 3] = translationY;
+            transformation[2, 3] = translationZ;
+            transformation[3, 3] = 1;
+
+            return new RasterMapper(mode, transformation);
         }
 
         #endregion
