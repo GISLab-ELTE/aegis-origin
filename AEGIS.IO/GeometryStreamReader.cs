@@ -84,9 +84,14 @@ namespace ELTE.AEGIS.IO
         protected const String MessageContentReadError = "Error occured during stream reading.";
 
         /// <summary>
-        /// Exception message in case the content of the stream is invalid. This field is constant.
+        /// Exception message in case the stream content is in invalid. This field is constant.
         /// </summary>
-        protected const String MessageContentInvalid = "The content of the stream is invalid.";
+        protected const String MessageContentInvalid = "The stream content is in invalid.";
+
+        /// <summary>
+        /// Exception message in case the stream header is in invalid. This field is constant.
+        /// </summary>
+        protected const String MessageHeaderInvalid = "The stream header is in invalid.";
 
         #endregion
 
@@ -98,19 +103,9 @@ namespace ELTE.AEGIS.IO
         private static readonly Dictionary<GeometryStreamParameter, Object> EmptyParameters = new Dictionary<GeometryStreamParameter, Object>();
 
         /// <summary>
-        /// The geometry stream format. This field is read-only.
-        /// </summary>
-        private readonly GeometryStreamFormat _format;
-
-        /// <summary>
         /// The parameters of the reader. This field is read-only.
         /// </summary>
         private readonly IDictionary<GeometryStreamParameter, Object> _parameters;
-
-        /// <summary>
-        /// The path to the source.
-        /// </summary>
-        private readonly Uri _path;
 
         /// <summary>
         /// The type of the factory used for producing geometries.
@@ -150,7 +145,7 @@ namespace ELTE.AEGIS.IO
         /// Gets the format of the geometry stream.
         /// </summary>
         /// <value>The format of the geometry stream.</value>
-        public GeometryStreamFormat Format { get { return _format; } }
+        public GeometryStreamFormat Format { get; private set; }
 
         /// <summary>
         /// Gets the parameters of the reader.
@@ -162,7 +157,7 @@ namespace ELTE.AEGIS.IO
         /// Gets the path of the data.
         /// </summary>
         /// <value>The full path of the data.</value>
-        public Uri Path { get { return _path; } }
+        public Uri Path { get; private set; }
 
         /// <summary>
         /// Gets the undelying stream.
@@ -213,7 +208,7 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
         protected GeometryStreamReader(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolvePath(path), format, parameters)
         { }
@@ -232,17 +227,15 @@ namespace ELTE.AEGIS.IO
         /// The format requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty, or consists only of whitespace characters.
-        /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
         protected GeometryStreamReader(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolveStream(path), format, parameters)
         {
-            _path = path;
+            Path = path;
         }
 
         /// <summary>
@@ -263,7 +256,6 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream reading.</exception>
         protected GeometryStreamReader(Stream stream, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
         {
             if (stream == null)
@@ -298,7 +290,7 @@ namespace ELTE.AEGIS.IO
             }
 
             // store parameters
-            _format = format;
+            Format = format;
             _parameters = parameters;
             _baseStream = stream;
             _disposed = false;

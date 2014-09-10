@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -27,6 +27,80 @@ namespace ELTE.AEGIS.IO
     /// </summary>
     public abstract class GeometryStreamWriter : IDisposable
     {
+        #region Protected constant fields
+
+        /// <summary>
+        /// Exception message in case the path is null. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsNull = "The path is null.";
+
+        /// <summary>
+        /// Exception message in case the path is empty, or consists only of whitespace characters. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsEmpty = "The path is empty, or consists only of whitespace characters.";
+
+        /// <summary>
+        /// Exception message in case the path is in an invalid format. This field is constant.
+        /// </summary>
+        protected const String MessagePathIsInInvalidFormat = "The path is in an invalid format.";
+
+        /// <summary>
+        /// Exception message in case the stream is null. This field is constant.
+        /// </summary>
+        protected const String MessageStreamIsNull = "The stream is null.";
+
+        /// <summary>
+        /// Exception message in case the format is null. This field is constant.
+        /// </summary>
+        protected const String MessageFormatIsNull = "The format is null.";
+
+        /// <summary>
+        /// Exception message in case the geometry is null. This field is constant.
+        /// </summary>
+        protected const String MessageGeometryIsNull = "The geometry is null.";
+
+        /// <summary>
+        /// Exception message in case the type of the geometry is not supported. This field is constant.
+        /// </summary>
+        protected const String MessageGeometryIsNotSupported = "The type of the geometry is not supported by the format.";
+
+        /// <summary>
+        /// Exception message in case one or more of the geometries is not supported by the format. This field is constant.
+        /// </summary>
+        protected const String MessageGeometriesAreNotSupported = "One or more of the geometries is not supported by the format.";
+
+        /// <summary>
+        /// Exception message in case the format requires parameters which are not specified. This field is constant.
+        /// </summary>
+        protected const String MessageParametersNull = "The format requires parameters which are not specified.";
+
+        /// <summary>
+        /// Exception message in case the parameters do not contain a required parameter value. This field is constant.
+        /// </summary>
+        protected const String MessageParameterMissing = "The parameters do not contain a required parameter value ({0}).";
+
+        /// <summary>
+        /// Exception message in case the type of a parameter value does not match the type specified by the method. This field is constant.
+        /// </summary>
+        protected const String MessageParameterTypeError = "The type of a parameter value ({0}) does not match the type specified by the method.";
+
+        /// <summary>
+        /// Exception message in case the parameter value does not satisfy the conditions of the parameter. This field is constant.
+        /// </summary>
+        protected const String MessageParameterConditionError = "The parameter value ({0}) does not satisfy the conditions of the parameter.";
+
+        /// <summary>
+        /// Exception message in case error occured during stream opening. This field is constant.
+        /// </summary>
+        protected const String MessageContentOpenError = "Error occured during stream opening.";
+
+        /// <summary>
+        /// Exception message in case error occured during stream writing. This field is constant.
+        /// </summary>
+        protected const String MessageContentWriteError = "Error occured during stream writing.";
+
+        #endregion
+
         #region Private fields
 
         /// <summary>
@@ -34,15 +108,23 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         private readonly static Dictionary<GeometryStreamParameter, Object> EmptyParameters = new Dictionary<GeometryStreamParameter, Object>();
 
-        private readonly GeometryStreamFormat _format;
+        /// <summary>
+        /// The parameters of the reader. This field is read-only.
+        /// </summary>
         private readonly IDictionary<GeometryStreamParameter, Object> _parameters;
-        private readonly Uri _path;
+
+        /// <summary>
+        /// A value indicating whether this instance is disposed.
+        /// </summary>
         private Boolean _disposed;
 
         #endregion
 
         #region Protected fields
 
+        /// <summary>
+        /// The underlying stream.
+        /// </summary>
         protected readonly Stream _baseStream;
 
         #endregion
@@ -53,7 +135,7 @@ namespace ELTE.AEGIS.IO
         /// Gets the format of the geometry stream.
         /// </summary>
         /// <value>The format of the geometry stream.</value>
-        public GeometryStreamFormat Format { get { return _format; } }
+        public GeometryStreamFormat Format { get; private set; }
 
         /// <summary>
         /// Gets the parameters of the reader.
@@ -65,7 +147,7 @@ namespace ELTE.AEGIS.IO
         /// Gets the path of the data.
         /// </summary>
         /// <value>The full path of the data.</value>
-        public Uri Path { get { return _path; } }
+        public Uri Path { get; private set; }
         
         /// <summary>
         /// Gets the undelying stream.
@@ -91,69 +173,22 @@ namespace ELTE.AEGIS.IO
         /// The format requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
-        /// The path is invalid.
+        /// The path is in an invalid format.
         /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter value does not match the type specified by the format.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
         /// or
-        /// Exception occured during stream writing.
+        /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        protected GeometryStreamWriter(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)            
+        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        protected GeometryStreamWriter(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
+            : this(ResolvePath(path), format, parameters)
         {
-            if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
-            if (format == null)
-                throw new ArgumentNullException("format", "The format is null.");
-            if (parameters == null && format.Parameters != null && format.Parameters.Length > 0)
-                throw new ArgumentNullException("parameters", "The format requires parameters which are not specified.");
-            if (String.IsNullOrEmpty(path))
-                throw new ArgumentException("The path is empty.", "path");
-            if (!Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out _path))
-                throw new ArgumentException("The path is invalid.", "path");
-
-            if (parameters != null && format.Parameters != null)
-            {
-                foreach (GeometryStreamParameter parameter in format.Parameters)
-                {
-                    // check parameter existence
-                    if (!parameter.IsOptional && (!parameters.ContainsKey(parameter) || parameters[parameter] == null))
-                        throw new ArgumentException("The parameters do not contain a required parameter value (" + parameter.Name + ").", "parameters");
-
-                    if (parameters.ContainsKey(parameter))
-                    {
-                        // check parameter type
-                        if (!(parameter.Type.GetInterfaces().Contains(typeof(IConvertible)) && parameters[parameter] is IConvertible) &&
-                            !parameter.Type.Equals(parameters[parameter].GetType()) &&
-                            !parameters[parameter].GetType().IsSubclassOf(parameter.Type) &&
-                            !parameters[parameter].GetType().GetInterfaces().Contains(parameter.Type))
-                            throw new ArgumentException("The type of a parameter value (" + parameter.Name + ") does not match the type specified by the method.", "parameters");
-
-                        // check parameter value
-                        if (!parameter.IsValid(parameters[parameter]))
-                            throw new ArgumentException("The parameter value (" + parameter.Name + ") does not satisfy the conditions of the parameter.", "parameters");
-                    }
-                }
-            }
-
-            _format = format;
-            _parameters = parameters;
-            _disposed = false;
-
-            try
-            {
-                _baseStream = FileSystem.GetFileSystemForPath(_path).CreateFile(_path.AbsolutePath, true);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Exception occured during stream opening.", ex);
-            }
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryStreamWriter" /> class.
         /// </summary>
@@ -168,68 +203,19 @@ namespace ELTE.AEGIS.IO
         /// The format requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The path is empty.
-        /// or
-        /// The path is invalid.
+        /// The path is empty, or consists only of whitespace characters.
         /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
-        /// or
-        /// Exception occured during stream writing.
-        /// </exception>
+        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
         protected GeometryStreamWriter(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
+            : this(ResolveStream(path), format, parameters)
         {
-            if (path == null)
-                throw new ArgumentNullException("path", "The path is null.");
-            if (format == null)
-                throw new ArgumentNullException("format", "The format is null.");
-            if (parameters == null && format.Parameters != null && format.Parameters.Length > 0)
-                throw new ArgumentNullException("parameters", "The format requires parameters which are not specified.");
-            if (String.IsNullOrEmpty(path.AbsolutePath))
-                throw new ArgumentException("The path is empty.", "path");
-
-            if (parameters != null && format.Parameters != null)
-            {
-                foreach (GeometryStreamParameter parameter in format.Parameters)
-                {
-                    // check parameter existence
-                    if (!parameter.IsOptional && (!parameters.ContainsKey(parameter) || parameters[parameter] == null))
-                        throw new ArgumentException("The parameters do not contain a required parameter value (" + parameter.Name + ").", "parameters");
-
-                    if (parameters.ContainsKey(parameter))
-                    {
-                        // check parameter type
-                        if (!(parameter.Type.GetInterfaces().Contains(typeof(IConvertible)) && parameters[parameter] is IConvertible) &&
-                            !parameter.Type.Equals(parameters[parameter].GetType()) &&
-                            !parameters[parameter].GetType().IsSubclassOf(parameter.Type) &&
-                            !parameters[parameter].GetType().GetInterfaces().Contains(parameter.Type))
-                            throw new ArgumentException("The type of a parameter value (" + parameter.Name + ") does not match the type specified by the method.", "parameters");
-
-                        // check parameter value
-                        if (!parameter.IsValid(parameters[parameter]))
-                            throw new ArgumentException("The parameter value (" + parameter.Name + ") does not satisfy the conditions of the parameter.", "parameters");
-                    }
-                }
-            }
-
-            _format = format;
-            _parameters = parameters;
-            _path = path;
-            _disposed = false;
-
-            try
-            {
-                _baseStream = FileSystem.GetFileSystemForPath(_path).CreateFile(_path.AbsolutePath, true);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("Exception occured during stream opening.", ex);
-            }
+            Path = path;
         }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryStreamWriter" /> class.
         /// </summary>
@@ -248,15 +234,14 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream writing.</exception>
         protected GeometryStreamWriter(Stream stream, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
         {
             if (stream == null)
-                throw new ArgumentNullException("stream", "The stream is null.");
+                throw new ArgumentNullException("stream", MessageStreamIsNull);
             if (format == null)
-                throw new ArgumentNullException("format", "The format is null.");
+                throw new ArgumentNullException("format", MessageFormatIsNull);
             if (parameters == null && format.Parameters != null && format.Parameters.Length > 0)
-                throw new ArgumentNullException("parameters", "The format requires parameters which are not specified.");
+                throw new ArgumentNullException("parameters", MessageParametersNull);
 
             if (parameters != null && format.Parameters != null)
             {
@@ -264,7 +249,7 @@ namespace ELTE.AEGIS.IO
                 {
                     // check parameter existence
                     if (!parameter.IsOptional && (!parameters.ContainsKey(parameter) || parameters[parameter] == null))
-                        throw new ArgumentException("The parameters do not contain a required parameter value (" + parameter.Name + ").", "parameters");
+                        throw new ArgumentException(String.Format(MessageParameterMissing, parameter.Name), "parameters");
 
                     if (parameters.ContainsKey(parameter))
                     {
@@ -273,16 +258,16 @@ namespace ELTE.AEGIS.IO
                             !parameter.Type.Equals(parameters[parameter].GetType()) &&
                             !parameters[parameter].GetType().IsSubclassOf(parameter.Type) &&
                             !parameters[parameter].GetType().GetInterfaces().Contains(parameter.Type))
-                            throw new ArgumentException("The type of a parameter value (" + parameter.Name + ") does not match the type specified by the method.", "parameters");
+                            throw new ArgumentException(String.Format(MessageParameterTypeError, parameter.Name), "parameters");
 
                         // check parameter value
                         if (!parameter.IsValid(parameters[parameter]))
-                            throw new ArgumentException("The parameter value (" + parameter.Name + ") does not satisfy the conditions of the parameter.", "parameters");
+                            throw new ArgumentException(String.Format(MessageParameterConditionError, parameter.Name), "parameters");
                     }
                 }
             }
 
-            _format = format;
+            Format = format;
             _parameters = parameters;
             _baseStream = stream;
             _disposed = false;
@@ -314,9 +299,9 @@ namespace ELTE.AEGIS.IO
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (geometry == null)
-                throw new ArgumentNullException("geometry", "The geometry is null.");
-            if (_format.SupportedGeometries.Contains(geometry.GetType()))
-                throw new ArgumentException("The geometry is not supported by the format.", "geometry");
+                throw new ArgumentNullException("geometry", MessageGeometryIsNull);
+            if (Format.SupportedGeometries.Contains(geometry.GetType()))
+                throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
 
             try
             {
@@ -324,7 +309,7 @@ namespace ELTE.AEGIS.IO
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream writing.", ex);
+                throw new IOException(MessageContentWriteError, ex);
             }
         }
         /// <summary>
@@ -341,7 +326,7 @@ namespace ELTE.AEGIS.IO
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (geometries == null)
-                throw new ArgumentNullException("geometry", "The geometry is null.");
+                throw new ArgumentNullException("geometry", MessageGeometryIsNull);
 
             try
             {
@@ -349,15 +334,15 @@ namespace ELTE.AEGIS.IO
                 {
                     if (geometry == null)
                         continue;
-                    if (_format.SupportedGeometries.Contains(geometry.GetType()))
-                        throw new ArgumentException("One or more of the geometries is not supported by the format.", "geometries");
+                    if (Format.SupportedGeometries.Contains(geometry.GetType()))
+                        throw new ArgumentException(MessageGeometriesAreNotSupported, "geometries");
 
                     ApplyWriteGeometry(geometry);
                 }
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream writing.", ex);
+                throw new IOException(MessageContentWriteError, ex);
             }
         }
 
@@ -408,6 +393,78 @@ namespace ELTE.AEGIS.IO
                 _baseStream.Dispose();
                 if (_parameters != null)
                     _parameters.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Resolves the specified parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of the parameter.</typeparam>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>The specified parameter value or the default value if none specified.</returns>
+        protected T ResolveParameter<T>(GeometryStreamParameter parameter)
+        {
+            if (_parameters != null && _parameters.ContainsKey(parameter) && _parameters[parameter] is T)
+                return (T)_parameters[parameter];
+
+            return (T)parameter.DefaultValue;
+        }
+
+        /// <summary>
+        /// Determines whether the specified parameter is provided.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns><c>true</c> if the parameter is provided; otherwise, <c>false</c>.</returns>
+        protected Boolean IsProvidedParameter(GeometryStreamParameter parameter)
+        {
+            return _parameters != null && _parameters.ContainsKey(parameter);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Resolves the path.
+        /// </summary>
+        /// <param name="path">The path string.</param>
+        /// <returns>The path URI.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// </exception>
+        private static Uri ResolvePath(String path)
+        {
+            Uri pathUri;
+
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrEmpty(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+            if (!Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out pathUri))
+                throw new ArgumentException(MessagePathIsInInvalidFormat, "path");
+
+            return pathUri;
+        }
+
+        /// <summary>
+        /// Resolves the stream.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The stream.</returns>
+        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        private static Stream ResolveStream(Uri path)
+        {
+            try
+            {
+                // open the stream for reading
+                return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.OpenOrCreate, FileAccess.Write);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(MessageContentOpenError, ex);
             }
         }
 
