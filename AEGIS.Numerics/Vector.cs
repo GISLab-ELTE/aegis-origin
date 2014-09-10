@@ -449,7 +449,7 @@ namespace ELTE.AEGIS.Numerics
             if (vector.Size != matrix.NumberOfColumns)
                 throw new ArgumentException("The dimension of the vector does not match the number of rows in the matrix.", "vector");
 
-            Vector result = new Vector(vector.Size);
+            Vector result = new Vector(matrix.NumberOfRows);
             for (Int32 i = 0; i < matrix.NumberOfRows; i++)
             {
                 for (Int32 j = 0; j < matrix.NumberOfColumns; j++)
