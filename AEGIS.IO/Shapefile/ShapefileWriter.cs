@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -39,28 +39,61 @@ namespace ELTE.AEGIS.IO.Shapefile
             /// <summary>
             /// The offset of the record.
             /// </summary>
-            public Int32 Offset;
+            public Int32 Offset { get; set; }
 
             /// <summary>
             /// The length of the record.
             /// </summary>
-            public Int32 Length;
+            public Int32 Length { get; set; }
         }
 
         #endregion
 
         #region Private fields
 
+        /// <summary>
+        /// The base path.
+        /// </summary>
         private readonly String _basePath;
+
+        /// <summary>
+        /// The base file name.
+        /// </summary>
         private readonly String _baseFileName;
+
+        /// <summary>
+        /// The file system of the path.
+        /// </summary>
         private readonly FileSystem _fileSystem;
 
+        /// <summary>
+        /// The type of shapes in the file.
+        /// </summary>
         private ShapeType _shapeType;
+
+        /// <summary>
+        /// The index of the shapes in the file.
+        /// </summary>
         private List<ShapeRecordInfo> _shapeIndex;
+
+        /// <summary>
+        /// The reference system of the file.
+        /// </summary>
         private IReferenceSystem _referenceSystem;
+
+        /// <summary>
+        /// The envelope of the file.
+        /// </summary>
         private Envelope _envelope;
+
+        /// <summary>
+        /// The current geometry model.
+        /// </summary>
         private GeometryModel _geometryModel;
 
+        /// <summary>
+        /// The metadata writer.
+        /// </summary>
         private DBaseStreamWriter _metadataWriter;
 
         #endregion
@@ -130,7 +163,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream writing.", ex);
+                throw new IOException(MessageContentWriteError, ex);
             }
         }
 
@@ -164,7 +197,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream writing.", ex);
+                throw new IOException(MessageContentWriteError, ex);
             }
         }
 

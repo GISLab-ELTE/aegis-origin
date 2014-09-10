@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -18,7 +18,6 @@ using ELTE.AEGIS.IO.WellKnown;
 using ELTE.AEGIS.Management;
 using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
 using System.IO;
 using System.Text;
 
@@ -44,27 +43,56 @@ namespace ELTE.AEGIS.IO.Shapefile
             /// <summary>
             /// The offset of the record.
             /// </summary>
-            public Int32 Offset;
+            public Int32 Offset {get; set; }
 
             /// <summary>
             /// The length of the record.
             /// </summary>
-            public Int32 Length;
+            public Int32 Length { get; set; }
         }
 
         #endregion
 
         #region Private fields
 
+        /// <summary>
+        /// The base path.
+        /// </summary>
         private readonly String _basePath;
+
+        /// <summary>
+        /// The base file name.
+        /// </summary>
         private readonly String _baseFileName;
+
+        /// <summary>
+        /// The file system of the path.
+        /// </summary>
         private readonly FileSystem _fileSystem;
 
+        /// <summary>
+        /// The type of shapes in the file.
+        /// </summary>
         private ShapeType _shapeType;
+
+        /// <summary>
+        /// The index of the shapes in the file.
+        /// </summary>
         private ShapeRecordInfo[] _shapeIndex;
+
+        /// <summary>
+        /// The reference system of the file.
+        /// </summary>
         private IReferenceSystem _referenceSystem;
+
+        /// <summary>
+        /// The envelope of the file.
+        /// </summary>
         private Envelope _envelope;
 
+        /// <summary>
+        /// The metadata reader.
+        /// </summary>
         private DBaseStreamReader _metadataReader;
 
         #endregion
@@ -104,7 +132,11 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         /// <param name="path">The file path to be read.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
-        /// <exception cref="System.ArgumentException">The path is empty.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// </exception>
         /// <exception cref="System.IO.IOException">
         /// Exception occured during stream opening.
         /// or
@@ -124,7 +156,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream reading.", ex);
+                throw new IOException(MessageContentReadError, ex);
             }
         }
 
@@ -133,7 +165,6 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         /// <param name="path">The file path to be read.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
-        /// <exception cref="System.ArgumentException">The path is empty.</exception>
         /// <exception cref="System.IO.IOException">
         /// Exception occured during stream opening.
         /// or
@@ -154,7 +185,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream reading.", ex);
+                throw new IOException(MessageContentReadError, ex);
             }
         }
 
@@ -228,7 +259,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <summary>
         /// Readsthe file header.
         /// </summary>
-        /// <exception cref="System.IO.InvalidDataException">Stream content is invalid.</exception>
+        /// <exception cref="System.IO.InvalidDataException">Stream content is in an invalid format.</exception>
         private void ReadHeader()
         {
             _baseStream.Seek(0, SeekOrigin.Begin);
@@ -240,7 +271,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                 EndianBitConverter.ToInt32(headerBytes, 24, ByteOrder.BigEndian) != _baseStream.Length / 2 || // file length
                 EndianBitConverter.ToInt32(headerBytes, 28, ByteOrder.LittleEndian) != 1000) // version
             {
-                throw new InvalidDataException("Stream header content is invalid.");
+                throw new InvalidDataException(MessageHeaderInvalid);
             }
 
             // shape type
