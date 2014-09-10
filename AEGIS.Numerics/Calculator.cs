@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -36,7 +36,37 @@ namespace ELTE.AEGIS.Numerics
 
         #endregion
 
-        #region Extrema
+        #region General methods
+
+        /// <summary>
+        /// Return the fraction part of a single precision floating point value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The fraction part of a single precision floating point value.</returns>
+        public static Single Fraction(Single value)
+        {
+            if (value < 0)
+                return Convert.ToSingle(value + Math.Ceiling(value));
+
+            return Convert.ToSingle(value - Math.Floor(value));
+        }
+
+        /// <summary>
+        /// Return the fraction part of a double precision floating point value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The fraction part of a double precision floating point value.</returns>
+        public static Double Fraction(Double value)
+        { 
+            if (value < 0)
+                return value + Math.Ceiling(value);
+
+            return value - Math.Floor(value);
+        }
+
+        #endregion
+
+        #region Extrema computation methods
 
         /// <summary>
         /// Returns the maximum of the specified values.
@@ -414,7 +444,7 @@ namespace ELTE.AEGIS.Numerics
 
         #endregion
 
-        #region Summation
+        #region Summation methods
 
         /// <summary>
         /// Computes the sum of values in an interval.
@@ -608,7 +638,7 @@ namespace ELTE.AEGIS.Numerics
 
         #endregion
 
-        #region Trigonometry
+        #region Trigonometry methods
 
         /// <summary>
         /// Returns the secant of a value.
@@ -735,6 +765,19 @@ namespace ELTE.AEGIS.Numerics
         }
 
         /// <summary>
+        /// Returnes the normalized cardinal sine of a value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The normalized cardinal sine of the value.</returns>
+        public static Double Sinc(Double value)
+        {
+            if (value == 0)
+                return 1;
+
+            return Math.Sin(Constants.PI * value) / (Constants.PI * value);
+        }
+
+        /// <summary>
         /// Returns the squared cosine of a value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -804,7 +847,7 @@ namespace ELTE.AEGIS.Numerics
 
         #endregion
 
-        #region Common values
+        #region Common value computation methods
 
         /// <summary>
         /// Computes the greatest common divisor of two numbers.
