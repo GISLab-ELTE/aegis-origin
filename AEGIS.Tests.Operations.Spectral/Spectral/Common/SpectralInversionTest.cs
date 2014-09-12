@@ -75,7 +75,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         {
             // integer values
 
-            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null); 
+            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -84,11 +84,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
             Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
 
-            for (Int32 i = 0; i < operation.Result.Raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < operation.Result.Raster.NumberOfRows; j += 5)
-                    for (Int32 k = 0; k < operation.Result.Raster.NumberOfColumns; k += 5)
+            for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < operation.Result.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < operation.Result.Raster.NumberOfColumns; columnIndex++)
                     {
-                        Assert.AreEqual(_rasterMock.Object.GetValue(j, k, i), 255 - operation.Result.Raster.GetValue(j, k, i));
+                        Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex), 255 - operation.Result.Raster.GetValue(rowIndex, columnIndex, bandIndex));
                     }
 
 
@@ -106,10 +106,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[0], operation.Result.Raster.RadiometricResolutions[0]);
             Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
 
-            for (Int32 j = 0; j < operation.Result.Raster.NumberOfRows; j += 5)
-                for (Int32 k = 0; k < operation.Result.Raster.NumberOfColumns; k += 5)
+            for (Int32 rowIndex = 0; rowIndex < operation.Result.Raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < operation.Result.Raster.NumberOfColumns; columnIndex++)
                 {
-                    Assert.AreEqual(_rasterMock.Object.GetValue(j, k, 0), 255 - operation.Result.Raster.GetValue(j, k, 0));
+                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 0), 255 - operation.Result.Raster.GetValue(rowIndex, columnIndex, 0));
                 }
 
 
@@ -117,14 +117,15 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Floating);
 
-            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null); 
+            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
-            for (Int32 j = 0; j < operation.Result.Raster.NumberOfRows; j += 5)
-                for (Int32 k = 0; k < operation.Result.Raster.NumberOfColumns; k += 5)
-                {
-                    Assert.AreEqual(_rasterMock.Object.GetFloatValue(j, k, 0), -operation.Result.Raster.GetFloatValue(j, k, 0));
-                }
+            for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < operation.Result.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < operation.Result.Raster.NumberOfColumns; columnIndex++)
+                    {
+                        Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, bandIndex), -operation.Result.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
+                    }
         }
 
         #endregion
