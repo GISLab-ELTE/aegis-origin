@@ -76,44 +76,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             if (_sourceBandIndex >= 0)
             {
-                _lowerThresholdValues = new Double[] { Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary)) };
-                _upperThresholdValues = new Double[] { Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary)) };
+                _lowerThresholdValues[_sourceBandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                _upperThresholdValues[_sourceBandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
             }
             else
             {
-                _lowerThresholdValues = new Double[_source.Raster.NumberOfBands];
-                _upperThresholdValues = new Double[_source.Raster.NumberOfBands];
-
-                for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
+                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
                 {
                     _lowerThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
                     _upperThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
                 }
             }
-        }
 
-        #endregion
-
-        #region Protected RasterTransformation methods
-
-        /// <summary>
-        /// Computes the specified spectral value.
-        /// </summary>
-        /// <param name="rowIndex">The zero-based row index of the value.</param>
-        /// <param name="columnIndex">The zero-based column index of the value.</param>
-        /// <param name="bandIndex">The zero-based band index of the value.</param>
-        /// <returns>The spectral value at the specified index.</returns>
-        protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
-        {
-            if (_source.Raster.Representation == RasterRepresentation.Floating)
+            for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
             {
-                Double value = _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
-                return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
-            }
-            else
-            {
-                UInt32 value = _source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
-                return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
+                if (_lowerThresholdValues[i] > _upperThresholdValues[i])
+                    _upperThresholdValues[i] = Double.MaxValue;
             }
         }
 

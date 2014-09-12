@@ -77,18 +77,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             if (_sourceBandIndex >= 0)
             {
-                _lowerThresholdValues = new Double[] { RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndex)) };
-                _upperThresholdValues = new Double[] { ResolveParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary) };
+                _lowerThresholdValues[_sourceBandIndex] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndex));
             }
             else
             {
-                _lowerThresholdValues = new Double[_source.Raster.NumberOfBands];
-                _upperThresholdValues = new Double[_source.Raster.NumberOfBands];
-
-                for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
+                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
                 {
                     _lowerThresholdValues[i] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(i));
-                    _upperThresholdValues[i] = ResolveParameter<Double>(SpectralOperationParameters.UpperThresholdBoundary);
                 }
             }
         }

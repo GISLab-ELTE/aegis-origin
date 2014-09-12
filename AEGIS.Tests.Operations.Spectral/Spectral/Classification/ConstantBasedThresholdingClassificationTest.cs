@@ -90,17 +90,17 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
             Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
 
-            for (Int32 i = 0; i < result.Raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
-                    for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
+            for (Int32 bandIndex = 0; bandIndex < result.Raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
                     {
-                        Assert.AreEqual(_rasterMock.Object.GetValue(j, k, i) >= 100 && _rasterMock.Object.GetValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, i), 0);
+                        Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, bandIndex), 0);
                     }
 
 
             // integer values with specified band
 
-            parameters.Add(SpectralOperationParameters.BandIndex, 0);
+            parameters.Add(SpectralOperationParameters.BandIndex, 2);
 
             operation = new ConstantBasedThresholdingClassification(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
@@ -110,13 +110,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, result.Raster.NumberOfRows);
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, result.Raster.NumberOfColumns);
             Assert.AreEqual(1, result.Raster.NumberOfBands);
-            Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[0], result.Raster.RadiometricResolutions[0]);
+            Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[2], result.Raster.RadiometricResolutions[0]);
             Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
 
-            for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
-                for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
+            for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
                 {
-                    Assert.AreEqual(_rasterMock.Object.GetValue(j, k, 0) >= 100 && _rasterMock.Object.GetValue(j, k, 0) <= 150 ? 255 : 0, result.Raster.GetValue(j, k, 0), 0);
+                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, 0), 0);
                 }
 
 
@@ -129,12 +129,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
 
             result = operation.Result;
 
-            for (Int32 i = 0; i < result.Raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < result.Raster.NumberOfRows; j += 5)
-                    for (Int32 k = 0; k < result.Raster.NumberOfColumns; k += 5)
-                    {
-                        Assert.AreEqual(_rasterMock.Object.GetFloatValue(j, k, i) >= 100 && _rasterMock.Object.GetFloatValue(j, k, i) <= 150 ? 255 : 0, result.Raster.GetFloatValue(j, k, i), 0);
-                    }
+            for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
+                {
+                    Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetFloatValue(rowIndex, columnIndex, 0), 0);
+                }
         }
 
         #endregion

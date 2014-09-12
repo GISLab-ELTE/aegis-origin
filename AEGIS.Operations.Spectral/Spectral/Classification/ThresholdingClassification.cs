@@ -56,6 +56,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected ThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
+            _lowerThresholdValues = Enumerable.Repeat(Double.MinValue, source.Raster.NumberOfBands).ToArray();
+            _upperThresholdValues = Enumerable.Repeat(Double.MaxValue, source.Raster.NumberOfBands).ToArray();
         }
 
         #endregion
@@ -69,7 +71,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
-        protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        protected override sealed UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
             // decide based on selector function
             if (_selectorFunction != null)
@@ -95,7 +97,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        protected override sealed void PrepareResult()
         {
             // the result will have integer representation in all cases
             if (_sourceBandIndex >= 0)
