@@ -1,4 +1,4 @@
-﻿/// <copyright file="TiffCompression.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterColorSpace.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,46 +13,66 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-namespace ELTE.AEGIS.IO.GeoTiff
+namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines TIFF compressions.
+    /// Defines color spaces os raster images.
     /// </summary>
-    public enum TiffCompression
+    public enum RasterColorSpace
     {
         /// <summary>
-        /// None.
+        /// Single sample grayscale color space with increasing spectral intensity.
         /// </summary>
-        None = 1,
+        Grayscale,
 
         /// <summary>
-        /// CCITT 1 dimensional modified Huffman code.
+        /// Single sample grayscale color space with descreasing spectral intensity.
         /// </summary>
-        CCITTModifiedHuffman = 2,
+        InvertedGrayscale,
 
         /// <summary>
-        /// CCITT T4 two level comptression.
+        /// RGB color space.
         /// </summary>
-        CCITTT4 = 3,
+        RGB,
 
         /// <summary>
-        /// CCITT T6 two level comptression.
+        /// sRGB color space.
         /// </summary>
-        CCITTT6 = 4,
+        SRGB,
 
         /// <summary>
-        /// LZW
+        /// HSV (hue-saturation-value) color space.
         /// </summary>
-        LZW = 5,
+        HSV,
 
         /// <summary>
-        /// JPEG.
+        /// HSV (hue-saturation-lightness) color space.
         /// </summary>
-        JPEG = 6,
+        HSL,
 
         /// <summary>
-        /// PackBits.
+        /// CMYK (cyan-magenta-yellow-black) color space.
         /// </summary>
-        PackBits = 32773
+        CMYK,
+
+        /// <summary>
+        /// YCbCr color space.
+        /// </summary>
+        YCbCr,
+
+        /// <summary>
+        /// CIE L*a*b color space.
+        /// </summary>
+        CIELab,
+
+        /// <summary>
+        /// Mixed color space.
+        /// </summary>
+        Mixed,
+
+        /// <summary>
+        /// Undefined colos space.
+        /// </summary>
+        Undefined
     }
 }

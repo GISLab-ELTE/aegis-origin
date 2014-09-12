@@ -328,7 +328,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // read additional geometry data
             IReferenceSystem referenceSystem = ComputeReferenceSystem();
             IDictionary<String, Object> metadata = ComputeMetadata();
-            ImagingScene imagingScene = ComputeImagingScene();
+            RasterInterpretation interpretation = ComputeRasterInterpretation();
+            RasterImaging imaging = ComputeRasterImaging();
 
             // read additional raster data
             Int32[] radiometricResolutions = ComputeRadiometricResolutionData();
@@ -350,11 +351,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, imagingScene, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, interpretation, imaging, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, imagingScene, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, interpretation, imaging, metadata);
                     break;
             }
 
@@ -532,7 +533,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="format">The format.</param>
         private void ReadRasterContentFromStrips(IRaster raster, TiffCompression compression, TiffSampleFormat format)
         {
-            Int32 rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][278][0]);
+            Int32 rowsPerStrip;
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(278))
+                rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][278][0]);
+            else
+                rowsPerStrip = raster.NumberOfRows;
+
             Int32 numberOfStrips = (Int32)Math.Ceiling((Single)raster.NumberOfRows / rowsPerStrip);
             UInt32[] stripOffsets = _imageFileDirectories[_currentImageIndex][273].Cast<UInt32>().ToArray();
             UInt32[] stripByteCounts = _imageFileDirectories[_currentImageIndex][279].Cast<UInt32>().ToArray();
@@ -848,10 +854,39 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Protected methods
 
         /// <summary>
-        /// Computes the spectral imaging scene data of the geometry.
+        /// Computes the interpretation data of the raster image.
         /// </summary>
-        /// <returns>The spectral imaging scene data of the geometry.</returns>
-        protected virtual ImagingScene ComputeImagingScene()
+        /// <returns>The interpretation data of the raster image.</returns>
+        protected virtual RasterInterpretation ComputeRasterInterpretation()
+        {
+            switch ((TiffPhotometricInterpretation)Convert.ToInt32(_imageFileDirectories[_currentImageIndex][262][0]))
+            {
+                case TiffPhotometricInterpretation.BlackIsZero:
+                    return RasterInterpretations.Grayscale;
+                case TiffPhotometricInterpretation.WhiteIsZero:
+                    return RasterInterpretations.InvertedGrayscale;
+                case TiffPhotometricInterpretation.RGB:
+                    return RasterInterpretations.RGB;
+                case TiffPhotometricInterpretation.PaletteColor:
+                    return null; // TODO: support palette color
+                case TiffPhotometricInterpretation.TransparencyMask:
+                    return RasterInterpretations.Transparent;
+                case TiffPhotometricInterpretation.CMYK:
+                    return RasterInterpretations.CMYK;
+                case TiffPhotometricInterpretation.YCbCr:
+                    return RasterInterpretations.YCbCr;
+                case TiffPhotometricInterpretation.CIELab:
+                    return RasterInterpretations.CIELab;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Computes the imaging data of the raster image.
+        /// </summary>
+        /// <returns>The imaging data of the raster image.</returns>
+        protected virtual RasterImaging ComputeRasterImaging()
         {
             return null;
         }

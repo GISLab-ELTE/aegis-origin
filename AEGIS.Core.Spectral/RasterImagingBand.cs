@@ -1,4 +1,4 @@
-﻿/// <copyright file="SpectralImagingBandData.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterBandImaging.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -18,9 +18,9 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a type containg imaging information of a spectral band.
+    /// Represents a type containg imaging data of a raster band.
     /// </summary>
-    public class ImagingSceneBand
+    public class RasterImagingBand
     {
         #region Public properties
 
@@ -53,14 +53,14 @@ namespace ELTE.AEGIS
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImagingSceneBand" /> class.
+        /// Initializes a new instance of the <see cref="RasterImagingBand" /> class.
         /// </summary>
         /// <param name="description">The band description.</param>
         /// <param name="physicalGain">The physical gain of the band.</param>
         /// <param name="physicalBias">The physical bias of the band.</param>
         /// <exception cref="System.ArgumentNullException">The description is null.</exception>
         /// <exception cref="System.ArgumentException">The description is empty, or consists of only shitespace characters.</exception>
-        public ImagingSceneBand(String description, Double physicalGain, Double physicalBias)
+        public RasterImagingBand(String description, Double physicalGain, Double physicalBias)
         {
             if (description == null)
                 throw new ArgumentNullException("description", "The description is null.");

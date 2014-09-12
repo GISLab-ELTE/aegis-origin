@@ -685,8 +685,9 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  _source.Raster.RadiometricResolutions,
-                                                                                 _source.Raster.Mapper), 
-                                                             _source.ImagingScene);
+                                                                                 _source.Raster.Mapper),
+                                                             _source.Interpretation,
+                                                             _source.Imaging);
         }
 
         /// <summary>
@@ -696,14 +697,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         {
             if (_result.Raster.Representation == RasterRepresentation.Floating)
             {
-                for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                    for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                    for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                         _result.Raster.SetFloatValues(i, j, ComputeFloat(i, j));
             }
             else
             {
-                for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                    for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                    for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                         _result.Raster.SetValues(i, j, Compute(i, j));
             }
         }

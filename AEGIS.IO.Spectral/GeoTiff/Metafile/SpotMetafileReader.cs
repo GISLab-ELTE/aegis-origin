@@ -156,7 +156,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <summary>
         /// Reads the imaging scene data.
         /// </summary>
-        protected override ImagingScene ReadImagingSceneFromStream()
+        protected override RasterImaging ReadImagingSceneFromStream()
         {
             if (_document == null)
                 _document = XDocument.Load(_stream);
@@ -181,17 +181,17 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             GeoCoordinate location = new GeoCoordinate(Angle.FromDegree(latitude), Angle.FromDegree(longitude), Length.FromMetre(altitude));
 
             // band parameters
-            List<ImagingSceneBand> bandData = new List<ImagingSceneBand>();
+            List<RasterImagingBand> bandData = new List<RasterImagingBand>();
 
             foreach (XElement bandElement in _document.Element("Dimap_Document").Element("Image_Interpretation").Elements("Spectral_Band_Info"))
             {
                 Double physicalGain = Double.Parse(bandElement.Element("PHYSICAL_GAIN").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
                 Double physicalBias = Double.Parse(bandElement.Element("PHYSICAL_BIAS").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
 
-                bandData.Add(new ImagingSceneBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias));
+                bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias));
             }
 
-            return new ImagingScene(ReadDeviceData(), imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+            return new RasterImaging(ReadDeviceData(), imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
         }
 
         #endregion

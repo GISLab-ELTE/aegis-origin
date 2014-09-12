@@ -45,8 +45,8 @@
     <Compile Include="ImagingDevice.cs" />
     <Compile Include="ImagingDeviceBand.cs" />
     <Compile Include="ImagingDevices.cs" />
-    <Compile Include="ImagingScene.cs" />
-    <Compile Include="ImagingSceneBand.cs" />
+    <Compile Include="RasterImaging.cs" />
+    <Compile Include="RasterImagingBand.cs" />
     <Compile Include="Indices\ISpectralIndex.cs" />
     <Compile Include="IRaster.cs" />
     <Compile Include="IRasterBand.cs" />
@@ -56,7 +56,11 @@
     <Compile Include="ISpectralPolygon.cs" />
     <Compile Include="IRasterService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RasterColorSpace.cs" />
+    <Compile Include="RasterColorSpaceChannel.cs" />
     <Compile Include="RasterCoordinate.cs" />
+    <Compile Include="RasterInterpretation.cs" />
+    <Compile Include="RasterInterpretations.cs" />
     <Compile Include="SpectralGeometryFactoryExtensions.cs" />
     <Compile Include="RasterMapMode.cs" />
     <Compile Include="RasterMapper.cs" />

@@ -52,7 +52,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -62,7 +63,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
        
         /// <summary>
         /// Creates a spectral geometry.
@@ -97,7 +98,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -111,7 +113,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -147,7 +149,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -162,7 +165,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -193,7 +196,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -203,7 +207,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -240,7 +244,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -254,7 +259,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -292,7 +297,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -307,7 +313,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a raster image for the specified service.
@@ -329,14 +335,15 @@ namespace ELTE.AEGIS
         /// <param name="geometry">The geometry.</param>
         /// <param name="service">The service.</param>
         /// <param name="mapper">The raster mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The geometry is null.
         /// or
         /// The raster service is null.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRasterService service, RasterMapper mapper, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRasterService service, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -356,14 +363,15 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <param name="raster">The raster.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The geometry is null.
         /// or
         /// The raster is null.
         /// </exception>
-        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRaster raster, ImagingScene scene);
+        ISpectralGeometry CreateSpectralGeometry(IGeometry geometry, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral geometry.
@@ -420,7 +428,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -429,7 +438,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -438,7 +447,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -448,7 +458,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -503,7 +513,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -516,7 +527,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -526,7 +537,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -540,7 +552,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -597,7 +609,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -611,7 +624,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -621,7 +634,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -636,7 +650,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -680,7 +694,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -689,7 +704,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -698,7 +713,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -708,7 +724,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -763,7 +779,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -776,7 +793,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -786,7 +803,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -800,7 +818,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -857,7 +875,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -871,7 +890,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -881,7 +900,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -896,7 +916,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -919,20 +939,22 @@ namespace ELTE.AEGIS
         /// Creates a spectral polygon.
         /// </summary>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IRaster raster, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IRaster raster, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -983,7 +1005,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -994,7 +1017,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1004,7 +1027,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1016,7 +1040,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1078,7 +1102,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1093,7 +1118,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1104,7 +1129,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1120,7 +1146,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1190,7 +1216,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -1209,7 +1236,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1220,7 +1247,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1240,7 +1268,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1291,7 +1319,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1302,7 +1331,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1312,7 +1341,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1324,7 +1354,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1386,7 +1416,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1401,7 +1432,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1412,7 +1443,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1428,7 +1460,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1498,7 +1530,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -1517,7 +1550,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1528,7 +1561,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1548,7 +1582,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1584,7 +1618,8 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="shell">The shell.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -1592,14 +1627,15 @@ namespace ELTE.AEGIS
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
         /// <param name="shell">The shell.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -1608,7 +1644,7 @@ namespace ELTE.AEGIS
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1662,7 +1698,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1673,7 +1710,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1684,7 +1721,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1696,7 +1734,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1761,7 +1799,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1776,7 +1815,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1788,7 +1827,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1804,7 +1844,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1877,7 +1917,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -1896,7 +1937,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1908,7 +1949,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1928,7 +1970,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -1982,7 +2024,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -1993,7 +2036,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2004,7 +2047,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2016,7 +2060,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2081,7 +2125,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
@@ -2096,7 +2141,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2108,7 +2153,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2124,7 +2170,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2197,7 +2243,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
@@ -2216,7 +2263,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2228,7 +2275,8 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2248,7 +2296,7 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2287,7 +2335,8 @@ namespace ELTE.AEGIS
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -2295,7 +2344,7 @@ namespace ELTE.AEGIS
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, ImagingScene scene);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging);
 
         /// <summary>
         /// Creates a spectral polygon.
@@ -2303,7 +2352,8 @@ namespace ELTE.AEGIS
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="scene">The imaging scene data.</param>
+        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -2312,7 +2362,7 @@ namespace ELTE.AEGIS
         /// The raster is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, ImagingScene scene, IDictionary<String, Object> metadata);
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
         #endregion
     }

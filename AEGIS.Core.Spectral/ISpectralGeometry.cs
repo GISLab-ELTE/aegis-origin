@@ -21,15 +21,21 @@ namespace ELTE.AEGIS
     public interface ISpectralGeometry : IGeometry
     {
         /// <summary>
-        /// Gets the raster associated with the geometry.
+        /// Gets the raster image contained within the geometry.
         /// </summary>
-        /// <value>The raster associated with the geometry.</value>
+        /// <value>The raster image contained within the geometry.</value>
         IRaster Raster { get; }
 
         /// <summary>
-        /// Gets the imaging scene data.
+        /// Gets the intepretation data.
         /// </summary>
-        /// <value>The imaging scene information of the spectral data.</value>
-        ImagingScene ImagingScene { get; }
+        /// <value>The interpretation data of the raster image.</value>
+        RasterInterpretation Interpretation { get; }
+
+        /// <summary>
+        /// Gets the imaging data.
+        /// </summary>
+        /// <value>The imaging data data of the raster image.</value>
+        RasterImaging Imaging { get; }
     }
 }

@@ -97,20 +97,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
-        protected override void ComputeResult()
+        protected override sealed void ComputeResult()
         {
             if (_sourceBandIndex >= 0)
             {
                 if (_result.Raster.Representation == RasterRepresentation.Floating)
                 {
-                    for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                        for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                    for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                        for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                             _result.Raster.SetFloatValue(i, j, 0, ComputeFloat(i, j, _sourceBandIndex));
                 }
                 else
                 {
-                    for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                        for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                    for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                        for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                             _result.Raster.SetValue(i, j, 0, Compute(i, j, _sourceBandIndex));
                 }
             }
@@ -118,16 +118,16 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 if (_result.Raster.Representation == RasterRepresentation.Floating)
                 {
-                    for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
-                        for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                            for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                    for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
+                        for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                            for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                                 _result.Raster.SetFloatValue(i, j, k, ComputeFloat(i, j, k));
                 }
                 else
                 {
-                    for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
-                        for (Int32 i = 0; i < _source.Raster.NumberOfRows; i++)
-                            for (Int32 j = 0; j < _source.Raster.NumberOfColumns; j++)
+                    for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
+                        for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                            for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
                                 _result.Raster.SetValue(i, j, k, Compute(i, j, k));
                 }
             }
@@ -143,24 +143,25 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
+        protected override sealed UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32[] values = new UInt32[_source.Raster.NumberOfBands];
-            for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
+            UInt32[] values = new UInt32[_result.Raster.NumberOfBands];
+            for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
                 values[k] = Compute(rowIndex, columnIndex, k);
 
             return values;
         }
+
         /// <summary>
         /// Computes the specified floating spectral values.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
+        protected override sealed Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
         {
-            Double[] values = new Double[_source.Raster.NumberOfBands];
-            for (Int32 k = 0; k < _source.Raster.NumberOfBands; k++)
+            Double[] values = new Double[_result.Raster.NumberOfBands];
+            for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
                 values[k] = ComputeFloat(rowIndex, columnIndex, k);
 
             return values;

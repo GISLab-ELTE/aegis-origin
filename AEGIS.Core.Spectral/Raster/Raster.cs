@@ -1089,6 +1089,200 @@ namespace ELTE.AEGIS.Raster
         }
 
         /// <summary>
+        /// Returns the boxed spectral value in a band to a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral values for the band at the specified index or the equidistant index if either row or column is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The band index is less than 0.
+        /// or
+        /// The band index is equal to or greater than the number of bands.
+        /// </exception>
+        public UInt32 GetBoxedValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (bandIndex < 0)
+                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+            if (bandIndex >= _bands.Length)
+                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+
+            return ApplyGetValue(trueRowIndex, trueColumnIndex, bandIndex);
+        }
+
+        /// <summary>
+        /// Returns the boxed spectral value in a band to a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>Returns the boxed spectral value in a band at the specified coordinate or at the equidistant coordinate if the coordinate is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The band index is less than 0.
+        /// or
+        /// The band index is equal to or greater than the number of bands.
+        /// </exception>
+        public UInt32 GetBoxedValue(Coordinate coordinate, Int32 bandIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (Mapper == null)
+                throw new NotSupportedException("The mapping of the raster is not defined.");
+            
+            Int32 rowIndex, columnIndex;
+            Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
+
+            return GetBoxedValue(rowIndex, columnIndex, bandIndex);
+        }
+
+        /// <summary>
+        /// Returns the boxed spectral values in all bands to a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based column index of the values.</param>
+        /// <param name="k">The zero-based row index of the values.</param>
+        /// <returns>The array containing the spectral values for each band at the specified index or the equidistant index if either row or column is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        public UInt32[] GetBoxedValues(Int32 rowIndex, Int32 columnIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+
+            return ApplyGetValues(trueRowIndex, trueColumnIndex);
+        }
+
+        /// <summary>
+        /// Returns the boxed spectral values in all bands to a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The array containing the spectral values for each band at the specified coordinate or at the equidistant coordinate if the coordinate is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        public UInt32[] GetBoxedValues(Coordinate coordinate)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (Mapper == null)
+                throw new NotSupportedException("The mapping of the raster is not defined.");
+
+            Int32 rowIndex, columnIndex; 
+            Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
+
+            return GetBoxedValues(rowIndex, columnIndex);
+        }
+
+        /// <summary>
+        /// Returns the boxed spectral value in a band to a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral values for the band at the specified index or the equidistant index if either row or column is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The band index is less than 0.
+        /// or
+        /// The band index is equal to or greater than the number of bands.
+        /// </exception>
+        public Double GetBoxedFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (bandIndex < 0)
+                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+            if (bandIndex >= _bands.Length)
+                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+
+            return ApplyGetFloatValue(trueRowIndex, trueColumnIndex, bandIndex);
+        }
+        
+        /// <summary>
+        /// Returns the boxed spectral value in a band to a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>Returns the boxed spectral value in a band at the specified coordinate or at the equidistant coordinate if the coordinate is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The band index is less than 0.
+        /// or
+        /// The band index is equal to or greater than the number of bands.
+        /// </exception>
+        public Double GetBoxedFloatValue(Coordinate coordinate, Int32 bandIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (Mapper == null)
+                throw new NotSupportedException("The mapping of the raster is not defined.");
+
+            Int32 rowIndex, columnIndex;
+            Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
+
+            return GetBoxedFloatValue(rowIndex, columnIndex, bandIndex);
+        }
+        
+        /// <summary>
+        /// Returns the boxed spectral values in all bands to a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based column index of the values.</param>
+        /// <param name="k">The zero-based row index of the values.</param>
+        /// <returns>The array containing the spectral values for each band at the specified index or the equidistant index if either row or column is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
+        public Double[] GetBoxedFloatValues(Int32 rowIndex, Int32 columnIndex)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+
+            return ApplyGetFloatValues(trueRowIndex, trueColumnIndex);
+        }
+        
+        /// <summary>
+        /// Returns the boxed spectral values in all bands to a specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The array containing the spectral values for each band at the specified coordinate or at the equidistant coordinate if the coordinate is out of range.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// The raster is not readable.
+        /// or
+        /// The mapping of the raster is not defined.
+        /// </exception>
+        public Double[] GetBoxedFloatValues(Coordinate coordinate)
+        {
+            if (!IsReadable)
+                throw new NotSupportedException("The raster is not readable.");
+            if (Mapper == null)
+                throw new NotSupportedException("The mapping of the raster is not defined.");
+
+            Int32 rowIndex, columnIndex;
+            Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
+
+            return GetBoxedFloatValues(rowIndex, columnIndex);
+        }
+
+        /// <summary>
         /// Returns the nearest spectral value in a band to a specified row and column index.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the value.</param>
@@ -1109,7 +1303,7 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
             if (bandIndex >= _bands.Length)
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-            
+
             Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), NumberOfRows - 1);
             Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), NumberOfColumns - 1);
 
@@ -1120,7 +1314,7 @@ namespace ELTE.AEGIS.Raster
         /// Returns the nearest spectral value in a band to a specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns>Returns the nearest spectral value in a band at the specified coordinate or at the nearest coordinate if the coordinate is out of range.</returns>
+        /// <returns>Returns the nearest spectral value in a band at the specified coordinate or the nearest coordinate if the coordinate is out of range.</returns>
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
@@ -1137,7 +1331,7 @@ namespace ELTE.AEGIS.Raster
                 throw new NotSupportedException("The raster is not readable.");
             if (Mapper == null)
                 throw new NotSupportedException("The mapping of the raster is not defined.");
-            
+
             Int32 rowIndex, columnIndex;
             Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
 
@@ -1149,7 +1343,7 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="rowIndex">The zero-based column index of the values.</param>
         /// <param name="k">The zero-based row index of the values.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index or the nearest index if either row or column is out odf range.</returns>
+        /// <returns>The array containing the spectral values for each band at the specified index or the nearest index if either row or column is out of range.</returns>
         /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
         public UInt32[] GetNearestValues(Int32 rowIndex, Int32 columnIndex)
         {
@@ -1166,7 +1360,7 @@ namespace ELTE.AEGIS.Raster
         /// Returns the nearest spectral values in all bands to a specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns>The array containing the spectral values for each band at the specified coordinate or at the nearest coordinate if the coordinate is out of range.</returns>
+        /// <returns>The array containing the spectral values for each band at the specified coordinate or the nearest coordinate if the coordinate is out of range.</returns>
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
@@ -1179,7 +1373,7 @@ namespace ELTE.AEGIS.Raster
             if (Mapper == null)
                 throw new NotSupportedException("The mapping of the raster is not defined.");
 
-            Int32 rowIndex, columnIndex; 
+            Int32 rowIndex, columnIndex;
             Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
 
             return GetNearestValues(rowIndex, columnIndex);
@@ -1206,18 +1400,18 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
             if (bandIndex >= _bands.Length)
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-            
+
             Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), NumberOfRows - 1);
             Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), NumberOfColumns - 1);
 
             return ApplyGetFloatValue(trueRowIndex, trueColumnIndex, bandIndex);
         }
-        
+
         /// <summary>
         /// Returns the nearest spectral value in a band to a specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns>Returns the nearest spectral value in a band at the specified coordinate or at the nearest coordinate if the coordinate is out of range.</returns>
+        /// <returns>Returns the nearest spectral value in a band at the specified coordinate or the nearest coordinate if the coordinate is out of range.</returns>
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
@@ -1240,13 +1434,13 @@ namespace ELTE.AEGIS.Raster
 
             return GetNearestFloatValue(rowIndex, columnIndex, bandIndex);
         }
-        
+
         /// <summary>
         /// Returns the nearest spectral values in all bands to a specified row and column index.
         /// </summary>
         /// <param name="rowIndex">The zero-based column index of the values.</param>
         /// <param name="k">The zero-based row index of the values.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index or the nearest index if either row or column is out odf range.</returns>
+        /// <returns>The array containing the spectral values for each band at the specified index or the nearest index if either row or column is out of range.</returns>
         /// <exception cref="System.NotSupportedException">The raster is not readable.</exception>
         public Double[] GetNearestFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
@@ -1258,12 +1452,12 @@ namespace ELTE.AEGIS.Raster
 
             return ApplyGetFloatValues(trueRowIndex, trueColumnIndex);
         }
-        
+
         /// <summary>
         /// Returns the nearest spectral values in all bands to a specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns>The array containing the spectral values for each band at the specified coordinate or at the nearest coordinate if the coordinate is out of range.</returns>
+        /// <returns>The array containing the spectral values for each band at the specified coordinate or the nearest coordinate if the coordinate is out of range.</returns>
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or

@@ -1,4 +1,4 @@
-﻿/// <copyright file="SpectralImagingData.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterImaging.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -20,16 +20,16 @@ using System.Linq;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a type containg imaging information of spectral data.
+    /// Represents a type containg imaging data of raster images.
     /// </summary>
-    public class ImagingScene
+    public class RasterImaging
     {
         #region Private fields
 
         /// <summary>
         /// The band data.
         /// </summary>
-        private List<ImagingSceneBand> _bandData;
+        private List<RasterImagingBand> _bandData;
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace ELTE.AEGIS
         /// Gets the time of imaging.
         /// </summary>
         /// <value>The time of imaging.</value>
-        public DateTime ImagingTime { get; private set; }
+        public DateTime Time { get; private set; }
 
         /// <summary>
         /// Gets the location of imaging.
@@ -81,7 +81,7 @@ namespace ELTE.AEGIS
         /// Gets the band data.
         /// </summary>
         /// <value>The read-only array contaning the band data.</value>
-        public IList<ImagingSceneBand> BandData { get { return _bandData.AsReadOnly(); } }
+        public IList<RasterImagingBand> Bands { get { return _bandData.AsReadOnly(); } }
 
         /// <summary>
         /// Gets the spectral ranges of the bands.
@@ -94,7 +94,7 @@ namespace ELTE.AEGIS
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImagingScene" /> class.
+        /// Initializes a new instance of the <see cref="RasterImaging" /> class.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="imagingTime">The imaging time.</param>
@@ -104,20 +104,20 @@ namespace ELTE.AEGIS
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        public ImagingScene(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params ImagingSceneBand[] bandData)
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params RasterImagingBand[] bandData)
         {
             Device = device;
-            ImagingTime = imagingTime;
+            Time = imagingTime;
             Location = location;
             IncidenceAngle = incidenceAngle;
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bandData = new List<ImagingSceneBand>(bandData);
+            _bandData = new List<RasterImagingBand>(bandData);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ImagingScene" /> class.
+        /// Initializes a new instance of the <see cref="RasterImaging" /> class.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="imagingTime">The imaging time.</param>
@@ -127,16 +127,16 @@ namespace ELTE.AEGIS
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        public ImagingScene(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<ImagingSceneBand> bandData)
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<RasterImagingBand> bandData)
         {
             Device = device;
-            ImagingTime = imagingTime;
+            Time = imagingTime;
             Location = location;
             IncidenceAngle = incidenceAngle;
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bandData = new List<ImagingSceneBand>(bandData);
+            _bandData = new List<RasterImagingBand>(bandData);
         }
 
         #endregion

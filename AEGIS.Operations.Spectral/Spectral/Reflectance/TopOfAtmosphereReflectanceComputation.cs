@@ -237,7 +237,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  Enumerable.Repeat(64, 3).ToArray(),
                                                                                  _source.Raster.Mapper),
-                                                             _source.ImagingScene);
+                                                             _source.Interpretation,
+                                                             _source.Imaging);
         }
 
         #endregion

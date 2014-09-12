@@ -107,7 +107,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      new Int32[] { 8 },
                                                                                      _source.Raster.Mapper), 
-                                                                 _source.ImagingScene);
+                                                                 RasterInterpretations.Grayscale,
+                                                                 _source.Imaging);
             }
             else
             {
@@ -118,7 +119,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
                                                                                      _source.Raster.Mapper),
-                                                                 _source.ImagingScene);
+                                                                 _source.Interpretation,
+                                                                 _source.Imaging);
             }
         }
 

@@ -140,10 +140,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             TiffImageFileDirectory imageFileDirectory = new TiffImageFileDirectory();
 
             // compute photometric interpretation
-            TiffPhotometricInterpretation photometricInterpretation;
-            
-            // TODO: compute different values...
-            photometricInterpretation = TiffPhotometricInterpretation.BlackIsZero;
+            TiffPhotometricInterpretation photometricInterpretation = ComputePhotometricInterpretation(geometry);
 
             // add raster properties
             imageFileDirectory.Add(262, new Object[] { (UInt16)photometricInterpretation }); // photometric interpretation
@@ -303,6 +300,40 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // write the IFD
             _baseStream.Seek(_currentImageFileDirectoryStartPosition, SeekOrigin.Begin);
             _baseStream.Write(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// Computes the photometric interpretation.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <returns>The photometric interpretation of the geometry.</returns>
+        private TiffPhotometricInterpretation ComputePhotometricInterpretation(ISpectralGeometry geometry)
+        { 
+            if (geometry.Interpretation == null)
+            {
+                if (geometry.Raster.NumberOfBands == 3)
+                    return TiffPhotometricInterpretation.RGB;
+
+                return TiffPhotometricInterpretation.BlackIsZero;
+            }
+
+            switch (geometry.Interpretation.ColorSpace)
+            { 
+                case RasterColorSpace.RGB:
+                case RasterColorSpace.SRGB:
+                    return TiffPhotometricInterpretation.RGB;
+                case RasterColorSpace.InvertedGrayscale:
+                    return TiffPhotometricInterpretation.WhiteIsZero;
+                case RasterColorSpace.CIELab:
+                    return TiffPhotometricInterpretation.CIELab;
+                case RasterColorSpace.CMYK:
+                    return TiffPhotometricInterpretation.CMYK;
+                case RasterColorSpace.YCbCr:
+                    return TiffPhotometricInterpretation.YCbCr;
+                default:
+                    return TiffPhotometricInterpretation.BlackIsZero;
+                // TODO: process other interpretations
+            }
         }
 
         /// <summary>

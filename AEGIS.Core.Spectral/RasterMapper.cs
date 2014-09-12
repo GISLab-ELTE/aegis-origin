@@ -181,7 +181,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the coordinate.</param>
         /// <param name="columnIndex">The zero-based column index of the coordinate.</param>
-        /// <returns>The coordinate located at the upper left corner of the specified index.</returns>
+        /// <returns>The coordinate located at the specified index.</returns>
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Int32 rowIndex, Int32 columnIndex)
         {
@@ -195,7 +195,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the coordinate.</param>
         /// <param name="columnIndex">The zero-based column index of the coordinate.</param>
-        /// <returns>The coordinate located at the upper left corner of the specified index.</returns>
+        /// <returns>The coordinate located at the specified index.</returns>
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Double rowIndex, Double columnIndex)
         {
@@ -203,9 +203,35 @@ namespace ELTE.AEGIS
 
             return new Coordinate(result[0], result[1], result[2]);
         }
+
+        /// <summary>
+        /// Maps the coordinate at a specified row and column index.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the coordinate.</param>
+        /// <param name="columnIndex">The zero-based column index of the coordinate.</param>
+        /// <param name="mode">The mapping mode.</param>
+        /// <returns>The coordinate located at the specified index with respect to the specified mode.</returns>
+        /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
+        public Coordinate MapCoordinate(Double rowIndex, Double columnIndex, RasterMapMode mode)
+        {
+            if (mode == Mode)
+            {
+                return MapCoordinate(rowIndex, columnIndex);
+            }
+            else
+            {
+                switch (mode)
+                { 
+                    case RasterMapMode.ValueIsArea:
+                        return MapCoordinate(rowIndex - 0.5, columnIndex - 0.5);
+                    default: // ValueIsCoordinate
+                        return MapCoordinate(rowIndex + 0.5, columnIndex + 0.5);
+                }
+            }
+        }
         
         /// <summary>
-        /// Maps the raster coordinate at a specified geometry coordinate.
+        /// Maps the raster row and column index at the specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <param name="rowIndex">The zero-based column index of the value.</param>
@@ -219,7 +245,7 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Maps the raster coordinate at a specified geometry coordinate.
+        /// Maps the raster row and column index at the specified coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <param name="rowIndex">The zero-based column index of the value.</param>
@@ -230,6 +256,37 @@ namespace ELTE.AEGIS
 
             columnIndex = result[0];
             rowIndex = result[1];
+        }
+
+        /// <summary>
+        /// Maps the raster row and column index at the specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="mode">The mapping mode.</param>
+        /// <param name="rowIndex">The zero-based column index of the value.</param>
+        /// <param name="columnIndex">The zero-based row index of the value.</param>
+        public void MapRaster(Coordinate coordinate, RasterMapMode mode, out Double rowIndex, out Double columnIndex)
+        {
+            if (mode == Mode)
+            {
+                MapRaster(coordinate, out rowIndex, out columnIndex);
+            }
+            else
+            {
+                switch (mode)
+                {
+                    case RasterMapMode.ValueIsArea:
+                        MapRaster(coordinate, out rowIndex, out columnIndex);
+                        rowIndex += 0.5;
+                        columnIndex += 0.5;
+                        break;
+                    default: // ValueIsCoordinate
+                        MapRaster(coordinate, out rowIndex, out columnIndex);
+                        rowIndex -= 0.5;
+                        columnIndex -= 0.5;
+                        break;
+                }
+            }
         }
 
         #endregion

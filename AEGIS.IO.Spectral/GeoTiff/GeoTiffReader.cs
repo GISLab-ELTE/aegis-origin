@@ -202,7 +202,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Computes the spectral imaging scene data of the geometry.
         /// </summary>
         /// <returns>The spectral imaging scene data of the geometry.</returns>
-        protected override ImagingScene ComputeImagingScene()
+        protected override RasterImaging ComputeRasterImaging()
         {
             if (Path == null)
                 return null;
