@@ -153,8 +153,8 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
 
             Matrix pivotMatrix = Pivotize();
 
-            _l = MatrixFactory.CreateIdentity(_numberOfRows, Math.Max(_numberOfRows, _numberOfColumns));
-            _u = new Matrix(Math.Max(_numberOfRows, _numberOfColumns), _numberOfColumns);
+            _l = MatrixFactory.CreateIdentity(_numberOfRows, Math.Min(_numberOfRows, _numberOfColumns));
+            _u = new Matrix(Math.Min(_numberOfRows, _numberOfColumns), _numberOfColumns);
 
             for (Int32 i = 0; i < _numberOfRows; i++)
                 for (Int32 j = 0; j < _numberOfColumns; j++)
