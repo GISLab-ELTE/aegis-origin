@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -106,6 +106,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _otsuThresholdingClassification;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
         private static SpectralOperationMethod _spectralInversion;
+        private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
         private static SpectralOperationMethod _topOfAthmospehereReflectanceComputation;
         private static SpectralOperationMethod _waterloggingClassification;
@@ -454,12 +455,29 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _spectralInversion ?? (_spectralInversion =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213104", "Spectral inversion",
-                                                                         "Creates a raster with opposite intensity values.", null, "1.0.0",
+                                                                         "Inverts all spectral values to the opposite.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
 
+        /// <summary>
+        /// Spectral resampling.
+        /// </summary>
+        public static SpectralOperationMethod SpectralResampling
+        {
+            get
+            {
+                return _spectralResampling ?? (_spectralResampling =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213301", "Spectral resampling",
+                                                                         "Resamples spectral values to specified resolution. Reampling is performed using a predefined strategy.", null, "1.0.0",
+                                                                         true, SpectralOperationDomain.BandFocal,
+                                                                         SpectralOperationParameters.NumberOfRows,
+                                                                         SpectralOperationParameters.NumberOfColumns,
+                                                                         SpectralOperationParameters.SpectralResamplingStrategy,
+                                                                         SpectralOperationParameters.SpectralResamplingType));
+            }
+        }
         /// <summary>
         /// Spectral translation.
         /// </summary>

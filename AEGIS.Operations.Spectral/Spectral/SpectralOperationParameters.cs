@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -16,6 +16,8 @@
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
+using ELTE.AEGIS.Operations.Spectral.Resampling;
+using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -114,8 +116,12 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _indexOfVisibleBand;
         private static OperationParameter _indexOfYellowBand;
         private static OperationParameter _lowerThresholdBoundary;
+        private static OperationParameter _numberOfRows;
+        private static OperationParameter _numberOfColumns;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
+        private static OperationParameter _spectralResamplingStrategy;
+        private static OperationParameter _spectralResamplingType;
         private static OperationParameter _spectralSelectorFunction;
         private static OperationParameter _upperThresholdBoundary;
 
@@ -542,6 +548,38 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Number of rows.
+        /// </summary>
+        public static OperationParameter NumberOfRows
+        {
+            get
+            {
+                return _numberOfRows ?? (_numberOfRows =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223015", "Number of rows",
+                                                                      "The number of rows in the resulting image.", null,
+                                                                      Conditions.IsPositive())
+                );
+
+            }
+        }
+
+        /// <summary>
+        /// Number of columns.
+        /// </summary>
+        public static OperationParameter NumberOfColumns
+        {
+            get
+            {
+                return _numberOfColumns ?? (_numberOfColumns =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223016", "Number of columns",
+                                                                      "The number of columns in the resulting image.", null,
+                                                                      Conditions.IsPositive())
+                );
+
+            }
+        }
+
+        /// <summary>
         /// Spectral factor.
         /// </summary>
         public static OperationParameter SpectralFactor
@@ -570,6 +608,36 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                        0)
                 );
 
+            }
+        }
+
+        /// <summary>
+        /// Spectral selector function.
+        /// </summary>
+        public static OperationParameter SpectralResamplingStrategy
+        {
+            get
+            {
+                return _spectralResamplingStrategy ?? (_spectralResamplingStrategy =
+                    OperationParameter.CreateOptionalParameter<SpectralResamplingStrategy>("AEGIS::223382", "Spectral resampling strategy",
+                                                                                         "A strategy that is applied suring spectral resampling.", null,
+                                                                                         (SpectralResamplingStrategy)null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Spectral selector function.
+        /// </summary>
+        public static OperationParameter SpectralResamplingType
+        {
+            get
+            {
+                return _spectralResamplingType ?? (_spectralResamplingType =
+                    OperationParameter.CreateOptionalParameter<SpectralResamplingType>("AEGIS::223381", "Spectral resampling type",
+                                                                                       "The type of resampling to be used. The default reampling type is the Lanczos method.", null, 
+                                                                                       Resampling.SpectralResamplingType.Lanczos)
+                );
             }
         }
 
