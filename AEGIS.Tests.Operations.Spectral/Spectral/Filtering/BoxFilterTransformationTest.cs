@@ -29,7 +29,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
     /// Test fixture for the <see cref="BoxFilterTranformation"/> class.
     /// </summary>
     [TestFixture]
-    public class BoxFilterTranformationTest
+    public class BoxFilterTransformationTest
     {
         #region Private fields
 
