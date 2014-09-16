@@ -113,11 +113,11 @@ namespace ELTE.AEGIS
                     _SPOT5HRG1 = new ImagingDevice("AEGIS::135065", "SPOT5", "HRG1", 
                                                    "SPOT-5 is the fifth satellite in the SPOT series of CNES (Space Agency of France), placed into orbit by an Ariane launcher.", 
                                                    Length.FromKilometre(832), TimeSpan.FromDays(26), 
-                                                   new ImagingDeviceBand(1, "Pancromatic band", Length.FromMetre(10), Length.FromKilometre(60), 8, new SpectralRange(0.49, 0.69)),
-                                                   new ImagingDeviceBand(2, "Multispectral green band", Length.FromMetre(5), Length.FromKilometre(60), 8, new SpectralRange(0.5, 0.59)),
-                                                   new ImagingDeviceBand(3, "Multispectral red band", Length.FromMetre(10), Length.FromKilometre(60), 8, new SpectralRange(0.61, 0.68)),
-                                                   new ImagingDeviceBand(4, "Multispectral NIR band", Length.FromMetre(10), Length.FromKilometre(60), 8, new SpectralRange(0.79, 0.89)),
-                                                   new ImagingDeviceBand(5, "Multispectral MIR band", Length.FromMetre(20), Length.FromKilometre(60), 8, new SpectralRange(1.58, 1.75)));
+                                                   new ImagingDeviceBand(0, "Pancromatic band (M)", Length.FromMetre(10), Length.FromKilometre(60), 8, SpectralDomain.Visible, new SpectralRange(0.49e-6, 0.69e-6)),
+                                                   new ImagingDeviceBand(1, "Multispectral green band (XS1)", Length.FromMetre(5), Length.FromKilometre(60), 8, SpectralDomain.Green, new SpectralRange(0.5e-6, 0.59e-6)),
+                                                   new ImagingDeviceBand(2, "Multispectral red band (XS2)", Length.FromMetre(10), Length.FromKilometre(60), 8, SpectralDomain.Red, new SpectralRange(0.61e-6, 0.68e-6)),
+                                                   new ImagingDeviceBand(3, "Multispectral NIR band (XS3)", Length.FromMetre(10), Length.FromKilometre(60), 8, SpectralDomain.NearInfrared, new SpectralRange(0.79e-6, 0.89e-6)),
+                                                   new ImagingDeviceBand(4, "Multispectral MIR band (SWIR)", Length.FromMetre(20), Length.FromKilometre(60), 8, SpectralDomain.ShortWaveInfrared, new SpectralRange(1.58e-6, 1.75e-6)));
                 return _SPOT5HRG1;
             }
         }

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -36,6 +36,7 @@ namespace ELTE.AEGIS
         /// Gets the lower bound of the wavelength (in metre).
         /// </summary>
         public Double WavelengthMinimum { get { return _wavelengthMinimum; } }
+
         /// <summary>
         /// Gets the upper bound of the wavelength (in metre).
         /// </summary>
@@ -51,6 +52,7 @@ namespace ELTE.AEGIS
                 return Constants.SpeedOfLight / _wavelengthMaximum;
             }
         }
+
         /// <summary>
         /// Gets the upper bound of the frequency (in hertz).
         /// </summary>

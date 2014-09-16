@@ -61,6 +61,7 @@
     <Compile Include="RasterCoordinate.cs" />
     <Compile Include="RasterPresentation.cs" />
     <Compile Include="RasterPresentationModel.cs" />
+    <Compile Include="SpectralDomain.cs" />
     <Compile Include="SpectralGeometryFactoryExtensions.cs" />
     <Compile Include="RasterMapMode.cs" />
     <Compile Include="RasterMapper.cs" />

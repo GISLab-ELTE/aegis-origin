@@ -61,9 +61,15 @@ namespace ELTE.AEGIS
         public Int32 RadiometricResolution { get; private set; }
 
         /// <summary>
-        /// Gets the spectral range.
+        /// Gets the spectral domain of the band.
         /// </summary>
-        /// <value>The spectral range.</value>
+        /// <value>Tje spectral domain of the band.</value>
+        public SpectralDomain SpectralDomain { get; private set; }
+
+        /// <summary>
+        /// Gets the spectral range of the band.
+        /// </summary>
+        /// <value>The spectral range of the band.</value>
         public SpectralRange SpectralRange { get; private set; }
 
         #endregion
@@ -78,7 +84,8 @@ namespace ELTE.AEGIS
         /// <param name="spatialResolution">The spatial resolution.</param>
         /// <param name="swath">The swath width.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRange">The spectral range.</param>
+        /// <param name="spectralDomain">The spectral domain of the band.</param>
+        /// <param name="spectralRange">The spectral range of the band.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The spatial resolution is equal to or less than 0.
         /// or
@@ -89,7 +96,7 @@ namespace ELTE.AEGIS
         /// The radiometric resolution is grater than 64.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral range is null.</exception>
-        public ImagingDeviceBand(Int32 number, String description, Length spatialResoltion, Length swath, Int32 radiometricResolution, SpectralRange spectralRange)
+        public ImagingDeviceBand(Int32 number, String description, Length spatialResoltion, Length swath, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (spatialResoltion <= Length.Zero)
                 throw new ArgumentOutOfRangeException("spatialResoltion", "The spatial resolution is equal to or less than 0.");
@@ -108,6 +115,7 @@ namespace ELTE.AEGIS
             AzimuthResolution = spatialResoltion;
             Swath = swath;
             RadiometricResolution = radiometricResolution;
+            SpectralDomain = spectralDomain;
             SpectralRange = spectralRange;
         }
 
@@ -120,7 +128,8 @@ namespace ELTE.AEGIS
         /// <param name="azimuthResolution">The azimuth resolution.</param>
         /// <param name="swath">The swath width.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRange">The spectral range.</param>
+        /// <param name="spectralDomain">The spectral domain of the band.</param>
+        /// <param name="spectralRange">The spectral range of the band.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The range resolution is equal to or less than 0.
         /// or
@@ -133,7 +142,7 @@ namespace ELTE.AEGIS
         /// The radiometric resolution is grater than 64.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral range is null.</exception>
-        public ImagingDeviceBand(Int32 number, String description, Length rangeResultion, Length azimuthResolution, Length swath, Int32 radiometricResolution, SpectralRange spectralRange)
+        public ImagingDeviceBand(Int32 number, String description, Length rangeResultion, Length azimuthResolution, Length swath, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (rangeResultion <= Length.Zero)
                 throw new ArgumentOutOfRangeException("rangeResultion", "The range resolution is equal to or less than 0.");
@@ -154,6 +163,7 @@ namespace ELTE.AEGIS
             AzimuthResolution = azimuthResolution;
             Swath = swath;
             RadiometricResolution = radiometricResolution;
+            SpectralDomain = spectralDomain;
             SpectralRange = spectralRange;
         }
 

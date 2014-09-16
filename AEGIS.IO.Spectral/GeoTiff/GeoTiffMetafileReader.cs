@@ -205,7 +205,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadDeviceDataFromStream();
+                return ReadDeviceFromStream();
             }
             catch (Exception ex)
             {
@@ -214,19 +214,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Reads the imaging scene stored in the metafile.
+        /// Reads the imaging information stored in the metafile.
         /// </summary>
-        /// <value>The imaging scene data.</value>
+        /// <value>The imaging data.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
         /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
-        public RasterImaging ReadImagingScene()
+        public RasterImaging ReadImaging()
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
             try
             {
-                return ReadImagingSceneFromStream();
+                return ReadImagingFromStream();
             }
             catch (Exception ex)
             {
@@ -317,14 +317,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Reads the device information stored in the metafile stream.
         /// </summary>
-        /// <returns>The device information.</returns>
-        protected virtual ImagingDevice ReadDeviceDataFromStream() { return null; }
+        /// <returns>The device data.</returns>
+        protected virtual ImagingDevice ReadDeviceFromStream() { return null; }
 
         /// <summary>
         /// Reads the imaging information stored in the metafile stream.
         /// </summary>
-        /// <value>The imaging information.</value>
-        protected virtual RasterImaging ReadImagingSceneFromStream() { return null; }
+        /// <value>The imaging data.</value>
+        protected virtual RasterImaging ReadImagingFromStream() { return null; }
 
         /// <summary>
         /// Reads the raster mapping stored in the metafile stream.

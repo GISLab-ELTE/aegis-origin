@@ -211,7 +211,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {   
                 using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
                 {
-                    return reader.ReadImagingScene();
+                    return reader.ReadImaging();
                 }
             }
             catch

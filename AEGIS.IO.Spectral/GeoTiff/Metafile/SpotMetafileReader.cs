@@ -136,8 +136,8 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <summary>
         /// Reads the device information stored in the metafile stream.
         /// </summary>
-        /// <returns>The device information.</returns>
-        protected override ImagingDevice ReadDeviceDataFromStream()
+        /// <returns>The device data.</returns>
+        protected override ImagingDevice ReadDeviceFromStream()
         {
             if (_document == null)
                 _document = XDocument.Load(_stream);
@@ -154,12 +154,16 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         }
 
         /// <summary>
-        /// Reads the imaging scene data.
+        /// Reads the imaging information stored in the metafile stream.
         /// </summary>
-        protected override RasterImaging ReadImagingSceneFromStream()
+        /// <returns>The imaging data.</returns>
+        protected override RasterImaging ReadImagingFromStream()
         {
             if (_document == null)
                 _document = XDocument.Load(_stream);
+
+            // read the device data.
+            ImagingDevice device = ReadDeviceData();
 
             XElement sceneSourceElement = _document.Element("Dimap_Document").Element("Dataset_Sources").Element("Source_Information").Element("Scene_Source");
 
@@ -188,10 +192,16 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                 Double physicalGain = Double.Parse(bandElement.Element("PHYSICAL_GAIN").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
                 Double physicalBias = Double.Parse(bandElement.Element("PHYSICAL_BIAS").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
 
-                bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias));
+                // match the device band data
+                ImagingDeviceBand deviceBand = device.Bands.FirstOrDefault(band =>  band.Description.Contains(bandElement.Element("BAND_DESCRIPTION").Value));
+
+                if (deviceBand != null)
+                    bandData.Add(new RasterImagingBand(deviceBand.Description, physicalGain, physicalBias, deviceBand.SpectralDomain, deviceBand.SpectralRange));
+                else // if no match is found
+                    bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias, SpectralDomain.Undefined, null));
             }
 
-            return new RasterImaging(ReadDeviceData(), imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+            return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
         }
 
         #endregion
