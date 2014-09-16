@@ -211,10 +211,10 @@ namespace ELTE.AEGIS.Geometry
         public IRaster Raster { get; private set; }
 
         /// <summary>
-        /// Gets the intepretation data.
+        /// Gets the presentation data.
         /// </summary>
-        /// <value>The interpretation data of the raster image.</value>
-        public RasterInterpretation Interpretation { get; private set; }
+        /// <value>The presentation data of the raster image.</value>
+        public RasterPresentation Presentation { get; private set; }
 
         /// <summary>
         /// Gets the imaging data.
@@ -251,7 +251,7 @@ namespace ELTE.AEGIS.Geometry
         /// The shell is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public SpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IReferenceSystem referenceSystem, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public SpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IReferenceSystem referenceSystem, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -259,7 +259,7 @@ namespace ELTE.AEGIS.Geometry
             _factory = referenceSystem == null ? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>() : AEGIS.Factory.GetInstance<SpectralGeometryFactory>(referenceSystem);
 
             Raster = raster;
-            Interpretation = interpretation;
+            Presentation = presentation;
             Imaging = imaging;
 
             _polygon = _factory.GetFactory<IGeometryFactory>().CreatePolygon(shell, holes, metadata);
@@ -283,7 +283,7 @@ namespace ELTE.AEGIS.Geometry
         /// The shell is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public SpectralPolygon(ISpectralGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public SpectralPolygon(ISpectralGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -291,7 +291,7 @@ namespace ELTE.AEGIS.Geometry
             _factory = factory ?? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>();
 
             Raster = raster;
-            Interpretation = interpretation;
+            Presentation = presentation;
             Imaging = imaging;
 
             _polygon = _factory.GetFactory<IGeometryFactory>().CreatePolygon(shell, holes, metadata);
@@ -368,7 +368,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the spectral polygon instance.</returns>
         public Object Clone()
         {
-            return new SpectralPolygon(_factory, _polygon.Shell, _polygon.Holes, Raster.Clone() as IRaster, Interpretation, Imaging, _polygon.Metadata);
+            return new SpectralPolygon(_factory, _polygon.Shell, _polygon.Holes, Raster.Clone() as IRaster, Presentation, Imaging, _polygon.Metadata);
         }
 
         #endregion

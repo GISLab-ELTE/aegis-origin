@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <summary>
         /// The supported raster representations.
         /// </summary>
-        private RasterRepresentation[] _supportedRepresentations;
+        private RasterFormat[] _supportedRepresentations;
 
         /// <summary>
         /// The spectral domain of the operation.
@@ -45,7 +45,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// Gets the supported raster representations.
         /// </summary>
         /// <value>The read-only list containing the supported raster representations.</value>
-        public IList<RasterRepresentation> SupportedRepresentations { get { return Array.AsReadOnly(_supportedRepresentations); } }
+        public IList<RasterFormat> SupportedRepresentations { get { return Array.AsReadOnly(_supportedRepresentations); } }
 
         /// <summary>
         /// Gets the spectral domain of the operation.
@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         public SpectralOperationMethod(String identifier, String name, String remarks, String[] aliases, Version version,
                                        Boolean isReversible, SpectralOperationDomain spectralDomain,
                                        Type sourceType, Type resultType, GeometryModel supportedModels,
-                                       RasterRepresentation supportedRepresentations,                                       
+                                       RasterFormat supportedRepresentations,                                       
                                        ExecutionMode supportedModes,
                                        ExecutionDomain supportedDomains,
                                        params OperationParameter[] parameters)
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
                                                GeometryModel.Any,
-                                               RasterRepresentation.Floating | RasterRepresentation.Integer,
+                                               RasterFormat.Floating | RasterFormat.Integer,
                                                ExecutionMode.Any,
                                                ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
@@ -158,7 +158,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
                                                GeometryModel.Any,
-                                               RasterRepresentation.Integer | RasterRepresentation.Floating, 
+                                               RasterFormat.Integer | RasterFormat.Floating, 
                                                supportedExecutions,
                                                ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
@@ -180,7 +180,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         public static SpectralOperationMethod CreateSpectralTransformation(String identifier, String name, String remarks, String[] aliases, String version,
                                                                            Boolean isReversible, SpectralOperationDomain spectralDomain,
-                                                                           RasterRepresentation supportedRepresentation,
+                                                                           RasterFormat supportedRepresentation,
                                                                            params OperationParameter[] parameters)
         {
             return new SpectralOperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
@@ -203,11 +203,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         /// <param name="models">The raster representation values.</param>
         /// <returns>The array of extracted enumeration values.</returns>
-        protected static RasterRepresentation[] ExtractRasterRepresentations(RasterRepresentation values)
+        protected static RasterFormat[] ExtractRasterRepresentations(RasterFormat values)
         {
-            Array enumValues = Enum.GetValues(typeof(RasterRepresentation));
+            Array enumValues = Enum.GetValues(typeof(RasterFormat));
 
-            return Enumerable.Range(0, enumValues.Length).Where(value => (Convert.ToInt32(values) & Calculator.Pow(2, value)) != 0).Select(value => (RasterRepresentation)Calculator.Pow(2, value)).ToArray();
+            return Enumerable.Range(0, enumValues.Length).Where(value => (Convert.ToInt32(values) & Calculator.Pow(2, value)) != 0).Select(value => (RasterFormat)Calculator.Pow(2, value)).ToArray();
         }
 
         #endregion

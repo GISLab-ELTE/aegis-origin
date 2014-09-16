@@ -328,7 +328,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // read additional geometry data
             IReferenceSystem referenceSystem = ComputeReferenceSystem();
             IDictionary<String, Object> metadata = ComputeMetadata();
-            RasterInterpretation interpretation = ComputeRasterInterpretation();
+            RasterPresentation presentation = ComputeRasterPresentation();
             RasterImaging imaging = ComputeRasterImaging();
 
             // read additional raster data
@@ -351,11 +351,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, interpretation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, interpretation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
                     break;
             }
 
@@ -854,32 +854,30 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Protected methods
 
         /// <summary>
-        /// Computes the interpretation data of the raster image.
+        /// Computes the presentation of the raster image.
         /// </summary>
-        /// <returns>The interpretation data of the raster image.</returns>
-        protected virtual RasterInterpretation ComputeRasterInterpretation()
+        /// <returns>The presentation of the raster image.</returns>
+        protected virtual RasterPresentation ComputeRasterPresentation()
         {
             switch ((TiffPhotometricInterpretation)Convert.ToInt32(_imageFileDirectories[_currentImageIndex][262][0]))
             {
                 case TiffPhotometricInterpretation.BlackIsZero:
-                    return RasterInterpretations.Grayscale;
+                    return RasterPresentation.CreateGrayscalePresentation();
                 case TiffPhotometricInterpretation.WhiteIsZero:
-                    return RasterInterpretations.InvertedGrayscale;
+                    return RasterPresentation.CreateInvertedGrayscalePresentation();
                 case TiffPhotometricInterpretation.RGB:
-                    return RasterInterpretations.RGB;
-                case TiffPhotometricInterpretation.PaletteColor:
-                    return null; // TODO: support palette color
+                    return RasterPresentation.CreateTrueColorPresentation();
                 case TiffPhotometricInterpretation.TransparencyMask:
-                    return RasterInterpretations.Transparent;
+                    return RasterPresentation.CreateTransparencyPresentation();
                 case TiffPhotometricInterpretation.CMYK:
-                    return RasterInterpretations.CMYK;
-                case TiffPhotometricInterpretation.YCbCr:
-                    return RasterInterpretations.YCbCr;
+                    return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.CMYK);
                 case TiffPhotometricInterpretation.CIELab:
-                    return RasterInterpretations.CIELab;
+                    return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.CIELab);
+                case TiffPhotometricInterpretation.YCbCr:
+                    return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.YCbCr);
+                default:
+                    return null; // TODO: support other interpretations
             }
-
-            return null;
         }
 
         /// <summary>

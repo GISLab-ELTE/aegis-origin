@@ -51,7 +51,7 @@ namespace ELTE.AEGIS
         {
             get
             {
-                return new Coordinate(TransformationToGeometry[0, 3], TransformationToGeometry[1, 3], TransformationToGeometry[2, 3]);
+                return new Coordinate(GeometryTransformation[0, 3], GeometryTransformation[1, 3], GeometryTransformation[2, 3]);
             }
         }
 
@@ -63,7 +63,7 @@ namespace ELTE.AEGIS
         {
             get
             {
-                return new CoordinateVector(TransformationToGeometry[0, 0], TransformationToGeometry[1, 1], TransformationToGeometry[2, 2]);
+                return new CoordinateVector(GeometryTransformation[0, 0], GeometryTransformation[1, 1], GeometryTransformation[2, 2]);
             }
         }
 
@@ -119,13 +119,13 @@ namespace ELTE.AEGIS
         /// Gets the transformation matrix used for computing geometry coordinates.
         /// </summary>
         /// <value>A 4x4 matrix used for computing geometry coordinates from raster coordinates.</value>
-        public Matrix TransformationToGeometry { get; private set; }
+        public Matrix GeometryTransformation { get; private set; }
 
         /// <summary>
         /// Gets the transformation matrix used for computing raster coordinates.
         /// </summary>
         /// <value>A 4x4 matrix used for computing raster coordinates from geometry coordinates.</value>
-        public Matrix TransformationToRaster { get; private set; }
+        public Matrix RasterTransformation { get; private set; }
 
         #endregion
 
@@ -167,9 +167,9 @@ namespace ELTE.AEGIS
                 throw new NotSupportedException("The specified transformation is not supported.");
 
             Mode = mode;
-            TransformationToGeometry = transformation;
+            GeometryTransformation = transformation;
 
-            TransformationToRaster = transformation.Invert();
+            RasterTransformation = transformation.Invert();
         }
 
         #endregion
@@ -185,7 +185,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Int32 rowIndex, Int32 columnIndex)
         {
-            Vector result = TransformationToGeometry * new Vector(columnIndex, rowIndex, 0, 1);
+            Vector result = GeometryTransformation * new Vector(columnIndex, rowIndex, 0, 1);
 
             return new Coordinate(result[0], result[1], result[2]);
         }
@@ -199,7 +199,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Double rowIndex, Double columnIndex)
         {
-            Vector result = TransformationToGeometry * new Vector(columnIndex, rowIndex, 0, 1);
+            Vector result = GeometryTransformation * new Vector(columnIndex, rowIndex, 0, 1);
 
             return new Coordinate(result[0], result[1], result[2]);
         }
@@ -238,7 +238,7 @@ namespace ELTE.AEGIS
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         public void MapRaster(Coordinate coordinate, out Int32 rowIndex, out Int32 columnIndex)
         {
-            Vector result = TransformationToRaster * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+            Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
 
             columnIndex = Convert.ToInt32(result[0]);
             rowIndex = Convert.ToInt32(result[1]);
@@ -252,7 +252,7 @@ namespace ELTE.AEGIS
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         public void MapRaster(Coordinate coordinate, out Double rowIndex, out Double columnIndex)
         {
-            Vector result = TransformationToRaster * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+            Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
 
             columnIndex = result[0];
             rowIndex = result[1];
@@ -303,7 +303,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return Mode.Equals(other.Mode) && TransformationToGeometry.SequenceEqual(other.TransformationToGeometry);
+            return Mode.Equals(other.Mode) && GeometryTransformation.SequenceEqual(other.GeometryTransformation);
         }
 
         #endregion
@@ -320,7 +320,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
 
-            return (obj is RasterMapper) && Mode.Equals((obj as RasterMapper).Mode) && TransformationToGeometry.SequenceEqual((obj as RasterMapper).TransformationToGeometry);
+            return (obj is RasterMapper) && Mode.Equals((obj as RasterMapper).Mode) && GeometryTransformation.SequenceEqual((obj as RasterMapper).GeometryTransformation);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace ELTE.AEGIS
             if (_hashCode == 0)
             {
                 _hashCode = Mode.GetHashCode();
-                foreach (Double value in TransformationToGeometry)
+                foreach (Double value in GeometryTransformation)
                     _hashCode ^= value.GetHashCode();
                 _hashCode ^= 674502721;
             }
@@ -437,7 +437,7 @@ namespace ELTE.AEGIS
                 transformation[0, 2] != 0 || transformation[1, 2] != 0)
                 throw new NotSupportedException("The specified transformation is not supported.");
 
-            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
+            return new RasterMapper(mapper.Mode, mapper.GeometryTransformation * transformation);
         }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace ELTE.AEGIS
             transformation[2, 3] = translation.Z;
             transformation[3, 3] = 1;
 
-            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
+            return new RasterMapper(mapper.Mode, mapper.GeometryTransformation * transformation);
         }
 
         /// <summary>
@@ -529,7 +529,7 @@ namespace ELTE.AEGIS
             transformation[2, 3] = translationZ;
             transformation[3, 3] = 1;
 
-            return new RasterMapper(mapper.Mode, mapper.TransformationToGeometry * transformation);
+            return new RasterMapper(mapper.Mode, mapper.GeometryTransformation * transformation);
         }
 
         /// <summary>

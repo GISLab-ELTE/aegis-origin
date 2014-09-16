@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
             _rasterMock.Setup(raster => raster.GetValues(It.IsAny<Int32>(), It.IsAny<Int32>()))
@@ -96,7 +96,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             Assert.AreEqual(5, result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, result.Raster.NumberOfBands);
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
-            Assert.AreEqual(RasterRepresentation.Integer, result.Raster.Representation);
+            Assert.AreEqual(RasterFormat.Integer, result.Raster.Format);
 
             SpectralResamplingStrategy strategy = new NearestNeighbourResamplingStrategy(_rasterMock.Object);
 
@@ -110,7 +110,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
 
             // floating point values
 
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Floating);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
             operation = new SpectralResampling(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();

@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)(rowIndex * columnIndex * bandIndex % 256)));
             _rasterMock.Setup(raster => raster.HistogramValues).Returns(ComputeHistogram(_rasterMock.Object));
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, operation.Result.Raster.NumberOfBands);
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
-            Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
+            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
             Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
             Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[0], operation.Result.Raster.RadiometricResolutions[0]);
-            Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
+            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             Assert.AreEqual(_rasterMock.Object.HistogramValues[0].Sum(), operation.Result.Raster.HistogramValues[0].Sum());
 

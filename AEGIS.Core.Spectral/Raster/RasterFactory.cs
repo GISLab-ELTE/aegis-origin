@@ -66,7 +66,7 @@ namespace ELTE.AEGIS.Raster
         /// </exception>
         public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, mapper);
+            return CreateRaster(RasterFormat.Any, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace ELTE.AEGIS.Raster
         /// </exception>
         public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
+            return CreateRaster(RasterFormat.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
@@ -117,13 +117,13 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
         public IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
-            return CreateRaster(RasterRepresentation.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            return CreateRaster(RasterFormat.Any, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
         }
 
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -136,15 +136,15 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
-            return CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, representation == RasterRepresentation.Floating ? DefaultFloatRadiometricResolution : DefaultRadiometricResolution, mapper);
+            return CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, format == RasterFormat.Floating ? DefaultFloatRadiometricResolution : DefaultRadiometricResolution, mapper);
         }
 
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -162,7 +162,7 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        public IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
             if (numberOfBands < 1)
                 throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
@@ -172,13 +172,13 @@ namespace ELTE.AEGIS.Raster
             if (radiometricResolution > 64)
                 throw new ArgumentOutOfRangeException("radiometricResolutions", "The radiometric resolution is greater than the maximum allowed.");
 
-            return CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
+            return CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
         }
 
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -197,7 +197,7 @@ namespace ELTE.AEGIS.Raster
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        public IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (numberOfBands < 1)
                 throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
@@ -215,10 +215,10 @@ namespace ELTE.AEGIS.Raster
 
            Int32 maxRadiometricResolution;
 
-            switch (representation)
+            switch (format)
             {
-                case RasterRepresentation.Any:
-                case RasterRepresentation.Integer:
+                case RasterFormat.Any:
+                case RasterFormat.Integer:
                     maxRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultRadiometricResolution;
 
                     if (maxRadiometricResolution <= 8)
@@ -232,7 +232,7 @@ namespace ELTE.AEGIS.Raster
 
                     return new RasterFloat64(this, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
 
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                      maxRadiometricResolution = (radiometricResolutions != null) ? radiometricResolutions.Max() : DefaultFloatRadiometricResolution;
 
                     if (maxRadiometricResolution <= 32)
@@ -255,11 +255,11 @@ namespace ELTE.AEGIS.Raster
             if (other == null)
                 throw new ArgumentNullException("other", "The other raster is null.");
 
-            IRaster raster = CreateRaster(other.Representation, other.NumberOfBands, other.NumberOfRows, other.NumberOfColumns, other.RadiometricResolutions, other.Mapper);
+            IRaster raster = CreateRaster(other.Format, other.NumberOfBands, other.NumberOfRows, other.NumberOfColumns, other.RadiometricResolutions, other.Mapper);
 
-            switch (raster.Representation)
+            switch (raster.Format)
             {
-                case RasterRepresentation.Integer:
+                case RasterFormat.Integer:
                     for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                         for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                             for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
@@ -267,7 +267,7 @@ namespace ELTE.AEGIS.Raster
                                 raster.SetValue(rowIndex, columnIndex, bandIndex, raster.GetValue(rowIndex, columnIndex, bandIndex));
                             }
                     break;
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                     for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                         for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                             for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)

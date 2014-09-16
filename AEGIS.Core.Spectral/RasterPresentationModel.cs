@@ -1,4 +1,4 @@
-﻿/// <copyright file="RasterColorSpace.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterPresentationMode.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -16,48 +16,43 @@
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines color spaces os raster images.
+    /// Defines the supported raster presentation models.
     /// </summary>
-    public enum RasterColorSpace
+    public enum RasterPresentationModel
     {
         /// <summary>
-        /// RGB color space.
+        /// Specifies natural color presentation for red, green and blue bands.
         /// </summary>
-        RGB,
+        TrueColor,
 
         /// <summary>
-        /// HSV (hue-saturation-value) color space.
+        /// Specifies custom color presentation for multiple bands.
         /// </summary>
-        HSV,
+        FalseColor,
 
         /// <summary>
-        /// HSV (hue-saturation-lightness) color space.
+        /// Specifies grayscale presentation of a single band.
         /// </summary>
-        HSL,
+        Grayscale,
 
         /// <summary>
-        /// CMYK (cyan-magenta-yellow-black) color space.
+        /// Specifies inverted grayscale presentation of a single band.
         /// </summary>
-        CMYK,
+        InvertedGrayscale,
 
         /// <summary>
-        /// YCbCr color space.
+        /// Specifies continuous colored presentation of a single band using a specified color map.
         /// </summary>
-        YCbCr,
+        PseudoColor,
 
         /// <summary>
-        /// CIE L*a*b color space.
+        /// Specifies discrete colored presentation of a single band using a specified color map.
         /// </summary>
-        CIELab,
+        DensitySlicing,
 
         /// <summary>
-        /// User-defined colos space.
+        /// Specifies a transparent representation
         /// </summary>
-        UserDefined,
-
-        /// <summary>
-        /// No color space.
-        /// </summary>
-        None
+        Transparency
     }
 }

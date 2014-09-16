@@ -141,13 +141,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
                                                                    new RasterCoordinate(0, _targetNumberOfColumns, Source.Raster.Coordinates[3]));
 
             _result = _source.Factory.CreateSpectralGeometry(Source,
-                                                             PrepareRasterResult(Source.Raster.Representation,
+                                                             PrepareRasterResult(Source.Raster.Format,
                                                                                  Source.Raster.NumberOfBands,
                                                                                  _targetNumberOfRows,
                                                                                  _targetNumberOfColumns,
                                                                                  Source.Raster.RadiometricResolutions,
                                                                                  mapper),
-                                                             _source.Interpretation,
+                                                             _source.Presentation,
                                                              _source.Imaging);
         }
 

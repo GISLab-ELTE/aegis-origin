@@ -76,19 +76,18 @@ namespace ELTE.AEGIS
         /// Gets the bounding coordinates of the raster.
         /// </summary>
         /// <value>The list containing the bounding coordinates of the raster in counterclockwise order.</value>
-        /// <exception cref="System.NotSupportedException">The mapping of the raster is not defined.</exception>
         IList<Coordinate> Coordinates { get; }
 
         /// <summary>
-        /// Gets the raster mapper used for mapping raster space to coordinate space.
+        /// Gets the raster mapper used for mapping raster space to geometry space.
         /// </summary>
         /// <value>The raster mapper associated with the raster.</value>
         RasterMapper Mapper { get; }
 
         /// <summary>
-        /// Get a value indicating whether the raster is mapped to coordinate space.
+        /// Get a value indicating whether the raster is mapped to geometry space.
         /// </summary>
-        /// <value><c>true</c> if the raster is mapped to coordinate spacet; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the raster is mapped to geometry space; otherwise, <c>false</c>.</value>
         Boolean IsMapped { get; }
 
         /// <summary>
@@ -104,10 +103,10 @@ namespace ELTE.AEGIS
         Boolean IsWritable { get; }
 
         /// <summary>
-        /// Gets the representation of the raster.
+        /// Gets the format of the raster.
         /// </summary>
-        /// <value>The representation of the raster.</value>
-        RasterRepresentation Representation { get; }
+        /// <value>The format of the raster.</value>
+        RasterFormat Format { get; }
 
         /// <summary>
         /// Gets a raster band with the specified index.
@@ -160,7 +159,7 @@ namespace ELTE.AEGIS
         /// or
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.IndexOutOfRangeException">
         /// The coordinate is not within the raster.
@@ -208,7 +207,7 @@ namespace ELTE.AEGIS
         /// or
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
         /// The spectral values are not specified.
@@ -266,7 +265,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The coordinate is not within the raster.
@@ -305,7 +304,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral values are not specified.</exception>
         /// <exception cref="System.ArgumentException">The number of spectral values does not match the number of bands in the raster.</exception>
@@ -344,7 +343,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The coordinate is not within the raster.
@@ -383,7 +382,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral values are not specified.</exception>
         /// <exception cref="System.ArgumentException">The number of spectral values does not match the number of bands in the raster.</exception>
@@ -422,7 +421,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The band index is less than 0.
@@ -459,7 +458,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         UInt32[] GetValues(Coordinate coordinate);
@@ -496,7 +495,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The band index is less than 0.
@@ -533,7 +532,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         Double[] GetFloatValues(Coordinate coordinate);
@@ -557,7 +556,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         UInt32 GetBoxedValue(Coordinate coordinate, Int32 bandIndex);
         
@@ -578,7 +577,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         UInt32[] GetBoxedValues(Coordinate coordinate);
 
@@ -600,7 +599,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         Double GetBoxedFloatValue(Coordinate coordinate, Int32 bandIndex);
 
@@ -618,11 +617,11 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The array containing the spectral values for each band at the specified coordinate or at the equidistant coordinate if the coordinate is out of range.</returns>
-        /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.InvalidOperationException">The geometry of the raster is not defined.</exception>
         /// exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         Double[] GetBoxedFloatValues(Coordinate coordinate);
 
@@ -645,7 +644,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         UInt32 GetNearestValue(Coordinate coordinate, Int32 bandIndex);
 
@@ -666,7 +665,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         UInt32[] GetNearestValues(Coordinate coordinate);
 
@@ -688,7 +687,7 @@ namespace ELTE.AEGIS
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         Double GetNearestFloatValue(Coordinate coordinate, Int32 bandIndex);
 
@@ -706,11 +705,11 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The array containing the spectral values for each band at the specified coordinate or at the nearest coordinate if the coordinate is out of range.</returns>
-        /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
+        /// <exception cref="System.InvalidOperationException">The geometry of the raster is not defined.</exception>
         /// exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         Double[] GetNearestFloatValues(Coordinate coordinate);
 

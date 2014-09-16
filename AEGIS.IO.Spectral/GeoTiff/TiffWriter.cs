@@ -113,7 +113,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             UInt32 startPosition = 0, endPosition = 0;
 
             TiffCompression compression = TiffCompression.None; // TODO: support other compressions
-            TiffSampleFormat sampleFormat = (geometry as ISpectralGeometry).Raster.Representation == RasterRepresentation.Floating ? TiffSampleFormat.Floating : TiffSampleFormat.UnsignedInteger;
+            TiffSampleFormat sampleFormat = (geometry as ISpectralGeometry).Raster.Format == RasterFormat.Floating ? TiffSampleFormat.Floating : TiffSampleFormat.UnsignedInteger;
 
             // perform writing based on representation
             WriteRasterContentToStrip((geometry as ISpectralGeometry).Raster, compression, sampleFormat, out startPosition, out endPosition);
@@ -309,7 +309,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The photometric interpretation of the geometry.</returns>
         private TiffPhotometricInterpretation ComputePhotometricInterpretation(ISpectralGeometry geometry)
         { 
-            if (geometry.Interpretation == null)
+            if (geometry.Presentation == null)
             {
                 if (geometry.Raster.NumberOfBands == 3)
                     return TiffPhotometricInterpretation.RGB;
@@ -317,23 +317,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return TiffPhotometricInterpretation.BlackIsZero;
             }
 
-            switch (geometry.Interpretation.ColorSpace)
+            switch (geometry.Presentation.Model)
             { 
-                case RasterColorSpace.RGB:
-                case RasterColorSpace.SRGB:
-                    return TiffPhotometricInterpretation.RGB;
-                case RasterColorSpace.InvertedGrayscale:
-                    return TiffPhotometricInterpretation.WhiteIsZero;
-                case RasterColorSpace.CIELab:
-                    return TiffPhotometricInterpretation.CIELab;
-                case RasterColorSpace.CMYK:
-                    return TiffPhotometricInterpretation.CMYK;
-                case RasterColorSpace.YCbCr:
-                    return TiffPhotometricInterpretation.YCbCr;
-                default:
+                case RasterPresentationModel.Grayscale:
                     return TiffPhotometricInterpretation.BlackIsZero;
-                // TODO: process other interpretations
+                case RasterPresentationModel.InvertedGrayscale:
+                    return TiffPhotometricInterpretation.WhiteIsZero;
+                case RasterPresentationModel.Transparency:
+                    return TiffPhotometricInterpretation.TransparencyMask;
+                case RasterPresentationModel.TrueColor:
+                case RasterPresentationModel.FalseColor:
+                    switch (geometry.Presentation.ColorSpace)
+                    { 
+                        case RasterColorSpace.RGB:
+                            return TiffPhotometricInterpretation.RGB;
+                        case RasterColorSpace.CIELab:
+                            return TiffPhotometricInterpretation.CIELab;
+                        case RasterColorSpace.CMYK:
+                            return TiffPhotometricInterpretation.CMYK;
+                        case RasterColorSpace.YCbCr:
+                            return TiffPhotometricInterpretation.YCbCr;
+                        default:
+                            throw new InvalidDataException("The specified presentation is not supported.");
+                    }
+                default:
+                    throw new InvalidDataException("The specified presentation is not supported.");
             }
+            // TODO: process other presentations
         }
 
         /// <summary>

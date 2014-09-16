@@ -16,17 +16,17 @@
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines the modes used by the raster mapper.
+    /// Defines modes used by the raster mapper.
     /// </summary>
     public enum RasterMapMode
     {
         /// <summary>
-        /// Indicates that the geometric coordinate is mapped to the upper left corner of the pixel with the raster coordinate.
+        /// Indicates that the geometry coordinate is mapped to the upper left corner of the pixel with the raster coordinate.
         /// </summary>
         ValueIsArea,
 
         /// <summary>
-        /// Indicates that the geometric coordinate is mapped to the center of the pixel with the raster coordinate.
+        /// Indicates that the geometry coordinate is mapped to the center of the pixel with the raster coordinate.
         /// </summary>
         ValueIsCoordinate
     }

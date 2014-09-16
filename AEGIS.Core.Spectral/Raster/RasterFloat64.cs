@@ -36,10 +36,10 @@ namespace ELTE.AEGIS.Raster
         #region IRaster properties
 
         /// <summary>
-        /// Gets the representation of the raster.
+        /// Gets the format of the raster.
         /// </summary>
-        /// <value>The representation of the raster.</value>
-        public override RasterRepresentation Representation { get { return RasterRepresentation.Floating; } }
+        /// <value>The format of the raster.</value>
+        public override RasterFormat Format { get { return RasterFormat.Floating; } }
 
         #endregion
 

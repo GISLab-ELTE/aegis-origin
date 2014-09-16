@@ -127,7 +127,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213124", "Balanced histogram thresholding",
                                                                          "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
-                                                                         RasterRepresentation.Integer,
+                                                                         RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -426,7 +426,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213121", "Otsu thresholding",
                                                                          "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
-                                                                         RasterRepresentation.Integer,
+                                                                         RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }

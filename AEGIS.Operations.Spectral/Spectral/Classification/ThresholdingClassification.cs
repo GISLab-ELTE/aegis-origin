@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 return _selectorFunction(_source.Raster, rowIndex, columnIndex, bandIndex) ? Byte.MaxValue : Byte.MinValue;
 
             // decide based on constants
-            if (_source.Raster.Representation == RasterRepresentation.Floating)
+            if (_source.Raster.Format == RasterFormat.Floating)
             {
                 Double value = _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
                 return (value >= _lowerThresholdValues[bandIndex] && value <= _upperThresholdValues[bandIndex]) ? Byte.MaxValue : Byte.MinValue;
@@ -103,25 +103,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             if (_sourceBandIndex >= 0)
             {
                 _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterRepresentation.Integer, 
+                                                                 PrepareRasterResult(RasterFormat.Integer, 
                                                                                      1,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      new Int32[] { 8 },
                                                                                      _source.Raster.Mapper), 
-                                                                 RasterInterpretations.Grayscale,
+                                                                 RasterPresentation.CreateGrayscalePresentation(),
                                                                  _source.Imaging);
             }
             else
             {
                 _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterRepresentation.Integer, 
+                                                                 PrepareRasterResult(RasterFormat.Integer, 
                                                                                      _source.Raster.NumberOfBands,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
                                                                                      _source.Raster.Mapper),
-                                                                 _source.Interpretation,
+                                                                 _source.Presentation,
                                                                  _source.Imaging);
             }
         }

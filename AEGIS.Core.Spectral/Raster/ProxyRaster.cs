@@ -58,10 +58,10 @@ namespace ELTE.AEGIS.Raster
         public override Boolean IsWritable { get { return _service.IsWritable; } }
 
         /// <summary>
-        /// Gets the representation of the raster.
+        /// Gets the format of the raster.
         /// </summary>
-        /// <value>The representation of the raster.</value>
-        public override RasterRepresentation Representation { get { return _service.Representation; } }
+        /// <value>The format of the raster.</value>
+        public override RasterFormat Format { get { return _service.Format; } }
 
         #endregion
 

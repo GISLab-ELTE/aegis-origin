@@ -55,7 +55,7 @@ namespace ELTE.AEGIS.Tests.Raster
             _service.Setup(entity => entity.NumberOfColumns).Returns(15);
             _service.Setup(entity => entity.NumberOfRows).Returns(20);
             _service.Setup(entity => entity.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
-            _service.Setup(entity => entity.Representation).Returns(RasterRepresentation.Integer);
+            _service.Setup(entity => entity.Format).Returns(RasterFormat.Integer);
             _service.Setup(entity => entity.NumberOfBands).Returns(3);
             _service.Setup(entity => entity.SupportedOrders).Returns(new RasterDataOrder[] { RasterDataOrder.RowColumnBand });
 
@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Tests.Raster
             Assert.AreEqual(_service.Object.NumberOfColumns, raster.NumberOfColumns);
             Assert.AreEqual(_service.Object.NumberOfRows, raster.NumberOfRows);
             Assert.IsTrue(_service.Object.RadiometricResolutions.SequenceEqual(raster.RadiometricResolutions));
-            Assert.AreEqual(_service.Object.Representation, raster.Representation);
+            Assert.AreEqual(_service.Object.Format, raster.Format);
             Assert.AreEqual(_service.Object.NumberOfBands, raster.NumberOfBands);
             Assert.AreEqual(_service.Object.NumberOfBands, raster.Bands.Count);
             Assert.AreEqual(_factory.Object, raster.Factory);

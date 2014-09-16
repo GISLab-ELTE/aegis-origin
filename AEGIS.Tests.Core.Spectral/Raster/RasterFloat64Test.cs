@@ -45,7 +45,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
                         Assert.AreEqual(i, raster.NumberOfBands);
                         Assert.AreEqual(j, raster.NumberOfRows);
                         Assert.AreEqual(k, raster.NumberOfColumns);
-                        Assert.AreEqual(RasterRepresentation.Floating, raster.Representation);
+                        Assert.AreEqual(RasterFormat.Floating, raster.Format);
                         Assert.IsFalse(raster.IsMapped);
                         Assert.IsTrue(raster.IsReadable);
                         Assert.IsTrue(raster.IsWritable);

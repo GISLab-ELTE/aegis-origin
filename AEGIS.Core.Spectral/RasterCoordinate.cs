@@ -18,7 +18,7 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a geometry space coordinate of a specified raster space location.
+    /// Represents a model space coordinate of a specified raster space location.
     /// </summary>
     public class RasterCoordinate
     {
@@ -37,9 +37,9 @@ namespace ELTE.AEGIS
         public Int32 ColumnIndex { get; private set; }
 
         /// <summary>
-        /// Gets the coordinate.
+        /// Gets the model coordinate.
         /// </summary>
-        /// <value>The coordinate mapped to the specified row and column indices.</value>
+        /// <value>The model coordinate mapped to the specified row and column indices.</value>
         public Coordinate Coordinate { get; private set; }
 
         #endregion
@@ -51,7 +51,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="rowIndex">The zero-based row index.</param>
         /// <param name="columnIndex">The zero-based column index.</param>
-        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="coordinate">The model coordinate.</param>
         public RasterCoordinate(Int32 rowIndex, Int32 columnIndex, Coordinate coordinate)
         {
             RowIndex = rowIndex;

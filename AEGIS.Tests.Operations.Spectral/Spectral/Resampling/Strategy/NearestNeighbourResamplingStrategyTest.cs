@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
             _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
             _rasterMock.Setup(raster => raster.GetValues(It.IsAny<Int32>(), It.IsAny<Int32>()))

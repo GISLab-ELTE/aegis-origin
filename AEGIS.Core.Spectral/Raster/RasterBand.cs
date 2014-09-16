@@ -81,10 +81,10 @@ namespace ELTE.AEGIS.Raster
         public Boolean IsWritable { get { return Raster.IsWritable; } }
 
         /// <summary>
-        /// Gets the representation of the raster.
+        /// Gets the format of the raster.
         /// </summary>
-        /// <value>The representation of the raster.</value>
-        public RasterRepresentation Representation { get { return _raster.Representation; } }
+        /// <value>The format of the raster.</value>
+        public RasterFormat Format { get { return _raster.Format; } }
 
         /// <summary>
         /// Gets or sets a spectral value at a specified row and column index.
@@ -120,7 +120,7 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public UInt32 this[Coordinate coordinate] { get { return GetValue(coordinate); } set { SetValue(coordinate, value); } }
@@ -186,7 +186,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public void SetValue(Coordinate coordinate, UInt32 value)
@@ -223,7 +223,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not writable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public void SetFloatValue(Coordinate coordinate, Double value)
@@ -260,7 +260,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public UInt32 GetValue(Coordinate coordinate)
@@ -297,7 +297,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The coordinate is not within the raster.</exception>
         public Double GetFloatValue(Coordinate coordinate)
@@ -325,7 +325,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         public UInt32 GetNearestValue(Coordinate coordinate)
         {
@@ -352,7 +352,7 @@ namespace ELTE.AEGIS.Raster
         /// <exception cref="System.NotSupportedException">
         /// The raster is not readable.
         /// or
-        /// The mapping of the raster is not defined.
+        /// The geometry of the raster is not defined.
         /// </exception>
         public Double GetNearestFloatValue(Coordinate coordinate)
         {

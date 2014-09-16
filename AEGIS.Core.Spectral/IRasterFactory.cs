@@ -90,7 +90,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -103,12 +103,12 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper);
+        IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper);
 
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -126,12 +126,12 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper);
+        IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper);
 
         /// <summary>
         /// Creates a raster image.
         /// </summary>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -150,7 +150,7 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        IRaster CreateRaster(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper);
+        IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper);
 
         /// <summary>
         /// Creates a raster image.

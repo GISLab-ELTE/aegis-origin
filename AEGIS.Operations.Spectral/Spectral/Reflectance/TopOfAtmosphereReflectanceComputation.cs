@@ -142,9 +142,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             n61 = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Math.PI / 180))) / (n59 * Math.Cos(n11 * Constants.PI / 180)));
             n57 = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Math.PI / 180))) / (n55 * Math.Cos(n11 * Constants.PI / 180)));
 
-            switch (_source.Raster.Representation)
+            switch (_source.Raster.Format)
             {
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                     switch (bandIndex)
                     {
                         case 0:
@@ -161,7 +161,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                             return (swir - red) / (swir + red);
                     }
                     break;
-                case RasterRepresentation.Integer:
+                case RasterFormat.Integer:
                     switch (bandIndex)
                     {
                         case 0:
@@ -202,15 +202,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             n61 = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Math.PI / 180))) / (n59 * Math.Cos(n11 * Constants.PI / 180)));
             n57 = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (n62 - 4) * Math.PI / 180))) / (n55 * Math.Cos(n11 * Constants.PI / 180)));
 
-            switch (_source.Raster.Representation)
+            switch (_source.Raster.Format)
             {
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                     swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand) / 10.587413 * n61;
                     nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand) / 1.721458 * n57;
                     red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand) / 2.702960 * n21;
 
                     return new Double[] { red, nir, swir };
-                case RasterRepresentation.Integer:
+                case RasterFormat.Integer:
 
                     swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand) / 10.587413 * n61;
                     nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) / 1.721458 * n57;
@@ -231,13 +231,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         protected override void PrepareResult()
         {
             _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterRepresentation.Floating,
+                                                             PrepareRasterResult(RasterFormat.Floating,
                                                                                  3,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  Enumerable.Repeat(64, 3).ToArray(),
                                                                                  _source.Raster.Mapper),
-                                                             _source.Interpretation,
+                                                             _source.Presentation,
                                                              _source.Imaging);
         }
 

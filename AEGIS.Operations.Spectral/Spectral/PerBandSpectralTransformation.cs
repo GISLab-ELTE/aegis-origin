@@ -81,7 +81,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             if (_sourceBandIndex >= 0)
             {
                 _result = _source.Factory.CreateSpectralGeometry(_source, 
-                                                                 PrepareRasterResult(_source.Raster.Representation,
+                                                                 PrepareRasterResult(_source.Raster.Format,
                                                                                      1,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
@@ -101,7 +101,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         {
             if (_sourceBandIndex >= 0)
             {
-                if (_result.Raster.Representation == RasterRepresentation.Floating)
+                if (_result.Raster.Format == RasterFormat.Floating)
                 {
                     for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
                         for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
             else
             {
-                if (_result.Raster.Representation == RasterRepresentation.Floating)
+                if (_result.Raster.Format == RasterFormat.Floating)
                 {
                     for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
                         for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)

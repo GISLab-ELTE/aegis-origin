@@ -87,22 +87,22 @@ namespace ELTE.AEGIS.IO.RawImage
             public IList<Int32> RadiometricResolutions { get { return Array.AsReadOnly(_radiometricResolutions); } }
 
             /// <summary>
-            /// Gets a value indicating whether the dataset is readable.
+            /// Gets a value indicating whether the service is readable.
             /// </summary>
-            /// <value><c>true</c> if the dataset is readable; otherwise, <c>false</c>.</value>
+            /// <value><c>true</c> if the service is readable; otherwise, <c>false</c>.</value>
             public Boolean IsReadable { get { return true; } }
 
             /// <summary>
-            /// Gets a value indicating whether the dataset is writable.
+            /// Gets a value indicating whether the service is writable.
             /// </summary>
-            /// <value><c>true</c> if the dataset is writable; otherwise, <c>false</c>.</value>
+            /// <value><c>true</c> if the service is writable; otherwise, <c>false</c>.</value>
             public Boolean IsWritable { get { return false; } }
 
             /// <summary>
-            /// Gets the representation of the dataset.
+            /// Gets the format of the service.
             /// </summary>
-            /// <value>The representation of the dataset.</value>
-            public RasterRepresentation Representation { get; private set; }
+            /// <value>The format of the service.</value>
+            public RasterFormat Format { get; private set; }
 
             /// <summary>
             /// Gets the supported read/write orders.
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
             /// <param name="representation">The representation.</param>
             /// <param name="order">The raster data order.</param>
-            public RawImageReaderService(RawImageReader rawImageReader, IList<Int32> radiometricResolutions, RasterRepresentation representation, RasterDataOrder order)
+            public RawImageReaderService(RawImageReader rawImageReader, IList<Int32> radiometricResolutions, RasterFormat format, RasterDataOrder order)
             {
                 _rawImageReader = rawImageReader;
                 _radiometricResolutions = radiometricResolutions.ToArray();
@@ -129,7 +129,7 @@ namespace ELTE.AEGIS.IO.RawImage
                 NumberOfBands = rawImageReader._spectralResolution;
                 NumberOfColumns = rawImageReader._numberOfColumns;
                 NumberOfRows = rawImageReader._numberOfRows;
-                Representation = representation;
+                Format = format;
 
                 _supportedOrders = new RasterDataOrder[] { order }; 
             }
@@ -288,69 +288,69 @@ namespace ELTE.AEGIS.IO.RawImage
             #region IRasterService methods for writing integer values (explicit)
 
             /// <summary>
-            /// Writes the specified spectral value to the dataset.
+            /// Writes the specified spectral value to the service.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="bandIndex">The band index.</param>
             /// <param name="spectralValue">The spectral value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the default order.
+            /// Writes the specified spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the specified order.
+            /// Writes the specified spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteValueSequence(Int32 startIndex, UInt32[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the default order.
+            /// Writes a sequence of spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the specified order.
+            /// Writes a sequence of spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             #endregion
@@ -358,69 +358,69 @@ namespace ELTE.AEGIS.IO.RawImage
             #region IRasterService methods for writing integer values (explicit)
 
             /// <summary>
-            /// Writes the specified spectral value to the dataset.
+            /// Writes the specified spectral value to the service.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="bandIndex">The band index.</param>
             /// <param name="spectralValue">The spectral value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the default order.
+            /// Writes the specified spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteFloatValueSequence(Int32 startIndex, Double[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes the specified spectral values to the dataset in the specified order.
+            /// Writes the specified spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The row index.</param>
             /// <param name="columnIndex">The column index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteFloatValueSequence(Int32 startIndex, Double[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the default order.
+            /// Writes a sequence of spectral values to the service in the default order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             /// <summary>
-            /// Writes a sequence of spectral values to the dataset in the specified order.
+            /// Writes a sequence of spectral values to the service in the specified order.
             /// </summary>
             /// <param name="rowIndex">The starting row index.</param>
             /// <param name="columnIndex">The starting column index.</param>
             /// <param name="bandIndex">The starting band index.</param>
             /// <param name="spectralValues">The spectral values.</param>
             /// <param name="writeOrder">The writing order.</param>
-            /// <exception cref="System.NotSupportedException">The dataset is not writable.</exception>
+            /// <exception cref="System.NotSupportedException">The service is not writable.</exception>
             void IRasterService.WriteFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double[] spectralValues, RasterDataOrder writeOrder)
             {
-                throw new NotSupportedException("The dataset is not writable.");
+                throw new NotSupportedException("The service is not writable.");
             }
 
             #endregion

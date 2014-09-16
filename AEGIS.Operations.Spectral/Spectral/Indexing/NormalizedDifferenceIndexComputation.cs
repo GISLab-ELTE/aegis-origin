@@ -127,9 +127,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             Double swir, nir, red;
 
-            switch (_source.Raster.Representation)
+            switch (_source.Raster.Format)
             {
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                     switch (bandIndex)
                     {
                         case 0:
@@ -146,7 +146,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
                             return (swir - red) / (swir + red);
                     }
                     break;
-                case RasterRepresentation.Integer:
+                case RasterFormat.Integer:
                     switch (bandIndex)
                     {
                         case 0:
@@ -178,15 +178,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             Double swir, nir, red;
 
-            switch (_source.Raster.Representation)
+            switch (_source.Raster.Format)
             {
-                case RasterRepresentation.Floating:
+                case RasterFormat.Floating:
                     swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
                     nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                     red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
 
                     return new Double[] { (swir - nir) / (swir + nir), (nir - red) / (nir + red), (swir - red) / (swir + red) };
-                case RasterRepresentation.Integer:
+                case RasterFormat.Integer:
 
                     swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
                     nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
@@ -207,7 +207,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         protected override void PrepareResult()
         {
             _result = _source.Factory.CreateSpectralGeometry(_source, 
-                                                             PrepareRasterResult(RasterRepresentation.Floating,
+                                                             PrepareRasterResult(RasterFormat.Floating,
                                                                                  3,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,

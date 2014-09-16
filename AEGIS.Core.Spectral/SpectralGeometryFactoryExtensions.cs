@@ -55,7 +55,7 @@ namespace ELTE.AEGIS
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
         /// <param name="raster">The raster.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -64,14 +64,14 @@ namespace ELTE.AEGIS
         /// The geometry is null.
         /// or
         /// The raster is null.
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, IRaster raster, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, raster, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, raster, presentation, imaging);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -130,14 +130,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -206,14 +206,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -284,14 +284,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -317,14 +317,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
@@ -332,12 +332,12 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -352,14 +352,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -390,14 +390,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
@@ -405,13 +405,13 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -430,14 +430,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
@@ -469,14 +469,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
         }
 
         /// <summary>
@@ -484,13 +484,13 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
         /// <param name="geometry">The geometry.</param>
-        /// <param name="representation">The representation of the raster.</param>
+        /// <param name="format">The format of the raster.</param>
         /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -510,14 +510,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -550,7 +550,7 @@ namespace ELTE.AEGIS
         /// <param name="geometry">The geometry.</param>
         /// <param name="service">The service.</param>
         /// <param name="mapper">The raster mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral geometry.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -560,14 +560,14 @@ namespace ELTE.AEGIS
         /// or
         /// The raster service is null.
         /// </exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, IRasterService service, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, IRasterService service, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, service, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, service, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -659,7 +659,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -670,14 +670,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -688,7 +688,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -700,14 +700,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -784,7 +784,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -799,14 +799,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -834,14 +834,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -920,7 +920,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -936,14 +936,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -955,7 +955,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -972,14 +972,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -999,14 +999,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
@@ -1027,14 +1027,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
         }
 
         /// <summary>
@@ -1045,7 +1045,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -1056,14 +1056,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1074,7 +1074,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1086,14 +1086,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1118,14 +1118,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
@@ -1151,14 +1151,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
         }
 
         /// <summary>
@@ -1170,7 +1170,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -1185,14 +1185,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1204,7 +1204,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1220,14 +1220,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1253,14 +1253,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
         }
 
         /// <summary>
@@ -1287,14 +1287,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
         }
 
         /// <summary>
@@ -1306,7 +1306,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
@@ -1322,14 +1322,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1341,7 +1341,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1358,14 +1358,14 @@ namespace ELTE.AEGIS
         /// One or more radiometric resolutions are greater than the maximum allowed.
         /// </exception>
         /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1403,35 +1403,35 @@ namespace ELTE.AEGIS
         /// Creates a spectral polygon.
         /// </summary>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, presentation, imaging);
         }
 
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(raster, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1499,7 +1499,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1511,14 +1511,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1529,7 +1529,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1542,14 +1542,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1628,7 +1628,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1644,14 +1644,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1663,7 +1663,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1680,14 +1680,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1774,7 +1774,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1794,14 +1794,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1813,7 +1813,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1834,14 +1834,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1862,14 +1862,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
@@ -1891,14 +1891,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
         }
 
         /// <summary>
@@ -1909,7 +1909,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -1921,14 +1921,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -1939,7 +1939,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -1952,14 +1952,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -1985,14 +1985,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
@@ -2019,14 +2019,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
         }
 
         /// <summary>
@@ -2038,7 +2038,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2054,14 +2054,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2073,7 +2073,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2090,14 +2090,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2127,14 +2127,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
         }
 
         /// <summary>
@@ -2165,14 +2165,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
         }
 
         /// <summary>
@@ -2184,7 +2184,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2204,14 +2204,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2223,7 +2223,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2244,14 +2244,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2296,19 +2296,19 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="shell">The shell.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IRaster raster, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, raster, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, raster, presentation, imaging);
         }
 
         /// <summary>
@@ -2316,20 +2316,20 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="shell">The shell.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, raster, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, raster, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2400,7 +2400,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2412,14 +2412,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2431,7 +2431,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2444,14 +2444,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2533,7 +2533,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2549,14 +2549,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2569,7 +2569,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2586,14 +2586,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2683,7 +2683,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2703,14 +2703,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2723,7 +2723,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2744,14 +2744,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2773,14 +2773,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, mapper);
         }
 
         /// <summary>
@@ -2803,14 +2803,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, mapper, metadata);
         }
 
         /// <summary>
@@ -2822,7 +2822,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2834,14 +2834,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2853,7 +2853,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -2866,14 +2866,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of columns is less than 0.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -2900,14 +2900,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
         }
 
         /// <summary>
@@ -2935,14 +2935,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, metadata);
         }
 
         /// <summary>
@@ -2955,7 +2955,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -2971,14 +2971,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -2991,7 +2991,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -3008,14 +3008,14 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is greater than the maximum allowed.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -3046,14 +3046,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
         }
 
         /// <summary>
@@ -3085,14 +3085,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
         }
 
         /// <summary>
@@ -3105,7 +3105,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
@@ -3125,14 +3125,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
         }
 
         /// <summary>
@@ -3145,7 +3145,7 @@ namespace ELTE.AEGIS
         /// <param name="numberOfColumns">The number of columns.</param>
         /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
@@ -3166,14 +3166,14 @@ namespace ELTE.AEGIS
         /// or
         /// The number of radiometric resolutions does not match the number of bands.
         /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
         }
 
         /// <summary>
@@ -3221,19 +3221,19 @@ namespace ELTE.AEGIS
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterPresentation presentation, RasterImaging imaging)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, raster, interpretation, imaging);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, raster, presentation, imaging);
         }
 
         /// <summary>
@@ -3242,20 +3242,20 @@ namespace ELTE.AEGIS
         /// <param name="shell">The shell.</param>
         /// <param name="holes">The holes.</param>
         /// <param name="raster">The raster image.</param>
-        /// <param name="interpretation">The raster interpretation data.</param>
+        /// <param name="presentation">The raster presentation data.</param>
         /// <param name="imaging">The raster imaging data.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>The produced spectral polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterInterpretation interpretation, RasterImaging imaging, IDictionary<String, Object> metadata)
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             if (factory == null)
                 throw new ArgumentNullException("factory", "The factory is null.");
 
             EnsureFactory(factory);
 
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, raster, interpretation, imaging, metadata);
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, raster, presentation, imaging, metadata);
         }
 
         #endregion

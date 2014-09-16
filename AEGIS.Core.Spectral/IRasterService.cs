@@ -62,10 +62,10 @@ namespace ELTE.AEGIS
         Boolean IsWritable { get; }
 
         /// <summary>
-        /// Gets the representation of the service.
+        /// Gets the format of the service.
         /// </summary>
-        /// <value>The representation of the service.</value>
-        RasterRepresentation Representation { get; }
+        /// <value>The format of the service.</value>
+        RasterFormat Format { get; }
 
         /// <summary>
         /// Gets the supported read/write orders.

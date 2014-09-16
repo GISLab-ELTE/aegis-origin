@@ -1,4 +1,4 @@
-﻿/// <copyright file="RasterColorSpaceChannel.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterColorSpaceBand.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -17,20 +17,10 @@
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines raster color space channels.
+    /// Defines raster color space bands.
     /// </summary>
-    public enum RasterColorSpaceChannel
+    public enum RasterColorSpaceBand
     {
-        /// <summary>
-        /// Grayscale.
-        /// </summary>
-        Grayscale,
-
-        /// <summary>
-        /// Inverted grayscale.
-        /// </summary>
-        InvertedGrayscale,
-
         /// <summary>
         /// Red.
         /// </summary>
@@ -117,8 +107,8 @@ namespace ELTE.AEGIS
         Transparent,
 
         /// <summary>
-        /// None.
+        /// Undefined.
         /// </summary>
-        None
+        Undefined
     }
 }

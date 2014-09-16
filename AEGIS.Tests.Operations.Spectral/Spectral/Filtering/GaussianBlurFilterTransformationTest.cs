@@ -57,7 +57,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Integer);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
             _rasterMock.Setup(raster => raster.GetNearestValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, operation.Result.Raster.NumberOfBands);
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
-            Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
+            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, operation.Result.Raster.NumberOfBands);
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
-            Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
+            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
@@ -129,7 +129,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
             Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
             Assert.AreEqual(_rasterMock.Object.RadiometricResolutions[1], operation.Result.Raster.RadiometricResolutions[0]);
-            Assert.AreEqual(_rasterMock.Object.Representation, operation.Result.Raster.Representation);
+            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             AssertResultForBand(_rasterMock.Object, 1, operation.Result.Raster, 0, (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
                                 FilterFactory.CreateGaussianFilter((Int32)SpectralOperationParameters.FilterRadius.DefaultValue).Kernel.Sum());
@@ -137,7 +137,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             // floating values with default parameters
 
-            _rasterMock.Setup(raster => raster.Representation).Returns(RasterRepresentation.Floating);
+            _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
             operation = new GaussianBlurFilterTransformation(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
@@ -169,9 +169,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
                 {
                     Double filteredValue = 0;
 
-                    switch (result.Representation)
+                    switch (result.Format)
                     {
-                        case RasterRepresentation.Integer:
+                        case RasterFormat.Integer:
                             for (Int32 filterRowIndex = -filterRadius; filterRowIndex <= filterRadius; filterRowIndex++)
                                 for (Int32 filterColumnIndex = -filterRadius; filterColumnIndex <= filterRadius; filterColumnIndex++)
                                     filteredValue += 1 / (2 * Math.PI) * Math.Exp(-(Calculator.Square(filterRowIndex) + Calculator.Square(filterColumnIndex)) / 2) * source.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, sourceBandIndex);
@@ -181,7 +181,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
                             Assert.AreEqual((UInt32)filteredValue, result.GetValue(rowIndex, columnIndex, resultBandIndex));
                             break;
 
-                        case RasterRepresentation.Floating:
+                        case RasterFormat.Floating:
                             for (Int32 filterRowIndex = -filterRadius; filterRowIndex <= filterRadius; filterRowIndex++)
                                 for (Int32 filterColumnIndex = -filterRadius; filterColumnIndex <= filterRadius; filterColumnIndex++)
                                     filteredValue += 1 / (2 * Math.PI) * Math.Exp(-(Calculator.Square(filterRowIndex) + Calculator.Square(filterColumnIndex)) / 2) * source.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, sourceBandIndex);

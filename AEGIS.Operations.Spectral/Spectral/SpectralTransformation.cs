@@ -94,10 +94,10 @@ namespace ELTE.AEGIS.Operations.Spectral
             public Boolean IsWritable { get { return false; } }
 
             /// <summary>
-            /// Gets the representation of the service.
+            /// Gets the format of the service.
             /// </summary>
-            /// <value>The representation of the service.</value>
-            public RasterRepresentation Representation { get; private set; }
+            /// <value>The format of the service.</value>
+            public RasterFormat Format { get; private set; }
 
             /// <summary>
             /// Gets the supported read/write orders.
@@ -112,13 +112,13 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <summary>
             /// Initializes a new instance of the <see cref="SpectralTransformationService" /> class.
             /// </summary>
-            /// <param name="representation">The representation.</param>
+            /// <param name="format">The format.</param>
             /// <param name="operation">The operation.</param>
             /// <param name="numberOfBands">The number of spectral bands.</param>
             /// <param name="numberOfRows">The number of rows.</param>
             /// <param name="numberOfColumns">The number of columns.</param>
             /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-            public SpectralTransformationService(SpectralTransformation operation, RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions)
+            public SpectralTransformationService(SpectralTransformation operation, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions)
             {
                 _operation = operation;
                 _radiometricResolutions = radiometricResolutions.ToArray();
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 NumberOfBands = numberOfBands;
                 NumberOfColumns = numberOfColumns;
                 NumberOfRows = numberOfRows;
-                Representation = representation;
+                Format = format;
 
                 if (_supportedOrders == null)
                     _supportedOrders = new RasterDataOrder[] { RasterDataOrder.RowColumnBand };
@@ -659,15 +659,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// or
         /// The source geometry does not contain raster data.
         /// or
-        /// The raster representation of the source is not supported by the method.
+        /// The raster format of the source is not supported by the method.
         /// </exception>
         protected SpectralTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
             if (source.Raster == null)
                 throw new ArgumentException("The source geometry does not contain raster data.", "source");
-            if (!method.SupportedRepresentations.Contains(source.Raster.Representation))
-                throw new ArgumentException("The raster representation of the source is not supported by the method.", "source");
+            if (!method.SupportedRepresentations.Contains(source.Raster.Format))
+                throw new ArgumentException("The raster format of the source is not supported by the method.", "source");
         }
 
         #endregion
@@ -680,13 +680,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         protected override void PrepareResult()
         {
             _result = _source.Factory.CreateSpectralGeometry(_source, 
-                                                             PrepareRasterResult(_source.Raster.Representation,
+                                                             PrepareRasterResult(_source.Raster.Format,
                                                                                  _source.Raster.NumberOfBands,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  _source.Raster.RadiometricResolutions,
                                                                                  _source.Raster.Mapper),
-                                                             _source.Interpretation,
+                                                             _source.Presentation,
                                                              _source.Imaging);
         }
 
@@ -695,7 +695,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void ComputeResult()
         {
-            if (_result.Raster.Representation == RasterRepresentation.Floating)
+            if (_result.Raster.Format == RasterFormat.Floating)
             {
                 for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
                     for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
@@ -722,11 +722,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="spectralRanges">The spectral ranges.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation.</param>
+        /// <param name="format">The format.</param>
         /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            return PrepareRasterResult(representation, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
+            return PrepareRasterResult(format, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
         }
 
         /// <summary>
@@ -737,20 +737,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="radiometricResolutions">The radiometric resolutions.</param>
         /// <param name="mapper">The mapper.</param>
-        /// <param name="representation">The representation.</param>
+        /// <param name="format">The format.</param>
         /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(RasterRepresentation representation, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
+        protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
             if (State == OperationState.Initialized)
             {
-                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(new SpectralTransformationService(this, representation,
+                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(new SpectralTransformationService(this, format,
                                                                                                                 numberOfBands, numberOfRows, numberOfColumns, 
                                                                                                                 radiometricResolutions), 
                                                                               mapper);
             }
             else
             {
-                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(representation, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
             }
         }
 

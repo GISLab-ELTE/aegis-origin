@@ -27,10 +27,10 @@ namespace ELTE.AEGIS
         IRaster Raster { get; }
 
         /// <summary>
-        /// Gets the intepretation data.
+        /// Gets the presentation data.
         /// </summary>
-        /// <value>The interpretation data of the raster image.</value>
-        RasterInterpretation Interpretation { get; }
+        /// <value>The presentation data of the raster image.</value>
+        RasterPresentation Presentation { get; }
 
         /// <summary>
         /// Gets the imaging data.

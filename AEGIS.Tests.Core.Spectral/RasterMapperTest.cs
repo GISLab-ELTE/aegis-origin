@@ -37,8 +37,8 @@ namespace ELTE.AEGIS.Tests
             RasterMapper mapper = new RasterMapper(RasterMapMode.ValueIsArea, MatrixFactory.CreateIdentity(4));
 
             Assert.AreEqual(RasterMapMode.ValueIsArea, mapper.Mode);
-            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.TransformationToGeometry);
-            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.TransformationToRaster);
+            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.RasterTransformation);
+            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.GeometryTransformation);
             Assert.AreEqual(1, mapper.ColumnSize);
             Assert.AreEqual(1, mapper.RowSize);
             Assert.AreEqual(new CoordinateVector(1, 0), mapper.ColumnVector);
@@ -73,7 +73,7 @@ namespace ELTE.AEGIS.Tests
             RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsArea, MatrixFactory.CreateIdentity(4));
 
             Assert.AreEqual(RasterMapMode.ValueIsArea, mapper.Mode);
-            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.TransformationToGeometry);
+            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.GeometryTransformation);
 
 
             // coordinate and vector
@@ -129,7 +129,7 @@ namespace ELTE.AEGIS.Tests
             RasterMapper mapper = RasterMapper.FromMapper(sourceMapper, MatrixFactory.CreateIdentity(4));
 
             Assert.AreEqual(RasterMapMode.ValueIsArea, mapper.Mode);
-            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.TransformationToGeometry);
+            Assert.AreEqual(MatrixFactory.CreateIdentity(4), mapper.GeometryTransformation);
 
 
             // coordinate and vector from identity
