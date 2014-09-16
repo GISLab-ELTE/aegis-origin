@@ -18,7 +18,7 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines the supported models for geometry representation
+    /// Defines the supported models for geometry representation.
     /// </summary>
     [Flags]
     public enum GeometryModel

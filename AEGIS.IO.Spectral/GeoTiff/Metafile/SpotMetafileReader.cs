@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
     /// Represents a type for reading SPOT GeoTIFF metafiles.
     /// </summary>
     /// <remarks>
-    /// SPOT metafiles are XML documents usually stored under the name <c>METADATA.DIM</c>. Thus each dataset should be located in a separate folder.
+    /// SPOT metafiles are XML documents usually stored under the name <c>METADATA.DIM</c>. Thus each source file should be located in a separate folder.
     /// The metafile contains information about imaging, location, and satellite path.
     /// </remarks>
     public class SpotMetafileReader : GeoTiffMetafileReader
