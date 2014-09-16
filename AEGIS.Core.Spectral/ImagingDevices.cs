@@ -117,7 +117,7 @@ namespace ELTE.AEGIS
                                                    new ImagingDeviceBand(1, "Multispectral green band (XS1)", Length.FromMetre(5), Length.FromKilometre(60), 8, SpectralDomain.Green, new SpectralRange(0.5e-6, 0.59e-6)),
                                                    new ImagingDeviceBand(2, "Multispectral red band (XS2)", Length.FromMetre(10), Length.FromKilometre(60), 8, SpectralDomain.Red, new SpectralRange(0.61e-6, 0.68e-6)),
                                                    new ImagingDeviceBand(3, "Multispectral NIR band (XS3)", Length.FromMetre(10), Length.FromKilometre(60), 8, SpectralDomain.NearInfrared, new SpectralRange(0.79e-6, 0.89e-6)),
-                                                   new ImagingDeviceBand(4, "Multispectral MIR band (SWIR)", Length.FromMetre(20), Length.FromKilometre(60), 8, SpectralDomain.ShortWaveInfrared, new SpectralRange(1.58e-6, 1.75e-6)));
+                                                   new ImagingDeviceBand(4, "Multispectral MIR band (SWIR)", Length.FromMetre(20), Length.FromKilometre(60), 8, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(1.58e-6, 1.75e-6)));
                 return _SPOT5HRG1;
             }
         }

@@ -27,9 +27,19 @@ namespace ELTE.AEGIS
         #region Private fields
 
         /// <summary>
-        /// The band data.
+        /// The array of band data.
         /// </summary>
-        private List<RasterImagingBand> _bandData;
+        private RasterImagingBand[] _bands;
+
+        /// <summary>
+        /// The array of spectral domains for each band.
+        /// </summary>
+        private SpectralDomain[] _spectralDomains;
+        
+        /// <summary>
+        /// The array of spectral ranges for each band.
+        /// </summary>
+        private SpectralRange[] _spectralRanges;
 
         #endregion
 
@@ -81,13 +91,37 @@ namespace ELTE.AEGIS
         /// Gets the band data.
         /// </summary>
         /// <value>The read-only array contaning the band data.</value>
-        public IList<RasterImagingBand> Bands { get { return _bandData.AsReadOnly(); } }
+        public IList<RasterImagingBand> Bands { get { return _bands.AsReadOnly(); } }
+
+        /// <summary>
+        /// Gets the spectral domains of the bands.
+        /// </summary>
+        /// <value>The read-only list containing the spectral domain of each band.</value>
+        public IList<SpectralDomain> SpectralDomains
+        {
+            get
+            {
+                if (_spectralDomains == null)
+                    _spectralDomains = _bands.Select(bandData => bandData.SpectralDomain).ToArray();
+
+                return _spectralDomains.AsReadOnly();
+            }
+        }
 
         /// <summary>
         /// Gets the spectral ranges of the bands.
         /// </summary>
         /// <value>The read-only list containing the spectral range of each band.</value>
-        public IList<SpectralRange> SpectralRanges { get { return Array.AsReadOnly(_bandData.Select(bandData => bandData.SpectralRange).ToArray()); } }
+        public IList<SpectralRange> SpectralRanges 
+        { 
+            get 
+            {
+                if (_spectralRanges == null)
+                    _spectralRanges = _bands.Select(bandData => bandData.SpectralRange).ToArray();
+
+                return _spectralRanges.AsReadOnly();
+            } 
+        }
 
         #endregion
 
@@ -113,7 +147,7 @@ namespace ELTE.AEGIS
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bandData = new List<RasterImagingBand>(bandData);
+            _bands = bandData.ToArray();
         }
 
         /// <summary>
@@ -136,7 +170,7 @@ namespace ELTE.AEGIS
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bandData = new List<RasterImagingBand>(bandData);
+            _bands = bandData.ToArray();
         }
 
         #endregion

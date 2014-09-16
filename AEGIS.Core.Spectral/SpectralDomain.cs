@@ -41,17 +41,17 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Long-wavelength infrared.
         /// </summary>
-        LongWaveInfrared = 4,
+        LongWavelengthInfrared = 4,
 
         /// <summary>
         /// Mid-wavelength infrared.
         /// </summary>
-        MidWaveInfrared = 8,
+        MidWavelengthInfrared = 8,
 
         /// <summary>
         /// Short-wavelength infrared.
         /// </summary>
-        ShortWaveInfrared = 16,
+        ShortWavelengthInfrared = 16,
 
         /// <summary>
         /// Middle infrared.
