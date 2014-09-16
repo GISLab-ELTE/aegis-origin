@@ -35,6 +35,11 @@ namespace ELTE.AEGIS.Operations
         private readonly OperationMethod _method;
 
         /// <summary>
+        /// The parameters of the operation. This field is read-only.
+        /// </summary>
+        private readonly IDictionary<OperationParameter, Object> _parameters;
+
+        /// <summary>
         /// The current operation state.
         /// </summary>
         private OperationState _state;
@@ -42,11 +47,6 @@ namespace ELTE.AEGIS.Operations
         #endregion
 
         #region Protected fields
-
-        /// <summary>
-        /// The parameters of the operation. This field is read-only.
-        /// </summary>
-        protected readonly IDictionary<OperationParameter, Object> _parameters;
 
         /// <summary>
         /// The source object. This field is read-only.
@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.Operations
         /// Gets the parameters of the operation.
         /// </summary>
         /// <value>The parameters of the operation stored as key/value pairs.</value>
-        public IDictionary<OperationParameter, Object> Parameters { get { return _parameters; } }
+        public IDictionary<OperationParameter, Object> Parameters { get { return _parameters.AsReadOnly(); } }
 
         /// <summary>
         /// Gets a value indicating whether the operation is reversible.

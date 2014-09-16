@@ -132,7 +132,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The reverse operation.</returns>
         protected override IOperation<ISpectralGeometry, ISpectralGeometry> ComputeReverseOperation()
         {
-            return new SpectralInversion(_result, _parameters);
+            return new SpectralInversion(_result, Parameters);
         }
 
         #endregion

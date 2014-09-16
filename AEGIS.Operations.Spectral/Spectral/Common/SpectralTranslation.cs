@@ -125,7 +125,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             parameters.Add(SpectralOperationParameters.SpectralOffset, -_offset);
             parameters.Add(SpectralOperationParameters.SpectralFactor, 1 / _factor);
 
-            return new SpectralTranslation(_result, _source, _parameters);
+            return new SpectralTranslation(_result, _source, parameters);
         }
 
         #endregion
