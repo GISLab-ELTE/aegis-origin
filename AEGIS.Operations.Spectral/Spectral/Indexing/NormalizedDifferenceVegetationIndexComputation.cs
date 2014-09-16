@@ -1,4 +1,4 @@
-﻿/// <copyright file="NormalizedDifferenceIndexComputation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="NormalizedDifferenceVegetationIndexComputation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,32 +13,29 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Indexing
 {
     /// <summary>
-    /// Represents an operation computing the normalized difference indices (NDxI) of raster geometries.
+    /// Represents an operation computing the normalized difference vegetation index (NDVI) of raster geometries.
     /// </summary>
-    [OperationClass("AEGIS::213511", "Normalized difference index (NDxI) computation")]
-    public class NormalizedDifferenceIndexComputation : SpectralTransformation
+    [OperationClass("AEGIS::213513", "Normalized difference vegetation index (NDVI) computation")]
+    public class NormalizedDifferenceVegetationIndexComputation : SpectralTransformation
     {
         #region Private fields
 
         private readonly Int32 _indexOfRedBand;
         private readonly Int32 _indexOfNearInfraredBand;
-        private readonly Int32 _indexOfShortWaveInfraredBand;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NormalizedDifferenceIndexComputation" /> class.
+        /// Initializes a new instance of the <see cref="NormalizedDifferenceVegetationIndexComputation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -54,13 +51,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        public NormalizedDifferenceIndexComputation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public NormalizedDifferenceVegetationIndexComputation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NormalizedDifferenceIndexComputation" /> class.
+        /// Initializes a new instance of the <see cref="NormalizedDifferenceVegetationIndexComputation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="result">The result.</param>
@@ -79,8 +76,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public NormalizedDifferenceIndexComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
-            : base(source, result, SpectralOperationMethods.NormalizedDifferenceIndexComputation, parameters)
+        public NormalizedDifferenceVegetationIndexComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
+            : base(source, result, SpectralOperationMethods.NormalizedDifferenceVegetationIndexComputation, parameters)
         {
             if (IsProvidedParameter(SpectralOperationParameters.IndexOfRedBand))
             {
@@ -103,17 +100,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
             }
             else
                 _indexOfNearInfraredBand = 1;
-
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand))
-            {
-                _indexOfShortWaveInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-            }
-            else if (_source.Imaging != null && _source.Imaging.SpectralDomains.Contains(SpectralDomain.ShortWavelengthInfrared))
-            {
-                _indexOfShortWaveInfraredBand = _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared);
-            }
-            else
-                _indexOfShortWaveInfraredBand = 2;
         }
 
         #endregion
@@ -129,79 +115,33 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double swir, nir, red;
-
-            switch (_source.Raster.Format)
-            {
-                case RasterFormat.Floating:
-                    switch (bandIndex)
-                    {
-                        case 0:
-                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            return (swir - nir) / (swir + nir);
-
-                        case 1:
-                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
-                            return (nir - red) / (nir + red);
-
-                        case 2:
-                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
-                            return (swir - red) / (swir + red);
-                    }
-                    break;
-                case RasterFormat.Integer:
-                    switch (bandIndex)
-                    {
-                        case 0:
-                            swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            return (swir - nir) / (swir + nir);
-
-                        case 1:
-                            nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
-                            return (nir - red) / (nir + red);
-
-                        case 2:
-                            swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                            red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
-                            return (swir - red) / (swir + red);
-                    }
-                    break;
-            }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Computes the specified floating spectral values.
-        /// </summary>
-        /// <param name="rowIndex">The zero-based row index of the value.</param>
-        /// <param name="columnIndex">The zero-based column index of the value.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
-        {
-            Double swir, nir, red;
+            Double nir, red;
 
             switch (_source.Raster.Format)
             {
                 case RasterFormat.Integer:
-                    swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
                     nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                     red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
                     break;
 
                 default:
-                    swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
                     nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                     red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
                     break;
-                    
             }
-            return new Double[] { (swir - nir) / (swir + nir), (nir - red) / (nir + red), (swir - red) / (swir + red) };
+
+            return (nir - red) / (nir + red);
+        }
+
+        /// <summary>
+        /// Computes the specified floating spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <returns>The spectral value at the specified index.</returns>
+        protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
+        {
+            return new Double[] { ComputeFloat(rowIndex, columnIndex, 0) };
         }
 
         #endregion
@@ -213,12 +153,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// </summary>
         protected override void PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source, 
+            _result = _source.Factory.CreateSpectralGeometry(_source,
                                                              PrepareRasterResult(RasterFormat.Floating,
-                                                                                 3,
+                                                                                 1,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 Enumerable.Repeat(64, 3).ToArray(),
+                                                                                 new Int32[] { 64 },
                                                                                  _source.Raster.Mapper));
         }
 

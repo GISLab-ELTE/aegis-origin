@@ -58,6 +58,9 @@
     <Compile Include="Spectral\Filtering\MedianFilterTransformation.cs" />
     <Compile Include="Spectral\Filtering\WeightedMedianFilterTransformation.cs" />
     <Compile Include="Spectral\Indexing\NormalizedDifferenceIndexComputation.cs" />
+    <Compile Include="Spectral\Indexing\NormalizedDifferenceSoilIndexComputation.cs" />
+    <Compile Include="Spectral\Indexing\NormalizedDifferenceVegetationIndexComputation.cs" />
+    <Compile Include="Spectral\Indexing\NormalizedDifferenceWaterIndexComputation.cs" />
     <Compile Include="Spectral\PerBandSpectralTransformation.cs" />
     <Compile Include="Spectral\Reflectance\TopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Resampling\SpectralResampling.cs" />
