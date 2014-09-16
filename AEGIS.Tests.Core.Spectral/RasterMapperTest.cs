@@ -226,6 +226,21 @@ namespace ELTE.AEGIS.Tests
 
                     Assert.AreEqual(300 + i * 10, coordinate.X);
                     Assert.AreEqual(1000 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate((Double)j, (Double)i);
+
+                    Assert.AreEqual(300 + i * 10, coordinate.X);
+                    Assert.AreEqual(1000 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate(j, i, RasterMapMode.ValueIsCoordinate);
+
+                    Assert.AreEqual(300 + i * 10, coordinate.X);
+                    Assert.AreEqual(1000 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate(j, i, RasterMapMode.ValueIsArea);
+
+                    Assert.AreEqual(295 + i * 10, coordinate.X);
+                    Assert.AreEqual(998.5 + j * 3, coordinate.Y);
                 }
 
 
@@ -238,8 +253,23 @@ namespace ELTE.AEGIS.Tests
                 {
                     Coordinate coordinate = mapper.MapCoordinate(j, i);
 
+                    Assert.AreEqual(300 + i * 10, coordinate.X);
+                    Assert.AreEqual(1000 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate((Double)j, (Double)i);
+
+                    Assert.AreEqual(300 + i * 10, coordinate.X);
+                    Assert.AreEqual(1000 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate(j, i, RasterMapMode.ValueIsCoordinate);
+
                     Assert.AreEqual(305 + i * 10, coordinate.X);
                     Assert.AreEqual(1001.5 + j * 3, coordinate.Y);
+
+                    coordinate = mapper.MapCoordinate(j, i, RasterMapMode.ValueIsArea);
+
+                    Assert.AreEqual(300 + i * 10, coordinate.X);
+                    Assert.AreEqual(1000 + j * 3, coordinate.Y);
                 }
         }
 
@@ -261,6 +291,23 @@ namespace ELTE.AEGIS.Tests
 
                     Assert.AreEqual(i, columnIndex);
                     Assert.AreEqual(j, rowIndex);
+
+                    Double floatRowIndex, floatColumnIndex;
+
+                    mapper.MapRaster(new Coordinate(300 + i * 10, 1000 + j * 3), out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
+
+                    mapper.MapRaster(new Coordinate(300 + i * 10, 1000 + j * 3), RasterMapMode.ValueIsCoordinate, out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
+
+                    mapper.MapRaster(new Coordinate(295 + i * 10, 998.5 + j * 3), RasterMapMode.ValueIsArea, out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
                 }
 
 
@@ -272,10 +319,27 @@ namespace ELTE.AEGIS.Tests
                 for (Int32 j = -100; j < 100; j += 3)
                 {
                     Int32 rowIndex, columnIndex;
-                    mapper.MapRaster(new Coordinate(305 + i * 10, 1001.5 + j * 3), out rowIndex, out columnIndex);
+                    mapper.MapRaster(new Coordinate(300 + i * 10, 1000 + j * 3), out rowIndex, out columnIndex);
 
                     Assert.AreEqual(i, columnIndex);
                     Assert.AreEqual(j, rowIndex);
+
+                    Double floatRowIndex, floatColumnIndex;
+
+                    mapper.MapRaster(new Coordinate(300 + i * 10, 1000 + j * 3), out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
+
+                    mapper.MapRaster(new Coordinate(305 + i * 10, 1001.5 + j * 3), RasterMapMode.ValueIsCoordinate, out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
+
+                    mapper.MapRaster(new Coordinate(300 + i * 10, 1000 + j * 3), RasterMapMode.ValueIsArea, out floatRowIndex, out floatColumnIndex);
+
+                    Assert.AreEqual(i, floatColumnIndex);
+                    Assert.AreEqual(j, floatRowIndex);
                 }
         }
 

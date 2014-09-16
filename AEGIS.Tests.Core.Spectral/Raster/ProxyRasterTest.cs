@@ -91,7 +91,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             Assert.IsFalse(raster.IsMapped);
             Assert.IsNull(raster.Mapper);
-            Assert.IsTrue(raster.Coordinates.All(coordinate => coordinate.Equals(Coordinate.Empty)));
+            Assert.IsTrue(raster.Coordinates.All(coordinate => !coordinate.IsValid));
 
             Assert.AreEqual(_service.Object.IsReadable, raster.IsReadable);
             Assert.AreEqual(_service.Object.IsWritable, raster.IsWritable);
@@ -105,7 +105,7 @@ namespace ELTE.AEGIS.Tests.Raster
 
             // successful construction with mapping
 
-            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsCoordinate, 1000, 1000, 0, 10, 10, 1);
+            RasterMapper mapper = RasterMapper.FromTransformation(RasterMapMode.ValueIsArea, 1000, 1000, 0, 10, 10, 1);
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
             Assert.IsTrue(raster.IsMapped);

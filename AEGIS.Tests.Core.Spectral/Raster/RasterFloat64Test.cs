@@ -60,7 +60,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
             Assert.Throws<ArgumentOutOfRangeException>(() => { RasterFloat64 raster = new RasterFloat64(null, 1, -1, 1, null, null); });
             Assert.Throws<ArgumentOutOfRangeException>(() => { RasterFloat64 raster = new RasterFloat64(null, 1, 1, -1, null, null); });
             Assert.Throws<ArgumentOutOfRangeException>(() => { RasterFloat64 raster = new RasterFloat64(null, 1, 1, 1, new Int32[] { -1 }, null); });
-            Assert.Throws<ArgumentOutOfRangeException>(() => { RasterFloat64 raster = new RasterFloat64(null, 1, 1, 1, new Int32[] { 33 }, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { RasterFloat64 raster = new RasterFloat64(null, 1, 1, 1, new Int32[] { 65 }, null); });
 
 
             // argument exceptions
