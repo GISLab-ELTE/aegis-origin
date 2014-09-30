@@ -1418,7 +1418,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// Returns the file system entries located on the specified path.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -1438,7 +1438,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public String[] GetFileSystemEntries(String path)
+        public FileSystemEntry[] GetFileSystemEntries(String path)
         {
             return GetFileSystemEntries(path, "*", false);
         }
@@ -1447,7 +1447,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// Returns the file system entries located on the specified path asynchronously.
         /// </summary>
         /// <param name="path">The path of the directory to search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -1467,7 +1467,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async Task<String[]> GetFileSystemEntriesAsync(String path)
+        public async Task<FileSystemEntry[]> GetFileSystemEntriesAsync(String path)
         {
             return await GetFileSystemEntriesAsync(path, "*", false);
         }
@@ -1478,7 +1478,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
         /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -1500,7 +1500,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public abstract String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive);
+        public abstract FileSystemEntry[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive);
 
         /// <summary>
         /// Returns the file system entries located on the specified path asynchronously.
@@ -1508,7 +1508,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
         /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -1530,7 +1530,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async virtual Task<String[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
+        public async virtual Task<FileSystemEntry[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
         {
             return await Task.Run(() => GetFileSystemEntries(path));
         }

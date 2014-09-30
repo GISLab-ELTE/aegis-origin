@@ -50,6 +50,7 @@
     <Compile Include="Storage\Authentication\AnonymousFileSystemAuthentication.cs" />
     <Compile Include="Storage\Authentication\UsernamePasswordFileSystemAuthentication.cs" />
     <Compile Include="Storage\FileSystemAuthenticationType.cs" />
+    <Compile Include="Storage\FileSystemEntry.cs" />
     <Compile Include="Storage\IFileSystemAuthentication.cs" />
     <Compile Include="Storage\ConnectionException.cs" />
     <Compile Include="Storage\FileSystem.cs" />
@@ -62,6 +63,9 @@
     <Compile Include="GeometryStreamReader.cs" />
     <Compile Include="GeometryStreamWriter.cs" />
     <Compile Include="Shapefile\ShapefileWriter.cs" />
+    <Compile Include="Storage\Operation\FileSystemOperationException.cs" />
+    <Compile Include="Storage\Operation\FileSystemOperationResult.cs" />
+    <Compile Include="Storage\Operation\FileSystemOperationResultCode.cs" />
     <Compile Include="WellKnown\Compatility\GeometryCompatibility.cs" />
     <Compile Include="WellKnown\GeometryConverter.WellKnownBinary.cs" />
     <Compile Include="WellKnown\GeometryConverter.WellKnownText.cs" />

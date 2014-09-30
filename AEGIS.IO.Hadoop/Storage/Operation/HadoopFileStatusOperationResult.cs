@@ -38,6 +38,12 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         public String Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the type of the entry.
+        /// </summary>
+        /// <value>The type of the entry.</value>
+        public FileSystemEntryType EntryType { get; set; }
+
+        /// <summary>
         /// Gets or sets the time of the last access.
         /// </summary>
         /// <value>The time of the last access.</value>
@@ -61,12 +67,6 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <value>The size of the blocks in bytes.</value>
         public Int64 BlockSize { get; set; }
 
-        /// <summary>
-        /// Gets or sets the type of the entry.
-        /// </summary>
-        /// <value>The type of the entry.</value>
-        public FileSystemEntryType EntryType { get; set; }
-
         #endregion
 
         #region Constructors
@@ -82,21 +82,21 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <param name="request">The request of the operation.</param>
         /// <param name="path">The path of the entry.</param>
         /// <param name="name">The name of the entry.</param>
+        /// <param name="entryType">The type of the entry.</param>
         /// <param name="accessTime">The time of the last access.</param>
         /// <param name="modificationTime">The time of the last modification.</param>
         /// <param name="length">The length of the file.</param>
         /// <param name="blockSize">The size of the block.</param>
-        /// <param name="entryType">the type of the entry.</param>
-        public HadoopFileStatusOperationResult(String request, String path, String name, DateTime accessTime, DateTime modificationTime, Int64 length, Int64 blockSize, FileSystemEntryType entryType)
+        public HadoopFileStatusOperationResult(String request, String path, String name, FileSystemEntryType entryType, DateTime accessTime, DateTime modificationTime, Int64 length, Int64 blockSize)
             : base(request) 
         {
             Path = path;
             Name = name;
+            EntryType = entryType;
             AccessTime = accessTime;
             ModificationTime = modificationTime;
             Length = length;
             BlockSize = blockSize;
-            EntryType = entryType;
         }
 
         #endregion

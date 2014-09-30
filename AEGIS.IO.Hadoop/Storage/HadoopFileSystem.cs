@@ -459,8 +459,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// The path is in an invalid format.
         /// or
-        /// The path exceeds the maximum length supported by the file system.
-        /// or
         /// The file mode is invalid.
         /// or
         /// The file access is invalid.
@@ -544,8 +542,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// The path is in an invalid format.
         /// or
-        /// The path exceeds the maximum length supported by the file system.
-        /// or
         /// The file mode is invalid.
         /// or
         /// The file access is invalid.
@@ -623,8 +619,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// The path is in an invalid format.
         /// or
         /// The path does not exist.
-        /// or
-        /// The file system entry on the specified path is currently in use.
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
         /// <exception cref="ConnectionException">
@@ -1998,7 +1992,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
         /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -2013,7 +2007,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public override String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
+        public override FileSystemEntry[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
@@ -2025,7 +2019,15 @@ namespace ELTE.AEGIS.IO.Storage
                 List<HadoopFileStatusOperationResult> result = GetFileEntryStatusListAsync(path, searchPattern, recursive).Result;
 
                 // convert and sort the result
-                return result.Select(fileStatusResult => fileStatusResult.Path).OrderBy(resultPath => resultPath).ToArray();
+                return result.Select(fileStatusResult => new FileSystemEntry { 
+                    Path = fileStatusResult.Path, 
+                    Name = fileStatusResult.Name, 
+                    Type = fileStatusResult.EntryType, 
+                    CreationTime = DateTime.MinValue, 
+                    LastAccessTime = fileStatusResult.AccessTime, 
+                    LastModificationTime = fileStatusResult.ModificationTime, 
+                    Length = fileStatusResult.Length 
+                }).OrderBy(entry => entry.Path).ToArray();
             }
             catch (AggregateException ex)
             {
@@ -2062,7 +2064,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
         /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -2077,7 +2079,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async override Task<String[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
+        public async override Task<FileSystemEntry[]> GetFileSystemEntriesAsync(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
@@ -2089,7 +2091,16 @@ namespace ELTE.AEGIS.IO.Storage
                 List<HadoopFileStatusOperationResult> result = await GetFileEntryStatusListAsync(path, searchPattern, recursive);
 
                 // convert and sort the result
-                return result.Select(fileStatusResult => fileStatusResult.Path).OrderBy(resultPath => resultPath).ToArray();
+                return result.Select(fileStatusResult => new FileSystemEntry
+                {
+                    Path = fileStatusResult.Path,
+                    Name = fileStatusResult.Name,
+                    Type = fileStatusResult.EntryType,
+                    CreationTime = DateTime.MinValue,
+                    LastAccessTime = fileStatusResult.AccessTime,
+                    LastModificationTime = fileStatusResult.ModificationTime,
+                    Length = fileStatusResult.Length
+                }).OrderBy(entry => entry.Path).ToArray();
             }
             catch (AggregateException ex)
             {
@@ -2176,7 +2187,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // enqueue the starting directories
                 Queue<String> directories = new Queue<String>((result as HadoopFileListingOperationResult).StatusList.
                                                                   Where(status => status.EntryType == FileSystemEntryType.Directory).
-                                                                  Select(status => path + status.Name));
+                                                                  Select(status => status.Name));
 
                 while (directories.Count > 0)
                 {
@@ -2185,9 +2196,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                     // create operation for the inner directory
                     if (_client != null)
-                        operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + directoryPath, _authentication);
+                        operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path + directoryPath, _authentication);
                     else
-                        operation = new HadoopFileListingOperation(Location.ToString() + RootPath + directoryPath, _authentication);
+                        operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path + directoryPath, _authentication);
 
                     try
                     {
@@ -2202,13 +2213,13 @@ namespace ELTE.AEGIS.IO.Storage
 
                     // filter the result
                     statusList.AddRange((result as HadoopFileListingOperationResult).StatusList.
-                                            Select(status => { status.Path = directoryPath + DirectorySeparator + status.Name; return status; }).
-                                            Where(status => IsMatch(status.Path, searchPattern)));
+                                            Select(status => { status.Path = path + directoryPath + DirectorySeparator + status.Name; return status; }).
+                                            Where(status => IsMatch(directoryPath + DirectorySeparator + status.Name, searchPattern)));
 
                     // add inner directories to the queue
                     foreach (String innerDirectory in (result as HadoopFileListingOperationResult).StatusList.
                                                           Where(status => status.EntryType == FileSystemEntryType.Directory).
-                                                          Select(status => directoryPath + DirectorySeparator + status.Name))
+                                                          Select(status => path + directoryPath + DirectorySeparator + status.Name))
                         directories.Enqueue(innerDirectory);
                 }
             }

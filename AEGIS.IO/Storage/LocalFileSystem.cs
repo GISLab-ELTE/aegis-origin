@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.IO.Storage.Authentication;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -958,7 +959,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="path">The path of the directory to search.</param>
         /// <param name="searchPattern">The search string to match against the names of files in path.</param>
         /// <param name="recursive">A value that specifies whether subdirectories are included in the search.</param>
-        /// <returns>An array containing the full paths to all file system entries.</returns>
+        /// <returns>An array containing the file system entry informations.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty, or consists only of whitespace characters.
@@ -975,7 +976,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// </exception>
         /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission for the path.</exception>
         /// <exception cref="ConnectionException">No connection is available to the file system.</exception>
-        public override String[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
+        public override FileSystemEntry[] GetFileSystemEntries(String path, String searchPattern, Boolean recursive)
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
@@ -984,7 +985,48 @@ namespace ELTE.AEGIS.IO.Storage
 
             try
             {
-                return Directory.GetFileSystemEntries(path, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                // read the names of the entries
+                String[] entryNames = Directory.GetFileSystemEntries(path, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+
+                // read directory and file info
+                FileSystemEntry[] result = new FileSystemEntry[entryNames.Length];
+
+                for (Int32 entryIndex = 0; entryIndex < entryNames.Length; entryIndex++)
+                {
+                    // check whether the entry is a file or directory
+                    if (Directory.Exists(entryNames[entryIndex]))
+                    {
+                        DirectoryInfo info = new DirectoryInfo(entryNames[entryIndex]);
+
+                        result[entryIndex] = new FileSystemEntry
+                        {
+                            Path = info.FullName,
+                            Name = info.Name,
+                            Type = FileSystemEntryType.Directory,
+                            CreationTime = info.CreationTime,
+                            LastAccessTime = info.LastAccessTime,
+                            LastModificationTime = info.LastWriteTime,
+                            Length = 0
+                        };
+                    }
+                    else
+                    {
+                        FileInfo info = new FileInfo(entryNames[entryIndex]);
+
+                        result[entryIndex] = new FileSystemEntry
+                        {
+                            Path = info.FullName,
+                            Name = info.Name,
+                            Type = FileSystemEntryType.Directory,
+                            CreationTime = info.CreationTime,
+                            LastAccessTime = info.LastAccessTime,
+                            LastModificationTime = info.LastWriteTime,
+                            Length = info.Length
+                        };
+                    }
+                }
+
+                return result;
             }
             catch (ArgumentException ex)
             {

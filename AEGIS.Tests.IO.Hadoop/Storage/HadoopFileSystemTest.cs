@@ -23,7 +23,7 @@ using System.Net.Http;
 namespace ELTE.AEGIS.Tests.IO.Storage
 {
     /// <summary>
-    /// Test fixture for the <see cref="HadoopFileSystem"/> class.
+    /// Test fixture for class <see cref="HadoopFileSystem"/>.
     /// </summary>
     [TestFixture]
     public class HadoopFileSystemTest
@@ -113,12 +113,8 @@ namespace ELTE.AEGIS.Tests.IO.Storage
 
             fileSystem = new HadoopFileSystem(_hostname, _portNumber, _authentication);
 
-            if (!fileSystem.IsConnected)
-                Assert.Inconclusive();
-
             Assert.AreEqual(_authentication, fileSystem.Authentication);
-
-
+            
             // exceptions
             
             Assert.Throws<ArgumentNullException>(() => fileSystem = new HadoopFileSystem(null, 1));
@@ -434,11 +430,11 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             fileSystem.CreateDirectory(_directoryPath + "/InnerDirectory1");
             fileSystem.CreateDirectory(_directoryPath + "/InnerDirectory2");
 
-            String[] directories = fileSystem.GetFileSystemEntries(_directoryPath);
+            FileSystemEntry[] directories = fileSystem.GetFileSystemEntries(_directoryPath);
 
             Assert.AreEqual(2, directories.Length);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0]);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory2", directories[1]);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0].Path);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory2", directories[1].Path);
 
 
             // with search pattern
@@ -446,7 +442,7 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             directories = fileSystem.GetFileSystemEntries(_directoryPath, "*1", false);
 
             Assert.AreEqual(1, directories.Length);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0]);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0].Path);
 
 
             // recursive
@@ -457,10 +453,10 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             directories = fileSystem.GetFileSystemEntries(_directoryPath, "*", true);
 
             Assert.AreEqual(4, directories.Length);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0]);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory1/DeepInnerDirectory1", directories[1]);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory1/DeepInnerDirectory2", directories[2]);
-            Assert.AreEqual(_directoryPath + "/InnerDirectory2", directories[3]);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory1", directories[0].Path);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory1/DeepInnerDirectory1", directories[1].Path);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory1/DeepInnerDirectory2", directories[2].Path);
+            Assert.AreEqual(_directoryPath + "/InnerDirectory2", directories[3].Path);
 
 
             fileSystem.Delete(_directoryPath);

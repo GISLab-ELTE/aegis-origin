@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// Gets or sets the path of the operation.
         /// </summary>
         /// <value>The absolute path to the operation.</value>
-        public String Path { get; set; }
+        public String Path { get; private set; }
 
         #endregion
 
@@ -236,7 +236,6 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <summary>
         /// Executes the operation asynchronously.
         /// </summary>
-        /// <param name="content">The content.</param>
         /// <returns>The result of the operation.</returns>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.Net.Http.HttpRequestException">The remote address returned with an invalid response.</exception>
