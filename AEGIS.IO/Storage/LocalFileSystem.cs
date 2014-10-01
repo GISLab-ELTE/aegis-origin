@@ -33,11 +33,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// </summary>
         private static readonly Uri LocalhostUri = new Uri("file://localhost/");
 
-        /// <summary>
-        /// The anyonymous authentication. This field is read-only.
-        /// </summary>
-        private static readonly IFileSystemAuthentication AnyonymousAuthentication = new AnonymousFileSystemAuthentication();
-
         #endregion
 
         #region Public FileSystem properties
@@ -109,12 +104,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// <value><c>true</c> if operations ans credentials are handled in a secure manner; otherwise, <c>false</c>.</value>
         public override Boolean IsSecureConnection { get { return true; } }
 
-        /// <summary>
-        /// Gets the authentication used by the file system.
-        /// </summary>
-        /// <value>The authentication used by the file system.</value>
-        public override IFileSystemAuthentication Authentication { get { return AnyonymousAuthentication; } }
-
         #endregion
 
         #region Constructors
@@ -122,7 +111,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalFileSystem"/> class.
         /// </summary>
-        public LocalFileSystem() : base(LocalhostUri) { }
+        public LocalFileSystem() : base(LocalhostUri, null) { }
 
         #endregion
 

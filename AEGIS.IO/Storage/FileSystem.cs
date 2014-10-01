@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.IO.Storage.Authentication;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -290,7 +291,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// Gets the authentication used by the file system.
         /// </summary>
         /// <value>The authentication used by the file system.</value>
-        public abstract IFileSystemAuthentication Authentication { get; }
+        public IFileSystemAuthentication Authentication { get; private set; }
 
         /// <summary>
         /// Gets the location of the file system.
@@ -306,9 +307,13 @@ namespace ELTE.AEGIS.IO.Storage
         /// Initializes a new instance of the <see cref="FileSystem"/> class.
         /// </summary>
         /// <param name="location">The URI of the file system location.</param>
-        protected FileSystem(Uri location)
+        protected FileSystem(Uri location, IFileSystemAuthentication authentication)
         {
+            if (location == null)
+                throw new ArgumentNullException("location", "The location is null.");
+
             Location = location;
+            Authentication = authentication ?? new AnonymousFileSystemAuthentication();
         }
 
         #endregion

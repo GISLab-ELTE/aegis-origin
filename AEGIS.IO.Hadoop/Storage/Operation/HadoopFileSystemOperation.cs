@@ -93,7 +93,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <summary>
         /// Gets or sets the authentication used for the operation.
         /// </summary>
-        /// <value>The HDFS authentication.</value>
+        /// <value>The Hadoop authentication.</value>
         public IHadoopFileSystemAuthentication Authentication { get; set; }
 
         /// <summary>

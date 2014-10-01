@@ -1,4 +1,4 @@
-﻿/// <copyright file="HadoopBooleanOperationResult.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="HadoopFileSystem.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -43,11 +43,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// The HTTP client.
         /// </summary>
         private HttpClient _client;
-
-        /// <summary>
-        /// The authentication.
-        /// </summary>
-        private IHadoopFileSystemAuthentication _authentication;
 
         #endregion
 
@@ -119,12 +114,6 @@ namespace ELTE.AEGIS.IO.Storage
         /// </summary>
         /// <value><c>true</c> if operations ans credentials are handled in a secure manner; otherwise, <c>false</c>.</value>
         public override Boolean IsSecureConnection { get { return false; } }
-
-        /// <summary>
-        /// Gets the authentication used by the file system.
-        /// </summary>
-        /// <value>The authentication used by the file system.</value>
-        public override IFileSystemAuthentication Authentication { get { return _authentication; } }
 
         #endregion
 
@@ -210,44 +199,40 @@ namespace ELTE.AEGIS.IO.Storage
         /// <param name="location">The URI of the file system location.</param>
         /// <exception cref="System.ArgumentNullException">The location is null.</exception>
         public HadoopFileSystem(Uri location)
-            : base(location)
+            : base(location, new HadoopAnonymousAuthentication())
         {
             if (location == null)
                 throw new ArgumentNullException("location", "The location is null.");
 
-            _authentication = new HadoopAnonymousAuthentication();
             _client = null;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopFileSystem" /> class.
         /// </summary>
-        /// <param name="hostname">The HDFS hostname.</param>
-        /// <param name="portNumber">The HDFS port.</param>
-        /// <param name="authentication">The authentication.</param>
+        /// <param name="location">The location of the file system.</param>
+        /// <param name="authentication">The authentication used by file system operation.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The location is null.
         /// or
         /// The authentication is null.
         /// </exception>
         public HadoopFileSystem(Uri location, IHadoopFileSystemAuthentication authentication)
-            : base(location)
+            : base(location, new HadoopAnonymousAuthentication())
         {
             if (location == null)
                 throw new ArgumentNullException("location", "The location is null.");
             if (authentication == null)
                 throw new ArgumentNullException("authentication", "The authentication is null.");
 
-            _authentication = authentication;
             _client = null;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopFileSystem" /> class.
         /// </summary>
-        /// <param name="hostname">The HDFS hostname.</param>
-        /// <param name="portNumber">The HDFS port.</param>
-        /// <param name="authentication">The authentication.</param>
+        /// <param name="location">The location of the file system.</param>
+        /// <param name="authentication">The authentication used by file system operation.</param>
         /// <param name="client">The HTTP client.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The location is null.
@@ -257,7 +242,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// The HTTP client is null.
         /// </exception>
         public HadoopFileSystem(Uri location, IHadoopFileSystemAuthentication authentication, HttpClient client)
-            : base(location)
+            : base(location, authentication)
         {
             if (location == null)
                 throw new ArgumentNullException("location", "The location is null.");
@@ -266,15 +251,13 @@ namespace ELTE.AEGIS.IO.Storage
             if (client == null)
                 throw new ArgumentNullException("client", "The client is null.");
 
-            _authentication = authentication;
             _client = client;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
         /// </summary>
-        /// <param name="hostname">Name of the host.</param>
-        /// <param name="portNumber">The port number.</param>
+        /// <param name="location">The location of the file system.</param>
         /// <param name="client">The HTTP client.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The location is null.
@@ -282,14 +265,13 @@ namespace ELTE.AEGIS.IO.Storage
         /// The HTTP client is null.
         /// </exception>
         public HadoopFileSystem(Uri location, HttpClient client)
-            : base(location)
+            : base(location, new HadoopAnonymousAuthentication())
         {
             if (location == null)
                 throw new ArgumentNullException("location", "The location is null.");
             if (client == null)
                 throw new ArgumentNullException("client", "The client is null.");
 
-            _authentication = new HadoopAnonymousAuthentication();
             _client = client;
         }
 
@@ -326,9 +308,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
                 else
-                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
@@ -392,9 +374,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopCreateDirectoryOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
                 else
-                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopCreateDirectoryOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
@@ -491,9 +473,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
                 else
-                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
@@ -574,9 +556,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopReadFileOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
                 else
-                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, _authentication);
+                    operation = new HadoopReadFileOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
@@ -639,9 +621,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, _authentication, true);
+                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication, true);
                 else
-                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, _authentication, true);
+                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication, true);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
@@ -707,9 +689,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, _authentication, true);
+                    operation = new HadoopDeleteOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication, true);
                 else
-                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, _authentication, true);
+                    operation = new HadoopDeleteOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication, true);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
@@ -796,9 +778,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, Authentication as IHadoopFileSystemAuthentication, destinationPath);
                 else
-                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, Authentication as IHadoopFileSystemAuthentication, destinationPath);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
@@ -885,9 +867,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // create operation
                 if (_client != null)
-                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+                    operation = new HadoopRenameOperation(_client, Location.ToString() + RootPath + sourcePath, Authentication as IHadoopFileSystemAuthentication, destinationPath);
                 else
-                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, _authentication, destinationPath);
+                    operation = new HadoopRenameOperation(Location.ToString() + RootPath + sourcePath, Authentication as IHadoopFileSystemAuthentication, destinationPath);
 
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
@@ -2146,9 +2128,9 @@ namespace ELTE.AEGIS.IO.Storage
 
             // create operation
             if (_client != null)
-                operation = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                operation = new HadoopFileStatusOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
             else
-                operation = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, _authentication);
+                operation = new HadoopFileStatusOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
             // execute operation
             return (await operation.ExecuteAsync()) as HadoopFileStatusOperationResult;
@@ -2165,9 +2147,9 @@ namespace ELTE.AEGIS.IO.Storage
 
             // create operation
             if (_client != null)
-                operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, _authentication);
+                operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
             else
-                operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path, _authentication);
+                operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path, Authentication as IHadoopFileSystemAuthentication);
 
             // execute operation
             HadoopFileListingOperationResult result = (await operation.ExecuteAsync()) as HadoopFileListingOperationResult;
@@ -2196,9 +2178,9 @@ namespace ELTE.AEGIS.IO.Storage
 
                     // create operation for the inner directory
                     if (_client != null)
-                        operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path + directoryPath, _authentication);
+                        operation = new HadoopFileListingOperation(_client, Location.ToString() + RootPath + path + directoryPath, Authentication as IHadoopFileSystemAuthentication);
                     else
-                        operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path + directoryPath, _authentication);
+                        operation = new HadoopFileListingOperation(Location.ToString() + RootPath + path + directoryPath, Authentication as IHadoopFileSystemAuthentication);
 
                     try
                     {
