@@ -91,20 +91,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filterRadius * _filterRadius];
-            Int32 rowBase = rowIndex - _filterRadius / 2;
-            Int32 columnBase = columnIndex - _filterRadius / 2;
+            Double[] filteredValues = new Double[_filter.Radius * _filter.Radius];
+            Int32 rowBase = rowIndex - _filter.Radius / 2;
+            Int32 columnBase = columnIndex - _filter.Radius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filterRadius; k++)
-                for (Int32 l = 0; l < _filterRadius; l++)
+            for (Int32 k = 0; k < _filter.Radius; k++)
+                for (Int32 l = 0; l < _filter.Radius; l++)
                 {
                     filteredValues[index] += _filter.Kernel[k, l] * _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(filteredValues);
 
-            return (UInt32)filteredValues[_filterRadius * _filterRadius / 2];
+            return (UInt32)filteredValues[_filter.Radius * _filter.Radius / 2];
         }
 
         /// <summary>
@@ -116,20 +116,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filterRadius * _filterRadius];
-            Int32 rowBase = rowIndex - _filterRadius / 2;
-            Int32 columnBase = columnIndex - _filterRadius / 2;
+            Double[] filteredValues = new Double[_filter.Radius * _filter.Radius];
+            Int32 rowBase = rowIndex - _filter.Radius / 2;
+            Int32 columnBase = columnIndex - _filter.Radius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filterRadius; k++)
-                for (Int32 l = 0; l < _filterRadius; l++)
+            for (Int32 k = 0; k < _filter.Radius; k++)
+                for (Int32 l = 0; l < _filter.Radius; l++)
                 {
                     filteredValues[index] += _filter.Kernel[k, l] * _source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(filteredValues);
 
-            return filteredValues[_filterRadius * _filterRadius / 2];
+            return filteredValues[_filter.Radius * _filter.Radius / 2];
         }
 
         #endregion

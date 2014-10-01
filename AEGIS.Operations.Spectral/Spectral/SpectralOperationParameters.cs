@@ -95,7 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _filterFactor;
         private static OperationParameter _filterKernel;
         private static OperationParameter _filterOffset;
-        private static OperationParameter _filterSize;
+        private static OperationParameter _filterRadius;
         private static OperationParameter _filterWeight;
         private static OperationParameter _gammaValue;
         private static OperationParameter _gaussianStandardDeviation;
@@ -118,6 +118,9 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _lowerThresholdBoundary;
         private static OperationParameter _numberOfRows;
         private static OperationParameter _numberOfColumns;
+        private static OperationParameter _sharpeningAmount;
+        private static OperationParameter _sharpeningRadius;
+        private static OperationParameter _sharpeningThreshold;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
         private static OperationParameter _spectralResamplingStrategy;
@@ -241,7 +244,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         {
             get
             {
-                return _filterSize ?? (_filterSize =
+                return _filterRadius ?? (_filterRadius =
                     OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223205", "Radius of the filter",
                                                                       "The radius of the filter determining the number of neighbouring pixels to be convoluted by the filter. The radius must be a positive number.", null, 
                                                                       1,
@@ -273,7 +276,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gammaValue ?? (_gammaValue =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223204", "Gamma value",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223104", "Gamma value",
                                                                        "The gamma value used for gamma correction.", null)
                 );
             }
@@ -287,7 +290,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gaussianStandardDeviation ?? (_gaussianStandardDeviation =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223104", "Gaussian standard deviation",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223271", "Gaussian standard deviation",
                                                                        "The standard deviation value for the Gaussian blur filter.", null, 1)
                 );
             }
@@ -301,7 +304,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _histogramMatchFunction ?? (_histogramMatchFunction =
-                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223271", "Histogram match function",
+                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223123", "Histogram match function",
                                                                                     "The function that is matched against the current raster histogram.", null)
                     );
             }
@@ -580,6 +583,56 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Amount of sharpening.
+        /// </summary>
+        public static OperationParameter SharpeningAmount
+        {
+            get
+            {
+                return _sharpeningAmount ?? (_sharpeningAmount =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223241", "Amount of sharpening",
+                                                                       "The strength of the sharpening effect.", null,
+                                                                       0.8, 
+                                                                       Conditions.IsBetween(0, 1))
+                );
+
+            }
+        }
+
+        /// <summary>
+        /// Radius of sharpening.
+        /// </summary>
+        public static OperationParameter SharpeningRadius
+        {
+            get
+            {
+                return _sharpeningRadius ?? (_sharpeningRadius =
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223242", "Radius of sharpening",
+                                                                      "Radius affects the size of the edges to be enhanced or how wide the edge rims become, so a smaller radius enhances smaller-scale detail.", null,
+                                                                      1,
+                                                                      Conditions.IsPositive())
+                    );
+            }
+        }
+
+        /// <summary>
+        /// Threshold of sharpening.
+        /// </summary>
+        public static OperationParameter SharpeningThreshold
+        {
+            get
+            {
+                return _sharpeningThreshold ?? (_sharpeningThreshold =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223243", "Threshold of sharpening",
+                                                                       "Threshold controls the minimum brightness change that will be sharpened or how far apart adjacent tonal values have to be before the filter does anything.", null,
+                                                                       0,
+                                                                       Conditions.IsBetween(0, 1))
+                );
+
+            }
+        }
+
+        /// <summary>
         /// Spectral factor.
         /// </summary>
         public static OperationParameter SpectralFactor
@@ -591,7 +644,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                        "A factor by which all spectral values are multiplied.", null,
                                                                        1)
                 );
-
             }
         }
 

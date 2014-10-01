@@ -44,7 +44,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// Creates a gaussian filter.
         /// </summary>
         /// <param name="radius">The radius of the filter.</param>
-        /// <returns>The produces gaussian filter.</returns>
+        /// <returns>The produced gaussian filter.</returns>
         public static Filter CreateGaussianFilter(Int32 radius)
         {
             return CreateGaussianFilter(radius, 1);
@@ -55,7 +55,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// </summary>
         /// <param name="radius">The radius of the filter.</param>
         /// <param name="sigma">The standard deviation of the Gaussian distribution.</param>
-        /// <returns>The produces gaussian filter.</returns>
+        /// <returns>The produced gaussian filter.</returns>
         public static Filter CreateGaussianFilter(Int32 radius, Double sigma)
         {
             // source: http://en.wikipedia.org/wiki/Gaussian_blur
@@ -76,6 +76,75 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 }
 
             return new Filter(matrix, sum, 0);
+        }
+
+        /// <summary>
+        /// Creates a mean removal filter.
+        /// </summary>
+        /// <param name="weight">The weight of the mean value.</param>
+        /// <returns>The produced mean removal filter.</returns>
+        public static Filter CreateMeanRemovalFilter(Double weight)
+        {
+            Matrix matrix = new Matrix(3, 3, -1);
+            matrix[1, 1] = weight;
+
+            return new Filter(matrix, weight - 8, 0);
+        }
+
+        /// <summary>
+        /// Creates a horizontal Prewitt filter.
+        /// </summary>
+        /// <returns>The produced Prewitt filter.</returns>
+        public static Filter CreatePrewittHorizontalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[1, 0] = matrix[2, 0] = -1;
+            matrix[0, 2] = matrix[1, 2] = matrix[2, 2] = 1;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a vertical Prewitt filter.
+        /// </summary>
+        /// <returns>The produced Prewitt filter.</returns>
+        public static Filter CreatePrewittVerticalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[0, 1] = matrix[0, 2] = -1;
+            matrix[2, 0] = matrix[2, 1] = matrix[2, 2] = 1;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a horizontal Sobel filter.
+        /// </summary>
+        /// <returns>The produced Sobel filter.</returns>
+        public static Filter CreateSobelHorizontalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[2, 0] = -1;
+            matrix[1, 0] = -2;
+            matrix[0, 2] = matrix[2, 2] = 1;
+            matrix[1, 2] = 2;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a vertical Sobel filter.
+        /// </summary>
+        /// <returns>The produced Sobel filter.</returns>
+        public static Filter CreateSobelVerticalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[0, 2] = 1;
+            matrix[0, 1] = 2;
+            matrix[2, 0] = matrix[2, 2] = -1;
+            matrix[2, 1] = -2;
+
+            return new Filter(matrix, 1, 0);
         }
 
         #endregion

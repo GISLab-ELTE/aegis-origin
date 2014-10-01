@@ -100,6 +100,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _inverseGammaCorrection;
         private static SpectralOperationMethod _laplaceFilter;
         private static SpectralOperationMethod _maximumFilter;
+        private static SpectralOperationMethod _meanRemovalFilter;
         private static SpectralOperationMethod _medianFilter;
         private static SpectralOperationMethod _minimumFilter;
         private static SpectralOperationMethod _normalizedDifferenceIndexComputation;
@@ -107,11 +108,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _normalizedDifferenceVegetationIndexComputation;
         private static SpectralOperationMethod _normalizedDifferenceWaterIndexComputation;
         private static SpectralOperationMethod _otsuThresholdingClassification;
+        private static SpectralOperationMethod _prewittFilter;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
+        private static SpectralOperationMethod _sobelFilter;
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
         private static SpectralOperationMethod _topOfAthmospehereReflectanceComputation;
+        private static SpectralOperationMethod _unsharpMasking;
         private static SpectralOperationMethod _waterloggingClassification;
         private static SpectralOperationMethod _weightedMedianFilter;
 
@@ -144,7 +148,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _boxFilter ?? (_boxFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213202", "Box filter",
-                                                                         "Returns the average of the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the mean of the neighbouring values, thus smothening the image.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -358,7 +362,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _maximumFilter ?? (_maximumFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213215", "Maximum filter",
-                                                                         "Returns the maximum of the the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the maximum of the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -375,10 +379,27 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _minimumFilter ?? (_minimumFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213216", "Minimum filter",
-                                                                         "Returns the minimum of the the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the minimum of the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+        /// <summary>
+        /// Mean removal filter.
+        /// </summary>
+        public static SpectralOperationMethod MeanRemovalFilter
+        {
+            get
+            {
+                return _meanRemovalFilter ?? (_meanRemovalFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213241", "Mean removal filter",
+                                                                         "Removes the mean of the neighbouring values from the central value. This filter has an opposite effect as the box filter, thus helping image sharpening.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.FilterWeight,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -486,6 +507,22 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Prewitt filter.
+        /// </summary>
+        public static SpectralOperationMethod PrewittFilter
+        {
+            get
+            {
+                return _prewittFilter ?? (_prewittFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213264", "Prewitt filter",
+                                                                         "The Prewitt filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+        /// <summary>
         /// Saturating contrast enhancement.
         /// </summary>
         public static SpectralOperationMethod SaturatingContrastEnhancement
@@ -496,6 +533,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213130", "Saturating contrast enhancement",
                                                                          "Saturating contrast enhancement is a linear transformation method, where the raster histogram is pulled to fill the entire spectrum.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+        /// <summary>
+        /// Sobel filter.
+        /// </summary>
+        public static SpectralOperationMethod SobelFilter
+        {
+            get
+            {
+                return _sobelFilter ?? (_sobelFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213265", "Sobel filter",
+                                                                         "The Sobel filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -567,6 +620,25 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Unsharp masking.
+        /// </summary>
+        public static SpectralOperationMethod UnsharpMasking
+        {
+            get
+            {
+                return _unsharpMasking ?? (_unsharpMasking =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213242", "Unsharp masking",
+                                                                         "Unsharp masking uses a blurred positive image to create a mask of the original image, which is then combined with the negative image to create a sharper image. The method uses Gaussian blur technique.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.SharpeningAmount,
+                                                                         SpectralOperationParameters.SharpeningRadius,
+                                                                         SpectralOperationParameters.SharpeningThreshold));
+            }
+        }
+
+        /// <summary>
         /// Waterlogging classification.
         /// </summary>
         public static SpectralOperationMethod WaterloggingClassification
@@ -574,7 +646,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _waterloggingClassification ?? (_waterloggingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Waterlogging classification",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::214624", "Waterlogging classification",
                                                                         "", null, "1.0.0",
                                                                         false, SpectralOperationDomain.BandLocal,
                                                                         ExecutionMode.OutPlace | ExecutionMode.InPlace,

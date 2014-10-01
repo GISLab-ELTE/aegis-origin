@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         public GaussianBlurFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.GaussianBlurFilter, parameters)
         {
-            _filter = FilterFactory.CreateGaussianFilter(_filterRadius, Convert.ToDouble(ResolveParameter(SpectralOperationParameters.GaussianStandardDeviation)));
+            _filter = FilterFactory.CreateGaussianFilter(Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius)), Convert.ToDouble(ResolveParameter(SpectralOperationParameters.GaussianStandardDeviation)));
         }
 
         #endregion

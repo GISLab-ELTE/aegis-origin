@@ -1,4 +1,4 @@
-﻿/// <copyright file="FilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="MultiFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -14,35 +14,35 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a filter transformation.
+    /// Represents a filter transformation utilizing multiple filters.
     /// </summary>
     /// <remarks>
     /// Filtering is a technique for modifying or enhancing raster imagery by applying a convolution between the image and the filter. 
     /// The filter consists of a kernel (also known as convolution matrix or mask), a factor and an offset scalar. Depending on the element values, a kernel can cause a wide range of effects.
+    /// This variant of filtering uses multiple kernels which are applied separately on the image. The initial results are then combined to form the final result.
     /// Filtering is a focal operation that modifies the central spectral value under the kernel.
     /// </remarks>
-    public abstract class FilterTransformation : PerBandSpectralTransformation
+    public abstract class MultiFilterTransformation : PerBandSpectralTransformation
     {
         #region Protected fields
 
         /// <summary>
-        /// The filter.
+        /// The array of filters.
         /// </summary>
-        protected Filter _filter;
+        protected Filter[] _filters;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="MultiFilterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -64,7 +64,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        protected FilterTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
+        protected MultiFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
         }
@@ -82,15 +82,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double filteredValue = 0;
-            for (Int32 filterRowIndex = -_filter.Radius; filterRowIndex <= _filter.Radius; filterRowIndex++)
-                for (Int32 filterColumnIndex = -_filter.Radius; filterColumnIndex <= _filter.Radius; filterColumnIndex++)
-                {
-                    filteredValue += _source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filter.Kernel[filterRowIndex + _filter.Radius, filterColumnIndex + _filter.Radius];
-                }
-            filteredValue = filteredValue / _filter.Factor + _filter.Offset;
+            Double[] filteredValues = new Double[_filters.Length];
 
-            return RasterAlgorithms.Restrict(filteredValue, _source.Raster.RadiometricResolutions[bandIndex]);
+            for (Int32 filterIndex = 0; filterIndex < _filters.Length; filterIndex++)
+            {
+                for (Int32 filterRowIndex = -_filters[filterIndex].Radius; filterRowIndex <= _filters[filterIndex].Radius; filterRowIndex++)
+                    for (Int32 filterColumnIndex = -_filters[filterIndex].Radius; filterColumnIndex <= _filters[filterIndex].Radius; filterColumnIndex++)
+                    {
+                        filteredValues[filterIndex] += _source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
+                    }
+                filteredValues[filterIndex] = filteredValues[filterIndex] / _filters[filterIndex].Factor + _filters[filterIndex].Offset;
+            }
+
+            return RasterAlgorithms.Restrict(CombineValues(filteredValues), _source.Raster.RadiometricResolutions[bandIndex]);
         }
 
         /// <summary>
@@ -102,16 +106,30 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double filteredValue = 0;
-            for (Int32 filterRowIndex = -_filter.Radius; filterRowIndex <= _filter.Radius; filterRowIndex++)
-                for (Int32 filterColumnIndex = -_filter.Radius; filterColumnIndex <= _filter.Radius; filterColumnIndex++)
-                {
-                    filteredValue += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filter.Kernel[filterRowIndex + _filter.Radius, filterColumnIndex + _filter.Radius];
-                }
-            filteredValue = filteredValue / _filter.Factor + _filter.Offset;
+            Double[] filteredValues = new Double[_filters.Length];
+            for (Int32 filterIndex = 0; filterIndex < _filters.Length; filterIndex++)
+            {
+                for (Int32 filterRowIndex = -_filters[filterIndex].Radius; filterRowIndex <= _filters[filterIndex].Radius; filterRowIndex++)
+                    for (Int32 filterColumnIndex = -_filters[filterIndex].Radius; filterColumnIndex <= _filters[filterIndex].Radius; filterColumnIndex++)
+                    {
+                        filteredValues[filterIndex] += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
+                    }
+                filteredValues[filterIndex] = filteredValues[filterIndex] / _filters[filterIndex].Factor + _filters[filterIndex].Offset;
+            }
 
-            return filteredValue;
+            return CombineValues(filteredValues);
         }
+
+        #endregion
+
+        #region Protected methods
+
+        /// <summary>
+        /// Combines the specified filtered values.
+        /// </summary>
+        /// <param name="values">The array of filtered values.</param>
+        /// <returns>The combination of the values for the specified filter.</returns>
+        protected abstract Double CombineValues(Double[] values);
 
         #endregion
     }

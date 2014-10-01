@@ -1,4 +1,4 @@
-﻿/// <copyright file="BoxFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="MeanRemovalFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -20,13 +20,10 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represnts a box filter transformation.
+    /// Represents a mean removal filter.
     /// </summary>
-    /// <remarks>
-    /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighbouring values under the kernel.
-    /// </remarks>
-    [OperationClass("AEGIS::213202", "Box filter")]
-    public class BoxFilterTransformation : FilterTransformation
+    [OperationClass("AEGIS::213241", "Mean removal filter")]
+    public class MeanRemovalFilterTransformation : FilterTransformation
     {
         #region Constructors
 
@@ -49,7 +46,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public BoxFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public MeanRemovalFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
@@ -74,10 +71,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public BoxFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.BoxFilter, parameters)
+        public MeanRemovalFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.MeanRemovalFilter, parameters)
         {
-            _filter = FilterFactory.CreateBoxFilter(Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius)));
+            _filter = FilterFactory.CreateMeanRemovalFilter(Convert.ToDouble(ResolveParameter(SpectralOperationParameters.FilterWeight)));
         }
 
         #endregion
