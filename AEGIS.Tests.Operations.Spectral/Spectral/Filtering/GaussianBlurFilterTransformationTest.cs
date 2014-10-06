@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
                             filteredValue /= filterFactor;
 
-                            Assert.AreEqual((UInt32)filteredValue, result.GetValue(rowIndex, columnIndex, resultBandIndex));
+                            Assert.AreEqual(Convert.ToInt32(filteredValue), result.GetValue(rowIndex, columnIndex, resultBandIndex));
                             break;
 
                         case RasterFormat.Floating:

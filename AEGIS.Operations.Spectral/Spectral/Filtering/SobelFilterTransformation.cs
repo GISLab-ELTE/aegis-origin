@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The value of a parameter is not within the expected range.
         /// </exception>
-        protected SobelFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public SobelFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
@@ -73,12 +73,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        protected SobelFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+        public SobelFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.SobelFilter, parameters)
         {
             _filters = new Filter[2];
             _filters[0] = FilterFactory.CreateSobelHorizontalFilter();
-            _filters[2] = FilterFactory.CreateSobelVerticalFilter();
+            _filters[1] = FilterFactory.CreateSobelVerticalFilter();
         }
 
         #endregion

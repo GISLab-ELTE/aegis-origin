@@ -23,8 +23,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// Represents a median filter transformation.
     /// </summary>
     [OperationClass("AEGIS::213213", "Median filter")]
-    public class MedianFilterTransformation : FilterTransformation
+    public class MedianFilterTransformation : PerBandSpectralTransformation
     {
+        #region Private fields
+
+        /// <summary>
+        /// The radius of the filter.
+        /// </summary>
+        private Int32 _filterRadius;
+
+        /// <summary>
+        /// The array of filtered values.
+        /// </summary>
+        private Double[] _filteredValues;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -74,6 +88,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         public MedianFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.MedianFilter, parameters)
         {
+            _filterRadius = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius));
+            _filteredValues = new Double[_filterRadius * _filterRadius];
         }
 
         #endregion
@@ -89,20 +105,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filter.Radius * _filter.Radius];
-            Int32 rowBase = rowIndex - _filter.Radius / 2;
-            Int32 columnBase = columnIndex - _filter.Radius / 2;
+            Int32 rowBase = rowIndex - _filterRadius / 2;
+            Int32 columnBase = columnIndex - _filterRadius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filter.Radius; k++)
-                for (Int32 l = 0; l < _filter.Radius; l++)
+            for (Int32 k = 0; k < _filterRadius; k++)
+                for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    filteredValues[index] += _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
+                    _filteredValues[index] = _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
-            Array.Sort(filteredValues);
+            Array.Sort(_filteredValues);
 
-            return (UInt32)filteredValues[_filter.Radius * _filter.Radius / 2];
+            return (UInt32)_filteredValues[_filterRadius * _filterRadius / 2];
         }
 
         /// <summary>
@@ -114,20 +129,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double[] filteredValues = new Double[_filter.Radius * _filter.Radius];
-            Int32 rowBase = rowIndex - _filter.Radius / 2;
-            Int32 columnBase = columnIndex - _filter.Radius / 2;
+            Int32 rowBase = rowIndex - _filterRadius / 2;
+            Int32 columnBase = columnIndex - _filterRadius / 2;
             Int32 index = 0;
 
-            for (Int32 k = 0; k < _filter.Radius; k++)
-                for (Int32 l = 0; l < _filter.Radius; l++)
+            for (Int32 k = 0; k < _filterRadius; k++)
+                for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    filteredValues[index] += _source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
+                    _filteredValues[index] = _source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
-            Array.Sort(filteredValues);
+            Array.Sort(_filteredValues);
 
-            return filteredValues[_filter.Radius * _filter.Radius / 2];
+            return _filteredValues[_filterRadius * _filterRadius / 2];
         }
 
         #endregion

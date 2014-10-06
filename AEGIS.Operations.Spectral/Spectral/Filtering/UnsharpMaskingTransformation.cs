@@ -80,9 +80,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         public UnsharpMaskingTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.UnsharpMasking, parameters)
         {
-            _amount = Convert.ToDouble(SpectralOperationParameters.SharpeningAmount);
-            _threshold = Convert.ToDouble(SpectralOperationParameters.SharpeningThreshold);
-            _unsharpFilter = FilterFactory.CreateGaussianFilter(Convert.ToInt32(SpectralOperationParameters.SharpeningRadius));
+            _amount = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SharpeningAmount));
+            _threshold = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SharpeningThreshold));
+            _unsharpFilter = FilterFactory.CreateGaussianFilter(Convert.ToInt32(ResolveParameter(SpectralOperationParameters.SharpeningRadius)));
         }
 
         #endregion
@@ -100,9 +100,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             // if threshold is specified, the magnitude of the gradient is computed
             if (_threshold > 0)
-            {            
-                Double gradientRow = -_source.Raster.GetValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetValue(rowIndex + 1, columnIndex, bandIndex);
-                Double gradientColumn = -_source.Raster.GetValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetValue(rowIndex, columnIndex + 1, bandIndex);
+            {
+                Double gradientRow = -_source.Raster.GetNearestValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetNearestValue(rowIndex + 1, columnIndex, bandIndex);
+                Double gradientColumn = -_source.Raster.GetNearestValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetNearestValue(rowIndex, columnIndex + 1, bandIndex);
 
                 // if the threshold is not reached, the original value is returned
                 if (Math.Sqrt(gradientRow *gradientRow + gradientColumn * gradientColumn) < _threshold)
@@ -132,8 +132,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             // if threshold is specified, the magnitude of the gradient is computed
             if (_threshold > 0)
             {
-                Double gradientRow = -_source.Raster.GetValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetValue(rowIndex + 1, columnIndex, bandIndex);
-                Double gradientColumn = -_source.Raster.GetValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetValue(rowIndex, columnIndex + 1, bandIndex);
+                Double gradientRow = -_source.Raster.GetNearestFloatValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetNearestFloatValue(rowIndex + 1, columnIndex, bandIndex);
+                Double gradientColumn = -_source.Raster.GetNearestFloatValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetNearestFloatValue(rowIndex, columnIndex + 1, bandIndex);
 
                 // if the threshold is not reached, the original value is returned
                 if (Math.Sqrt(gradientRow * gradientRow + gradientColumn * gradientColumn) < _threshold)

@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spectral;
@@ -173,7 +174,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
                             filteredValue /= Calculator.Square(2 * filterRadius + 1);
 
-                            Assert.AreEqual((UInt32)filteredValue, result.GetValue(rowIndex, columnIndex, resultBandIndex));
+                            Assert.AreEqual(Convert.ToUInt32(filteredValue), result.GetValue(rowIndex, columnIndex, resultBandIndex));
                             break;
 
                         case RasterFormat.Floating:
@@ -183,7 +184,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
                             filteredValue /= Calculator.Square(2 * filterRadius + 1);
 
-                            Assert.AreEqual((UInt32)filteredValue, result.GetFloatValue(rowIndex, columnIndex, resultBandIndex));
+                            Assert.AreEqual(filteredValue, result.GetFloatValue(rowIndex, columnIndex, resultBandIndex));
                             break;
                     }
                 }
