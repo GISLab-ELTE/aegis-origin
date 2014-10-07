@@ -94,7 +94,10 @@ namespace ELTE.AEGIS.Reference.Operations
         #region Private static field
 
         private static CoordinateOperationMethod _affineParametricTransformation;
+        private static CoordinateOperationMethod _albersEqualAreaProjection;
         private static CoordinateOperationMethod _americanPolyconicProjection;
+        private static CoordinateOperationMethod _bonne;
+        private static CoordinateOperationMethod _bonneSouthOrientated;
         private static CoordinateOperationMethod _cassiniSoldnerProjection;
         private static CoordinateOperationMethod _coordinateFrameRotationGeoc;
         private static CompoundCoordinateOperationMethod _coordinateFrameRotationGeog2D;
@@ -176,13 +179,32 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _affineParametricTransformation ??
                       (_affineParametricTransformation =
-                           new CoordinateOperationMethod("EPSG::9624 ", "Affine parametric transformation", true,
+                           new CoordinateOperationMethod("EPSG::9624", "Affine parametric transformation", true,
                                                          CoordinateOperationParameters.A0,
                                                          CoordinateOperationParameters.A1,
                                                          CoordinateOperationParameters.A2,
                                                          CoordinateOperationParameters.B0,
                                                          CoordinateOperationParameters.B1,
                                                          CoordinateOperationParameters.B2));
+            }
+        }
+
+        /// <summary>
+        /// Albers Equal Area.
+        /// </summary>
+        public static CoordinateOperationMethod AlbersEqualAreaProjection
+        {
+            get
+            {
+                return _albersEqualAreaProjection ??
+                      (_albersEqualAreaProjection =
+                           new CoordinateOperationMethod("EPSG::9822", "Albers Equal Area", true,
+                                                         CoordinateOperationParameters.LatitudeOfFalseOrigin,
+                                                         CoordinateOperationParameters.LongitudeOfFalseOrigin,
+                                                         CoordinateOperationParameters.LatitudeOf1stStandardParallel,
+                                                         CoordinateOperationParameters.LatitudeOf2ndStandardParallel,
+                                                         CoordinateOperationParameters.EastingAtFalseOrigin,
+                                                         CoordinateOperationParameters.NorthingAtFalseOrigin));
             }
         }
 
@@ -202,6 +224,42 @@ namespace ELTE.AEGIS.Reference.Operations
                                                       CoordinateOperationParameters.FalseNorthing);
 
                 return _americanPolyconicProjection;
+            }
+        }
+
+        /// <summary>
+        /// Bonne.
+        /// </summary>
+        public static CoordinateOperationMethod Bonne
+        {
+            get
+            {
+                if (_bonne == null)
+                    _bonne =
+                        new CoordinateOperationMethod("EPSG::9827", "Bonne", true,
+                                                      CoordinateOperationParameters.LatitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+                return _bonne;
+            }
+        }
+
+        /// <summary>
+        /// Bonne South Orientated.
+        /// </summary>
+        public static CoordinateOperationMethod BonneSouthOrientated
+        {
+            get
+            {
+                if (_bonneSouthOrientated == null)
+                    _bonneSouthOrientated =
+                        new CoordinateOperationMethod("EPSG::9828", "Bonne South Orientated", true,
+                                                      CoordinateOperationParameters.LatitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+                return _bonneSouthOrientated;
             }
         }
 

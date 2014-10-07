@@ -79,6 +79,9 @@
     <Compile Include="Operations\GridProjectionFactory.cs" />
     <Compile Include="Operations\Conversions\GeocentricToTopocentricConversion.cs" />
     <Compile Include="Operations\Conversions\GeographicToTopocentricConversion.cs" />
+    <Compile Include="Operations\Projections\AlbersEqualAreaProjection.cs" />
+    <Compile Include="Operations\Projections\BonneProjection.cs" />
+    <Compile Include="Operations\Projections\BonneSouthOrientatedProjection.cs" />
     <Compile Include="Operations\Projections\LabordeObliqueMercatorProjection.cs" />
     <Compile Include="Operations\Projections\LambertCylindricalEqualAreaEllipsoidalProjection.cs" />
     <Compile Include="Operations\Projections\LambertCylindricalEqualAreaSphericalProjection.cs" />
