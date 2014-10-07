@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -218,7 +217,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// The authentication is null.
         /// </exception>
         public HadoopFileSystem(Uri location, IHadoopFileSystemAuthentication authentication)
-            : base(location, new HadoopAnonymousAuthentication())
+            : base(location, authentication)
         {
             if (location == null)
                 throw new ArgumentNullException("location", "The location is null.");
