@@ -98,14 +98,16 @@ namespace ELTE.AEGIS.Geometry
                     if (_holes[i].Coordinates.Any(coordinate => coordinate.Z != zValue))
                         return false;
 
-                    if (PolygonAlgorithms.Orientation(_shell.Coordinates) != Orientation.Clockwise)
+                    if (PolygonAlgorithms.Orientation(_holes[i].Coordinates) != Orientation.Clockwise)
                         return false;
 
                     ringList.Add(_holes[i].Coordinates);
                 }
 
                 // check for any intersection
-                ShamosHoeyAlgorithm.Intersects(ringList);
+                // check for any intersection
+                if (ShamosHoeyAlgorithm.Intersects(ringList))
+                    return false;
 
                 return true;
             }

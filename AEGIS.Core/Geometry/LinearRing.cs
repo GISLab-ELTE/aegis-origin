@@ -27,12 +27,6 @@ namespace ELTE.AEGIS.Geometry
         #region IGeometry properties
 
         /// <summary>
-        /// Gets a value indicating whether the linear ring is simple.
-        /// </summary>
-        /// <value><c>true</c>, as a linear ring is always considered to be simple.</value>
-        public override Boolean IsSimple { get { return true; } }
-
-        /// <summary>
         /// Determines whether the linear ring is valid.
         /// </summary>
         /// <value>
