@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -630,7 +630,7 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         /// <summary>
-        /// Computes the intersection of a cancave polygon and a line located in the same plane.
+        /// Computes the intersection of a concave polygon and a line located in the same plane.
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="lineStart">The starting coordinates of the line.</param>

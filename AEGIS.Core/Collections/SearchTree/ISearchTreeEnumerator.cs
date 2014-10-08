@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Collections.SearchTree
 {
     /// <summary>
-    /// Supports a multidirection iteration over a <see cref="ISearchTree" /> collection.
+    /// Supports a multidirection iteration over a <see cref="ISearchTree{TKey, TValue}" /> collection.
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -46,7 +46,7 @@ namespace ELTE.AEGIS.Algorithms
             if (!lineStart.IsValid || !lineEnd.IsValid)
                 return Coordinate.Undefined;
 
-            return new Coordinate(lineStart.X + lineEnd.X / 2, lineStart.Y + lineEnd.Y / 2, lineStart.Z + lineEnd.Z / 2);
+            return new Coordinate((lineStart.X + lineEnd.X) / 2, (lineStart.Y + lineEnd.Y) / 2, (lineStart.Z + lineEnd.Z) / 2);
         }
 
         /// <summary>
@@ -606,7 +606,7 @@ namespace ELTE.AEGIS.Algorithms
                 else
                 {
                     t0 = Math.Min(w.Y / v.Y, z.Y / v.Y);
-                    t1 = Math.Min(w.Y / v.Y, z.Y / v.Y);
+                    t1 = Math.Max(w.Y / v.Y, z.Y / v.Y);
                 }
                 if (t0 > 1 || t1 < 0)
                 {
@@ -770,7 +770,7 @@ namespace ELTE.AEGIS.Algorithms
                 else
                 {
                     t0 = Math.Min(w.Y / v.Y, z.Y / v.Y);
-                    t1 = Math.Min(w.Y / v.Y, z.Y / v.Y);
+                    t1 = Math.Max(w.Y / v.Y, z.Y / v.Y);
                 }
                 if (t0 >= 1 || t1 <= 0)
                 {
