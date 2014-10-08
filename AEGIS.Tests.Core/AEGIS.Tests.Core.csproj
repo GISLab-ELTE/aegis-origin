@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\BentleyFaustPreparataAlgorithmTest.cs" />
+    <Compile Include="Algorithms\BentleyOttmannAlgorithmTest.cs" />
     <Compile Include="Algorithms\GrahamScanAlgorithmTest.cs" />
     <Compile Include="Algorithms\PolygonAlgorithmsTest.cs" />
     <Compile Include="Algorithms\PolygonCentroidAlgorithmTest.cs" />

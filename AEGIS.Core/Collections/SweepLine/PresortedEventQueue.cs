@@ -1,9 +1,9 @@
 ﻿/// <copyright file="PresortedEventQueue.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Private fields
 
         private readonly IComparer<Coordinate> _comparer;
-        private readonly List<Event> _eventList;
+        private readonly List<EndPointEvent> _eventList;
         private Int32 _eventIndex;
 
         #endregion
@@ -34,10 +35,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresortedEventQueue" /> class.
+        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.PresortedEventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
         public PresortedEventQueue(IList<Coordinate> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -46,14 +47,14 @@ namespace ELTE.AEGIS.Collections.SweepLine
                 throw new ArgumentNullException("source", "The source is null.");
 
             _comparer = new CoordinateComparer();
-            _eventList = new List<Event>(2 * source.Count);
+            _eventList = new List<EndPointEvent>(2 * source.Count);
             _eventIndex = 0;
 
             Int32 compare;
             for (Int32 i = 0; i < source.Count - 1; i++)
             {
-                Event firstEvent = new Event { Edge = i, Vertex = source[i] };
-                Event secondEvent = new Event { Edge = i, Vertex = source[i + 1] };
+                var firstEvent = new EndPointEvent { Edge = i, Vertex = source[i] };
+                var secondEvent = new EndPointEvent { Edge = i, Vertex = source[i + 1] };
 
                 compare = _comparer.Compare(source[i], source[i + 1]);
                 if (compare == 0) continue;
@@ -76,10 +77,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PresortedEventQueue" /> class.
+        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.PresortedEventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
         public PresortedEventQueue(IEnumerable<IList<Coordinate>> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -89,7 +90,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
             _comparer = new CoordinateComparer();
             _eventIndex = 0;
-            _eventList = new List<Event>();
+            _eventList = new List<EndPointEvent>();
 
             Int32 index = 0, compare;
             foreach (IList<Coordinate> coordinateList in source)
@@ -99,8 +100,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
                 for (Int32 i = 0; i < coordinateList.Count - 1; i++)
                 {
-                    Event firstEvent = new Event { Edge = index, Vertex = coordinateList[i] };
-                    Event secondEvent = new Event { Edge = index, Vertex = coordinateList[i + 1] };
+                    var firstEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i] };
+                    var secondEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i + 1] };
 
                     compare = _comparer.Compare(coordinateList[i], coordinateList[i + 1]);
                     if (compare == 0) continue;
@@ -133,7 +134,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Retrieves the next event from the queue.
         /// </summary>
         /// <returns>The next event in the queue.</returns>
-        public Event Next()
+        public EndPointEvent Next()
         {
             return (_eventIndex < _eventList.Count) ? _eventList[_eventIndex++] : null;
         }

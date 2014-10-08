@@ -1,9 +1,9 @@
 ﻿/// <copyright file="EventQueue.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -12,10 +12,11 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Collections;
+using System.Linq;
 
 namespace ELTE.AEGIS.Collections.SweepLine
 {
@@ -24,20 +25,109 @@ namespace ELTE.AEGIS.Collections.SweepLine
     /// </summary>
     public class EventQueue
     {
+        #region Private types
+
+        /// <summary>
+        /// Represents a comparer for <see cref="Event"/> instances.
+        /// </summary>
+        private sealed class EventComparer : IComparer<Event>
+        {
+            #region IComparer methods
+
+            /// <summary>
+            /// Compares two <see cref="Event"/> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// </summary>
+            /// <remarks>
+            /// Events primarily compared by their vertex coordinate, secondarily by their type.
+            /// </remarks>
+            /// <param name="x">The first <see cref="Event"/> to compare.</param>
+            /// <param name="y">The second <see cref="Event"/> to compare.</param>
+            /// <returns>A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>.</returns>
+            public Int32 Compare(Event x, Event y)
+            {
+                Int32 result = x.CompareTo(y);
+                if (result == 0)
+                {
+                    if (x is EndPointEvent && y is EndPointEvent)
+                        result = ((EndPointEvent)x).CompareTo((EndPointEvent)y);
+                    else if (x is IntersectionEvent && y is IntersectionEvent)
+                        result = ((IntersectionEvent)x).CompareTo((IntersectionEvent)y);
+                    else if (x is EndPointEvent && y is IntersectionEvent)
+                        result = 1;
+                    else if (y is EndPointEvent && x is IntersectionEvent)
+                        result = -1;
+                }
+                return result;
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        /// Represents a heap data structure containing <see cref="Event"/> instances.
+        /// </summary>
+        private sealed class EventHeap : Heap<Event, Event>
+        {
+            #region Private fields
+
+            /// <summary>
+            /// Stores an inner <see cref="CoordinateComparer"/> instance.
+            /// </summary>
+            private readonly CoordinateComparer _coordinateComparer = new CoordinateComparer();
+
+            #endregion
+
+            #region Constructors
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="EventHeap"/> class.
+            /// </summary>
+            public EventHeap() : base(new EventComparer())
+            { }
+
+            #endregion
+
+            #region Public methods
+
+            /// <summary>
+            /// Inserts the specified event element into the heap.
+            /// </summary>
+            /// <param name="element">The event element of the element to insert.</param>
+            /// <exception cref="System.ArgumentNullException"><paramref name="element"/> is null.</exception>
+            public void Insert(Event element)
+            {
+                Insert(element, element);
+            }
+
+            /// <summary>
+            /// Determines whether the <see cref="EventHeap"/> contains any event element with the given coordinate.
+            /// </summary>
+            /// <param name="position">The coordinate position to locate in the <see cref="EventHeap"/>.</param>
+            /// <returns><c>true</c> if the the <see cref="EventHeap"/> contains an event element with the specified position; otherwise <c>false</c>.</returns>
+            public Boolean Contains(Coordinate position)
+            {
+                return this.Any(item => _coordinateComparer.Compare(item.Key.Vertex, position) == 0);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Private fields
 
         private readonly IComparer<Coordinate> _comparer;
-        private readonly Heap<Coordinate, Event> _eventHeap;
+        private readonly EventHeap _eventHeap;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventQueue" /> class.
+        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.EventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
         public EventQueue(IList<Coordinate> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -46,13 +136,13 @@ namespace ELTE.AEGIS.Collections.SweepLine
                 throw new ArgumentNullException("source", "The source is null.");
 
             _comparer = new CoordinateComparer();
-            _eventHeap = new Heap<Coordinate, Event>(new CoordinateComparer());
+            _eventHeap = new EventHeap();
 
             Int32 compare;
             for (Int32 i = 0; i < source.Count - 1; i++)
             {
-                Event firstEvent = new Event { Edge = i, Vertex = source[i] };
-                Event secondEvent = new Event { Edge = i, Vertex = source[i + 1] };
+                var firstEvent = new EndPointEvent { Edge = i, Vertex = source[i] };
+                var secondEvent = new EndPointEvent { Edge = i, Vertex = source[i + 1] };
 
                 compare = _comparer.Compare(source[i], source[i + 1]);
                 if (compare == 0) continue;
@@ -68,16 +158,16 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     secondEvent.Type = EventType.Left;
                 }
 
-                _eventHeap.Insert(firstEvent.Vertex, firstEvent);
-                _eventHeap.Insert(firstEvent.Vertex, secondEvent);
+                _eventHeap.Insert(firstEvent);
+                _eventHeap.Insert(secondEvent);
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EventQueue" /> class.
+        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.EventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
         public EventQueue(IEnumerable<IList<Coordinate>> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -86,7 +176,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
                 throw new ArgumentNullException("source", "The source is null.");
 
             _comparer = new CoordinateComparer();
-            _eventHeap = new Heap<Coordinate, Event>(new CoordinateComparer());
+            _eventHeap = new EventHeap();
 
             Int32 index = 0, compare;
             foreach (IList<Coordinate> coordinateList in source)
@@ -96,8 +186,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
                 for (Int32 i = 0; i < coordinateList.Count - 1; i++)
                 {
-                    Event firstEvent = new Event { Edge = index, Vertex = coordinateList[i] };
-                    Event secondEvent = new Event { Edge = index, Vertex = coordinateList[i + 1] };
+                    var firstEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i] };
+                    var secondEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i + 1] };
 
                     compare = _comparer.Compare(coordinateList[i], coordinateList[i + 1]);
                     if (compare == 0) continue;
@@ -112,8 +202,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
                         firstEvent.Type = EventType.Right;
                         secondEvent.Type = EventType.Left;
                     }
-                    _eventHeap.Insert(firstEvent.Vertex, firstEvent);
-                    _eventHeap.Insert(firstEvent.Vertex, secondEvent);
+                    
+                    _eventHeap.Insert(firstEvent);
+                    _eventHeap.Insert(secondEvent);
 
                     index++;
                 }
@@ -138,26 +229,37 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Adds an intersection event to the queue.
         /// </summary>
         /// <param name="intersectionEvent">The intersection event.</param>
-        /// <exception cref="System.ArgumentNullException">The instersection event is null.</exception>
-        /// <exception cref="System.ArgumentException">The event is not an intersection.</exception>
-        public void Add(Event intersectionEvent)
+        /// <exception cref="System.ArgumentNullException">intersectionEvent;The instersection event is null.</exception>
+        public void Add(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)
                 throw new ArgumentNullException("intersectionEvent", "The instersection event is null.");
-            if (intersectionEvent.Type != EventType.Intersection)
-                throw new ArgumentException("The event is not an intersection.", "intersectionEvent");
 
-            _eventHeap.Insert(intersectionEvent.Vertex, intersectionEvent);
+            _eventHeap.Insert(intersectionEvent);
         }
 
         /// <summary>
-        /// Determines whether the queue contains a coordinate.
+        /// Determines whether the queue contains an event at the given coordinate.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns><c>true</c> if the queue contains <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the queue contains an event at <paramref name="coordinate"/>; otherwise <c>false</c>.</returns>
         public Boolean Contains(Coordinate coordinate)
         {
-            return (_eventHeap.Contains(coordinate));
+            return _eventHeap.Contains(coordinate);
+        }
+
+        /// <summary>
+        /// Determines whether the queue contains an intersection event.
+        /// </summary>
+        /// <param name="intersectionEvent">The intersection event.</param>
+        /// <returns><c>true</c> if the queue contains the <paramref name="intersectionEvent"/>; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">intersectionEvent;The instersection event is null.</exception>
+        public Boolean Contains(IntersectionEvent intersectionEvent)
+        {
+            if (intersectionEvent == null)
+                throw new ArgumentNullException("intersectionEvent", "The instersection event is null.");
+
+            return _eventHeap.Contains(intersectionEvent);
         }
 
         #endregion

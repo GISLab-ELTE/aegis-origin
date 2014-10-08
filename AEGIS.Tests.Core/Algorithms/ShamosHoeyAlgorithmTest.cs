@@ -21,43 +21,49 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Algorithms
 {
+    /// <summary>
+    /// Test fixture for the <see cref="ShamosHoeyAlgorithm" /> class.
+    /// </summary>
     [TestFixture]
     public class ShamosHoeyAlgorithmTest
     {
-        [TestCase]
+        /// <summary>
+        /// Test case for the <see cref="Intersects" /> method.
+        /// </summary>
+        [Test]
         public void ShamosHoeyAlgorithmIntersectsTest()
         {
-            // test case 1: simple polygon, intersection
+            // simple polygon, intersection
 
             IList<Coordinate> coordinates = new Coordinate[] { new Coordinate(0, 0), new Coordinate(1, 1), new Coordinate(1, 0), new Coordinate(0, 1) };
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinates));
 
 
-            // test case 2: simple polygon, no intersection
+            // simple polygon, no intersection
 
             coordinates = new Coordinate[] { new Coordinate(0, 0), new Coordinate(1, 1), new Coordinate(2, 0), new Coordinate(3, 1) };
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
 
 
-            // test case 3: simple line, no intersection
+            // simple line, no intersection
 
             coordinates = Enumerable.Range(0, 1000).Select(n => new Coordinate(n, n)).ToArray();
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
 
             
-            // test case 4: line string, no intersection
+            // line string, no intersection
 
             coordinates = Enumerable.Range(0, 1000).Select(n => new Coordinate(n, n % 2)).ToArray();
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
 
 
-            // test case 5: line string, no intersection
+            // line string, no intersection
 
             coordinates = Enumerable.Range(0, 1000).Select(n => new Coordinate(n % 2, n)).ToArray();
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
         
 
-            // test case 6: random line string, no intersection
+            // random line string, no intersection
 
             Random random = new Random();
 
@@ -65,19 +71,19 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
 
 
-            // test case 7: random line string, no intersection
+            // random line string, no intersection
             
             coordinates = Enumerable.Range(0, 1000).Select(n => new Coordinate(n, random.Next(1000))).ToArray();
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinates));
         
             
-            // test case 8: random line string, intersection
+            // random line string, intersection
 
             coordinates = Enumerable.Range(0, 10000).Select(n => new Coordinate(random.Next(100), random.Next(100))).ToArray();
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinates));
         
 
-            // test case 9: multiple line strings, intersection
+            // multiple line strings, intersection
 
             IList<Coordinate[]> coordinateLists = new List<Coordinate[]>
             {                
@@ -87,7 +93,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 10: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -97,7 +103,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -107,7 +113,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -117,7 +123,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -127,7 +133,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, no intersection
+            // multiple line strings, no intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -139,7 +145,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsFalse(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
@@ -152,7 +158,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsTrue(ShamosHoeyAlgorithm.Intersects(coordinateLists));
 
 
-            // test case 11: multiple line strings, intersection
+            // multiple line strings, intersection
 
             coordinateLists = new List<Coordinate[]>
             {                
