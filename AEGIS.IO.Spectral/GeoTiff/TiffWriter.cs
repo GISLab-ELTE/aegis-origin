@@ -560,23 +560,23 @@ namespace ELTE.AEGIS.IO.GeoTiff
             switch (type)
             {
                 case TiffTagType.Byte:
-                    EndianBitConverter.CopyBytes((Byte)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToByte(value), array, startIndex);
                     break;
                 case TiffTagType.ASCII:
                     Byte[] asciiValues = System.Text.Encoding.ASCII.GetBytes(value as String);
                     Array.Copy(asciiValues, 0, array, startIndex, asciiValues.Length);
                     return startIndex + asciiValues.Length;
                 case TiffTagType.Short:
-                    EndianBitConverter.CopyBytes((UInt16)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToUInt16(value), array, startIndex);
                     break;
                 case TiffTagType.Long:
-                    EndianBitConverter.CopyBytes((UInt32)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToUInt32(value), array, startIndex);
                     break;
                 case TiffTagType.SByte:
-                    EndianBitConverter.CopyBytes((SByte)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToSByte(value), array, startIndex);
                     break;
                 case TiffTagType.SShort:
-                    EndianBitConverter.CopyBytes((Int16)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToInt16(value), array, startIndex);
                     break;
                 case TiffTagType.Rational:
                     EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
@@ -585,13 +585,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
                     break;
                 case TiffTagType.SLong:
-                    EndianBitConverter.CopyBytes((Int32)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToInt32(value), array, startIndex);
                     break;
                 case TiffTagType.Float:
-                    EndianBitConverter.CopyBytes((Single)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToSingle(value), array, startIndex);
                     break;
                 case TiffTagType.Double:
-                    EndianBitConverter.CopyBytes((Double)value, array, startIndex);
+                    EndianBitConverter.CopyBytes(Convert.ToDouble(value), array, startIndex);
                     break;
             }
             return startIndex + dataSize;
