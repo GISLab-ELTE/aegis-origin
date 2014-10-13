@@ -133,7 +133,7 @@ namespace ELTE.AEGIS
             if (String.IsNullOrWhiteSpace(instrument))
                 throw new ArgumentException("The instrument is empty, or consists of only shitespace characters.", "instrument");
 
-            _name = mission + " " + instrument;
+            Name = mission + " " + instrument;
             Mission = mission;
             Instrument = instrument;
             Orbit = orbit;
@@ -184,7 +184,7 @@ namespace ELTE.AEGIS
             if (String.IsNullOrWhiteSpace(instrument))
                 throw new ArgumentException("The instrument is empty, or consists of only shitespace characters.", "instrument");
 
-            _name = mission + missionNumber + " " + instrument;
+            Name = mission + missionNumber + " " + instrument;
             Mission = mission;
             MissionNumber = missionNumber;
             Instrument = instrument;

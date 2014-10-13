@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using System;
+using System.Collections.Generic;
 
 namespace ELTE.AEGIS
 {
@@ -23,27 +24,12 @@ namespace ELTE.AEGIS
     [Serializable]
     public abstract class IdentifiedObject : IEquatable<IdentifiedObject>
     {
-        #region Protected fields
-
-        /// <summary>
-        /// The identifier. This field is read-only.
-        /// </summary>
-        protected readonly String _identifier;
-
-        /// <summary>
-        /// The name.
-        /// </summary>
-        protected String _name;
-
-        /// <summary>
-        /// The remarks.
-        /// </summary>
-        protected String _remarks;
+        #region Private fields
 
         /// <summary>
         /// The aliases.
         /// </summary>
-        protected String[] _aliases;
+        private String[] _aliases;
 
         #endregion
 
@@ -53,13 +39,13 @@ namespace ELTE.AEGIS
         /// Gets the identifier.
         /// </summary>
         /// <value>An identifier which references elsewhere the object's defining information.</value>
-        public String Identifier { get { return _identifier; } }
+        public String Identifier { get; private set; }
 
         /// <summary>
         /// Gets the authority.
         /// </summary>
         /// <value>The authority responsible for the object if provided; otherwise, <c>Empty</c>.</value>
-        public String Authority { get { return _identifier.Contains("::") ? _identifier.Substring(0, _identifier.IndexOf("::")) : String.Empty; } }
+        public String Authority { get { return Identifier.Contains("::") ? Identifier.Substring(0, Identifier.IndexOf("::")) : String.Empty; } }
 
         /// <summary>
         /// Gets the code.
@@ -68,8 +54,8 @@ namespace ELTE.AEGIS
         public Int32 Code 
         { 
             get 
-            { 
-                String codeString = _identifier.Contains("::") ? _identifier.Substring(_identifier.LastIndexOf("::")) : _identifier;
+            {
+                String codeString = Identifier.Contains("::") ? Identifier.Substring(Identifier.LastIndexOf("::")) : Identifier;
                 Int32 code;
 
                 return (Int32.TryParse(codeString, out code)) ? code : 0;
@@ -80,19 +66,19 @@ namespace ELTE.AEGIS
         /// Gets the name.
         /// </summary>
         /// <value>The primary name by which this object is identified.</value>
-        public String Name { get { return _name ?? String.Empty; } }
+        public String Name { get; protected set; }
 
         /// <summary>
         /// Gets the remarks.
         /// </summary>
         /// <value>Comments on or information about this object, including data source information.</value>
-        public String Remarks { get { return _remarks; } }
+        public String Remarks { get; protected set; }
 
         /// <summary>
         /// Gets the aliasas that can also be used for naming purposes.
         /// </summary>
-        /// <value>An alternative names by which this object is identified.</value>
-        public String[] Aliases { get { return _aliases; } }
+        /// <value>The read-only list containing alternative names by which this object is identified.</value>
+        public IList<String> Aliases { get { return _aliases == null ? null : _aliases.AsReadOnly(); } }
 
         #endregion
 
@@ -105,14 +91,8 @@ namespace ELTE.AEGIS
         /// <param name="name">The name.</param>
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         protected IdentifiedObject(String identifier, String name)
+            : this(identifier, name, null, null)
         {
-            if (identifier == null)
-                throw new ArgumentNullException("identifier", "The identifier is null.");
-
-            _identifier = identifier;
-            _name = name;
-            _remarks = null;
-            _aliases = null;
         }
 
         /// <summary>
@@ -128,9 +108,9 @@ namespace ELTE.AEGIS
             if (identifier == null)
                 throw new ArgumentNullException("identifier", "The identifier is null.");
 
-            _identifier = identifier;
-            _name = name;
-            _remarks = remarks;
+            Identifier = identifier;
+            Name = name ?? String.Empty;
+            Remarks = remarks;
             _aliases = aliases;
         }
 
@@ -150,7 +130,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, another)) return false;
             if (ReferenceEquals(this, another)) return true;
 
-            return _identifier.Equals(another._identifier);
+            return Identifier.Equals(another.Identifier);
         }
 
         #endregion
@@ -167,7 +147,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
 
-            return (obj is IdentifiedObject && _identifier.Equals((obj as IdentifiedObject)._identifier) && (Name.Equals((obj as IdentifiedObject).Name)));
+            return (obj is IdentifiedObject && Identifier.Equals((obj as IdentifiedObject).Identifier) && (Name.Equals((obj as IdentifiedObject).Name)));
         }
 
         /// <summary>
@@ -176,7 +156,7 @@ namespace ELTE.AEGIS
         /// <returns>A hash code for the current <see cref="IdentifiedObject" />.</returns>
         public override Int32 GetHashCode()
         {
-            return _identifier.GetHashCode() ^ Name.GetHashCode() ^ 925409699;
+            return Identifier.GetHashCode() ^ Name.GetHashCode() ^ 925409699;
         }
 
         /// <summary>
@@ -185,7 +165,7 @@ namespace ELTE.AEGIS
         /// <returns>A <see cref="String" /> that contains both identifier and name.</returns>
         public override String ToString()
         {
-            return "[" + _identifier + "] " + Name;
+            return "[" + Identifier + "] " + Name;
         }
 
         #endregion

@@ -182,7 +182,7 @@ namespace ELTE.AEGIS.Operations
             if (ReferenceEquals(null, another)) return false;
             if (ReferenceEquals(this, another)) return true;
 
-            return _identifier.Equals(another._identifier) && _version.Equals(another._version);
+            return Identifier.Equals(another.Identifier) && _version.Equals(another._version);
         }
 
         #endregion
@@ -200,7 +200,7 @@ namespace ELTE.AEGIS.Operations
             if (ReferenceEquals(this, obj)) return true;
             if (!(obj is OperationMethod)) return false;
 
-            return _identifier.Equals((obj as OperationMethod)._identifier) && _version.Equals((obj as OperationMethod)._version);
+            return Identifier.Equals((obj as OperationMethod).Identifier) && _version.Equals((obj as OperationMethod)._version);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A hash code for the current <see cref="OperationMethod" />.</returns>
         public override Int32 GetHashCode()
         {
-            return _identifier.GetHashCode() ^ _version.GetHashCode() ^ 920419823;
+            return Identifier.GetHashCode() ^ _version.GetHashCode() ^ 920419823;
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A <see cref="System.String" /> that contains both identifier and name.</returns>
         public override String ToString()
         {
-            return "[" + _identifier + "] " + _name + " (V" + _version + ")";
+            return "[" + Identifier + "] " + Identifier + " (V" + _version + ")";
         }
 
         #endregion

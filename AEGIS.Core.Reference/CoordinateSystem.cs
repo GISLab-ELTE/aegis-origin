@@ -97,7 +97,7 @@ namespace ELTE.AEGIS.Reference
 
             _axis = axis;
 
-            _name = Type.ToString() + " " + _axis.Length + "D CS. Axis: " +
+            Name = Type.ToString() + " " + _axis.Length + "D CS. Axis: " +
                    _axis.Select(ax => ax.Name).Aggregate((x, y) => x + ", " + y) + ". Orientation: " +
                    _axis.Select(ax => ax.Direction.ToString()).Aggregate((x, y) => x + ", " + y) + ". UoM: " +
                    _axis.Select(ax => ax.Unit.ToString()).Aggregate((x, y) => x + ", " + y) + ".";
