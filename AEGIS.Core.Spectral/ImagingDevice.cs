@@ -119,27 +119,8 @@ namespace ELTE.AEGIS
         /// The instrument is empty, or consists of only shitespace characters.
         /// </exception>
         public ImagingDevice(String identifier, String mission, String instrument, String orbit, Length altitude, TimeSpan temporalResolution, params ImagingDeviceBand[] bands)
-            : base(identifier, null)
+            : this(identifier, mission, 0, instrument, null, null, orbit, altitude, temporalResolution, bands)
         {
-            if (mission == null)
-                throw new ArgumentNullException("mission", "The mission is null.");
-            if (instrument == null)
-                throw new ArgumentNullException("instrument", "The instrument is null.");
-            if (bands == null)
-                throw new ArgumentNullException("bands", "No bands are specified.");
-
-            if (String.IsNullOrWhiteSpace(mission))
-                throw new ArgumentException("The mission is empty, or consists of only shitespace characters.", "mission");
-            if (String.IsNullOrWhiteSpace(instrument))
-                throw new ArgumentException("The instrument is empty, or consists of only shitespace characters.", "instrument");
-
-            Name = mission + " " + instrument;
-            Mission = mission;
-            Instrument = instrument;
-            Orbit = orbit;
-            Altitude = altitude;
-            TemporalResolution = temporalResolution;
-            _bands = bands;
         }
 
         /// <summary>
