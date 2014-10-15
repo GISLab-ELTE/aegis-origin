@@ -460,7 +460,10 @@ namespace ELTE.AEGIS.IO
             try
             {
                 // open the stream for reading
-                return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.OpenOrCreate, FileAccess.Write);
+                if (path.IsAbsoluteUri)
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.OpenOrCreate, FileAccess.Write);
+                else
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.OpenOrCreate, FileAccess.Write);
             }
             catch (Exception ex)
             {

@@ -363,6 +363,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         private void WriteReferenceSystem()
         {
+            if (_referenceSystem == null)
+                return;
+
             // writes the reference system as WKT text
             using (StreamWriter writer = new StreamWriter(ReferenceSystemFilePath))
             {

@@ -119,7 +119,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <param name="stream">The source stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.IO.InvalidDataException">The specified dBase format is not supported.</exception>
-        public DBaseHeader(Stream stream)
+        public DBaseHeader(Stream stream) : this()
         {
             if (stream == null)
                 throw new ArgumentNullException("stream", "The stream is null.");

@@ -548,8 +548,10 @@ namespace ELTE.AEGIS.IO
         {
             try
             {
-                // open the stream for reading
-                return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.Open, FileAccess.Read);
+                if (path.IsAbsoluteUri)
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.Open, FileAccess.Read);
+                else
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.Open, FileAccess.Read);
             }
             catch (Exception ex)
             {

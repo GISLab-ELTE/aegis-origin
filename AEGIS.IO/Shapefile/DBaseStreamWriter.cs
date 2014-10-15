@@ -112,7 +112,10 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
-                _stream = FileSystem.GetFileSystemForPath(_path).CreateFile(_path.LocalPath, true);
+                if (_path.IsAbsoluteUri)
+                    _stream = FileSystem.GetFileSystemForPath(_path).CreateFile(_path.AbsolutePath, true);
+                else
+                    _stream = FileSystem.GetFileSystemForPath(_path).CreateFile(_path.OriginalString, true);
             }
             catch (Exception ex)
             {

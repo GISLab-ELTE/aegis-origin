@@ -101,7 +101,10 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
-                _stream = FileSystem.GetFileSystemForPath(_path).OpenFile(_path.LocalPath, FileMode.Open, FileAccess.Read);
+                if (_path.IsAbsoluteUri)
+                    _stream = FileSystem.GetFileSystemForPath(_path).OpenFile(_path.AbsolutePath, FileMode.Open, FileAccess.Read);
+                else
+                    _stream = FileSystem.GetFileSystemForPath(_path).OpenFile(_path.OriginalString, FileMode.Open, FileAccess.Read);
             }
             catch (Exception ex)
             {
