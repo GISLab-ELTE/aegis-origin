@@ -43,6 +43,12 @@ namespace ELTE.AEGIS
         public Double PhysicalBias { get; private set; }
 
         /// <summary>
+        /// Gets the solar irradiance.
+        /// </summary>
+        /// <value>The solar irradiance.</value>
+        public Double SolarIrradiance { get; private set; }
+
+        /// <summary>
         /// Gets the spectral domain of the band.
         /// </summary>
         /// <value>Tje spectral domain of the band.</value>
@@ -64,11 +70,12 @@ namespace ELTE.AEGIS
         /// <param name="description">The band description.</param>
         /// <param name="physicalGain">The physical gain of the band.</param>
         /// <param name="physicalBias">The physical bias of the band.</param>
+        /// <param name="solarIrradiance">The solar irradiance of the band.</param>
         /// <param name="spectralDomain">The spectral domain of the band.</param>
         /// <param name="spectralRange">The spectral range of the band.</param>
         /// <exception cref="System.ArgumentNullException">The description is null.</exception>
         /// <exception cref="System.ArgumentException">The description is empty, or consists of only shitespace characters.</exception>
-        public RasterImagingBand(String description, Double physicalGain, Double physicalBias, SpectralDomain spectralDomain, SpectralRange spectralRange)
+        public RasterImagingBand(String description, Double physicalGain, Double physicalBias, Double solarIrradiance, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (description == null)
                 throw new ArgumentNullException("description", "The description is null.");
@@ -78,6 +85,7 @@ namespace ELTE.AEGIS
             Description = description;
             PhysicalGain = physicalGain;
             PhysicalBias = physicalBias;
+            SolarIrradiance = solarIrradiance;
             SpectralDomain = spectralDomain;
             SpectralRange = spectralRange;
         }

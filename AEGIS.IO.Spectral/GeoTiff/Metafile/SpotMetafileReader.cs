@@ -146,11 +146,10 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 
             // device information
             String mission = sceneSourceElement.Element("MISSION").Value;
-            Int32 missionIndex = Int32.Parse(sceneSourceElement.Element("MISSION_INDEX").Value);
+            Int32 missionNumber = Int32.Parse(sceneSourceElement.Element("MISSION_INDEX").Value);
             String instrument = sceneSourceElement.Element("INSTRUMENT").Value;
-            Int32 instrumentIndex = Int32.Parse(sceneSourceElement.Element("INSTRUMENT_INDEX").Value);
 
-            return ImagingDevices.FromName(mission + missionIndex + " " + instrument + instrumentIndex).FirstOrDefault();
+            return ImagingDevices.FromName(mission + missionNumber + " " + instrument).FirstOrDefault();
         }
 
         /// <summary>
@@ -189,16 +188,27 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 
             foreach (XElement bandElement in _document.Element("Dimap_Document").Element("Image_Interpretation").Elements("Spectral_Band_Info"))
             {
+                String bandIndex = bandElement.Element("BAND_INDEX").Value;
                 Double physicalGain = Double.Parse(bandElement.Element("PHYSICAL_GAIN").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
                 Double physicalBias = Double.Parse(bandElement.Element("PHYSICAL_BIAS").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
 
+                // read the solar irradiance
+                XElement solarIrradianceElement = _document.Element("Dimap_Document").Element("Data_Strip").Element("Sensor_Calibration").Element("Solar_Irradiance").Elements("Band_Solar_Irradiance").FirstOrDefault(elements => elements.Element("BAND_INDEX").Value.Equals(bandIndex));
+
+                Double solarIrradiance = 0; 
+
+                if (solarIrradianceElement != null)
+                    solarIrradiance = Double.Parse(solarIrradianceElement.Element("SOLAR_IRRADIANCE_VALUE").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
+
                 // match the device band data
-                ImagingDeviceBand deviceBand = device.Bands.FirstOrDefault(band =>  band.Description.Contains(bandElement.Element("BAND_DESCRIPTION").Value));
+                ImagingDeviceBand deviceBand = null;
+                if (device != null)
+                    deviceBand = device.Bands.FirstOrDefault(band => band.Description.Contains(bandElement.Element("BAND_DESCRIPTION").Value));
 
                 if (deviceBand != null)
-                    bandData.Add(new RasterImagingBand(deviceBand.Description, physicalGain, physicalBias, deviceBand.SpectralDomain, deviceBand.SpectralRange));
+                    bandData.Add(new RasterImagingBand(deviceBand.Description, physicalGain, physicalBias, solarIrradiance, deviceBand.SpectralDomain, deviceBand.SpectralRange));
                 else // if no match is found
-                    bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias, SpectralDomain.Undefined, null));
+                    bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias, solarIrradiance, SpectralDomain.Undefined, null));
             }
 
             return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
