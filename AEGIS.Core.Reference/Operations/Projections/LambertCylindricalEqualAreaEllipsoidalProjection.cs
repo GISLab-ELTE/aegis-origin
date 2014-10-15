@@ -16,7 +16,6 @@
 using ELTE.AEGIS.Management;
 using System;
 using System.Collections.Generic;
-using System.Management.Instrumentation;
 
 namespace ELTE.AEGIS.Reference.Operations
 {
