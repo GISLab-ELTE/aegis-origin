@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -297,9 +297,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 byteIndex += 12;
             }
 
+            UInt32 finalPosition = (UInt32)_baseStream.Position;
+
             // write the IFD
             _baseStream.Seek(_currentImageFileDirectoryStartPosition, SeekOrigin.Begin);
             _baseStream.Write(bytes, 0, bytes.Length);
+
+            // position after all values
+            _baseStream.Seek(finalPosition, SeekOrigin.Begin);
         }
 
         /// <summary>

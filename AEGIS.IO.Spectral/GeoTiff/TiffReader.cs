@@ -351,11 +351,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Integer, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Floating, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
                     break;
             }
 
