@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,9 +25,43 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         #region Matrix properties
 
         /// <summary>
+        /// Determines whether the specified matrix is a nullmatrix.
+        /// </summary>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns><c>true</c> if all values of the matrix are zeros; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        public static Boolean IsNull(Matrix matrix)
+        {
+            return Matrix.IsNull(matrix);
+        }
+
+        /// <summary>
+        /// Determines whether the specified matrix is valid.
+        /// </summary>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns><c>true</c> if all values of the matrix are numbers; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        public static Boolean IsValid(Matrix matrix)
+        {
+            return Matrix.IsValid(matrix);
+        }
+
+        /// <summary>
+        /// Determines whether the matrix is symmetric.
+        /// </summary>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns><c>true</c> if the matrix is square and symmetric; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        public static Boolean IsSymmetric(this Matrix matrix)
+        {
+            return Matrix.IsSymmetric(matrix);
+        }
+
+        /// <summary>
         /// Computes the determinant of the matrix.
         /// </summary>
-        /// <value>The determinant of the matrix.</value>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns>The determinant of the matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public static Double ComputeDeterminant(this Matrix matrix)
         {
@@ -37,7 +71,8 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <summary>
         /// Computes the definiteness of the matrix.
         /// </summary>
-        /// <value>The definiteness of the matrix.</value>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns>The definiteness of the matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public static MatrixDefiniteness ComputeDefiniteness(this Matrix matrix) 
         {
@@ -45,11 +80,11 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
             Int32 posValues = 0;
             Int32 negValues = 0;
             Int32 zeroValues = 0;
-            for (Int32 i = 0; i < eigenValues.Length; ++i)
+            for (Int32 index = 0; index < eigenValues.Length; ++index)
             {
-                if (eigenValues[i] > 0)
+                if (eigenValues[index] > 0)
                     posValues++;
-                else if (eigenValues[i] < 0)
+                else if (eigenValues[index] < 0)
                     negValues++;
                 else
                     zeroValues++;
@@ -70,7 +105,8 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <summary>
         /// Computes the eigenvalues of the matrix.
         /// </summary>
-        /// <value>The eigenvalues of the matrix.</value>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns>The eigenvalues of the matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public static Double[] Eigenvalues(this Matrix matrix)  
         {
@@ -80,7 +116,8 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <summary>
         /// Computes the eigenvectors of the matrix.
         /// </summary>
-        /// <value>The eigenvectors of the matrix.</value>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns>The eigenvectors of the matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public static Vector[] Eigenvectors(this Matrix matrix) 
         {

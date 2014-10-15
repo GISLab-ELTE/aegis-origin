@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -234,27 +234,6 @@ namespace ELTE.AEGIS.Numerics
         public Boolean IsSquare { get { return _values.Length == 0 || _values.Length == _values[0].Length; } }
 
         /// <summary>
-        /// Determines whether the matrix is symmetric.
-        /// </summary>
-        /// <value><c>true</c> if the matrix is square and symmetric; otherwise, <c>false</c>.</value>
-        public Boolean IsSymmetric
-        {
-            get
-            {
-                if (_values.Length != 0 && _values.Length != _values[0].Length)
-                    return false;
-
-                for (Int32 i = 0; i < _values.Length; i++)
-                    for (Int32 j = i + 1; j < _values[i].Length; j++)
-                    {
-                        if (_values[i][j] != _values[j][i])
-                            return false;
-                    }
-                return true;
-            }
-        }
-
-        /// <summary>
         /// Gets the trace of the matrix.
         /// </summary>
         /// <value>The sum of elements on the main diagonal of the matrix.</value>
@@ -267,9 +246,9 @@ namespace ELTE.AEGIS.Numerics
                     throw new InvalidOperationException("The matrix must be square to have a trace.");
 
                 Double trace = 1;
-                for (Int32 i = 0; i < _values.Length; i++)
-                    for (Int32 j = 0; j < _values[i].Length; j++)
-                        trace += _values[i][j];
+                for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < _values[rowIndex].Length; columnIndex++)
+                        trace += _values[rowIndex][columnIndex];
                 return trace;
             }
         }
@@ -352,8 +331,8 @@ namespace ELTE.AEGIS.Numerics
                 throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
 
             _values = new Double[numberOfRows][];
-            for (Int32 i = 0; i < _values.Length; i++)
-                _values[i] = new Double[numberOfColumns];
+            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
+                _values[rowIndex] = new Double[numberOfColumns];
 
             _version = 0;
         }
@@ -377,8 +356,27 @@ namespace ELTE.AEGIS.Numerics
                 throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
 
             _values = new Double[numberOfRows][];
-            for (Int32 i = 0; i < _values.Length; i++)
-                _values[i] = Enumerable.Repeat(defaultValue, numberOfColumns).ToArray();
+            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
+                _values[rowIndex] = Enumerable.Repeat(defaultValue, numberOfColumns).ToArray();
+
+            _version = 0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Matrix" />.
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        public Matrix(Double[,] source)
+        {
+            _values = new Double[source.GetLength(0)][];
+            for (Int32 rowIndex = 0; rowIndex < _values.GetLength(0); rowIndex++)
+            {
+                _values[rowIndex] = new Double[source.GetLength(1)];
+                for (Int32 columnIndex = 0; columnIndex < _values.GetLength(1); columnIndex++)
+                {
+                    _values[rowIndex][columnIndex] = source[rowIndex, columnIndex];
+                }
+            }
 
             _version = 0;
         }
@@ -390,10 +388,10 @@ namespace ELTE.AEGIS.Numerics
         public Matrix(Matrix other)
         {
             _values = new Double[other.NumberOfRows][];
-            for (Int32 i = 0; i < _values.Length; i++)
+            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
             {
-                _values[i] = new Double[other._values[i].Length];
-                Array.Copy(other._values[i], _values[i], _values[i].Length);
+                _values[rowIndex] = new Double[other._values[rowIndex].Length];
+                Array.Copy(other._values[rowIndex], _values[rowIndex], _values[rowIndex].Length);
             }
 
             _version = 0;
@@ -431,8 +429,8 @@ namespace ELTE.AEGIS.Numerics
 
             Double[] values = new Double[_values[0].Length];
 
-            for (Int32 i = 0; i < _values[0].Length; i++)
-                values[i] = _values[i][columnIndex];
+            for (Int32 rowIndex = 0; rowIndex < _values[0].Length; rowIndex++)
+                values[rowIndex] = _values[rowIndex][columnIndex];
 
             return values;
         }
@@ -472,15 +470,15 @@ namespace ELTE.AEGIS.Numerics
         {
             StringBuilder builder = new StringBuilder(NumberOfColumns * NumberOfRows * 8);
             builder.Append("(");
-            for (Int32 i = 0; i < _values.Length; i++)
+            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
             {
-                if (i > 0)
+                if (rowIndex > 0)
                     builder.Append("; ");
-                for (Int32 j = 0; j < _values[i].Length; j++)
+                for (Int32 columnIndex = 0; columnIndex < _values[rowIndex].Length; columnIndex++)
                 {
-                    if (j > 0)
+                    if (columnIndex > 0)
                         builder.Append(' ');
-                    builder.Append(_values[i][j]);
+                    builder.Append(_values[rowIndex][columnIndex]);
                 }
             }
             builder.Append(")");
@@ -522,10 +520,10 @@ namespace ELTE.AEGIS.Numerics
 
             Matrix result = new Matrix(first.NumberOfRows, first.NumberOfColumns);
 
-            for (Int32 i = 0; i < result.NumberOfRows; i++)
-                for (Int32 j = 0; j < result.NumberOfColumns; j++)
+            for (Int32 rowIndex = 0; rowIndex < result.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.NumberOfColumns; columnIndex++)
                 {
-                    result[i, j] = first[i, j] + second[i, j];
+                    result[rowIndex, columnIndex] = first[rowIndex, columnIndex] + second[rowIndex, columnIndex];
                 }
 
             return result;
@@ -561,10 +559,10 @@ namespace ELTE.AEGIS.Numerics
 
             Matrix result = new Matrix(first.NumberOfRows, first.NumberOfColumns);
 
-            for (Int32 i = 0; i < result.NumberOfRows; i++)
-                for (Int32 j = 0; j < result.NumberOfColumns; j++)
+            for (Int32 rowIndex = 0; rowIndex < result.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.NumberOfColumns; columnIndex++)
                 {
-                    result[i, j] = first[i, j] - second[i, j];
+                    result[rowIndex, columnIndex] = first[rowIndex, columnIndex] - second[rowIndex, columnIndex];
                 }
 
             return result;
@@ -582,10 +580,10 @@ namespace ELTE.AEGIS.Numerics
                 throw new ArgumentNullException("matrix", "The matrix is null.");
 
             Matrix result = new Matrix(matrix.NumberOfRows, matrix.NumberOfColumns);
-            for (Int32 i = 0; i < result.NumberOfRows; i++)
-                for (Int32 j = 0; j < result.NumberOfColumns; j++)
+            for (Int32 rowIndex = 0; rowIndex < result.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.NumberOfColumns; columnIndex++)
                 {
-                    result[i, j] = -matrix[i, j];
+                    result[rowIndex, columnIndex] = -matrix[rowIndex, columnIndex];
                 }
 
             return result;
@@ -604,10 +602,10 @@ namespace ELTE.AEGIS.Numerics
                 throw new ArgumentNullException("matrix", "The matrix is null.");
 
             Matrix result = new Matrix(matrix.NumberOfRows, matrix.NumberOfColumns);
-            for (Int32 i = 0; i < result.NumberOfRows; i++)
-                for (Int32 j = 0; j < result.NumberOfColumns; j++)
+            for (Int32 rowIndex = 0; rowIndex < result.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.NumberOfColumns; columnIndex++)
                 {
-                    result[i, j] = scalar * matrix[i, j];
+                    result[rowIndex, columnIndex] = scalar * matrix[rowIndex, columnIndex];
                 }
 
             return result;
@@ -648,12 +646,12 @@ namespace ELTE.AEGIS.Numerics
                 throw new ArgumentException("The number of columns in the first matrix does not match the number of rows in the second matrix.", "second");
 
             Matrix result = new Matrix(first.NumberOfRows, second.NumberOfColumns);
-            for (Int32 i = 0; i < result.NumberOfRows; i++)
-                for (Int32 j = 0; j < result.NumberOfColumns; j++)
+            for (Int32 rowIndex = 0; rowIndex < result.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < result.NumberOfColumns; columnIndex++)
                 {
                     for (Int32 k = 0; k < first.NumberOfColumns; k++)
                     {
-                        result[i, j] += first[i, k] * second[k, j];
+                        result[rowIndex, columnIndex] += first[rowIndex, k] * second[k, columnIndex];
                     }
                 }
             return result;
@@ -692,6 +690,29 @@ namespace ELTE.AEGIS.Numerics
         }
 
         /// <summary>
+        /// Determines whether the specified matrix is symmetric.
+        /// </summary>
+        /// <param name="matrix">The matrix.</param>
+        /// <returns><c>true</c> if the matrix is square and symmetric; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
+        public static Boolean IsSymmetric(Matrix matrix)
+        {
+            if (matrix == null)
+                throw new ArgumentNullException("matrix", "The matrix is null.");
+
+            if (matrix.NumberOfRows != matrix.NumberOfColumns)
+                return false;
+
+            for (Int32 rowIndex = 0; rowIndex < matrix.NumberOfRows; rowIndex++)
+                for (Int32 jcolumnIndex = rowIndex + 1; jcolumnIndex < matrix.NumberOfColumns; jcolumnIndex++)
+                {
+                    if (matrix[rowIndex][jcolumnIndex] != matrix[jcolumnIndex][rowIndex])
+                        return false;
+                }
+            return true;
+        }
+
+        /// <summary>
         /// Determines whether the specified matrix instances are equal.
         /// </summary>
         /// <param name="first">The first matrix.</param>
@@ -709,11 +730,11 @@ namespace ELTE.AEGIS.Numerics
             if (first._values.Length != second._values.Length)
                 return false;
 
-            for (Int32 i = 0; i < first._values.Length; i++)
+            for (Int32 rowIndex = 0; rowIndex < first._values.Length; rowIndex++)
             {
-                if (first._values[i].Length != second._values[i].Length)
+                if (first._values[rowIndex].Length != second._values[rowIndex].Length)
                     return false;
-                if (!first._values[i].SequenceEqual(second._values[i]))
+                if (!first._values[rowIndex].SequenceEqual(second._values[rowIndex]))
                     return false;
             }
 
