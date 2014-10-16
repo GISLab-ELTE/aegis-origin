@@ -74,7 +74,7 @@ namespace ELTE.AEGIS.Numerics
             /// <value>The element at the current position of the enumerator.</value>
             public Double Current
             {
-                get { return _localMatrix._values[_rowIndex][_columnIndex]; }
+                get { return _localMatrix._values[_rowIndex * _localMatrix.NumberOfColumns + _columnIndex]; }
             }
 
             /// <summary>
@@ -83,7 +83,7 @@ namespace ELTE.AEGIS.Numerics
             /// <value>The element at the current position of the enumerator.-</value>
             Object IEnumerator.Current
             {
-                get { return _localMatrix._values[_rowIndex][_columnIndex]; }
+                get { return _localMatrix._values[_rowIndex * _localMatrix.NumberOfColumns + _columnIndex]; }
             }
 
             #endregion
@@ -207,9 +207,9 @@ namespace ELTE.AEGIS.Numerics
         private Int32 _version;
 
         /// <summary>
-        /// The values stored by rows.
+        /// The values stored in row major order.
         /// </summary>
-        private Double[][] _values;
+        private Double[] _values;
 
         #endregion
 
@@ -219,19 +219,18 @@ namespace ELTE.AEGIS.Numerics
         /// Gets the number of rows.
         /// </summary>
         /// <value>The number of rows.</value>
-        public Int32 NumberOfRows { get { return _values.Length; } }
-
+        public Int32 NumberOfRows { get; private set; }
         /// <summary>
         /// Gets the number of columns.
         /// </summary>
         /// <value>The number of columns.</value>
-        public Int32 NumberOfColumns { get { return _values.Length == 0 ? 0 : _values[0].Length; } }
+        public Int32 NumberOfColumns { get; private set; }
 
         /// <summary>
         /// Determines whether the matrix is square.
         /// </summary>
         /// <value><c>true</c> if the matrix is square; otherwise, <c>false</c>.</value>
-        public Boolean IsSquare { get { return _values.Length == 0 || _values.Length == _values[0].Length; } }
+        public Boolean IsSquare { get { return NumberOfRows == NumberOfColumns; } }
 
         /// <summary>
         /// Gets the trace of the matrix.
@@ -246,28 +245,10 @@ namespace ELTE.AEGIS.Numerics
                     throw new InvalidOperationException("The matrix must be square to have a trace.");
 
                 Double trace = 1;
-                for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
-                    for (Int32 columnIndex = 0; columnIndex < _values[rowIndex].Length; columnIndex++)
-                        trace += _values[rowIndex][columnIndex];
+                for (Int32 rowIndex = 0; rowIndex < NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < NumberOfColumns; columnIndex++)
+                        trace += _values[rowIndex * NumberOfColumns + columnIndex];
                 return trace;
-            }
-        }
-
-        /// <summary>
-        /// Gets the row located at the specified index.
-        /// </summary>
-        /// <value>The <see cref="Double[]" /> row values located at the index.</value>
-        /// <param name="rowIndex">The row index.</param>
-        /// <returns>The <see cref="Double[]" /> row values located at the index.</returns>
-        /// <exception cref="System.IndexOutOfRangeException">Row index was outside the bounds of the matrix.</exception>
-        public Double[] this[Int32 rowIndex]
-        {
-            get
-            {
-                if (rowIndex < 0 || rowIndex >= _values.Length)
-                    throw new IndexOutOfRangeException("Row index was outside the bounds of the matrix.");
-
-                return _values[rowIndex];
             }
         }
 
@@ -287,24 +268,24 @@ namespace ELTE.AEGIS.Numerics
         {
             get
             {
-                if (rowIndex < 0 || rowIndex >= _values.Length)
+                if (rowIndex < 0 || rowIndex >= NumberOfRows)
                     throw new IndexOutOfRangeException("Row index was outside the bounds of the matrix.");
-                if (columnIndex < 0 || columnIndex >= _values[0].Length)
+                if (columnIndex < 0 || columnIndex >= NumberOfColumns)
                     throw new IndexOutOfRangeException("Column index was outside the bounds of the matrix.");
 
-                return _values[rowIndex][columnIndex];
+                return _values[rowIndex * NumberOfColumns + columnIndex];
             }
             set
             {
-                if (rowIndex < 0 || rowIndex >= _values.Length)
+                if (rowIndex < 0 || rowIndex >= NumberOfRows)
                     throw new IndexOutOfRangeException("Row index was outside the bounds of the matrix.");
-                if (columnIndex < 0 || columnIndex >= _values[0].Length)
+                if (columnIndex < 0 || columnIndex >= NumberOfColumns)
                     throw new IndexOutOfRangeException("Column index was outside the bounds of the matrix.");
 
-                if (_values[rowIndex][columnIndex] == value)
+                if (_values[rowIndex * NumberOfColumns + columnIndex] == value)
                     return;
 
-                _values[rowIndex][columnIndex] = value;
+                _values[rowIndex * NumberOfColumns + columnIndex] = value;
                 _version++;
             }
         }
@@ -330,10 +311,9 @@ namespace ELTE.AEGIS.Numerics
             if (numberOfColumns < 0)
                 throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
 
-            _values = new Double[numberOfRows][];
-            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
-                _values[rowIndex] = new Double[numberOfColumns];
-
+            NumberOfRows = numberOfRows;
+            NumberOfColumns = numberOfColumns;
+            _values = new Double[NumberOfRows * NumberOfColumns];
             _version = 0;
         }
 
@@ -355,10 +335,9 @@ namespace ELTE.AEGIS.Numerics
             if (numberOfColumns < 0)
                 throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
 
-            _values = new Double[numberOfRows][];
-            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
-                _values[rowIndex] = Enumerable.Repeat(defaultValue, numberOfColumns).ToArray();
-
+            NumberOfRows = numberOfRows;
+            NumberOfColumns = numberOfColumns;
+            _values = Enumerable.Repeat(defaultValue, NumberOfRows * NumberOfColumns).ToArray();
             _version = 0;
         }
 
@@ -366,35 +345,42 @@ namespace ELTE.AEGIS.Numerics
         /// Initializes a new instance of the <see cref="Matrix" />.
         /// </summary>
         /// <param name="source">The source array.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public Matrix(Double[,] source)
         {
-            _values = new Double[source.GetLength(0)][];
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            NumberOfRows = source.GetLength(0);
+            NumberOfColumns = source.GetLength(1);
+            _values = new Double[NumberOfRows * NumberOfColumns];
+            _version = 0;
+
             for (Int32 rowIndex = 0; rowIndex < _values.GetLength(0); rowIndex++)
             {
-                _values[rowIndex] = new Double[source.GetLength(1)];
                 for (Int32 columnIndex = 0; columnIndex < _values.GetLength(1); columnIndex++)
                 {
-                    _values[rowIndex][columnIndex] = source[rowIndex, columnIndex];
+                    _values[rowIndex * NumberOfColumns + columnIndex] = source[rowIndex, columnIndex];
                 }
             }
-
-            _version = 0;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Matrix" /> class based on the other matrix.
         /// </summary>
         /// <param name="other">The other matrix.</param>
+        /// <exception cref="System.ArgumentNullException">The other matrix is null.</exception>
         public Matrix(Matrix other)
         {
-            _values = new Double[other.NumberOfRows][];
-            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
-            {
-                _values[rowIndex] = new Double[other._values[rowIndex].Length];
-                Array.Copy(other._values[rowIndex], _values[rowIndex], _values[rowIndex].Length);
-            }
+            if (other == null)
+                throw new ArgumentNullException("other", "The other matrix is null.");
 
+            NumberOfRows = other.NumberOfRows;
+            NumberOfColumns = other.NumberOfColumns;
+            _values = new Double[NumberOfRows * NumberOfColumns];
             _version = 0;
+
+            Array.Copy(other._values, _values, _values.Length);
         }
 
         #endregion
@@ -409,10 +395,14 @@ namespace ELTE.AEGIS.Numerics
         /// <exception cref="System.IndexOutOfRangeException">Row index was outside the bounds of the matrix.</exception>
         public Double[] GetRow(Int32 rowIndex)
         {
-            if (rowIndex < 0 || rowIndex >= _values.Length)
+            if (rowIndex < 0 || rowIndex >= NumberOfRows)
                 throw new ArgumentOutOfRangeException("rowIndex", "Row index was outside the bounds of the matrix.");
 
-            return _values[rowIndex].ToArray();
+            Double[] values = new Double[NumberOfColumns];
+
+            Array.Copy(_values, rowIndex * NumberOfColumns, values, 0, NumberOfColumns);
+
+            return values;
         }
 
 
@@ -424,13 +414,13 @@ namespace ELTE.AEGIS.Numerics
         /// <exception cref="System.ArgumentOutOfRangeException">Column index was outside the bounds of the matrix.</exception>
         public Double[] GetColumn(Int32 columnIndex)
         {
-            if (columnIndex < 0 || _values.Length == 0 || columnIndex >= _values[0].Length)
+            if (columnIndex < 0 || NumberOfRows == 0 || columnIndex >= NumberOfColumns)
                 throw new ArgumentOutOfRangeException("columnIndex", "Column index was outside the bounds of the matrix.");
 
-            Double[] values = new Double[_values[0].Length];
+            Double[] values = new Double[NumberOfRows];
 
-            for (Int32 rowIndex = 0; rowIndex < _values[0].Length; rowIndex++)
-                values[rowIndex] = _values[rowIndex][columnIndex];
+            for (Int32 rowIndex = 0; rowIndex < NumberOfRows; rowIndex++)
+                values[rowIndex] = _values[rowIndex * NumberOfColumns + columnIndex];
 
             return values;
         }
@@ -470,15 +460,15 @@ namespace ELTE.AEGIS.Numerics
         {
             StringBuilder builder = new StringBuilder(NumberOfColumns * NumberOfRows * 8);
             builder.Append("(");
-            for (Int32 rowIndex = 0; rowIndex < _values.Length; rowIndex++)
+            for (Int32 rowIndex = 0; rowIndex < NumberOfRows; rowIndex++)
             {
                 if (rowIndex > 0)
                     builder.Append("; ");
-                for (Int32 columnIndex = 0; columnIndex < _values[rowIndex].Length; columnIndex++)
+                for (Int32 columnIndex = 0; columnIndex < NumberOfColumns; columnIndex++)
                 {
                     if (columnIndex > 0)
                         builder.Append(' ');
-                    builder.Append(_values[rowIndex][columnIndex]);
+                    builder.Append(_values[rowIndex * NumberOfColumns + columnIndex]);
                 }
             }
             builder.Append(")");
@@ -672,7 +662,10 @@ namespace ELTE.AEGIS.Numerics
             if (matrix == null)
                 throw new ArgumentNullException("matrix", "The matrix is null.");
 
-            return matrix._values.All(array => array.All(value => value == 0));
+            if (matrix._values.Length == 0)
+                return true;
+
+            return matrix._values.All(value => value == 0);
         }
 
         /// <summary>
@@ -686,7 +679,10 @@ namespace ELTE.AEGIS.Numerics
             if (matrix == null)
                 throw new ArgumentNullException("matrix", "The matrix is null.");
 
-            return matrix._values.All(array => array.All(value => !Double.IsNaN(value)));
+            if (matrix._values.Length == 0)
+                return true;
+
+            return matrix._values.All(value => !Double.IsNaN(value));
         }
 
         /// <summary>
@@ -704,9 +700,9 @@ namespace ELTE.AEGIS.Numerics
                 return false;
 
             for (Int32 rowIndex = 0; rowIndex < matrix.NumberOfRows; rowIndex++)
-                for (Int32 jcolumnIndex = rowIndex + 1; jcolumnIndex < matrix.NumberOfColumns; jcolumnIndex++)
+                for (Int32 columnIndex = rowIndex + 1; columnIndex < matrix.NumberOfColumns; columnIndex++)
                 {
-                    if (matrix[rowIndex][jcolumnIndex] != matrix[jcolumnIndex][rowIndex])
+                    if (matrix._values[rowIndex * matrix.NumberOfColumns + columnIndex] != matrix._values[rowIndex * matrix.NumberOfColumns + columnIndex])
                         return false;
                 }
             return true;
@@ -727,18 +723,10 @@ namespace ELTE.AEGIS.Numerics
             if (ReferenceEquals(first, second))
                 return true;
 
-            if (first._values.Length != second._values.Length)
+            if (first.NumberOfRows != second.NumberOfRows || first.NumberOfColumns != second.NumberOfColumns)
                 return false;
 
-            for (Int32 rowIndex = 0; rowIndex < first._values.Length; rowIndex++)
-            {
-                if (first._values[rowIndex].Length != second._values[rowIndex].Length)
-                    return false;
-                if (!first._values[rowIndex].SequenceEqual(second._values[rowIndex]))
-                    return false;
-            }
-
-            return true;
+            return first._values.SequenceEqual(second._values);
         }
 
         #endregion

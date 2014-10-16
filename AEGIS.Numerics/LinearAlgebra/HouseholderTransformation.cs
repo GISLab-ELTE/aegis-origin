@@ -150,20 +150,20 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
 
             Matrix tridiagonalMatrix = new Matrix(matrix);
 
-            for (Int32 i = 0; i < matrix.NumberOfColumns - 2; i++)
+            for (Int32 columnIndex = 0; columnIndex < matrix.NumberOfColumns - 2; columnIndex++)
             {
-                Double[] column = tridiagonalMatrix[i];
+                Double[] column = tridiagonalMatrix.GetColumn(columnIndex);
 
                 Double sum = 0;
-                for (Int32 j = i + 1; j < column.Length; j++)
+                for (Int32 j = columnIndex + 1; j < column.Length; j++)
                     sum += column[j] * column[j];
 
-                Double alpha = -Math.Sign(column[i + 1]) * Math.Sqrt(sum);
-                Double r = Math.Sqrt(0.5 * (alpha * alpha - column[i + 1] * alpha));
+                Double alpha = -Math.Sign(column[columnIndex + 1]) * Math.Sqrt(sum);
+                Double r = Math.Sqrt(0.5 * (alpha * alpha - column[columnIndex + 1] * alpha));
 
                 Vector v = new Vector(column.Length);
-                v[i + 1] = (column[i + 1] - alpha) / 2 / r;
-                for (Int32 j = i + 2; j < column.Length; j++)
+                v[columnIndex + 1] = (column[columnIndex + 1] - alpha) / 2 / r;
+                for (Int32 j = columnIndex + 2; j < column.Length; j++)
                     v[j] = column[j] / 2 / r;
 
                 Matrix p = MatrixFactory.CreateIdentity(column.Length) - 2 * v * v.Transpone();
