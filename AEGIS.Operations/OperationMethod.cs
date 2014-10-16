@@ -29,26 +29,6 @@ namespace ELTE.AEGIS.Operations
         #region Private fields
 
         /// <summary>
-        /// The version of the method.
-        /// </summary>
-        private readonly Version _version;
-
-        /// <summary>
-        /// A value indicating whther the operation is reversible.
-        /// </summary>
-        private readonly Boolean _isReversible;
-
-        /// <summary>
-        /// The type of the source.
-        /// </summary>
-        private readonly Type _sourceType;
-
-        /// <summary>
-        /// The type of the result.
-        /// </summary>
-        private readonly Type _resultType;
-
-        /// <summary>
         /// The supported geometry models.
         /// </summary>
         private readonly GeometryModel[] _supportedModels;
@@ -76,25 +56,25 @@ namespace ELTE.AEGIS.Operations
         /// Gets or sets the version of the method.
         /// </summary>
         /// <value>The version of the method.</value>
-        public Version Version { get { return _version; } }
+        public Version Version { get; private set; }
 
         /// <summary>
         /// Gets a values indicating whether the operation is reversible.
         /// </summary>
         /// <value><c>true</c> if the operation is reversible; otherwise, <c>false</c>.</value>
-        public Boolean IsReversible { get { return _isReversible; } }
+        public Boolean IsReversible { get; private set; }
 
         /// <summary>
         /// Gets the source type of the method.
         /// </summary>
         /// <value>The source type of the method.</value>
-        public Type SourceType { get { return _sourceType; } }
+        public Type SourceType { get; private set; }
 
         /// <summary>
         /// Gets the result type of the method.
         /// </summary>
         /// <value>The result type of the method.</value>
-        public Type ResultType { get { return _resultType; } }
+        public Type ResultType { get; private set; }
 
         /// <summary>
         /// Gets or sets the geometry models supported by the method.
@@ -158,10 +138,10 @@ namespace ELTE.AEGIS.Operations
             if (resultType == null)
                 throw new ArgumentNullException("targetType", "The target type is null.");
 
-            _version = version;
-            _isReversible = isReversible;
-            _sourceType = sourceType;
-            _resultType = resultType;
+            Version = version;
+            IsReversible = isReversible;
+            SourceType = sourceType;
+            ResultType = resultType;
             _supportedModels = ExtractGeometryModels(supportedModels);
             _supportedModes = ExtractExecutionModes(supportedModes);
             _supportedDomains = ExtractExecutionDomains(supportedDomains);
@@ -182,7 +162,7 @@ namespace ELTE.AEGIS.Operations
             if (ReferenceEquals(null, another)) return false;
             if (ReferenceEquals(this, another)) return true;
 
-            return Identifier.Equals(another.Identifier) && _version.Equals(another._version);
+            return Identifier.Equals(another.Identifier) && Version.Equals(another.Version);
         }
 
         #endregion
@@ -200,7 +180,7 @@ namespace ELTE.AEGIS.Operations
             if (ReferenceEquals(this, obj)) return true;
             if (!(obj is OperationMethod)) return false;
 
-            return Identifier.Equals((obj as OperationMethod).Identifier) && _version.Equals((obj as OperationMethod)._version);
+            return Identifier.Equals((obj as OperationMethod).Identifier) && Version.Equals((obj as OperationMethod).Version);
         }
 
         /// <summary>
@@ -209,7 +189,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A hash code for the current <see cref="OperationMethod" />.</returns>
         public override Int32 GetHashCode()
         {
-            return Identifier.GetHashCode() ^ _version.GetHashCode() ^ 920419823;
+            return Identifier.GetHashCode() ^ Version.GetHashCode() ^ 920419823;
         }
 
         /// <summary>
@@ -218,7 +198,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A <see cref="System.String" /> that contains both identifier and name.</returns>
         public override String ToString()
         {
-            return "[" + Identifier + "] " + Identifier + " (V" + _version + ")";
+            return "[" + Identifier + "] " + Name + " (V" + Version + ")";
         }
 
         #endregion
