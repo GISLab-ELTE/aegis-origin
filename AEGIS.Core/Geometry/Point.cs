@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Geometry
             {
                 if (_coordinate.X != value)
                 {
-                    _coordinate = new Coordinate(value, _coordinate.Y, _coordinate.Z);
+                    _coordinate = new Coordinate(PrecisionModel.MakePrecise(value), _coordinate.Y, _coordinate.Z);
                     OnGeometryChanged();
                 }
             } 
@@ -60,7 +60,7 @@ namespace ELTE.AEGIS.Geometry
             {
                 if (_coordinate.Y != value)
                 {
-                    _coordinate = new Coordinate(_coordinate.X, value, _coordinate.Z);
+                    _coordinate = new Coordinate(_coordinate.X, PrecisionModel.MakePrecise(value), _coordinate.Z);
                     OnGeometryChanged();
                 }
             } 
@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Geometry
             {
                 if (_coordinate.Z != value)
                 {
-                    _coordinate = new Coordinate(_coordinate.X, _coordinate.Y, value);
+                    _coordinate = new Coordinate(_coordinate.X, _coordinate.Y, PrecisionModel.MakePrecise(value));
                     OnGeometryChanged();
                 }
             } 
@@ -94,7 +94,7 @@ namespace ELTE.AEGIS.Geometry
             {
                 if (!_coordinate.Equals(value))
                 {
-                    _coordinate = value;
+                    _coordinate = PrecisionModel.MakePrecise(value);
                     OnGeometryChanged();
                 }
             } 
@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.Geometry
         public Point(Double x, Double y, Double z, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
             : base(referenceSystem, metadata)
         {
-            _coordinate = new Coordinate(x, y, z);
+            _coordinate = new Coordinate(PrecisionModel.MakePrecise(x), PrecisionModel.MakePrecise(y), PrecisionModel.MakePrecise(z));
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace ELTE.AEGIS.Geometry
         public Point(Double x, Double y, Double z, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
-            _coordinate = new Coordinate(x, y, z);
+            _coordinate = new Coordinate(PrecisionModel.MakePrecise(x), PrecisionModel.MakePrecise(y), PrecisionModel.MakePrecise(z));
         }
 
         #endregion

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -260,7 +260,7 @@ namespace ELTE.AEGIS.Geometry
             if (source == null)
                 _coordinates = new List<Coordinate>();
             else
-                _coordinates = new List<Coordinate>(source);
+                _coordinates = new List<Coordinate>(source.Select(coordinate => PrecisionModel.MakePrecise(coordinate)));
 
             _version = 0;
         }
@@ -277,7 +277,7 @@ namespace ELTE.AEGIS.Geometry
             if (source == null)
                 _coordinates = new List<Coordinate>();
             else
-                _coordinates = new List<Coordinate>(source);
+                _coordinates = new List<Coordinate>(source.Select(coordinate => PrecisionModel.MakePrecise(coordinate)));
 
             _version = 0;
         }
@@ -326,7 +326,7 @@ namespace ELTE.AEGIS.Geometry
             if (_coordinates[index].Equals(coordinate))
                 return;
 
-            _coordinates[index] = coordinate;
+            _coordinates[index] = PrecisionModel.MakePrecise(coordinate);
             OnGeometryChanged();
         }
 

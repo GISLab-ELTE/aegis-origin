@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="coordinate">The coordinate.</param>
         public virtual void Add(Coordinate coordinate)
         {
-            _coordinates.Add(coordinate);
+            _coordinates.Add(PrecisionModel.MakePrecise(coordinate));
 
             OnGeometryChanged();
         }
@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.Geometry
             if (index > _coordinates.Count)
                 throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than the number of coordinates.");
 
-            _coordinates.Insert(index, coordinate);
+            _coordinates.Insert(index, PrecisionModel.MakePrecise(coordinate));
 
             OnGeometryChanged();
         }

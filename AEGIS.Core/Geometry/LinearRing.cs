@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -109,12 +109,12 @@ namespace ELTE.AEGIS.Geometry
 
             if (index == 0 || index == _coordinates.Count - 1)
             {
-                _coordinates[0] = coordinate;
-                _coordinates[_coordinates.Count - 1] = coordinate;
+                _coordinates[0] = PrecisionModel.MakePrecise(coordinate);
+                _coordinates[_coordinates.Count - 1] = _coordinates[0];
             }
             else
             {
-                _coordinates[index] = coordinate;
+                _coordinates[index] = PrecisionModel.MakePrecise(coordinate);
             }
 
             OnGeometryChanged();
@@ -147,12 +147,12 @@ namespace ELTE.AEGIS.Geometry
         {
             if (index == 0) // insertion of new starting coordinate
             {
-                _coordinates[_coordinates.Count - 1] = coordinate;
+                _coordinates[_coordinates.Count - 1] = PrecisionModel.MakePrecise(coordinate);
                 base.Insert(0, coordinate);
             }
             else // insertion of new inner coordinate
             {
-                base.Insert(index, coordinate);
+                base.Insert(index, PrecisionModel.MakePrecise(coordinate));
             }
         }
 
