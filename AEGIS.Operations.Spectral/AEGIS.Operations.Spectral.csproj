@@ -68,6 +68,7 @@
     <Compile Include="Spectral\Indexing\NormalizedDifferenceVegetationIndexComputation.cs" />
     <Compile Include="Spectral\Indexing\NormalizedDifferenceWaterIndexComputation.cs" />
     <Compile Include="Spectral\PerBandSpectralTransformation.cs" />
+    <Compile Include="Spectral\Reflectance\SpotTopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Reflectance\TopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Resampling\SpectralResampling.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingType.cs" />
