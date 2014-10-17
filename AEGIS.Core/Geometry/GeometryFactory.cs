@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -29,7 +29,6 @@ namespace ELTE.AEGIS.Geometry
     {
         #region Private fields
 
-        private readonly IReferenceSystem _referenceSystem;
         private readonly IMetadataFactory _metadataFactory;
 
         #endregion
@@ -37,10 +36,16 @@ namespace ELTE.AEGIS.Geometry
         #region IGeometryFactory properties
 
         /// <summary>
+        /// Gets the precision model used by the factory.
+        /// </summary>
+        /// <value>The precision model used by the factory.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
+
+        /// <summary>
         /// Gets the reference system used by the factory.
         /// </summary>
         /// <value>The reference system used by the factory.</value>
-        public IReferenceSystem ReferenceSystem { get { return _referenceSystem; } }
+        public IReferenceSystem ReferenceSystem { get; private set; }
 
         #endregion
 
@@ -49,22 +54,26 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
-        public GeometryFactory(IReferenceSystem referenceSystem)
+        public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem)
         {
-            _referenceSystem = referenceSystem;
+            PrecisionModel = precisionModel;
+            ReferenceSystem = referenceSystem;
             _metadataFactory = Factory.DefaultInstance<IMetadataFactory>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadataFactory">The metadata factory.</param>
-        /// <param name="rasterFactory">The raster factory.</param>
-        public GeometryFactory(IReferenceSystem referenceSystem, IMetadataFactory metadataFactory) : base(metadataFactory)
+        public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IMetadataFactory metadataFactory)
+            : base(metadataFactory)
         {
-            _referenceSystem = referenceSystem;
+            PrecisionModel = precisionModel;
+            ReferenceSystem = referenceSystem;
             _metadataFactory = metadataFactory ?? Factory.DefaultInstance<IMetadataFactory>();
         }
 

@@ -89,7 +89,7 @@ namespace ELTE.AEGIS
             private FactoryImplementation()
             {
                 MetadataFactory metadataFactory = new MetadataFactory();
-                GeometryFactory geometryFactory = new GeometryFactory(null, metadataFactory);
+                GeometryFactory geometryFactory = new GeometryFactory(PrecisionModel.Default, null, metadataFactory);
 
                 _container = new Container();
 

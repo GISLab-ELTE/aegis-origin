@@ -144,7 +144,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
             Assert.IsNull(geometryFactory);
 
             // should resolve with reference system parameter
-            Assert.IsTrue(_container.TryResolve<IGeometryFactory>(new Object[]{ (IReferenceSystem)null }, out geometryFactory));
+            Assert.IsTrue(_container.TryResolve<IGeometryFactory>(new Object[]{ PrecisionModel.Default, (IReferenceSystem)null }, out geometryFactory));
             Assert.IsNotNull(geometryFactory);
 
             Assert.IsInstanceOf<GeometryFactory>(geometryFactory);
