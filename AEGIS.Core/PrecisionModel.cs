@@ -22,6 +22,15 @@ namespace ELTE.AEGIS
     /// </summary>
     public class PrecisionModel : IComparable<PrecisionModel>, IEquatable<PrecisionModel>
     {
+        #region Public static instances
+
+        /// <summary>
+        /// The default precision model.
+        /// </summary>
+        public static readonly PrecisionModel Default = new PrecisionModel();
+
+        #endregion
+
         #region Public properties
 
         /// <summary>
