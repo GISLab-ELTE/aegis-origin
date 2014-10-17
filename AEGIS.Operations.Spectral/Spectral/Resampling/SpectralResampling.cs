@@ -134,11 +134,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             RasterMapper mapper = null;
 
             if (Source.Raster.IsMapped)
-                RasterMapper.FromCoordinates(RasterMapMode.ValueIsArea,
-                                                                   new RasterCoordinate(0, 0, _source.Raster.Coordinates[0]),
-                                                                   new RasterCoordinate(_targetNumberOfRows, 0, Source.Raster.Coordinates[1]),
-                                                                   new RasterCoordinate(_targetNumberOfRows, _targetNumberOfColumns, Source.Raster.Coordinates[2]),
-                                                                   new RasterCoordinate(0, _targetNumberOfColumns, Source.Raster.Coordinates[3]));
+                mapper = RasterMapper.FromMapper(Source.Raster.Mapper, Coordinate.Empty, new CoordinateVector((Double)_targetNumberOfRows / Source.Raster.NumberOfRows, (Double)_targetNumberOfColumns / Source.Raster.NumberOfColumns));
 
             _result = _source.Factory.CreateSpectralGeometry(Source,
                                                              PrepareRasterResult(Source.Raster.Format,
@@ -147,8 +143,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
                                                                                  _targetNumberOfColumns,
                                                                                  Source.Raster.RadiometricResolutions,
                                                                                  mapper),
-                                                             _source.Presentation,
-                                                             _source.Imaging);
+                                                             Source.Presentation,
+                                                             Source.Imaging);
         }
 
         #endregion
