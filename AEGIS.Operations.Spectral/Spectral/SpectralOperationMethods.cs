@@ -577,12 +577,12 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _spectralResampling ?? (_spectralResampling =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213301", "Spectral resampling",
-                                                                         "Resamples spectral values to specified resolution. Reampling is performed using a predefined strategy.", null, "1.0.0",
+                                                                         "Resamples spectral values to specified resolution. Resampling of th raster is performed using a predefined algorithm.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandFocal,
                                                                          SpectralOperationParameters.NumberOfRows,
                                                                          SpectralOperationParameters.NumberOfColumns,
-                                                                         SpectralOperationParameters.SpectralResamplingStrategy,
-                                                                         SpectralOperationParameters.SpectralResamplingType));
+                                                                         SpectralOperationParameters.RasterResamplingAlgorithm,
+                                                                         SpectralOperationParameters.RasterResamplingAlgorithmType));
             }
         }
         /// <summary>

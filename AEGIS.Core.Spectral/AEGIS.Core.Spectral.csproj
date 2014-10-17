@@ -40,6 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\RasterAlgorithms.cs" />
+    <Compile Include="Algorithms\Resampling\BilinearResamplingAlgorithm.cs" />
+    <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
+    <Compile Include="Algorithms\Resampling\NearestNeighbourResamplingAlgorithm.cs" />
+    <Compile Include="Algorithms\Resampling\RasterResamplingAlgorithm.cs" />
     <Compile Include="Geometry\SpectralGeometryFactory.cs" />
     <Compile Include="Geometry\SpectralPolygon.cs" />
     <Compile Include="ImagingDevice.cs" />

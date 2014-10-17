@@ -1,4 +1,4 @@
-﻿/// <copyright file="BilinearResamplingStrategy.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="BilinearResamplingAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -16,69 +16,27 @@
 using ELTE.AEGIS.Algorithms;
 using System;
 
-namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
+namespace ELTE.AEGIS.Algorithms.Resampling
 {
     /// <summary>
-    /// Represents a spectral resampling strategy using bilinear interpolation.
+    /// Represents a type performing resapling of raster images using bilinear interpolation.
     /// </summary>
-    public class BilinearResamplingStrategy : SpectralResamplingStrategy
+    public class BilinearResamplingAlgorithm : RasterResamplingAlgorithm
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BilinearResamplingStrategy"/> class.
+        /// Initializes a new instance of the <see cref="BilinearResamplingAlgorithm" /> class.
         /// </summary>
         /// <param name="raster">The raster.</param>
-        public BilinearResamplingStrategy(IRaster raster)
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public BilinearResamplingAlgorithm(IRaster raster)
             : base(raster)
         { }
 
         #endregion
 
-        #region Public RasterResamplingStrategy methods
-
-        /// <summary>
-        /// Computes the specified spectral value.
-        /// </summary>
-        /// <param name="rowIndex">The zero-based row index of the value.</param>
-        /// <param name="columnIndex">The zero-based column index of the value.</param>
-        /// <param name="bandIndex">The zero-based band index of the value.</param>
-        /// <returns>The spectral value at the specified index.</returns>
-        public override UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
-        {
-            Int32 columnFloor = (Int32)Math.Floor(columnIndex);
-            Int32 rowFloor = (Int32)Math.Floor(rowIndex);
-
-            Double columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor, bandIndex);
-            Double rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor + 1, bandIndex);
-
-            return RasterAlgorithms.Restrict((1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity, _raster.RadiometricResolutions[bandIndex]);
-        }
-
-        /// <summary>
-        /// Computes the specified spectral value.
-        /// </summary>
-        /// <param name="rowIndex">The zero-based row index of the value.</param>
-        /// <param name="columnIndex">The zero-based column index of the value.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        public override UInt32[] Compute(Double rowIndex, Double columnIndex)
-        {
-            Int32 columnFloor = (Int32)Math.Floor(columnIndex);
-            Int32 rowFloor = (Int32)Math.Floor(rowIndex);
-
-            Double columnIntensity, rowIntensity;
-
-            UInt32[] result = new UInt32[_raster.NumberOfBands];
-            for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
-            {
-                columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor, bandIndex);
-                rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor + 1, bandIndex);
-
-                result[bandIndex] = RasterAlgorithms.Restrict((1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity, _raster.RadiometricResolutions[bandIndex]);
-            }
-
-            return result;
-        }
+        #region Public RasterResamplingAlgorithm methods
 
         /// <summary>
         /// Computes the specified floating spectral value.

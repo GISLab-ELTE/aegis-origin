@@ -13,11 +13,10 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms.Resampling;
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
-using ELTE.AEGIS.Operations.Spectral.Resampling;
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,13 +117,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _lowerThresholdBoundary;
         private static OperationParameter _numberOfRows;
         private static OperationParameter _numberOfColumns;
+        private static OperationParameter _rasterResamplingAlgorithm;
+        private static OperationParameter _rasterResamplingAlgorithmType;
         private static OperationParameter _sharpeningAmount;
         private static OperationParameter _sharpeningRadius;
         private static OperationParameter _sharpeningThreshold;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
-        private static OperationParameter _spectralResamplingStrategy;
-        private static OperationParameter _spectralResamplingType;
         private static OperationParameter _spectralSelectorFunction;
         private static OperationParameter _upperThresholdBoundary;
 
@@ -583,6 +582,36 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Raster resampling algorithm.
+        /// </summary>
+        public static OperationParameter RasterResamplingAlgorithm
+        {
+            get
+            {
+                return _rasterResamplingAlgorithm ?? (_rasterResamplingAlgorithm =
+                    OperationParameter.CreateOptionalParameter<RasterResamplingAlgorithm>("AEGIS::223382", "Raster resampling algorithm",
+                                                                                          "The algroithm that performs the resampling of the raster.", null,
+                                                                                          (RasterResamplingAlgorithm)null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Raster resampling algorithm type.
+        /// </summary>
+        public static OperationParameter RasterResamplingAlgorithmType
+        {
+            get
+            {
+                return _rasterResamplingAlgorithmType ?? (_rasterResamplingAlgorithmType =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223383", "Raster resampling algorithm type",
+                                                                     "The type of the algorithm that performs the resampling of the raster.", null,
+                                                                     typeof(BilinearResamplingAlgorithm))
+                );
+            }
+        }
+
+        /// <summary>
         /// Amount of sharpening.
         /// </summary>
         public static OperationParameter SharpeningAmount
@@ -660,36 +689,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                        0)
                 );
 
-            }
-        }
-
-        /// <summary>
-        /// Spectral selector function.
-        /// </summary>
-        public static OperationParameter SpectralResamplingStrategy
-        {
-            get
-            {
-                return _spectralResamplingStrategy ?? (_spectralResamplingStrategy =
-                    OperationParameter.CreateOptionalParameter<SpectralResamplingStrategy>("AEGIS::223382", "Spectral resampling strategy",
-                                                                                         "A strategy that is applied suring spectral resampling.", null,
-                                                                                         (SpectralResamplingStrategy)null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Spectral selector function.
-        /// </summary>
-        public static OperationParameter SpectralResamplingType
-        {
-            get
-            {
-                return _spectralResamplingType ?? (_spectralResamplingType =
-                    OperationParameter.CreateOptionalParameter<SpectralResamplingType>("AEGIS::223381", "Spectral resampling type",
-                                                                                       "The type of resampling to be used. The default reampling type is the Lanczos method.", null, 
-                                                                                       Resampling.SpectralResamplingType.Lanczos)
-                );
             }
         }
 

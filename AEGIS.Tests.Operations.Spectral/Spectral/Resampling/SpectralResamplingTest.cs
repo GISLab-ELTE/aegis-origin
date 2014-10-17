@@ -13,10 +13,10 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms.Resampling;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spectral;
 using ELTE.AEGIS.Operations.Spectral.Resampling;
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -59,13 +59,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
-            _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
+            _rasterMock.Setup(raster => raster.GetNearestValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
-            _rasterMock.Setup(raster => raster.GetValues(It.IsAny<Int32>(), It.IsAny<Int32>()))
+            _rasterMock.Setup(raster => raster.GetNearestValues(It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, UInt32[]>((rowIndex, columnIndex) => Enumerable.Range(0, 3).Select(bandIndex => (UInt32)(rowIndex * columnIndex * bandIndex + 256) % 256).ToArray()));
-            _rasterMock.Setup(raster => raster.GetFloatValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
+            _rasterMock.Setup(raster => raster.GetNearestFloatValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => (rowIndex * columnIndex * bandIndex + 256) % 256));
-            _rasterMock.Setup(raster => raster.GetFloatValues(It.IsAny<Int32>(), It.IsAny<Int32>()))
+            _rasterMock.Setup(raster => raster.GetNearestFloatValues(It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Double[]>((rowIndex, columnIndex) => Enumerable.Range(0, 3).Select(bandIndex => (Double)(rowIndex * columnIndex * bandIndex + 256) % 256).ToArray()));
         }
 
@@ -82,7 +82,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             // integer values
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.SpectralResamplingType, SpectralResamplingType.NearestNeighbour);
+            parameters.Add(SpectralOperationParameters.RasterResamplingAlgorithmType, typeof(NearestNeighbourResamplingAlgorithm));
             parameters.Add(SpectralOperationParameters.NumberOfRows, 10);
             parameters.Add(SpectralOperationParameters.NumberOfColumns, 5);
 
@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
             Assert.AreEqual(RasterFormat.Integer, result.Raster.Format);
 
-            SpectralResamplingStrategy strategy = new NearestNeighbourResamplingStrategy(_rasterMock.Object);
+            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
 
             for (Int32 bandIndex = 0; bandIndex < result.Raster.NumberOfBands; bandIndex++)
                 for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)

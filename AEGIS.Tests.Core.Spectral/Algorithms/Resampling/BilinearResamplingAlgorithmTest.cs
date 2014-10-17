@@ -1,4 +1,4 @@
-﻿/// <copyright file="BilinearResamplingStrategyTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="BilinearResamplingAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,34 +13,19 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-/// <copyright file="BilinearResamplingStrategyTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
+using ELTE.AEGIS.Algorithms.Resampling;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Linq;
 
-namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
+namespace ELTE.AEGIS.Tests.Algorithms.Resampling
 {
     /// <summary>
-    /// Test fixture for the <see cref="BilinearResamplingStrategy" /> class.
+    /// Test fixture for the <see cref="BilinearResamplingAlgorithm" /> class.
     /// </summary>
     [TestFixture]
-    public class BilinearResamplingStrategyTest
+    public class BilinearResamplingAlgorithmTest
     {
         #region Private fields
 
@@ -90,9 +75,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
         /// Test case for integer value computation.
         /// </summary>
         [Test]
-        public void BilinearResamplingStrategyComputeTest()
+        public void BilinearResamplingAlgorithmComputeTest()
         {
-            BilinearResamplingStrategy strategy = new BilinearResamplingStrategy(_rasterMock.Object);
+            BilinearResamplingAlgorithm algorithm = new BilinearResamplingAlgorithm(_rasterMock.Object);
 
             UInt32[] values = new UInt32[4];   
 
@@ -109,7 +94,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                         values[2] = _rasterMock.Object.GetBoxedValue(rowFloor + 1, columnFloor, bandIndex);
                         values[3] = _rasterMock.Object.GetBoxedValue(rowFloor + 1, columnFloor + 1, bandIndex);
 
-                        UInt32 value = strategy.Compute(rowIndex, columnIndex, bandIndex);
+                        UInt32 value = algorithm.Compute(rowIndex, columnIndex, bandIndex);
 
                         Assert.LessOrEqual(value, values.Max());
                         Assert.GreaterOrEqual(value, values.Min());
@@ -121,9 +106,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
         /// Test case for floating value computation.
         /// </summary>
         [Test]
-        public void BilinearResamplingStrategyComputeFloatTest()
+        public void BilinearResamplingAlgorithmComputeFloatTest()
         {
-            BilinearResamplingStrategy strategy = new BilinearResamplingStrategy(_rasterMock.Object);
+            BilinearResamplingAlgorithm algorithm = new BilinearResamplingAlgorithm(_rasterMock.Object);
 
             Double[] values = new Double[4];
 
@@ -140,7 +125,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                         values[2] = _rasterMock.Object.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
                         values[3] = _rasterMock.Object.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
 
-                        Double value = strategy.ComputeFloat(rowIndex, columnIndex, bandIndex);
+                        Double value = algorithm.ComputeFloat(rowIndex, columnIndex, bandIndex);
 
                         Assert.LessOrEqual(value, values.Max());
                         Assert.GreaterOrEqual(value, values.Min());

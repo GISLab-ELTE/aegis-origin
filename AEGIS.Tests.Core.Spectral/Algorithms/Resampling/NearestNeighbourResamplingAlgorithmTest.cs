@@ -1,4 +1,4 @@
-﻿/// <copyright file="NearestNeighbourResamplingStrategyTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="NearestNeighbourResamplingAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,19 +13,19 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
+using ELTE.AEGIS.Algorithms.Resampling;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Linq;
 
-namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
+namespace ELTE.AEGIS.Tests.Algorithms.Resampling
 {
     /// <summary>
-    /// Test fixture for the <see cref="NearestNeighbourResamplingStrategy" /> class.
+    /// Test fixture for the <see cref="NearestNeighbourResamplingAlgorithm" /> class.
     /// </summary>
     [TestFixture]
-    public class NearestNeighbourResamplingStrategyTest
+    public class NearestNeighbourResamplingAlgorithmTest
     {
         #region Private fields
 
@@ -75,31 +75,31 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
         /// Test case for integer value computation.
         /// </summary>
         [Test]
-        public void NearestNeighbourResamplingStrategyComputeTest()
+        public void NearestNeighbourResamplingAlgorithmComputeTest()
         {
-            NearestNeighbourResamplingStrategy strategy = new NearestNeighbourResamplingStrategy(_rasterMock.Object);
+            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
 
-                for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.1)
-                    for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.1)
+            for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.1)
+                for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.1)
+                {
+                    // individual bands
+                    for (Int32 bandIndex = 0; bandIndex < _rasterMock.Object.NumberOfBands; bandIndex++)
                     {
-                        // individual bands
-                        for (Int32 bandIndex = 0; bandIndex < _rasterMock.Object.NumberOfBands; bandIndex++)
-                        {
-                            Assert.AreEqual(_rasterMock.Object.GetValue((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex), bandIndex), strategy.Compute(rowIndex, columnIndex, bandIndex));
-                        }
-
-                        // all bands
-                        Assert.IsTrue(_rasterMock.Object.GetValues((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex)).SequenceEqual(strategy.Compute(rowIndex, columnIndex)));
+                        Assert.AreEqual(_rasterMock.Object.GetValue((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex), bandIndex), strategy.Compute(rowIndex, columnIndex, bandIndex));
                     }
+
+                    // all bands
+                    Assert.IsTrue(_rasterMock.Object.GetValues((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex)).SequenceEqual(strategy.Compute(rowIndex, columnIndex)));
+                }
         }
 
         /// <summary>
         /// Test case for floating value computation.
         /// </summary>
         [Test]
-        public void NearestNeighbourResamplingStrategyComputeFloatTest()
+        public void NearestNeighbourResamplingAlgorithmComputeFloatTest()
         {
-            NearestNeighbourResamplingStrategy strategy = new NearestNeighbourResamplingStrategy(_rasterMock.Object);
+            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
 
             for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.1)
                 for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.1)

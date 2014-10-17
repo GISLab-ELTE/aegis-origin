@@ -1,4 +1,4 @@
-﻿/// <copyright file="LanczosResamplingStrategyTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="LanczosResamplingAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,19 +13,19 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
+using ELTE.AEGIS.Algorithms.Resampling;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Linq;
 
-namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
+namespace ELTE.AEGIS.Tests.Algorithms.Resampling
 {
     /// <summary>
-    /// Test fixture for the <see cref="LanczosResamplingStrategy" /> class.
+    /// Test fixture for the <see cref="LanczosResamplingAlgorithm" /> class.
     /// </summary>
     [TestFixture]
-    public class LanczosResamplingStrategyTest
+    public class LanczosResamplingAlgorithmTest
     {
         #region Private fields
 
@@ -75,25 +75,25 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
         /// Test case for the constructor.
         /// </summary>
         [Test]
-        public void LanczosResamplingStrategyConstructorTest()
+        public void LanczosResamplingAlgorithmConstructorTest()
         {
-            LanczosResamplingStrategy strategy = new LanczosResamplingStrategy(_rasterMock.Object);
-            Assert.AreEqual(3, strategy.Radius);
+            LanczosResamplingAlgorithm algorithm = new LanczosResamplingAlgorithm(_rasterMock.Object);
+            Assert.AreEqual(3, algorithm.Radius);
 
-            strategy = new LanczosResamplingStrategy(_rasterMock.Object, 5);
-            Assert.AreEqual(5, strategy.Radius);
+            algorithm = new LanczosResamplingAlgorithm(_rasterMock.Object, 5);
+            Assert.AreEqual(5, algorithm.Radius);
 
-            Assert.Throws<ArgumentNullException>(() => strategy = new LanczosResamplingStrategy(null));
-            Assert.Throws<ArgumentOutOfRangeException>(() => strategy = new LanczosResamplingStrategy(_rasterMock.Object, 0));
+            Assert.Throws<ArgumentNullException>(() => algorithm = new LanczosResamplingAlgorithm(null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => algorithm = new LanczosResamplingAlgorithm(_rasterMock.Object, 0));
         }
 
         /// <summary>
         /// Test case for integer value computation.
         /// </summary>
         [Test]
-        public void LanczosResamplingStrategyComputeTest()
+        public void LanczosResamplingAlgorithmComputeTest()
         {
-            LanczosResamplingStrategy strategy = new LanczosResamplingStrategy(_rasterMock.Object);
+            LanczosResamplingAlgorithm algorithm = new LanczosResamplingAlgorithm(_rasterMock.Object);
 
             for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.41)
                 for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.41)
@@ -105,8 +105,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                     {
                         Double minValue = Double.MaxValue, maxValue = Double.MinValue;
 
-                        for (Int32 i = rowFloor - strategy.Radius + 1; i <= rowFloor + strategy.Radius; i++)
-                            for (Int32 j = columnFloor - strategy.Radius + 1; j <= columnFloor + strategy.Radius; j++)
+                        for (Int32 i = rowFloor - algorithm.Radius + 1; i <= rowFloor + algorithm.Radius; i++)
+                            for (Int32 j = columnFloor - algorithm.Radius + 1; j <= columnFloor + algorithm.Radius; j++)
                             {
                                 UInt32 value = _rasterMock.Object.GetBoxedValue(i, j, bandIndex);
 
@@ -114,7 +114,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                                 maxValue = Math.Max(maxValue, value);
                             }
 
-                        Double strategyValue = strategy.Compute(rowIndex, columnIndex, bandIndex);
+                        Double strategyValue = algorithm.Compute(rowIndex, columnIndex, bandIndex);
 
                         Assert.GreaterOrEqual(strategyValue, minValue);
                         Assert.LessOrEqual(strategyValue, maxValue);
@@ -126,9 +126,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
         /// Test case for floating value computation.
         /// </summary>
         [Test]
-        public void LanczosResamplingStrategyComputeFloatTest()
+        public void LanczosResamplingAlgorithmComputeFloatTest()
         {
-            LanczosResamplingStrategy strategy = new LanczosResamplingStrategy(_rasterMock.Object);
+            LanczosResamplingAlgorithm algorithm = new LanczosResamplingAlgorithm(_rasterMock.Object);
 
             for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.41)
                 for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.41)
@@ -140,8 +140,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                     {
                         Double minValue = Double.MaxValue, maxValue = Double.MinValue;
 
-                        for (Int32 i = rowFloor - strategy.Radius + 1; i <= rowFloor + strategy.Radius; i++)
-                            for (Int32 j = columnFloor - strategy.Radius + 1; j <= columnFloor + strategy.Radius; j++)
+                        for (Int32 i = rowFloor - algorithm.Radius + 1; i <= rowFloor + algorithm.Radius; i++)
+                            for (Int32 j = columnFloor - algorithm.Radius + 1; j <= columnFloor + algorithm.Radius; j++)
                             {
                                 Double value = _rasterMock.Object.GetBoxedFloatValue(i, j, bandIndex);
 
@@ -149,7 +149,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling.Strategy
                                 maxValue = Math.Max(maxValue, value);
                             }
 
-                        Double strategyValue = strategy.ComputeFloat(rowIndex, columnIndex, bandIndex);
+                        Double strategyValue = algorithm.ComputeFloat(rowIndex, columnIndex, bandIndex);
 
                         Assert.GreaterOrEqual(strategyValue, minValue);
                         Assert.LessOrEqual(strategyValue, maxValue);

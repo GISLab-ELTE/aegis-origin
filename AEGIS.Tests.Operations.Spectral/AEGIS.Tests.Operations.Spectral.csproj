@@ -54,9 +54,6 @@
     <Compile Include="Spectral\Filtering\FilterTest.cs" />
     <Compile Include="Spectral\Filtering\GaussianBlurFilterTransformationTest.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingTest.cs" />
-    <Compile Include="Spectral\Resampling\Strategy\BilinearResamplingStrategyTest.cs" />
-    <Compile Include="Spectral\Resampling\Strategy\LanczosResamplingStrategyTest.cs" />
-    <Compile Include="Spectral\Resampling\Strategy\NearestNeighbourResamplingStrategyTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

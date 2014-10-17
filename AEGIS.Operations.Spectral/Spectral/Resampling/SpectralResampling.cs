@@ -13,8 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms.Resampling;
 using ELTE.AEGIS.Operations.Management;
-using ELTE.AEGIS.Operations.Spectral.Resampling.Strategy;
 using System;
 using System.Collections.Generic;
 
@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         /// <summary>
         /// The resampling strategy.
         /// </summary>
-        private SpectralResamplingStrategy _resamplingStrategy;
+        private RasterResamplingAlgorithm _resamplingAlgorithm;
 
         #endregion
 
@@ -100,23 +100,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             _targetNumberOfColumns = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfColumns));
 
             // check whether the strategy is provided
-            if (IsProvidedParameter(SpectralOperationParameters.SpectralResamplingStrategy))
-                _resamplingStrategy = ResolveParameter<SpectralResamplingStrategy>(SpectralOperationParameters.SpectralResamplingStrategy);
+            if (IsProvidedParameter(SpectralOperationParameters.RasterResamplingAlgorithm))
+                _resamplingAlgorithm = ResolveParameter<RasterResamplingAlgorithm>(SpectralOperationParameters.RasterResamplingAlgorithm);
 
             // check the strategy type (that has default value)
-            if (_resamplingStrategy == null)
+            if (_resamplingAlgorithm == null)
             {
-                switch (ResolveParameter<SpectralResamplingType>(SpectralOperationParameters.SpectralResamplingType))
+                try
                 {
-                    case SpectralResamplingType.Bilinear:
-                        _resamplingStrategy = new BilinearResamplingStrategy(_source.Raster);
-                        break;
-                    case SpectralResamplingType.Lanczos:
-                        _resamplingStrategy = new LanczosResamplingStrategy(_source.Raster);
-                        break;
-                    case SpectralResamplingType.NearestNeighbour:
-                        _resamplingStrategy = new NearestNeighbourResamplingStrategy(_source.Raster);
-                        break;
+                    _resamplingAlgorithm = (RasterResamplingAlgorithm)Activator.CreateInstance(ResolveParameter<Type>(SpectralOperationParameters.RasterResamplingAlgorithmType), new Object[] { Source.Raster });
+                }
+                catch
+                {
+                    _resamplingAlgorithm = (RasterResamplingAlgorithm)Activator.CreateInstance((Type)SpectralOperationParameters.RasterResamplingAlgorithmType.DefaultValue, new Object[] { Source.Raster });
                 }
             }
         }
@@ -163,7 +159,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
             Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
 
-            return _resamplingStrategy.Compute(originalRowIndex, originalColumnIndex, bandIndex);
+            return _resamplingAlgorithm.Compute(originalRowIndex, originalColumnIndex, bandIndex);
         }
 
         /// <summary>
@@ -177,7 +173,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
             Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
 
-            return _resamplingStrategy.Compute(originalRowIndex, originalColumnIndex);
+            return _resamplingAlgorithm.Compute(originalRowIndex, originalColumnIndex);
         }
 
         /// <summary>
@@ -192,7 +188,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
             Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
 
-            return _resamplingStrategy.ComputeFloat(originalRowIndex, originalColumnIndex, bandIndex);
+            return _resamplingAlgorithm.ComputeFloat(originalRowIndex, originalColumnIndex, bandIndex);
         }
 
 
@@ -207,7 +203,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
             Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
 
-            return _resamplingStrategy.ComputeFloat(originalRowIndex, originalColumnIndex);
+            return _resamplingAlgorithm.ComputeFloat(originalRowIndex, originalColumnIndex);
         }
 
         #endregion

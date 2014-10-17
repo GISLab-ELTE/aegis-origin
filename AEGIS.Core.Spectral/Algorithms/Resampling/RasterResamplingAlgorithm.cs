@@ -1,4 +1,4 @@
-﻿/// <copyright file="NearestNeighbourResamplingStrategy.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="RasterResamplingAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,28 +13,44 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms;
 using System;
+using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
+namespace ELTE.AEGIS.Algorithms.Resampling
 {
     /// <summary>
-    /// Represents a spectral resampling strategy using nearest neighbour interpolation.
+    /// Represents a type performing resapling of raster images.
     /// </summary>
-    public class NearestNeighbourResamplingStrategy : SpectralResamplingStrategy
+    public abstract class RasterResamplingAlgorithm
     {
-        #region Constructors
+        #region Protected fields
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NearestNeighbourResamplingStrategy"/> class.
+        /// The raster image.
         /// </summary>
-        /// <param name="raster">The raster.</param>
-        public NearestNeighbourResamplingStrategy(IRaster raster)
-            : base(raster)
-        { }
+        protected IRaster _raster;
 
         #endregion
 
-        #region Public RasterResamplingStrategy methods
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RasterResamplingAlgorithm" /> class.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        protected RasterResamplingAlgorithm(IRaster raster)
+        {
+            if (raster == null)
+                throw new ArgumentNullException("raster", "The raster is null.");
+
+            _raster = raster;
+        }
+
+        #endregion
+
+        #region Public methods
 
         /// <summary>
         /// Computes the specified spectral value.
@@ -43,9 +59,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
-        public override UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
+        public virtual UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
-            return _raster.GetValue(Convert.ToInt32(Math.Round(rowIndex)), Convert.ToInt32(Math.Round(columnIndex)), bandIndex);
+            return RasterAlgorithms.Restrict(ComputeFloat(rowIndex, columnIndex, bandIndex), _raster.RadiometricResolutions[bandIndex]);
         }
 
         /// <summary>
@@ -54,9 +70,16 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        public override UInt32[] Compute(Double rowIndex, Double columnIndex)
+        public virtual UInt32[] Compute(Double rowIndex, Double columnIndex)
         {
-            return _raster.GetValues(Convert.ToInt32(Math.Round(rowIndex)), Convert.ToInt32(Math.Round(columnIndex)));
+            Double[] resultFloat = ComputeFloat(rowIndex, columnIndex);
+
+            UInt32[] result = new UInt32[_raster.NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
+            {
+                result[bandIndex] = RasterAlgorithms.Restrict(resultFloat[bandIndex], _raster.RadiometricResolutions[bandIndex]);
+            }
+            return result;
         }
 
         /// <summary>
@@ -66,10 +89,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
-        public override Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex)
-        {
-            return _raster.GetFloatValue(Convert.ToInt32(Math.Round(rowIndex)), Convert.ToInt32(Math.Round(columnIndex)), bandIndex);
-        }
+        public abstract Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex);
 
         /// <summary>
         /// Computes the specified floating spectral value.
@@ -77,10 +97,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        public override Double[] ComputeFloat(Double rowIndex, Double columnIndex)
-        {
-            return _raster.GetFloatValues(Convert.ToInt32(Math.Round(rowIndex)), Convert.ToInt32(Math.Round(columnIndex)));
-        }
+        public abstract Double[] ComputeFloat(Double rowIndex, Double columnIndex);
 
         #endregion
     }
