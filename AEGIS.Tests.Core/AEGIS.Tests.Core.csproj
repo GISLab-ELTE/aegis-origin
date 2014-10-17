@@ -58,6 +58,7 @@
     <Compile Include="Indices\Spatial\RTree\RStarTreeTest.cs" />
     <Compile Include="Indices\Spatial\RTree\RTreeTest.cs" />
     <Compile Include="Management\InversionOfControl\ContainerTest.cs" />
+    <Compile Include="PrecisionModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

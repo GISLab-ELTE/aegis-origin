@@ -132,6 +132,8 @@
     <Compile Include="IdentifiedObject.cs" />
     <Compile Include="GeoCoordinate.cs" />
     <Compile Include="Management\InversionOfControl\Container.cs" />
+    <Compile Include="PrecisionModel.cs" />
+    <Compile Include="PrecisionModelType.cs" />
     <Compile Include="UnitQuantityType.cs" />
     <Compile Include="ICurve.cs" />
     <Compile Include="ISurface.cs" />
