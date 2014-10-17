@@ -535,6 +535,12 @@ namespace ELTE.AEGIS.Geometry
         public IGeometryFactory Factory { get { return _factory.GetFactory<IGeometryFactory>(); } }
 
         /// <summary>
+        /// Gets the precision model of the geometry.
+        /// </summary>
+        /// <value>The precision model of the geometry.</value>
+        public PrecisionModel PrecisionModel { get { return _factory.GetFactory<IGeometryFactory>().PrecisionModel; } }
+
+        /// <summary>
         /// Gets the general name of the geometry.
         /// </summary>
         /// <value>The general name of the specific geometry.</value>
