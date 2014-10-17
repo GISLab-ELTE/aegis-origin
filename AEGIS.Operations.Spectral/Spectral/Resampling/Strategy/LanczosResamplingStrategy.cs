@@ -63,7 +63,66 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         #endregion
 
         #region Public RasterResamplingStrategy methods
+        
+        /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral value at the specified index.</returns>
+        public override UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
+        {
+            Double value = 0;
+            Double weight = 0;
 
+            for (Int32 i = -Radius + 1; i <= Radius; i++)
+                for (Int32 j = -Radius + 1; j <= Radius; j++)
+                {
+                    Double lanczosValue = Lanczos(i - Calculator.Fraction(rowIndex)) * Lanczos(j - Calculator.Fraction(columnIndex));
+
+                    value += _raster.GetBoxedValue((Int32)Math.Floor(rowIndex) + i, (Int32)Math.Floor(columnIndex) + j, bandIndex) * lanczosValue;
+
+                    weight += lanczosValue;
+                }
+
+            return RasterAlgorithms.Restrict(value / weight, _raster.RadiometricResolutions[bandIndex]);
+        }
+
+        /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
+        public override UInt32[] Compute(Double rowIndex, Double columnIndex)
+        {
+            Double[] floatValues = new Double[_raster.NumberOfBands];
+            Double weight = 0;
+
+            for (Int32 i = -Radius + 1; i <= Radius; i++)
+                for (Int32 j = -Radius + 1; j <= Radius; j++)
+                {
+                    Double lanczosValue = Lanczos(i - Calculator.Fraction(rowIndex)) * Lanczos(j - Calculator.Fraction(columnIndex));
+
+                    for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
+                    {
+                        floatValues[bandIndex] += _raster.GetBoxedValue((Int32)Math.Floor(rowIndex) + i, (Int32)Math.Floor(columnIndex) + j, bandIndex) * lanczosValue;
+                    }
+
+                    weight += lanczosValue;
+                }
+
+            UInt32[] values = new UInt32[_raster.NumberOfBands];
+
+            for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
+            {
+                values[bandIndex] = RasterAlgorithms.Restrict(floatValues[bandIndex] / weight, _raster.RadiometricResolutions[bandIndex]);
+            }
+
+            return values;
+        }
+        
         /// <summary>
         /// Computes the specified floating spectral value.
         /// </summary>

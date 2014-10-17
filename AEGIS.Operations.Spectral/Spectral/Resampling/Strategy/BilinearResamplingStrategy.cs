@@ -38,6 +38,49 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         #region Public RasterResamplingStrategy methods
 
         /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral value at the specified index.</returns>
+        public override UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
+        {
+            Int32 columnFloor = (Int32)Math.Floor(columnIndex);
+            Int32 rowFloor = (Int32)Math.Floor(rowIndex);
+
+            Double columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor, bandIndex);
+            Double rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor + 1, bandIndex);
+
+            return RasterAlgorithms.Restrict((1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity, _raster.RadiometricResolutions[bandIndex]);
+        }
+
+        /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
+        public override UInt32[] Compute(Double rowIndex, Double columnIndex)
+        {
+            Int32 columnFloor = (Int32)Math.Floor(columnIndex);
+            Int32 rowFloor = (Int32)Math.Floor(rowIndex);
+
+            Double columnIntensity, rowIntensity;
+
+            UInt32[] result = new UInt32[_raster.NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
+            {
+                columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor, bandIndex);
+                rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedValue(rowFloor + 1, columnFloor + 1, bandIndex);
+
+                result[bandIndex] = RasterAlgorithms.Restrict((1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity, _raster.RadiometricResolutions[bandIndex]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Computes the specified floating spectral value.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index of the value.</param>

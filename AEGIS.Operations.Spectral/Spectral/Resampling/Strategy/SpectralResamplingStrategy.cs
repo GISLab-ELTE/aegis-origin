@@ -59,10 +59,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
-        public virtual UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
-        {
-            return RasterAlgorithms.Restrict(ComputeFloat(rowIndex, columnIndex, bandIndex), _raster.RadiometricResolutions[bandIndex]);
-        }
+        public abstract UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex);
 
         /// <summary>
         /// Computes the specified spectral value.
@@ -70,17 +67,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling.Strategy
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        public virtual UInt32[] Compute(Double rowIndex, Double columnIndex)
-        {
-            Double[] resultFloat = ComputeFloat(rowIndex, columnIndex);
-
-            UInt32[] result = new UInt32[_raster.NumberOfBands];
-            for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
-            {
-                result[bandIndex] = RasterAlgorithms.Restrict(resultFloat[bandIndex], _raster.RadiometricResolutions[bandIndex]);
-            }
-            return result;
-        }
+        public abstract UInt32[] Compute(Double rowIndex, Double columnIndex);
 
         /// <summary>
         /// Computes the specified floating spectral value.
