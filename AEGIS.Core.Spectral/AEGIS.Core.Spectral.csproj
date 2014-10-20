@@ -44,6 +44,8 @@
     <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\NearestNeighbourResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\RasterResamplingAlgorithm.cs" />
+    <Compile Include="Collections\Segmentation\Segment.cs" />
+    <Compile Include="Collections\Segmentation\SegmentCollection.cs" />
     <Compile Include="Geometry\SpectralGeometryFactory.cs" />
     <Compile Include="Geometry\SpectralPolygon.cs" />
     <Compile Include="ImagingDevice.cs" />
