@@ -39,6 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithms\Distances\BhattacharyaDistance.cs" />
+    <Compile Include="Algorithms\Distances\EuclideanDistance.cs" />
+    <Compile Include="Algorithms\Distances\ManhattanDistance.cs" />
+    <Compile Include="Algorithms\Distances\SpectralDistance.cs" />
     <Compile Include="Algorithms\RasterAlgorithms.cs" />
     <Compile Include="Algorithms\Resampling\BilinearResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
