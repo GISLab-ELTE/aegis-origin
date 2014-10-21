@@ -89,16 +89,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private static fields
 
         private static OperationParameter _bandIndex;
-        private static OperationParameter _contrastEnhancementValue;
-        private static OperationParameter _convertResultToRGB;
-        private static OperationParameter _densitySlicingThresholds;
-        private static OperationParameter _filterFactor;
-        private static OperationParameter _filterKernel;
-        private static OperationParameter _filterOffset;
-        private static OperationParameter _filterRadius;
-        private static OperationParameter _filterWeight;
         private static OperationParameter _gammaValue;
-        private static OperationParameter _gaussianStandardDeviation;
         private static OperationParameter _histogramMatchFunction;
         private static OperationParameter _histogramMatchValues;
         private static OperationParameter _indexOfBlueBand;
@@ -115,21 +106,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _indexOfVioletBand;
         private static OperationParameter _indexOfVisibleBand;
         private static OperationParameter _indexOfYellowBand;
-        private static OperationParameter _lowerThresholdBoundary;
         private static OperationParameter _numberOfColumns;
         private static OperationParameter _numberOfIterations;
         private static OperationParameter _numberOfRows;
         private static OperationParameter _rasterResamplingAlgorithm;
         private static OperationParameter _rasterResamplingAlgorithmType;
-        private static OperationParameter _sharpeningAmount;
-        private static OperationParameter _sharpeningRadius;
-        private static OperationParameter _sharpeningThreshold;
         private static OperationParameter _spectralDistance;
         private static OperationParameter _spectralDistanceType;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
-        private static OperationParameter _spectralSelectorFunction;
-        private static OperationParameter _upperThresholdBoundary;
 
         #endregion
 
@@ -152,126 +137,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Convert result to RGB.
-        /// </summary>
-        public static OperationParameter ConvertResultToRGB
-        {
-            get
-            {
-                return _convertResultToRGB ?? (_convertResultToRGB =
-                     OperationParameter.CreateOptionalParameter<Boolean>("AEGIS::000000", "Convert result to RGB",
-                                                                         "", null, false)
-                     );
-            }
-        }
-
-        /// <summary>
-        /// Contrast enhancement value.
-        /// </summary>
-        public static OperationParameter DensitySlicingThresholds
-        {
-            get
-            {
-                return _densitySlicingThresholds ?? (_densitySlicingThresholds =
-                    OperationParameter.CreateOptionalParameter<Double[]>("AEGIS::223128", "Density slicing thresholds",
-                                                                         "The array of threshold values used for dencity slicing.", null, 
-                                                                         (Double[])null)
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Contrast enhancement value.
-        /// </summary>
-        public static OperationParameter ContrastEnhancementValue
-        {
-            get
-            {
-                return _contrastEnhancementValue ?? (_contrastEnhancementValue =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223120", "Contrast enhancement value",
-                                                                       "The contrast enhancement value used by the basic contrast operator.", null, 
-                                                                       0)
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Filter factor.
-        /// </summary>
-        public static OperationParameter FilterFactor
-        {
-            get 
-            {
-                return _filterFactor ?? (_filterFactor =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223201", "Filter factor",
-                                                                       "The factor used by the filter operation to divide the result.", null, 
-                                                                       1)
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Filter kernel.
-        /// </summary>
-        public static OperationParameter FilterKernel
-        {
-            get
-            {
-                return _filterKernel ?? (_filterKernel =
-                    OperationParameter.CreateRequiredParameter<Matrix>("AEGIS::223200", "Filter kernel",
-                                                                       "The odd sized matrix used by filters for multipling neightbour values.", null,
-                                                                       value => (value is Matrix) && (value as Matrix).NumberOfColumns == (value as Matrix).NumberOfRows && (value as Matrix).NumberOfRows % 2 == 1)
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Filter offset.
-        /// </summary>
-        public static OperationParameter FilterOffset
-        {
-            get
-            {
-                return _filterOffset ?? (_filterOffset =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223202", "Filter offset",
-                                                                       "The offset used by the filter operation to add to the result.", null,
-                                                                       0)
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Radius of the filter.
-        /// </summary>
-        public static OperationParameter FilterRadius
-        {
-            get
-            {
-                return _filterRadius ?? (_filterRadius =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223205", "Radius of the filter",
-                                                                      "The radius of the filter determining the number of neighbouring pixels to be convoluted by the filter. The radius must be a positive number.", null, 
-                                                                      1,
-                                                                      Conditions.IsPositive())
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Filter weight.
-        /// </summary>
-        public static OperationParameter FilterWeight
-        {
-            get
-            {
-                return _filterWeight ?? (_filterWeight =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223204", "Filter weight",
-                                                                       "The weight of the central value in the filter.", null, 
-                                                                       1)
-                    );
-            }
-        }
-
-        /// <summary>
         /// Gamma value.
         /// </summary>
         public static OperationParameter GammaValue
@@ -281,20 +146,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _gammaValue ?? (_gammaValue =
                     OperationParameter.CreateRequiredParameter<Double>("AEGIS::223104", "Gamma value",
                                                                        "The gamma value used for gamma correction.", null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Gaussian standard deviation.
-        /// </summary>
-        public static OperationParameter GaussianStandardDeviation
-        {
-            get
-            {
-                return _gaussianStandardDeviation ?? (_gaussianStandardDeviation =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223271", "Gaussian standard deviation",
-                                                                       "The standard deviation value for the Gaussian blur filter.", null, 1)
                 );
             }
         }
@@ -539,17 +390,32 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Lower threshold boundary.
+        /// Number of columns.
         /// </summary>
-        public static OperationParameter LowerThresholdBoundary
+        public static OperationParameter NumberOfColumns
         {
             get
             {
-                return _lowerThresholdBoundary ?? (_lowerThresholdBoundary =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS:223101", "Lower threshold boundary",
-                                                                       "The lower threshold boundary value for creating a monochrome image.", null)
+                return _numberOfColumns ?? (_numberOfColumns =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223016", "Number of columns",
+                                                                      "The number of columns in the resulting image.", null,
+                                                                      Conditions.IsPositive())
                 );
 
+            }
+        }
+
+        /// <summary>
+        /// Number of iterations.
+        /// </summary>
+        public static OperationParameter NumberOfIterations
+        {
+            get
+            {
+                return _numberOfIterations ?? (_numberOfIterations =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::000000", "Number of iterations",
+                                                                      "The number of iterations for an iterative algorithm.", null)
+                );
             }
         }
 
@@ -563,22 +429,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _numberOfRows ?? (_numberOfRows =
                     OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223015", "Number of rows",
                                                                       "The number of rows in the resulting image.", null,
-                                                                      Conditions.IsPositive())
-                );
-
-            }
-        }
-
-        /// <summary>
-        /// Number of columns.
-        /// </summary>
-        public static OperationParameter NumberOfColumns
-        {
-            get
-            {
-                return _numberOfColumns ?? (_numberOfColumns =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223016", "Number of columns",
-                                                                      "The number of columns in the resulting image.", null,
                                                                       Conditions.IsPositive())
                 );
 
@@ -616,52 +466,30 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Amount of sharpening.
+        /// Spectral distance.
         /// </summary>
-        public static OperationParameter SharpeningAmount
+        public static OperationParameter SpectralDistance
         {
             get
             {
-                return _sharpeningAmount ?? (_sharpeningAmount =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223241", "Amount of sharpening",
-                                                                       "The strength of the sharpening effect.", null,
-                                                                       0.8, 
-                                                                       Conditions.IsBetween(0, 1))
+                return _spectralDistance ?? (_spectralDistance =
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance",
+                                                                                 "The object used for determining the distance of spectral values.", null, (SpectralDistance)null)
                 );
-
             }
         }
 
         /// <summary>
-        /// Radius of sharpening.
+        /// Spectral distance type.
         /// </summary>
-        public static OperationParameter SharpeningRadius
+        public static OperationParameter SpectralDistanceType
         {
             get
             {
-                return _sharpeningRadius ?? (_sharpeningRadius =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223242", "Radius of sharpening",
-                                                                      "Radius affects the size of the edges to be enhanced or how wide the edge rims become, so a smaller radius enhances smaller-scale detail.", null,
-                                                                      1,
-                                                                      Conditions.IsPositive())
-                    );
-            }
-        }
-
-        /// <summary>
-        /// Threshold of sharpening.
-        /// </summary>
-        public static OperationParameter SharpeningThreshold
-        {
-            get
-            {
-                return _sharpeningThreshold ?? (_sharpeningThreshold =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223243", "Threshold of sharpening",
-                                                                       "Threshold controls the minimum brightness change that will be sharpened or how far apart adjacent tonal values have to be before the filter does anything.", null,
-                                                                       0,
-                                                                       Conditions.IsBetween(0, 1))
+                return _spectralDistanceType ?? (_spectralDistanceType =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223413", "Spectral distance type",
+                                                                     "The type used for determining the distance of spectral values.", null, (Type)null)
                 );
-
             }
         }
 
@@ -695,80 +523,6 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             }
         }
-
-        /// <summary>
-        /// Spectral selector function.
-        /// </summary>
-        public static OperationParameter SpectralSelectorFunction
-        {
-            get
-            {
-                return _spectralSelectorFunction ?? (_spectralSelectorFunction =
-                    OperationParameter.CreateRequiredParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>("AEGIS::223100", "Spectral selector function",
-                                                                                                            "A function deciding whether a raster value meets a specified criteria.", null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Upper threshold boundary.
-        /// </summary>
-        public static OperationParameter UpperThresholdBoundary
-        {
-            get
-            {
-                return _upperThresholdBoundary ?? (_upperThresholdBoundary =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223102", "Upper threshold boundary",
-                                                                       "The upper threshold boundary for creating a monochrome image.", null, 
-                                                                       Double.PositiveInfinity)
-                );
-
-            }
-        }
-
-        /// <summary>
-        /// Number of iterations.
-        /// </summary>
-        public static OperationParameter NumberOfIterations
-        {
-            get
-            {
-                return _numberOfIterations ?? (_numberOfIterations =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::000000", "Number of iterations",
-                                                                      "The number of iterations for an iterative algorithm.", null)
-                );
-            }
-        }
-
-
-        /// <summary>
-        /// Spectral distance.
-        /// </summary>
-        public static OperationParameter SpectralDistance
-        {
-            get
-            {
-                return _spectralDistance ?? (_spectralDistance =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance",
-                                                                                 "The object used for determining the distance of spectral values.", null, (SpectralDistance)null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Spectral distance type.
-        /// </summary>
-        public static OperationParameter SpectralDistanceType
-        {
-            get
-            {
-                return _spectralDistanceType ?? (_spectralDistanceType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223413", "Spectral distance type",
-                                                                     "The type used for determining the distance of spectral values.", null, (Type)null)
-                );
-            }
-        }
-
 
         #endregion
     }

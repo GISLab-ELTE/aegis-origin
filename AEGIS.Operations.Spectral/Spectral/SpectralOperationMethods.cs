@@ -83,78 +83,23 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         #endregion
 
-        #region Private static instances
+        #region Private static fields
 
-        private static SpectralOperationMethod _balancedHistogramThresholdingClassification;
-        private static SpectralOperationMethod _boxFilter;
         private static SpectralOperationMethod _contrastLimitedAdaptingHistogramEqualization;
-        private static SpectralOperationMethod _densitySlicing;
-        private static SpectralOperationMethod _constantBasedThresholdingClassification;
-        private static SpectralOperationMethod _customFilter;
-        private static SpectralOperationMethod _functionBasedThresholdingClassification;
         private static SpectralOperationMethod _gammaCorrection;
-        private static SpectralOperationMethod _gaussianBlurFilter;
         private static SpectralOperationMethod _histogramEqualization;
         private static SpectralOperationMethod _histogramSpecification;
         private static SpectralOperationMethod _histogramMatching;
         private static SpectralOperationMethod _inverseGammaCorrection;
-        private static SpectralOperationMethod _laplaceFilter;
-        private static SpectralOperationMethod _maximumFilter;
-        private static SpectralOperationMethod _meanRemovalFilter;
-        private static SpectralOperationMethod _medianFilter;
-        private static SpectralOperationMethod _minimumFilter;
-        private static SpectralOperationMethod _normalizedDifferenceIndexComputation;
-        private static SpectralOperationMethod _normalizedDifferenceSoilIndexComputation;
-        private static SpectralOperationMethod _normalizedDifferenceVegetationIndexComputation;
-        private static SpectralOperationMethod _normalizedDifferenceWaterIndexComputation;
-        private static SpectralOperationMethod _otsuThresholdingClassification;
-        private static SpectralOperationMethod _prewittFilter;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
-        private static SpectralOperationMethod _sobelFilter;
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
         private static SpectralOperationMethod _topOfAthmospehereReflectanceComputation;
-        private static SpectralOperationMethod _unsharpMasking;
-        private static SpectralOperationMethod _waterloggingClassification;
-        private static SpectralOperationMethod _weightedMedianFilter;
 
         #endregion
 
         #region Public static properties
-
-        /// <summary>
-        /// Balanced histogram thresholding.
-        /// </summary>
-        public static SpectralOperationMethod BalancedHistogramThresholdingClassification
-        {
-            get
-            {
-                return _balancedHistogramThresholdingClassification ?? (_balancedHistogramThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213124", "Balanced histogram thresholding",
-                                                                         "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         RasterFormat.Integer,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Box filter.
-        /// </summary>
-        public static SpectralOperationMethod BoxFilter
-        {
-            get
-            {
-                return _boxFilter ?? (_boxFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213202", "Box filter",
-                                                                         "Returns the mean of the neighbouring values, thus smothening the image.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
 
         /// <summary>
         /// Contrast limited adapting histogram equalization.
@@ -167,25 +112,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213133", "Contrast limited adapting histogram equalization",
                                                                          "Contrast limited adapting histogram equalization (CLAHE) differs from ordinary adaptive histogram equalization in its contrast limiting.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Custom filter.
-        /// </summary>
-        public static SpectralOperationMethod CustomFilter
-        {
-            get
-            {
-                return _customFilter ?? (_customFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213200", "Custom filter",
-                                                                         "Returns a linear combination of the neighbouring values based on kernel, factor and offset values.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterKernel,
-                                                                         SpectralOperationParameters.FilterOffset,
-                                                                         SpectralOperationParameters.FilterFactor,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -208,38 +134,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Density slicing.
-        /// </summary>
-        public static SpectralOperationMethod DensitySlicing
-        {
-            get
-            {
-                return _densitySlicing ?? (_densitySlicing =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213145", "Density slicing",
-                                                                         "For density slicing the range of grayscale levels is divided into intervals, with each interval assigned to one of a few discrete colors – this is in contrast to pseudo color, which uses a continuous color scale.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.DensitySlicingThresholds));
-            }
-        }
-
-        /// <summary>
-        /// Function based spectral thresholding.
-        /// </summary>
-        public static SpectralOperationMethod FunctionBasedThresholdClassification
-        {
-            get
-            {
-                return _functionBasedThresholdingClassification ?? (_functionBasedThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213122", "Function based spectral thresholding",
-                                                                         "Creates a monochrome raster by separating values based on the specified selector function.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.SpectralSelectorFunction,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
         /// Gamma correction.
         /// </summary>
         public static SpectralOperationMethod GammaCorrection
@@ -252,24 +146,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.GammaValue));
-            }
-        }
-
-        /// <summary>
-        /// Gaussian blur filter.
-        /// </summary>
-        public static SpectralOperationMethod GaussianBlurFilter
-        {
-            get
-            {
-                return _gaussianBlurFilter ?? (_gaussianBlurFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213204", "Gaussian blur filter",
-                                                                         "A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.GaussianStandardDeviation));
             }
         }
 
@@ -337,160 +213,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Laplace filter.
-        /// </summary>
-        public static SpectralOperationMethod LaplaceFilter
-        {
-            get
-            {
-                return _laplaceFilter ?? (_laplaceFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213205", "Laplace filter",
-                                                                         "The Laplace filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Maximum filter.
-        /// </summary>
-        public static SpectralOperationMethod MaximumFilter
-        {
-            get
-            {
-                return _maximumFilter ?? (_maximumFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213215", "Maximum filter",
-                                                                         "Returns the maximum of the neighbouring values.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Minimum filter.
-        /// </summary>
-        public static SpectralOperationMethod MinimumFilter
-        {
-            get
-            {
-                return _minimumFilter ?? (_minimumFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213216", "Minimum filter",
-                                                                         "Returns the minimum of the neighbouring values.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Mean removal filter.
-        /// </summary>
-        public static SpectralOperationMethod MeanRemovalFilter
-        {
-            get
-            {
-                return _meanRemovalFilter ?? (_meanRemovalFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213241", "Mean removal filter",
-                                                                         "Removes the mean of the neighbouring values from the central value. This filter has an opposite effect as the box filter, thus helping image sharpening.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterWeight,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Median filter.
-        /// </summary>
-        public static SpectralOperationMethod MedianFilter
-        {
-            get
-            {
-                return _medianFilter ?? (_medianFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213213", "Median filter",
-                                                                         "Returns the median of the the neighbouring values.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Normalized difference index (NDxI) computation.
-        /// </summary>
-        public static SpectralOperationMethod NormalizedDifferenceIndexComputation
-        {
-            get
-            {
-                return _normalizedDifferenceIndexComputation ?? (_normalizedDifferenceIndexComputation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213511", "Normalized difference index (NDxI) computation",
-                                                                         "Normalized difference indices (for soil, vegetation and water) are standard ways to model the ratio of spectral bands.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Local,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.IndexOfRedBand,
-                                                                         SpectralOperationParameters.IndexOfNearInfraredBand,
-                                                                         SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-            }
-        }
-
-        /// <summary>
-        /// Normalized difference index (NDxI) computation.
-        /// </summary>
-        public static SpectralOperationMethod NormalizedDifferenceSoilIndexComputation
-        {
-            get
-            {
-                return _normalizedDifferenceSoilIndexComputation ?? (_normalizedDifferenceSoilIndexComputation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213512", "Normalized difference soil index (NDSI) computation",
-                                                                         "Normalized difference indices (for soil, vegetation and water) are standard ways to model the ratio of spectral bands.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Local,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.IndexOfNearInfraredBand,
-                                                                         SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-            }
-        }
-
-        /// <summary>
-        /// Normalized difference vegetation index (NDVI) computation.
-        /// </summary>
-        public static SpectralOperationMethod NormalizedDifferenceVegetationIndexComputation
-        {
-            get
-            {
-                return _normalizedDifferenceVegetationIndexComputation ?? (_normalizedDifferenceVegetationIndexComputation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213513", "Normalized difference index vegetation (NDVI) computation",
-                                                                         "Normalized difference indices (for soil, vegetation and water) are standard ways to model the ratio of spectral bands.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Local,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.IndexOfRedBand,
-                                                                         SpectralOperationParameters.IndexOfNearInfraredBand));
-            }
-        }
-
-        /// <summary>
-        /// Normalized difference water index (NDWI) computation.
-        /// </summary>
-        public static SpectralOperationMethod NormalizedDifferenceWaterIndexComputation
-        {
-            get
-            {
-                return _normalizedDifferenceWaterIndexComputation ?? (_normalizedDifferenceWaterIndexComputation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213514", "Normalized difference index water (NDWI) computation",
-                                                                         "Normalized difference indices (for soil, vegetation and water) are standard ways to model the ratio of spectral bands.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Local,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.IndexOfRedBand,
-                                                                         SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-            }
-        }
-
-        /// <summary>
         /// Otsu thresholding.
         /// </summary>
         public static SpectralOperationMethod OtsuThresholdingClassification
@@ -507,22 +229,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Prewitt filter.
-        /// </summary>
-        public static SpectralOperationMethod PrewittFilter
-        {
-            get
-            {
-                return _prewittFilter ?? (_prewittFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213264", "Prewitt filter",
-                                                                         "The Prewitt filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
         /// Saturating contrast enhancement.
         /// </summary>
         public static SpectralOperationMethod SaturatingContrastEnhancement
@@ -533,22 +239,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213130", "Saturating contrast enhancement",
                                                                          "Saturating contrast enhancement is a linear transformation method, where the raster histogram is pulled to fill the entire spectrum.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Sobel filter.
-        /// </summary>
-        public static SpectralOperationMethod SobelFilter
-        {
-            get
-            {
-                return _sobelFilter ?? (_sobelFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213265", "Sobel filter",
-                                                                         "The Sobel filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -616,61 +306,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.SpectralOffset,
                                                                          SpectralOperationParameters.SpectralFactor,
                                                                          SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Unsharp masking.
-        /// </summary>
-        public static SpectralOperationMethod UnsharpMasking
-        {
-            get
-            {
-                return _unsharpMasking ?? (_unsharpMasking =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213242", "Unsharp masking",
-                                                                         "Unsharp masking uses a blurred positive image to create a mask of the original image, which is then combined with the negative image to create a sharper image. The method uses Gaussian blur technique.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.SharpeningAmount,
-                                                                         SpectralOperationParameters.SharpeningRadius,
-                                                                         SpectralOperationParameters.SharpeningThreshold));
-            }
-        }
-
-        /// <summary>
-        /// Waterlogging classification.
-        /// </summary>
-        public static SpectralOperationMethod WaterloggingClassification
-        {
-            get
-            {
-                return _waterloggingClassification ?? (_waterloggingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::214624", "Waterlogging classification",
-                                                                        "", null, "1.0.0",
-                                                                        false, SpectralOperationDomain.BandLocal,
-                                                                        ExecutionMode.OutPlace | ExecutionMode.InPlace,
-                                                                        SpectralOperationParameters.IndexOfRedBand,
-                                                                        SpectralOperationParameters.IndexOfNearInfraredBand,
-                                                                        SpectralOperationParameters.IndexOfShortWavelengthInfraredBand,
-                                                                        SpectralOperationParameters.ConvertResultToRGB));
-            }
-        }
-
-        /// <summary>
-        /// Weighted median filter.
-        /// </summary>
-        public static SpectralOperationMethod WeightedMedianFilter
-        {
-            get
-            {
-                return _weightedMedianFilter ?? (_weightedMedianFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213214", "Weighted median filter",
-                                                                        "Returns the median of the the neighbouring values multiplied by the weight kernel.", null, "1.0.0",
-                                                                        false, SpectralOperationDomain.BandFocal,
-                                                                        ExecutionMode.OutPlace,
-                                                                        SpectralOperationParameters.FilterKernel,
-                                                                        SpectralOperationParameters.BandIndex));
             }
         }
 

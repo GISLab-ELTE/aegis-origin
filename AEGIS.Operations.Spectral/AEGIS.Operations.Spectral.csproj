@@ -76,11 +76,16 @@
     <Compile Include="Spectral\Segmentation\GraphBasedSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\SequentialCouplingSegmentation .cs" />
     <Compile Include="Spectral\Segmentation\SpectralSegmentation.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.Classification.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.Filtering.cs" />
     <Compile Include="Spectral\SpectralOperationDomain.cs" />
     <Compile Include="Spectral\SpectralOperationMethod.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.Indexing.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Segmentation.cs" />
+    <Compile Include="Spectral\SpectralOperationParameters.Classification.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.cs" />
+    <Compile Include="Spectral\SpectralOperationParameters.Filtering.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.Segmentation.cs" />
     <Compile Include="Spectral\SpectralTransformation.cs" />
   </ItemGroup>
