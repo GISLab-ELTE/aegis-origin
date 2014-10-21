@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// Represents a collection of known <see cref="SpectralOperationMethod" /> instances.
     /// </summary>
     [OperationMethodCollection]
-    public static class SpectralOperationMethods
+    public static partial class SpectralOperationMethods
     {
         #region Query fields
 

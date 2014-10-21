@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms.Distances;
 using ELTE.AEGIS.Algorithms.Resampling;
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
@@ -27,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     /// Represents a collection of known <see cref="OperationParameter" /> instances for spectral operations.
     /// </summary>
     [OperationParameterCollection]
-    public static class SpectralOperationParameters
+    public static partial class SpectralOperationParameters
     {
         #region Query fields
 
@@ -115,13 +116,16 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _indexOfVisibleBand;
         private static OperationParameter _indexOfYellowBand;
         private static OperationParameter _lowerThresholdBoundary;
-        private static OperationParameter _numberOfRows;
         private static OperationParameter _numberOfColumns;
+        private static OperationParameter _numberOfIterations;
+        private static OperationParameter _numberOfRows;
         private static OperationParameter _rasterResamplingAlgorithm;
         private static OperationParameter _rasterResamplingAlgorithmType;
         private static OperationParameter _sharpeningAmount;
         private static OperationParameter _sharpeningRadius;
         private static OperationParameter _sharpeningThreshold;
+        private static OperationParameter _spectralDistance;
+        private static OperationParameter _spectralDistanceType;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
         private static OperationParameter _spectralSelectorFunction;
@@ -721,6 +725,50 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             }
         }
+
+        /// <summary>
+        /// Number of iterations.
+        /// </summary>
+        public static OperationParameter NumberOfIterations
+        {
+            get
+            {
+                return _numberOfIterations ?? (_numberOfIterations =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::000000", "Number of iterations",
+                                                                      "The number of iterations for an iterative algorithm.", null)
+                );
+            }
+        }
+
+
+        /// <summary>
+        /// Spectral distance.
+        /// </summary>
+        public static OperationParameter SpectralDistance
+        {
+            get
+            {
+                return _spectralDistance ?? (_spectralDistance =
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance",
+                                                                                 "The object used for determining the distance of spectral values.", null, (SpectralDistance)null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Spectral distance type.
+        /// </summary>
+        public static OperationParameter SpectralDistanceType
+        {
+            get
+            {
+                return _spectralDistanceType ?? (_spectralDistanceType =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223413", "Spectral distance type",
+                                                                     "The type used for determining the distance of spectral values.", null, (Type)null)
+                );
+            }
+        }
+
 
         #endregion
     }

@@ -72,10 +72,16 @@
     <Compile Include="Spectral\Reflectance\TopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Resampling\SpectralResampling.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingType.cs" />
+    <Compile Include="Spectral\Segmentation\BestMergeBasedSegmentation.cs" />
+    <Compile Include="Spectral\Segmentation\GraphBasedSegmentation.cs" />
+    <Compile Include="Spectral\Segmentation\SequentialCouplingSegmentation .cs" />
+    <Compile Include="Spectral\Segmentation\SpectralSegmentation.cs" />
     <Compile Include="Spectral\SpectralOperationDomain.cs" />
     <Compile Include="Spectral\SpectralOperationMethod.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.Segmentation.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.cs" />
+    <Compile Include="Spectral\SpectralOperationParameters.Segmentation.cs" />
     <Compile Include="Spectral\SpectralTransformation.cs" />
   </ItemGroup>
   <ItemGroup>

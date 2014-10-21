@@ -28,9 +28,9 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private fields
 
         /// <summary>
-        /// The supported raster representations.
+        /// The supported raster formats.
         /// </summary>
-        private RasterFormat[] _supportedRepresentations;
+        private RasterFormat[] _supportedFormats;
 
         /// <summary>
         /// The spectral domain of the operation.
@@ -42,10 +42,10 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Public properties
 
         /// <summary>
-        /// Gets the supported raster representations.
+        /// Gets the supported raster formats.
         /// </summary>
-        /// <value>The read-only list containing the supported raster representations.</value>
-        public IList<RasterFormat> SupportedRepresentations { get { return Array.AsReadOnly(_supportedRepresentations); } }
+        /// <value>The read-only list containing the supported raster formats.</value>
+        public IList<RasterFormat> SupportedFormats { get { return Array.AsReadOnly(_supportedFormats); } }
 
         /// <summary>
         /// Gets the spectral domain of the operation.
@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="sourceType">The source type of the method.</param>
         /// <param name="resultType">The result type of the method.</param>
         /// <param name="supportedModels">The supported geometry models.</param>
-        /// <param name="supportedRepresentations">The supported raster representations.</param>
+        /// <param name="supportedFormats">The supported raster formats.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
         /// <param name="supportedDomains">The supported execution domains of the method.</param>
         /// <param name="parameters">The parameters of the operation.</param>
@@ -78,13 +78,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         public SpectralOperationMethod(String identifier, String name, String remarks, String[] aliases, Version version,
                                        Boolean isReversible, SpectralOperationDomain spectralDomain,
                                        Type sourceType, Type resultType, GeometryModel supportedModels,
-                                       RasterFormat supportedRepresentations,                                       
+                                       RasterFormat supportedFormats,                                       
                                        ExecutionMode supportedModes,
                                        ExecutionDomain supportedDomains,
                                        params OperationParameter[] parameters)
             : base(identifier, name, remarks, aliases, version, isReversible, sourceType, resultType, supportedModels, supportedModes, supportedDomains, parameters)
         {
-            _supportedRepresentations = ExtractRasterRepresentations(supportedRepresentations);
+            _supportedFormats = ExtractRasterFormats(supportedFormats);
             _spectralDomain = spectralDomain;
         }
 
@@ -174,13 +174,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="version">The version.</param>
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
         /// <param name="spectralDomain">The domain of the operation.</param>
-        /// <param name="supportedRepresentation">The supported raster representations of the method.</param>
+        /// <param name="supportedFormats">The supported raster formats of the method.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <returns>The <see cref="SpectralOperationMethod" /> instance produced by the method.</returns>
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         public static SpectralOperationMethod CreateSpectralTransformation(String identifier, String name, String remarks, String[] aliases, String version,
                                                                            Boolean isReversible, SpectralOperationDomain spectralDomain,
-                                                                           RasterFormat supportedRepresentation,
+                                                                           RasterFormat supportedFormats,
                                                                            params OperationParameter[] parameters)
         {
             return new SpectralOperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
@@ -188,7 +188,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                typeof(ISpectralGeometry),
                                                typeof(ISpectralGeometry),
                                                GeometryModel.Any,
-                                               supportedRepresentation,
+                                               supportedFormats,
                                                ExecutionMode.Any,
                                                ExecutionDomain.Local | ExecutionDomain.Remote,
                                                parameters);
@@ -199,11 +199,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Protected static methods
 
         /// <summary>
-        /// Extracts the raster representation values.
+        /// Extracts the raster format values.
         /// </summary>
-        /// <param name="models">The raster representation values.</param>
+        /// <param name="models">The raster format values.</param>
         /// <returns>The array of extracted enumeration values.</returns>
-        protected static RasterFormat[] ExtractRasterRepresentations(RasterFormat values)
+        protected static RasterFormat[] ExtractRasterFormats(RasterFormat values)
         {
             Array enumValues = Enum.GetValues(typeof(RasterFormat));
 

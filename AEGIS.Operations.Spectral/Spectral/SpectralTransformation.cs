@@ -666,7 +666,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         {
             if (source.Raster == null)
                 throw new ArgumentException("The source geometry does not contain raster data.", "source");
-            if (!method.SupportedRepresentations.Contains(source.Raster.Format))
+            if (!method.SupportedFormats.Contains(source.Raster.Format))
                 throw new ArgumentException("The raster format of the source is not supported by the method.", "source");
         }
 
