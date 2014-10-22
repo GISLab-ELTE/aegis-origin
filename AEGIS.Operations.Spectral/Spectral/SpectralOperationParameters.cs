@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Algorithms.Distances;
 using ELTE.AEGIS.Algorithms.Resampling;
+using ELTE.AEGIS.Collections.Segmentation;
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
@@ -111,6 +112,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _numberOfRows;
         private static OperationParameter _rasterResamplingAlgorithm;
         private static OperationParameter _rasterResamplingAlgorithmType;
+        private static OperationParameter _segmentCollection;
         private static OperationParameter _spectralDistance;
         private static OperationParameter _spectralDistanceType;
         private static OperationParameter _spectralFactor;
@@ -461,6 +463,19 @@ namespace ELTE.AEGIS.Operations.Spectral
                     OperationParameter.CreateOptionalParameter<Type>("AEGIS::223383", "Raster resampling algorithm type",
                                                                      "The type of the algorithm that performs the resampling of the raster.", null,
                                                                      typeof(BilinearResamplingAlgorithm))
+                );
+            }
+        }
+
+        /// <summary>
+        /// Segment collection.
+        /// </summary>
+        public static OperationParameter SegmentCollection
+        {
+            get
+            {
+                return _segmentCollection ?? (_segmentCollection =
+                    OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::000000", "Segment collection", "An enumerable collection of segments.", null)
                 );
             }
         }

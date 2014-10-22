@@ -23,6 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private static fields
 
         private static SpectralOperationMethod _bestMergeBasedSegmentation;
+        private static SpectralOperationMethod _isodataClustering;
         private static SpectralOperationMethod _graphBasedSegmentation;
         private static SpectralOperationMethod _saturationThresholdingSegmentation;
         private static SpectralOperationMethod _sequentialCouplingSegmentation;
@@ -46,6 +47,24 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.NumberOfIterations,
                                                                          SpectralOperationParameters.SegmentMergeThreshold));
+            }
+        }
+
+        /// <summary>
+        /// ISODATA clustering.
+        /// </summary>
+        public static SpectralOperationMethod IsodataClustering
+        {
+            get
+            {
+                return _isodataClustering ?? (_isodataClustering =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "ISODATA clustering",
+                                                                        "", null, "1.0.0",
+                                                                        false, SpectralOperationDomain.Global,
+                                                                        ExecutionMode.OutPlace,
+                                                                        SpectralOperationParameters.SegmentCollection,
+                                                                        SpectralOperationParameters.NumberOfClusterCenters,
+                                                                        SpectralOperationParameters.ClusterDistanceThreshold));
             }
         }
 
