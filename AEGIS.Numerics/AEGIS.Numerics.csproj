@@ -51,6 +51,7 @@
     <Compile Include="LinearAlgebra\MatrixComputations.cs" />
     <Compile Include="LinearAlgebra\Norm.cs" />
     <Compile Include="LinearAlgebra\VectorFactory.cs" />
+    <Compile Include="Statistics\GaussianRandomGenerator.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="Integral\SimpsonMethod.cs" />
     <Compile Include="LinearAlgebra\LUDecomposition.cs">
