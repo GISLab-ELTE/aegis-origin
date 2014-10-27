@@ -44,6 +44,8 @@
     <Compile Include="Spectral\Classification\ConstantBasedThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\FunctionBasedThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\PaletteColorClassification.cs" />
+    <Compile Include="Spectral\Classification\RandomColorClassification.cs" />
     <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
     <Compile Include="Spectral\Common\HistogramEqualization.cs" />
     <Compile Include="Spectral\Common\HistogramTransformation.cs" />
