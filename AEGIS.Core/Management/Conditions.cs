@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -177,12 +177,23 @@ namespace ELTE.AEGIS.Management
         /// <summary>
         /// Requires that the object (or type) implements the specified interface.
         /// </summary>
-        /// <typeparam name="InterfaceType">The type of the nterface type.</typeparam>
+        /// <typeparam name="InterfaceType">The interface type.</typeparam>
         /// <returns>A <see cref="Predicate{Object}" /> that validates that the object (or type) implements the specified interface.</returns>
         public static Predicate<Object> Implements<InterfaceType>()
         {
             return value => (value is Type) && ((value as Type).Equals(typeof(InterfaceType)) || (value as Type).GetInterfaces().Contains(typeof(InterfaceType)))
                             || (value is InterfaceType);
+        }
+
+        /// <summary>
+        /// Requires that the object (or type) inherits the specified superclass type.
+        /// </summary>
+        /// <typeparam name="ClassType">The superclass type.</typeparam>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates that the object (or type) inherits the specified superclass type.</returns>
+        public static Predicate<Object> Inherits<ClassType>()
+        {
+            return value => (value is Type) && ((value as Type).Equals(typeof(ClassType)) || (value as Type).IsSubclassOf(typeof(ClassType)) || (value as Type).GetInterfaces().Contains(typeof(ClassType)))
+                            || (value is ClassType);
         }
     }
 }
