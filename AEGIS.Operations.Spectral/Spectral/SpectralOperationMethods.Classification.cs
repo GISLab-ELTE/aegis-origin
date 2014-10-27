@@ -27,7 +27,10 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _constantBasedThresholdingClassification;
         private static SpectralOperationMethod _functionBasedThresholdingClassification;
         private static SpectralOperationMethod _otsuThresholdingClassification;
-        private static SpectralOperationMethod _waterloggingClassification;
+        private static SpectralOperationMethod _paletteColorClassification;
+        private static SpectralOperationMethod _randomColorClassification;
+        private static SpectralOperationMethod _segmentClassification;
+        private static SpectralOperationMethod _thematicClassification;
 
         #endregion
 
@@ -41,10 +44,27 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _balancedHistogramThresholdingClassification ?? (_balancedHistogramThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213124", "Balanced histogram thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213826", "Balanced histogram thresholding",
                                                                          "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+        /// <summary>
+        /// Constant based spectral thresholding.
+        /// </summary>
+        public static SpectralOperationMethod ConstantBasedThresholdClassification
+        {
+            get
+            {
+                return _constantBasedThresholdingClassification ?? (_constantBasedThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213820", "Constant based spectral thresholding",
+                                                                         "Creates a monochrome raster by separating values located within the specified boundaries.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.LowerThresholdBoundary,
+                                                                         SpectralOperationParameters.UpperThresholdBoundary,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
@@ -57,7 +77,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _densitySlicing ?? (_densitySlicing =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213145", "Density slicing",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213819", "Density slicing",
                                                                          "For density slicing the range of grayscale levels is divided into intervals, with each interval assigned to one of a few discrete colors – this is in contrast to pseudo color, which uses a continuous color scale.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
@@ -73,29 +93,93 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _functionBasedThresholdingClassification ?? (_functionBasedThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213122", "Function based spectral thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213821", "Function based spectral thresholding",
                                                                          "Creates a monochrome raster by separating values based on the specified selector function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.SpectralSelectorFunction,
+                                                                         SpectralOperationParameters.SpectralPredicate,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+
+        /// <summary>
+        /// Segment classification.
+        /// </summary>
+        public static SpectralOperationMethod SegmentClassification
+        {
+            get
+            {
+                return _segmentClassification ?? (_segmentClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213818", "Segment classification",
+                                                                         "The classification of spectral imagery based on a collection of segments. The result data contains the segment indices as values.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Local,
+                                                                         SpectralOperationParameters.SegmentCollection));
+            }
+        }
+
+        /// <summary>
+        /// Otsu thresholding.
+        /// </summary>
+        public static SpectralOperationMethod OtsuThresholdingClassification
+        {
+            get
+            {
+                return _otsuThresholdingClassification ?? (_otsuThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213828", "Otsu thresholding",
+                                                                         "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandGlobal,
+                                                                         RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex));
             }
         }
 
         /// <summary>
-        /// Waterlogging classification.
+        /// Palette color classification.
         /// </summary>
-        public static SpectralOperationMethod WaterloggingClassification
+        public static SpectralOperationMethod PaletteColorClassification
         {
             get
             {
-                return _waterloggingClassification ?? (_waterloggingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::214624", "Waterlogging classification",
-                                                                        "", null, "1.0.0",
-                                                                        false, SpectralOperationDomain.BandLocal,
-                                                                        ExecutionMode.OutPlace | ExecutionMode.InPlace,
-                                                                        SpectralOperationParameters.IndexOfRedBand,
-                                                                        SpectralOperationParameters.IndexOfNearInfraredBand,
-                                                                        SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
+                return _paletteColorClassification ?? (_paletteColorClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213801", "Palette color classification",
+                                                                         "This classification method relies on using palette RGB colors for creating the classified image based on an image with multiple classes.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Local,
+                                                                         SpectralOperationParameters.ColorPalette));
+            }
+        }
+
+        /// <summary>
+        /// Random color classification.
+        /// </summary>
+        public static SpectralOperationMethod RandomColorClassification
+        {
+            get
+            {
+                return _randomColorClassification ?? (_randomColorClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213802", "Random color classification",
+                                                                         "This classification method relies on using random RGB colors for creating the classified image based on a collection of segments and/or clusters. The method garantees that each individual class will have a different color.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Local,
+                                                                         RasterFormat.Integer));
+            }
+        }
+
+        /// <summary>
+        /// Thematic classification.
+        /// </summary>
+        public static SpectralOperationMethod ThematicClassification
+        {
+            get
+            {
+                return _thematicClassification ?? (_thematicClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213850", "Thematic classification",
+                                                                         "In thematic classification, a pre-classified study area is aligned with the current target area, with which the process matches the categories. The process also relies on clustering of the data, and optional initial segmentation.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Global,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.ClassificationClusteringMethod,
+                                                                         SpectralOperationParameters.ClassificationClusteringType,
+                                                                         SpectralOperationParameters.ClassificationSegmentationMethod,
+                                                                         SpectralOperationParameters.ClassificationSegmentationType,
+                                                                         SpectralOperationParameters.ClassificationStudyArea));
             }
         }
 

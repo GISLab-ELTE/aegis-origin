@@ -481,15 +481,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Spectral distance.
+        /// Spectral distance algorithm.
         /// </summary>
-        public static OperationParameter SpectralDistance
+        public static OperationParameter SpectralDistanceAlgorithm
         {
             get
             {
                 return _spectralDistance ?? (_spectralDistance =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance",
-                                                                                 "The object used for determining the distance of spectral values.", null, (SpectralDistance)null)
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance algorithm",
+                                                                                 "The algorithm used for determining the distance of spectral values.", null, (SpectralDistance)null)
                 );
             }
         }

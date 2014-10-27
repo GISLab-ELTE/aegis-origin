@@ -49,7 +49,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected FunctionBasedThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.FunctionBasedThresholdClassification, parameters)
         {
-            _selectorFunction = ResolveParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>(SpectralOperationParameters.SpectralSelectorFunction);
+            _selectorFunction = ResolveParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>(SpectralOperationParameters.SpectralPredicate);
         }
 
         #endregion

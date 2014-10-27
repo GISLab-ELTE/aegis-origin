@@ -117,23 +117,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Constant based spectral thresholding.
-        /// </summary>
-        public static SpectralOperationMethod ConstantBasedThresholdClassification
-        {
-            get
-            {
-                return _constantBasedThresholdingClassification ?? (_constantBasedThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213120", "Constant based spectral thresholding",
-                                                                         "Creates a monochrome raster by separating values located within the specified boundaries.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.LowerThresholdBoundary,
-                                                                         SpectralOperationParameters.UpperThresholdBoundary,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
         /// Gamma correction.
         /// </summary>
         public static SpectralOperationMethod GammaCorrection
@@ -209,22 +192,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.GammaValue));
-            }
-        }
-
-        /// <summary>
-        /// Otsu thresholding.
-        /// </summary>
-        public static SpectralOperationMethod OtsuThresholdingClassification
-        {
-            get
-            {
-                return _otsuThresholdingClassification ?? (_otsuThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213121", "Otsu thresholding",
-                                                                         "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandGlobal,
-                                                                         RasterFormat.Integer,
-                                                                         SpectralOperationParameters.BandIndex));
             }
         }
 

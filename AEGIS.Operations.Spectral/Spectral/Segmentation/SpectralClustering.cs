@@ -77,9 +77,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             _initialSegments = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
 
-            if (IsProvidedParameter(SpectralOperationParameters.ClusterDistance))
+            if (IsProvidedParameter(SpectralOperationParameters.ClusterDistanceAlgorithm))
             {
-                _clusterDistance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.ClusterDistance);
+                _clusterDistance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.ClusterDistanceAlgorithm);
             }
             else if (IsProvidedParameter(SpectralOperationParameters.ClusterDistanceType))
             {

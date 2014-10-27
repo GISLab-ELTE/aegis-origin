@@ -71,9 +71,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             if (!method.SupportedFormats.Contains(source.Raster.Format))
                 throw new ArgumentException("The raster format of the source is not supported by the method.", "source");
 
-            if (IsProvidedParameter(SpectralOperationParameters.SpectralDistance))
+            if (IsProvidedParameter(SpectralOperationParameters.SpectralDistanceAlgorithm))
             {
-                _distance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.SpectralDistance);
+                _distance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.SpectralDistanceAlgorithm);
             }
             else if (IsProvidedParameter(SpectralOperationParameters.SpectralDistanceType))
             {

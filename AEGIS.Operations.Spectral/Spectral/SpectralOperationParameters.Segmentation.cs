@@ -26,9 +26,9 @@ namespace ELTE.AEGIS.Operations.Spectral
     {
         #region Private static fields
 
-        private static OperationParameter _clusterDistance;
-        private static OperationParameter _clusterDistanceType;
+        private static OperationParameter _clusterDistanceAlgorithm;
         private static OperationParameter _clusterDistanceThreshold;
+        private static OperationParameter _clusterDistanceType;
         private static OperationParameter _clusterSizeThreshold;
         private static OperationParameter _numberOfClusterCenters;
         private static OperationParameter _segmentHomogeneityThreshold;
@@ -41,29 +41,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Public static properties
 
         /// <summary>
-        /// Cluster distance.
+        /// Cluster distance algorithm.
         /// </summary>
-        public static OperationParameter ClusterDistance
+        public static OperationParameter ClusterDistanceAlgorithm
         {
             get
             {
-                return _clusterDistance ?? (_clusterDistance =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::000000", "Cluster distance",
-                                                                                 "The object used for determining the distance of spectral clusters.", null, (SpectralDistance)null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Cluster distance type.
-        /// </summary>
-        public static OperationParameter ClusterDistanceType
-        {
-            get
-            {
-                return _clusterDistanceType ?? (_clusterDistanceType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::000000", "Cluster distance type",
-                                                                     "The type used for determining the distance of spectral clusters.", null, (Type)null)
+                return _clusterDistanceAlgorithm ?? (_clusterDistanceAlgorithm =
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223651", "Cluster distance algorithm",
+                                                                                 "The algorithm used for determining the distance of spectral clusters.", null, (SpectralDistance)null)
                 );
             }
         }
@@ -78,6 +64,20 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _clusterDistanceThreshold ?? (_clusterDistanceThreshold =
                     OperationParameter.CreateRequiredParameter<Double>("AEGIS::223655", "Cluster distance threshold",
                                                                        "The upper threshold of the spectral distance between clusters.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Cluster distance type.
+        /// </summary>
+        public static OperationParameter ClusterDistanceType
+        {
+            get
+            {
+                return _clusterDistanceType ?? (_clusterDistanceType =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223652", "Cluster distance type",
+                                                                     "The type used for determining the distance of spectral clusters.", null, (Type)null)
                 );
             }
         }
@@ -107,8 +107,8 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _numberOfClusterCenters ?? (_numberOfClusterCenters =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::000000", "Number of cluster centers",
-                                                                      "", null, 0)
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223658", "Number of cluster centers",
+                                                                      "The initial number of cluster centers for clustering operations.", null, 0)
                 );
             }
         }
