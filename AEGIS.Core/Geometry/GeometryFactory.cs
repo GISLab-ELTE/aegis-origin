@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="referenceSystem">The reference system.</param>
         public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem)
         {
-            PrecisionModel = precisionModel;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             ReferenceSystem = referenceSystem;
             _metadataFactory = Factory.DefaultInstance<IMetadataFactory>();
         }
@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.Geometry
         public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IMetadataFactory metadataFactory)
             : base(metadataFactory)
         {
-            PrecisionModel = precisionModel;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             ReferenceSystem = referenceSystem;
             _metadataFactory = metadataFactory ?? Factory.DefaultInstance<IMetadataFactory>();
         }

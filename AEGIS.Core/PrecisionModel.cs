@@ -22,15 +22,6 @@ namespace ELTE.AEGIS
     /// </summary>
     public class PrecisionModel : IComparable<PrecisionModel>, IEquatable<PrecisionModel>
     {
-        #region Public static instances
-
-        /// <summary>
-        /// The default precision model.
-        /// </summary>
-        public static readonly PrecisionModel Default = new PrecisionModel();
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
@@ -215,6 +206,25 @@ namespace ELTE.AEGIS
                     return "Floating";
             }
         }
+
+        #endregion
+
+        #region Private static fields
+
+        /// <summary>
+        /// The lazily initialized default precision model.
+        /// </summary>
+        private static readonly Lazy<PrecisionModel> _default = new Lazy<PrecisionModel>(() => new PrecisionModel(PrecisionModelType.Floating));
+
+        #endregion
+
+        #region Public static properties
+
+        /// <summary>
+        /// Gets the default precision model.
+        /// </summary>
+        /// <value>The default floating precision model.</value>
+        public static PrecisionModel Default { get { return _default.Value; } }
 
         #endregion
 
