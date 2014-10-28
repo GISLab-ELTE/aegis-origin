@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -239,12 +239,12 @@ namespace ELTE.AEGIS.Reference.Operations
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(type => type.IsSubclassOf(typeof(GridProjection))))
             {
                 // query the attribute of the type
-                Object attribute = type.GetCustomAttributes(typeof(IdentifiedObjectInstanceAttribute), false).FirstOrDefault();
+                Object attribute = type.GetCustomAttributes(typeof(CoordinateOperationMethodImplementationAttribute), false).FirstOrDefault();
                 if (attribute == null)
                     continue;
 
                 // query the method of the projection
-                CoordinateOperationMethod method = CoordinateOperationMethods.FromIdentifier((attribute as IdentifiedObjectInstanceAttribute).Identifier).FirstOrDefault();
+                CoordinateOperationMethod method = CoordinateOperationMethods.FromIdentifier((attribute as CoordinateOperationMethodImplementationAttribute).Identifier).FirstOrDefault();
                 if (method == null)
                     continue;
 

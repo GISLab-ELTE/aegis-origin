@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Reference.Operations
     /// <summary>
     /// Represents a Bonne South Orientated projection.
     /// </summary>
-    [IdentifiedObjectInstance("EPSG::9828", "Bonne South Orientated")]
+    [CoordinateOperationMethodImplementationAttribute("EPSG::9828", "Bonne South Orientated")]
     public class BonneSouthOrientatedProjection : BonneProjection
     {
         #region Constructors

@@ -71,6 +71,7 @@
     <Compile Include="GeographicCoordinateReferenceSystems.cs" />
     <Compile Include="GridReferenceSystem.cs" />
     <Compile Include="GridReferenceSystems.cs" />
+    <Compile Include="Management\Attributes\CoordinateOperationMethodImplementationAttribute.cs" />
     <Compile Include="Meridian.cs" />
     <Compile Include="Meridians.cs" />
     <Compile Include="Operations\Compound\CompoundCoordinateOperationMethod.cs" />

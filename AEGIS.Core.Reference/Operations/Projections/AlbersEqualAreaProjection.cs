@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Reference.Operations
     /// <summary>
     /// Represents an Albers Equal Area projection.
     /// </summary>
-    [IdentifiedObjectInstance("EPSG::9822", "Albers Equal Area")]
+    [CoordinateOperationMethodImplementationAttribute("EPSG::9822", "Albers Equal Area")]
     public class AlbersEqualAreaProjection : CoordinateProjection
     {
         #region Private fields

@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Reference.Operations
     /// <summary>
     /// Represents a Bonne projection.
     /// </summary>
-    [IdentifiedObjectInstance("EPSG::9827", "Bonne")]
+    [CoordinateOperationMethodImplementationAttribute("EPSG::9827", "Bonne")]
     public class BonneProjection : CoordinateProjection
     {
         #region Protected fields

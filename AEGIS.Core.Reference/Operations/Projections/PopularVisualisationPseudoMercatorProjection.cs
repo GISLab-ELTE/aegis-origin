@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Reference.Operations
     /// <summary>
     /// Represents the Popular Visualisation Pseudo Mercator projection.
     /// </summary>
-    [IdentifiedObjectInstance("EPSG::1024", "Popular Visualisation Pseudo Mercator")]
+    [CoordinateOperationMethodImplementationAttribute("EPSG::1024", "Popular Visualisation Pseudo Mercator")]
     public class PopularVisualisationPseudoMercatorProjection : MercatorProjection
     {
         #region Constructors

@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Reference.Operations
     /// <summary>
     /// Represents the Lambert Cylindrical Equal Area (spherical case) projection.
     /// </summary>
-    [IdentifiedObjectInstance("EPSG::9834", "Lambert Cylindrical Equal Area (spherical case)")]
+    [CoordinateOperationMethodImplementationAttribute("EPSG::9834", "Lambert Cylindrical Equal Area (spherical case)")]
     public class LambertCylindricalEqualAreaSphericalProjection : LambertCylindricalEqualAreaEllipsoidalProjection
     {
         #region Constructors
