@@ -626,7 +626,7 @@ namespace ELTE.AEGIS.Geometry
                 centroidX /= count;
                 centroidY /= count;
                 centroidZ /= count;
-                return new Coordinate(centroidX, centroidY, centroidZ);
+                return PrecisionModel.MakePrecise(new Coordinate(centroidX, centroidY, centroidZ));
             }
         }
 
@@ -794,22 +794,9 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="edgeEqualityComparer">The edge equality comparer.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryGraph(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)            
+        public GeometryGraph(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+            : this(new GeometryGraphFactory(referenceSystem == null ? AEGIS.Factory.DefaultInstance<GeometryFactory>() : AEGIS.Factory.GetInstance<GeometryFactory>(referenceSystem)), metadata, vertexEqualityComparer, edgeEqualityComparer)
         {
-            _factory = new GeometryGraphFactory(referenceSystem == null ? AEGIS.Factory.DefaultInstance<GeometryFactory>() : AEGIS.Factory.GetInstance<GeometryFactory>(referenceSystem));
-            _metadata = _factory.GetFactory<IGeometryFactory>().CreateMetadata(metadata);
-
-            _envelope = null;
-            _boundary = null;
-
-            _vertexEqualityComparer = vertexEqualityComparer ?? new VertexEqualityComparer();
-            _edgeEqualityComparer = edgeEqualityComparer ?? new EdgeEqualityComparer();
-
-            _version = 0;
-            _vertexList = new List<IGraphVertex>();
-            _edgeList = null;
-            _adjacencySource = new Dictionary<IGraphVertex, HashSet<IGraphEdge>>(_vertexEqualityComparer);
-            _adjacencyTarget = new Dictionary<IGraphVertex, HashSet<IGraphEdge>>(_vertexEqualityComparer);
         }
 
         /// <summary>
@@ -872,7 +859,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The vertex created at the <paramref name="coordinate" />.</returns>
         public virtual IGraphVertex AddVertex(Coordinate coordinate)
         {
-            return AddVertex(coordinate, null);
+            return AddVertex(PrecisionModel.MakePrecise(coordinate), null);
         }
 
         /// <summary>
@@ -883,7 +870,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The vertex created at the <paramref name="coordinate" />.</returns>
         public virtual IGraphVertex AddVertex(Coordinate coordinate, IDictionary<String, Object> metadata)
         {
-            GraphVertex vertex = new GraphVertex(this, coordinate, metadata);
+            GraphVertex vertex = new GraphVertex(this, PrecisionModel.MakePrecise(coordinate), metadata);
 
             if (_adjacencySource.ContainsKey(vertex))
                 return null;
@@ -905,6 +892,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The vertex located at the <paramref name="coordinate" /> if any; otherwise, <c>null</c>.</returns>
         public virtual IGraphVertex GetVertex(Coordinate coordinate)
         {
+            coordinate = PrecisionModel.MakePrecise(coordinate);
             return _vertexList.FirstOrDefault(t => t.Coordinate.Equals(coordinate));
         }
 
@@ -915,6 +903,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The list of vertices located at the <paramref name="coordinate" />.</returns>
         public virtual IList<IGraphVertex> GetAllVertices(Coordinate coordinate)
         {
+            coordinate = PrecisionModel.MakePrecise(coordinate);
             return _vertexList.Where(t => t.Coordinate.Equals(coordinate)).ToList<IGraphVertex>();
         }
 
@@ -940,15 +929,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The edge created between <paramref name="source" /> and <paramref name="target" /> vertices.</returns>
         public virtual IGraphEdge AddEdge(Coordinate source, Coordinate target)
         {
-            IGraphVertex sourceVertex = GetVertex(source);
-            IGraphVertex targetVertex = GetVertex(target);
-
-            if (sourceVertex == null)
-                sourceVertex = AddVertex(source);
-            if (targetVertex == null)
-                targetVertex = AddVertex(target);
-
-            return AddEdge(sourceVertex, targetVertex, null);
+            return AddEdge(source, target, null);
         }
 
         /// <summary>
@@ -960,6 +941,9 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The edge created between <paramref name="source" /> and <paramref name="target" /> vertices.</returns>
         public virtual IGraphEdge AddEdge(Coordinate source, Coordinate target, IDictionary<String, Object> metadata)
         {
+            source = PrecisionModel.MakePrecise(source);
+            target = PrecisionModel.MakePrecise(target);
+
             IGraphVertex sourceVertex = GetVertex(source);
             IGraphVertex targetVertex = GetVertex(target);
 
@@ -1041,6 +1025,9 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The first edge between <paramref name="source" /> and <paramref name="target" /> coordinates.</returns>
         public virtual IGraphEdge GetEdge(Coordinate source, Coordinate target)
         {
+            source = PrecisionModel.MakePrecise(source);
+            target = PrecisionModel.MakePrecise(target);
+
             foreach (GraphVertex vertex in _adjacencySource.Keys)
             {
                 if (vertex.Coordinate.Equals(source))
@@ -1095,6 +1082,9 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The read-only list of edges between <paramref name="source" /> and <paramref name="target" /> coordinates.</returns>
         public virtual IList<IGraphEdge> GetAllEdges(Coordinate source, Coordinate target)
         {
+            source = PrecisionModel.MakePrecise(source);
+            target = PrecisionModel.MakePrecise(target);
+
             List<IGraphEdge> edges = new List<IGraphEdge>();
 
             foreach (GraphVertex vertex in _adjacencySource.Keys)
@@ -1148,6 +1138,8 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The nearest vertex to <paramref name="coordinate" /> if the graph is not empty; otherwise, <c>null</c>.</returns>
         public IGraphVertex GetNearestVertex(Coordinate coordinate)
         {
+            coordinate = PrecisionModel.MakePrecise(coordinate);
+
             GraphVertex minVertex = null;
             Double minDistance = Double.MaxValue;
             foreach (GraphVertex vertex in _vertexList)
@@ -1167,6 +1159,8 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The first vertex within the specified <paramref name="accuracy" /> to <paramref name="coordinate" /> if any; otherwise, <c>null</c>.</returns>
         public IGraphVertex GetNearestVertex(Coordinate coordinate, Double accuracy)
         {
+            coordinate = PrecisionModel.MakePrecise(coordinate);
+
             return _vertexList.FirstOrDefault(vertex => Coordinate.Distance(vertex.Coordinate, coordinate) <= accuracy);
         }
 
@@ -1177,6 +1171,8 @@ namespace ELTE.AEGIS.Geometry
         /// <returns><c>true</c> if at least one vertex was located and removed from the <paramref name="coordinate" />; otherwise false.</returns>
         public virtual Boolean RemoveVertex(Coordinate coordinate)
         {
+            coordinate = PrecisionModel.MakePrecise(coordinate);
+
             // get all vertices with the specified coordinate
             IGraphVertex[] vertices = _adjacencySource.Keys.Where(v => v.Coordinate.Equals(coordinate)).ToArray();
 
@@ -1267,6 +1263,9 @@ namespace ELTE.AEGIS.Geometry
         /// <returns><c>true</c> if at least one edge was located and removed between <paramref name="source" /> and <paramref name="target" />; otherwise, <c>false</c>.</returns>
         public virtual Boolean RemoveEdge(Coordinate source, Coordinate target)
         {
+            source = PrecisionModel.MakePrecise(source);
+            target = PrecisionModel.MakePrecise(target);
+
             if (_vertexList.Count(vertex => vertex.Coordinate.Equals(source) || vertex.Coordinate.Equals(target)) == 0)
                 return false;
 
@@ -1351,7 +1350,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the <see cref="GeometryGraph" /> instance.</returns>
         public virtual Object Clone()
         {
-            GeometryGraph result = new GeometryGraph(ReferenceSystem, Metadata, _vertexEqualityComparer, _edgeEqualityComparer);
+            GeometryGraph result = new GeometryGraph(_factory, _metadata, _vertexEqualityComparer, _edgeEqualityComparer);
             CloneToGraph(this, result);
             return result;
         }
