@@ -13,8 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Collections.Segmentation;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing segmentation on spectral geometries using best merge.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213610", "Best merge segmentation")]
     public class BestMergeBasedSegmentation : SpectralSegmentation
     {
         #region Private types

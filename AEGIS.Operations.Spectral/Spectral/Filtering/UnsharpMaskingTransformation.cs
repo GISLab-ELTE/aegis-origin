@@ -20,7 +20,7 @@ using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
-    [OperationClass("AEGIS::213242", "Unsharp masking filter")]
+    [OperationMethodImplementation("AEGIS::213242", "Unsharp masking filter")]
     public class UnsharpMaskingTransformation : PerBandSpectralTransformation
     {
         #region Private fields

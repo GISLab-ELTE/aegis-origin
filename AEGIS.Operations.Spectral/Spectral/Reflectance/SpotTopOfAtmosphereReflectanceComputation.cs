@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// <summary>
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries for SPOT images.
     /// </summary>
-    [OperationClass("AEGIS::213461", "Top of atmosphere reflectance computation")]
+    [OperationMethodImplementation("AEGIS::213461", "Top of atmosphere reflectance computation")]
     public class SpotTopOfAtmosphereReflectanceComputation : TopOfAtmosphereReflectanceComputation
     {
         #region Private fields

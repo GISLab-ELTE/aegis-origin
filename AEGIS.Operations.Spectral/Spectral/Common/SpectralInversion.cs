@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents an inversion transformation.
     /// </summary>
-    [OperationClass("AEGIS::213104", "Spectral inversion")]
+    [OperationMethodImplementation("AEGIS::213104", "Spectral inversion")]
     public class SpectralInversion : PerBandSpectralTransformation
     {
         #region Private fields

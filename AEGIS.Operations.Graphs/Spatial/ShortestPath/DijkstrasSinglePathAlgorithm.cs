@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
     /// <summary>
     /// Represents an operation performing Dijkstra's algorithm between two vertices on a graph.
     /// </summary>
-    [OperationClass("AEGIS::212331", "Dijkstra's algorithm (single path)")]
+    [OperationMethodImplementation("AEGIS::212331", "Dijkstra's algorithm (single path)")]
     public class DijkstrasSinglePathAlgorithm : ShortestPathAlgorithm
     {
         #region Private fileds

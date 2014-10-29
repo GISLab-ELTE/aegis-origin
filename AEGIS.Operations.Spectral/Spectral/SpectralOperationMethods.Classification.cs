@@ -101,22 +101,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
         }
 
-
-        /// <summary>
-        /// Segment classification.
-        /// </summary>
-        public static SpectralOperationMethod SegmentClassification
-        {
-            get
-            {
-                return _segmentClassification ?? (_segmentClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213818", "Segment classification",
-                                                                         "The classification of spectral imagery based on a collection of segments. The result data contains the segment indices as values.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Local,
-                                                                         SpectralOperationParameters.SegmentCollection));
-            }
-        }
-
         /// <summary>
         /// Otsu thresholding.
         /// </summary>
@@ -160,6 +144,21 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "This classification method relies on using random RGB colors for creating the classified image based on a collection of segments and/or clusters. The method garantees that each individual class will have a different color.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          RasterFormat.Integer));
+            }
+        }
+
+        /// <summary>
+        /// Segment classification.
+        /// </summary>
+        public static SpectralOperationMethod SegmentClassification
+        {
+            get
+            {
+                return _segmentClassification ?? (_segmentClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213818", "Segment classification",
+                                                                         "The classification of spectral imagery based on a collection of segments. The result data contains the segment indices as values.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Local,
+                                                                         SpectralOperationParameters.SegmentCollection));
             }
         }
 

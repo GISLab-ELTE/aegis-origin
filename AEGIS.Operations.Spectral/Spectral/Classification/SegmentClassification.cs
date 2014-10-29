@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Collections.Segmentation;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing spectral classification of segments.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213818", "Segment classification")]
     public class SegmentClassification : SpectralTransformation
     {
         #region Private fields
@@ -108,7 +110,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             Int32 radiometricResolution = _segmentCollection.Count > 65536 ? 32 : (_segmentCollection.Count > 256 ? 16 : 8);
 
-            _result = _factory.CreateSpectralGeometry(_source,
+            _result = Source.Factory.CreateSpectralGeometry(_source,
                                                       PrepareRasterResult(RasterFormat.Integer,
                                                                           1,
                                                                           _source.Raster.NumberOfRows,

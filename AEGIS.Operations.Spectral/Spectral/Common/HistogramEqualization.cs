@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represent an operation performing histogram equalization of <see cref="ISpectralGeometry"/> instances.
     /// </summary>
-    [OperationClass("AEGIS::213131", "Histogram equalization")]
+    [OperationMethodImplementation("AEGIS::213131", "Histogram equalization")]
     public class HistogramEqualization : HistogramTransformation
     {
         #region Private fields

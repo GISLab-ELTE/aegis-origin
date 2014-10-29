@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Tests.Operations
     /// <summary>
     /// Represents an operation used for testing.
     /// </summary>
-    [OperationClass("AEGIS::000000", "Test Operation Method")]
+    [OperationMethodImplementation("AEGIS::000000", "Test Operation Method")]
     public class TestOperation : IOperation<Object, Object>
     {
         #region IOperation properties

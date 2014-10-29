@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
     /// <summary>
     /// Represents an operation computing the maximum flow between two vertices in a graph using the Edmonds-Karp algorithm.
     /// </summary>
-    [OperationClass("AEGIS::212710", "Edmonds-Karp algorithm")]
+    [OperationMethodImplementation("AEGIS::212710", "Edmonds-Karp algorithm")]
     public class EdmondsKarpAlgorithm : MaximumFlowComputation
     {
         // TODO: use multikey dictionary for reverse edges that are not available

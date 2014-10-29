@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -32,11 +32,6 @@ namespace ELTE.AEGIS.Operations
         /// The supported geometry models.
         /// </summary>
         private readonly GeometryModel[] _supportedModels;
-
-        /// <summary>
-        /// The supported execution domains.
-        /// </summary>
-        private readonly ExecutionDomain[] _supportedDomains;
 
         /// <summary>
         /// The supported execution modes.
@@ -89,12 +84,6 @@ namespace ELTE.AEGIS.Operations
         public IList<ExecutionMode> SupportedModes { get { return Array.AsReadOnly(_supportedModes); } }
 
         /// <summary>
-        /// Gets or sets the execution domains supported by the method.
-        /// </summary>
-        /// <value>The read-only list containing the execution domains supported by the method.</value>
-        public IList<ExecutionDomain> SupportedDomains { get { return Array.AsReadOnly(_supportedDomains); } }
-
-        /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The read-only list containing the parameters of the method.</value>
@@ -117,7 +106,6 @@ namespace ELTE.AEGIS.Operations
         /// <param name="resultType">The result type of the method.</param>
         /// <param name="supportedModels">The supported models of the method.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
-        /// <param name="supportedDomains">The supported execution domains of the method.</param>
         /// <param name="parameters">The parameters of the method.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
@@ -129,7 +117,7 @@ namespace ELTE.AEGIS.Operations
         public OperationMethod(String identifier, String name, String remarks, String[] aliases, Version version,
                                Boolean isReversible, 
                                Type sourceType, Type resultType, GeometryModel supportedModels, 
-                               ExecutionMode supportedModes, ExecutionDomain supportedDomains,
+                               ExecutionMode supportedModes,
                                params OperationParameter[] parameters)
             : base(identifier, name, remarks, aliases)
         {
@@ -144,7 +132,6 @@ namespace ELTE.AEGIS.Operations
             ResultType = resultType;
             _supportedModels = ExtractGeometryModels(supportedModels);
             _supportedModes = ExtractExecutionModes(supportedModes);
-            _supportedDomains = ExtractExecutionDomains(supportedDomains);
             _parameters = parameters;            
         }
 
@@ -226,7 +213,7 @@ namespace ELTE.AEGIS.Operations
         {
             return new OperationMethod(identifier, name, remarks, null, Version.Default,
                                        isReversible, typeof(SourceType), typeof(ResultType),
-                                       supportedModels, supportedModes, ExecutionDomain.Local | ExecutionDomain.Remote, parameters);
+                                       supportedModels, supportedModes, parameters);
         }
 
         /// <summary>
@@ -242,7 +229,6 @@ namespace ELTE.AEGIS.Operations
         /// <param name="isReversible">Indicates whether the method is reversible.</param>
         /// <param name="supportedModels">The supported models of the method.</param>
         /// <param name="supportedModes">The supported execution modes of the method.</param>
-        /// <param name="supportedDomains">The supported execution domains of the method.</param>
         /// <param name="parameters">The parameters of the method.</param>
         /// <returns>The <see cref="OperationMethod"/> instance produced by the method.</returns>
         /// <exception cref="System.ArgumentNullException">
@@ -256,12 +242,12 @@ namespace ELTE.AEGIS.Operations
         public static OperationMethod CreateMethod<SourceType, ResultType>(String identifier, String name, String remarks, String[] aliases, String version,
                                                                            Boolean isReversible,
                                                                            GeometryModel supportedModels,
-                                                                           ExecutionMode supportedModes, ExecutionDomain supportedDomains,
+                                                                           ExecutionMode supportedModes,
                                                                            params OperationParameter[] parameters)
         {
             return new OperationMethod(identifier, name, remarks, aliases, Version.Parse(version),
                                        isReversible, typeof(SourceType), typeof(ResultType),
-                                       supportedModels, supportedModes, supportedDomains, parameters);
+                                       supportedModels, supportedModes, parameters);
         }
 
         #endregion
@@ -290,18 +276,6 @@ namespace ELTE.AEGIS.Operations
             Array enumValues = Enum.GetValues(typeof(ExecutionMode));
 
             return Enumerable.Range(0, enumValues.Length).Where(value => (Convert.ToInt32(values) & Calculator.Pow(2, value)) != 0).Select(value => (ExecutionMode)Calculator.Pow(2, value)).ToArray();
-        }
-
-        /// <summary>
-        /// Extracts the execution domain values.
-        /// </summary>
-        /// <param name="models">The execution domain values.</param>
-        /// <returns>The array of extracted enumeration values.</returns>
-        protected static ExecutionDomain[] ExtractExecutionDomains(ExecutionDomain values)
-        {
-            Array enumValues = Enum.GetValues(typeof(ExecutionDomain));
-
-            return Enumerable.Range(0, enumValues.Length).Where(value => (Convert.ToInt32(values) & Calculator.Pow(2, value)) != 0).Select(value => (ExecutionDomain)Calculator.Pow(2, value)).ToArray();
         }
 
         #endregion

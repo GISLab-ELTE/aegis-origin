@@ -24,10 +24,8 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         private static SpectralOperationMethod _bestMergeBasedSegmentation;
         private static SpectralOperationMethod _isodataClustering;
-        private static SpectralOperationMethod _graphBasedSegmentation;
-        private static SpectralOperationMethod _saturationThresholdingSegmentation;
+        private static SpectralOperationMethod _graphBasedMergeSegmentation;
         private static SpectralOperationMethod _sequentialCouplingSegmentation;
-        private static SpectralOperationMethod _splitBasedSegmentation;
 
         #endregion
 
@@ -41,12 +39,14 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bestMergeBasedSegmentation ?? (_bestMergeBasedSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Best merge segmentation",
-                                                                         "", null, "1.0.0",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213610", "Best merge segmentation",
+                                                                         "Best merge segmentation chooses any two neighboring segments over the image if their contraction is optimal with respect to the threshold. The algorithm performs multiple iterations, until no merge can be performed, or until the interation number is reached.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.NumberOfIterations,
-                                                                         SpectralOperationParameters.SegmentMergeThreshold));
+                                                                         SpectralOperationParameters.SegmentMergeThreshold,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
             }
         }
 
@@ -58,45 +58,35 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _isodataClustering ?? (_isodataClustering =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "ISODATA clustering",
-                                                                        "", null, "1.0.0",
-                                                                        false, SpectralOperationDomain.Global,
-                                                                        ExecutionMode.OutPlace,
-                                                                        SpectralOperationParameters.SegmentCollection,
-                                                                        SpectralOperationParameters.NumberOfClusterCenters,
-                                                                        SpectralOperationParameters.ClusterDistanceThreshold));
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213701", "ISODATA clustering",
+                                                                         "ISODATA clustering performes classification of spectral vectors in different clusters, by randomly initializing cluster centers, and then aligning these centers based on multispectral space properties. The initial number of cluster centers, and the distance thresdhold can be specified.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Global,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.SegmentCollection,
+                                                                         SpectralOperationParameters.NumberOfClusterCenters,
+                                                                         SpectralOperationParameters.ClusterDistanceAlgorithm,
+                                                                         SpectralOperationParameters.ClusterDistanceType,
+                                                                         SpectralOperationParameters.ClusterDistanceThreshold,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
             }
         }
 
         /// <summary>
-        /// Graph based merge segmentation.
+        /// Graph-based merge segmentation.
         /// </summary>
-        public static SpectralOperationMethod GraphBasedSegmentation
+        public static SpectralOperationMethod GraphBasedMergeSegmentation
         {
             get
             {
-                return _graphBasedSegmentation ?? (_graphBasedSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Graph based merge segmentation",
-                                                                         "", null, "1.0.0",
+                return _graphBasedMergeSegmentation ?? (_graphBasedMergeSegmentation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213611", "Graph-based merge segmentation",
+                                                                         "In graph-based merge segmentation, the image is represented in graph form. Edges are taken in the descending order of their weight, and it is decided whether the two segments belonging to the two end nodes can be contracted.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.SegmentMergeThreshold));
-            }
-        }
-
-        /// <summary>
-        /// Saturation thresholding segmentation.
-        /// </summary>
-        public static SpectralOperationMethod SaturationThresholdingSegmentation
-        {
-            get
-            {
-                return _saturationThresholdingSegmentation ?? (_saturationThresholdingSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Saturation thresholding segmentation",
-                                                                         "", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Zonal,
-                                                                         ExecutionMode.OutPlace
-                                                                         ));
+                                                                         SpectralOperationParameters.SegmentMergeThreshold,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
             }
         }
 
@@ -108,29 +98,15 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sequentialCouplingSegmentation ?? (_sequentialCouplingSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Sequential coupling segmentation ",
-                                                                         "", null, "1.0.0",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213614", "Sequential coupling segmentation",
+                                                                         "Sequential linking deals with the statistical homogeneity of segments using an iteration of merging neighbouring cells in row-major order.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.SegmentHomogeneityThreshold,
                                                                          SpectralOperationParameters.VarianceThresholdBeforeMerge,
-                                                                         SpectralOperationParameters.VarianceThresholdAfterMerge));
-            }
-        }
-
-        /// <summary>
-        /// Split based segmentation.
-        /// </summary>
-        public static SpectralOperationMethod SplitBasedSegmentation
-        {
-            get
-            {
-                return _splitBasedSegmentation ?? (_splitBasedSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::000000", "Split based segmentation",
-                                                                         "", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Global,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.SegmentHomogeneityThreshold));
+                                                                         SpectralOperationParameters.VarianceThresholdAfterMerge,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
             }
         }
 

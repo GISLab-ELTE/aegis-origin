@@ -11,7 +11,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents an inversion transformation.
     /// </summary>
-    [OperationClass("AEGIS::213130", "Saturating contrast enhancement")]
+    [OperationMethodImplementation("AEGIS::213130", "Saturating contrast enhancement")]
     public class SaturatingContrastEnhancement : PerBandSpectralTransformation
     {
         #region Private fields

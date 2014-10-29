@@ -2720,10 +2720,6 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-
-
-
-
         #region Protected Factory methods
 
         /// <summary>

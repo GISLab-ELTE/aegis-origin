@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -24,11 +24,18 @@ namespace ELTE.AEGIS.Operations.Management
     /// <remarks>
     /// The certificate contains validation methods on conditions reguarding the engine, the source and target object and the parameters of the operation.
     /// The operation can only be executed if the all verifications pass. If not, the operation will definately raise exception during runtime.
-    /// The certificate also contains a priority indicator. In case multiple operations satisfy the conditions, the operations with the highest priority should be chosen for execution.
+    /// The certificate contains a priority indicator. In case multiple operations satisfy the conditions, the operation with the highest priority should be chosen for execution.
+    /// The certificate also indicates whether the operation is performed elementwise for an input collection.
     /// </remarks>
     public class OperationCertificate
     {
         #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether the operation is performed elemetwise for an input collection.
+        /// </summary>
+        /// <value><c>true</c> if the operation is performed elemetwise for an input collection; otherwise <c>false</c>.</value>
+        public virtual Boolean IsElementWise { get { return false; } }
 
         /// <summary>
         /// Gets the priority of the operation.

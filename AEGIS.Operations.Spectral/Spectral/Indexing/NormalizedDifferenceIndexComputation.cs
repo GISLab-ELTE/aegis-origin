@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized difference indices (NDxI) of raster geometries.
     /// </summary>
-    [OperationClass("AEGIS::213511", "Normalized difference index (NDxI) computation")]
+    [OperationMethodImplementation("AEGIS::213511", "Normalized difference index (NDxI) computation")]
     public class NormalizedDifferenceIndexComputation : SpectralTransformation
     {
         #region Private fields

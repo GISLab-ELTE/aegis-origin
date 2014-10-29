@@ -1,4 +1,4 @@
-﻿/// <copyright file="GraphBasedSegmentation.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="GraphBasedMergeSegmentation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,20 +13,18 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Collections.Segmentation;
-using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
     /// <summary>
-    /// Represents an operation performing graph based segmentation on spectral geometries.
+    /// Represents an operation performing graph-based merge segmentation on spectral geometries.
     /// </summary>
-    public class GraphBasedSegmentation : SpectralSegmentation
+    [OperationMethodImplementation("AEGIS::213611", "Graph-based merge segmentation")]
+    public class GraphBasedMergeSegmentation : SpectralSegmentation
     {
         #region Private types
 
@@ -83,7 +81,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphBasedSegmentation" /> class.
+        /// Initializes a new instance of the <see cref="GraphBasedMergeSegmentation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="method">The method.</param>
@@ -102,13 +100,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        public GraphBasedSegmentation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public GraphBasedMergeSegmentation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphBasedSegmentation" /> class.
+        /// Initializes a new instance of the <see cref="GraphBasedMergeSegmentation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -130,8 +128,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public GraphBasedSegmentation(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.GraphBasedSegmentation, parameters)
+        public GraphBasedMergeSegmentation(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.GraphBasedMergeSegmentation, parameters)
         {
             _mergeThreshold = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SegmentMergeThreshold));
         }

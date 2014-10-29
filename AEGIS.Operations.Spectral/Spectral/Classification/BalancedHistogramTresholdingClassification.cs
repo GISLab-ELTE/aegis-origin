@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using histogram balancing.
     /// </summary>
-    [OperationClass("AEGIS::213124", "Balanced histogram thresholding")]
+    [OperationMethodImplementation("AEGIS::213826", "Balanced histogram thresholding")]
     public class BalancedHistogramTresholdingClassification : ThresholdingClassification
     {
         #region Constructors

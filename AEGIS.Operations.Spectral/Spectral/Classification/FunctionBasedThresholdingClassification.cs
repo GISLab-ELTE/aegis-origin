@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using the specified function.
     /// </summary>
-    [OperationClass("AEGIS::213122", "Function based spectral thresholding")]
+    [OperationMethodImplementation("AEGIS::213821", "Function based spectral thresholding")]
     public class FunctionBasedThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing classification using a color palette.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213801", "Palette color classification")]
     public class PaletteColorClassification : SpectralTransformation
     {
         #region Private fields

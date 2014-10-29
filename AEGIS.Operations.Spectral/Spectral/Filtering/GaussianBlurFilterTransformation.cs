@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <remarks>
     /// A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function. It is a widely used effect in graphics software, typically to reduce image noise and reduce detail.
     /// </remarks>
-    [OperationClass("AEGIS::213204", "Gaussian blur filter")]
+    [OperationMethodImplementation("AEGIS::213204", "Gaussian blur filter")]
     public class GaussianBlurFilterTransformation : FilterTransformation
     {
         #region Constructors

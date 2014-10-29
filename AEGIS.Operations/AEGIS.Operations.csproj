@@ -43,14 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExecutionDomain.cs" />
     <Compile Include="ExecutionMode.cs" />
     <Compile Include="IOperation.cs" />
     <Compile Include="IOperationProvider.cs" />
-    <Compile Include="Management\OperationCertificate.cs" />
-    <Compile Include="Management\OperationClassAttribute.cs" />
-    <Compile Include="Management\OperationMethodCollectionAttribute.cs" />
-    <Compile Include="Management\OperationParameterCollectionAttribute.cs" />
+    <Compile Include="Management\Attributes\OperationCertificate.cs" />
+    <Compile Include="Management\Attributes\OperationMethodImplementationAttribute.cs" />
+    <Compile Include="Management\Attributes\OperationMethodCollectionAttribute.cs" />
+    <Compile Include="Management\Attributes\OperationParameterCollectionAttribute.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="OperationParameters.cs" />
     <Compile Include="OperationState.cs">

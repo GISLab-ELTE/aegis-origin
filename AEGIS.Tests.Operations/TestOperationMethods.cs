@@ -103,7 +103,7 @@ namespace ELTE.AEGIS.Tests.Operations
                 return _testMethodWithoutParameter ?? (_testMethodWithoutParameter =
                     OperationMethod.CreateMethod<Object, Object>("AEGIS::000000", "Test Operation Method",
                                                                  String.Empty, null, "1.0.0",
-                                                                 false, GeometryModel.None, ExecutionMode.InPlace, ExecutionDomain.Local));
+                                                                 false, GeometryModel.None, ExecutionMode.InPlace));
             }
         }
 
@@ -117,7 +117,7 @@ namespace ELTE.AEGIS.Tests.Operations
                 return _testMethodWithParameter ?? (_testMethodWithParameter =
                     OperationMethod.CreateMethod<Object, Object>("AEGIS::000001", "Test Operation Method",
                                                                  String.Empty, null, "1.0.0",
-                                                                 false, GeometryModel.None, ExecutionMode.InPlace, ExecutionDomain.Local,
+                                                                 false, GeometryModel.None, ExecutionMode.InPlace,
                                                                  TestOperationParameters.TestRequiredParameter, 
                                                                  TestOperationParameters.TestOptionalParameter));
             }

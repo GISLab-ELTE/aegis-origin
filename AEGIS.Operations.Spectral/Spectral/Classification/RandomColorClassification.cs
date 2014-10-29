@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing spectral classification with random colors.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213802", "Random color classification")]
     public class RandomColorClassification : SpectralTransformation
     {
         #region Protected fields

@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The Sobel operator is a discrete differentiation operator, computing an approximation of the gradient of the image intensity function. 
     /// At each point in the image, the result of the Prewitt operator is either the corresponding gradient vector or the norm of this vector.
     /// </remarks>
-    [OperationClass("AEGIS::213265", "Sobel filter")]
+    [OperationMethodImplementation("AEGIS::213265", "Sobel filter")]
     public class SobelFilterTransformation : MultiFilterTransformation
     {
         #region Constructors

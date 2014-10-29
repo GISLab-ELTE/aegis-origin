@@ -16,6 +16,7 @@
 using ELTE.AEGIS.Collections.Segmentation;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Numerics.Statistics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing clustering of spectral geometries using the ISODATA method.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213701", "ISODATA clustering")]
     public class IsodataClustering : SpectralClustering
     {
         #region Private fields

@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation for converting geometry to network representation.
     /// </summary>
-    [OperationClass("AEGIS::212101", "Geometry to network conversion")]
+    [OperationMethodImplementation("AEGIS::212101", "Geometry to network conversion")]
     public class GeometryToNetworkConversion : GeometryToGraphConversion
     {
         #region Constructors

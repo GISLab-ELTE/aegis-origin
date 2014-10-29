@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a mean removal filter.
     /// </summary>
-    [OperationClass("AEGIS::213241", "Mean removal filter")]
+    [OperationMethodImplementation("AEGIS::213241", "Mean removal filter")]
     public class MeanRemovalFilterTransformation : FilterTransformation
     {
         #region Constructors

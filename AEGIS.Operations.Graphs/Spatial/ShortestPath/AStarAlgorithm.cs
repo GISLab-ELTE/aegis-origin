@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
     /// <summary>
     /// Represents an operation performing A* algorithm on a graph.
     /// </summary>
-    [OperationClass("AEGIS::212334", "A* algorithm")]
+    [OperationMethodImplementation("AEGIS::212334", "A* algorithm")]
     public class AStarAlgorithm : ShortestPathAlgorithm
     {
         #region Private fields

@@ -102,9 +102,9 @@ namespace ELTE.AEGIS.Operations.Providers
             }
 
             // get operations
-            foreach (Type operationType in types.Where(type => !type.IsAbstract && type.GetCustomAttributes(typeof(OperationClassAttribute), false).Length > 0))
+            foreach (Type operationType in types.Where(type => !type.IsAbstract && type.GetCustomAttributes(typeof(OperationMethodImplementationAttribute), false).Length > 0))
             {
-                OperationClassAttribute attribute = operationType.GetCustomAttributes(typeof(OperationClassAttribute), false)[0] as OperationClassAttribute;
+                OperationMethodImplementationAttribute attribute = operationType.GetCustomAttributes(typeof(OperationMethodImplementationAttribute), false)[0] as OperationMethodImplementationAttribute;
                 OperationMethod method = listOfMethods.FirstOrDefault(m => m.Identifier.Equals(attribute.Identifier));
 
                 if (method != null) // add methods and operations to the collection
@@ -135,9 +135,9 @@ namespace ELTE.AEGIS.Operations.Providers
             Type[] types = _assembly.GetTypes();
 
             // get operations
-            foreach (Type operationType in types.Where(type => !type.IsAbstract && type.GetCustomAttributes(typeof(OperationClassAttribute), false).Length > 0))
+            foreach (Type operationType in types.Where(type => !type.IsAbstract && type.GetCustomAttributes(typeof(OperationMethodImplementationAttribute), false).Length > 0))
             {
-                OperationClassAttribute attribute = operationType.GetCustomAttributes(typeof(OperationClassAttribute), false)[0] as OperationClassAttribute;
+                OperationMethodImplementationAttribute attribute = operationType.GetCustomAttributes(typeof(OperationMethodImplementationAttribute), false)[0] as OperationMethodImplementationAttribute;
 
                 // the operation matches the specified method
                 if (attribute.Identifier.Equals(method.Identifier) && attribute.Version.Equals(method.Version))

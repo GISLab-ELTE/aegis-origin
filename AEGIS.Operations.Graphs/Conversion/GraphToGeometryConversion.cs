@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation for converting <see cref="GeometryGraph" /> instances to <see cref="IGeometry" /> representation.
     /// </summary>
-    [OperationClass("AEGIS::212110", "Graph to geometry conversion")]
+    [OperationMethodImplementation("AEGIS::212110", "Graph to geometry conversion")]
     public class GraphToGeometryConversion : Operation<IGeometryGraph, IGeometry>
     {
         #region Private types

@@ -1,9 +1,9 @@
-﻿/// <copyright file="OperationClassAttribute.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="OperationMethodImplementationAttribute.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -19,10 +19,10 @@ using System;
 namespace ELTE.AEGIS.Operations.Management
 {
     /// <summary>
-    /// Idicates that the specified type is an operation implementation.
+    /// Indicates that the specified type implements an operation method.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public class OperationClassAttribute : IdentifiedObjectInstanceAttribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
+    public class OperationMethodImplementationAttribute : IdentifiedObjectInstanceAttribute
     {
         #region Private fields
 
@@ -56,17 +56,17 @@ namespace ELTE.AEGIS.Operations.Management
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OperationClassAttribute" /> class.
+        /// Initializes a new instance of the <see cref="OperationMethodImplementationAttribute" /> class.
         /// </summary>
-        /// <param name="identifier">The identifier.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="version">The version.</param>
+        /// <param name="identifier">The identifier of the operation method.</param>
+        /// <param name="name">The name of the operation method.</param>
+        /// <param name="version">The version of the operation.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
         /// The name is null.
         /// </exception>
-        public OperationClassAttribute(String identifier, String name)
+        public OperationMethodImplementationAttribute(String identifier, String name)
             : base(identifier, name)
         {
             _version = Version.Default;
@@ -74,11 +74,11 @@ namespace ELTE.AEGIS.Operations.Management
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OperationClassAttribute" /> class.
+        /// Initializes a new instance of the <see cref="OperationMethodImplementationAttribute" /> class.
         /// </summary>
-        /// <param name="identifier">The identifier.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="version">The version.</param>
+        /// <param name="identifier">The identifier of the operation method.</param>
+        /// <param name="name">The name of the operation method.</param>
+        /// <param name="version">The version of the operation.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Management
         /// or
         /// The version is null.
         /// </exception>
-        public OperationClassAttribute(String identifier, String name, String version)
+        public OperationMethodImplementationAttribute(String identifier, String name, String version)
             : base(identifier, name)
         {
             _version = Version.Parse(version);
@@ -94,12 +94,12 @@ namespace ELTE.AEGIS.Operations.Management
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OperationClassAttribute" /> class.
+        /// Initializes a new instance of the <see cref="OperationMethodImplementationAttribute" /> class.
         /// </summary>
-        /// <param name="identifier">The identifier.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="version">The version.</param>
-        /// <param name="certificateType">The type of the certificate.</param>
+        /// <param name="identifier">The identifier of the operation method.</param>
+        /// <param name="name">The name of the operation method.</param>
+        /// <param name="version">The version of the operation.</param>
+        /// <param name="certificateType">The type of the operation certificate.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.Operations.Management
         /// </exception>
         /// <exception cref="System.FormatException">One or more components of the version do not parse into an integer.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">One or more components of the version have a value of less than 0.</exception>
-        public OperationClassAttribute(String identifier, String name, String version, Type certificateType)
+        public OperationMethodImplementationAttribute(String identifier, String name, String version, Type certificateType)
             : base(identifier, name)
         {
             if (certificateType == null)

@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using Otsu's method.
     /// </summary>
-    [OperationClass("AEGIS::213121", "Otsu thresholding")]
+    [OperationMethodImplementation("AEGIS::213828", "Otsu thresholding")]
     public class OtsuThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

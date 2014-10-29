@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using the specified constants.
     /// </summary>
-    [OperationClass("AEGIS::213120", "Constant based spectral thresholding")]
+    [OperationMethodImplementation("AEGIS::213820", "Constant based spectral thresholding")]
     public class ConstantBasedThresholdingClassification : ThresholdingClassification
     {
         #region Constructors

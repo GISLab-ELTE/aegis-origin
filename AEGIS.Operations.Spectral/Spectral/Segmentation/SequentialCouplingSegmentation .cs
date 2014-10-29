@@ -13,18 +13,18 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Collections.Segmentation;
 using ELTE.AEGIS.Numerics;
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
     /// <summary>
     /// Represents an operation performing segmentation on spectral geometries using sequential coupling.
     /// </summary>
+    [OperationMethodImplementation("AEGIS::213614", "Sequential coupling segmentation")]
     public class SequentialCouplingSegmentation : SpectralSegmentation
     {
         #region Private types

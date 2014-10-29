@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents a spectral translation.
     /// </summary>
-    [OperationClass("AEGIS::213102", "Spectral translation")]
+    [OperationMethodImplementation("AEGIS::213102", "Spectral translation")]
     public class SpectralTranslation : PerBandSpectralTransformation
     {
         #region Private fields

@@ -46,6 +46,7 @@
     <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\PaletteColorClassification.cs" />
     <Compile Include="Spectral\Classification\RandomColorClassification.cs" />
+    <Compile Include="Spectral\Classification\SegmentClassification.cs" />
     <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
     <Compile Include="Spectral\Common\HistogramEqualization.cs" />
     <Compile Include="Spectral\Common\HistogramTransformation.cs" />
@@ -75,7 +76,7 @@
     <Compile Include="Spectral\Resampling\SpectralResampling.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingType.cs" />
     <Compile Include="Spectral\Segmentation\BestMergeBasedSegmentation.cs" />
-    <Compile Include="Spectral\Segmentation\GraphBasedSegmentation.cs" />
+    <Compile Include="Spectral\Segmentation\GraphBasedMergeSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\IsodataClustering.cs" />
     <Compile Include="Spectral\Segmentation\SequentialCouplingSegmentation .cs" />
     <Compile Include="Spectral\Segmentation\SpectralClustering.cs" />

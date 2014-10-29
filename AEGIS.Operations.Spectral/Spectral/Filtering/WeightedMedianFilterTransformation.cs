@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a median filter transformation with weight modifiers.
     /// </summary>
-    [OperationClass("AEGIS::213214", "Weighted median filter")]
+    [OperationMethodImplementation("AEGIS::213214", "Weighted median filter")]
     public class WeightedMedianFilterTransformation : FilterTransformation
     {
         #region Constructors

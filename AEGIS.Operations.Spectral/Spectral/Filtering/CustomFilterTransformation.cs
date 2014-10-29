@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a filter transformation using custom kernel, factor and offset values.
     /// </summary>
-    [OperationClass("AEGIS::213200", "Custom filter")]
+    [OperationMethodImplementation("AEGIS::213200", "Custom filter")]
     public class CustomFilterTransformation : FilterTransformation
     {
         #region Constructors

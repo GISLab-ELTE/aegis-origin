@@ -1,4 +1,4 @@
-﻿/// <copyright file="ExecutionDomain.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="OperationMethodCollectionAttributeTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,29 +13,31 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using System;
+using ELTE.AEGIS.Operations;
+using ELTE.AEGIS.Operations.Management;
+using NUnit.Framework;
 
-namespace ELTE.AEGIS.Operations
+namespace ELTE.AEGIS.Tests.Operations.Management
 {
     /// <summary>
-    /// Defines the domains of operation execution.
+    /// Test fixture for class <see cref="OperationMethodCollectionAttribute"/>.
     /// </summary>
-    [Flags]
-    public enum ExecutionDomain
+    [TestFixture]
+    public class OperationMethodCollectionAttributeTest
     {
-        /// <summary>
-        /// Operation is performed locally.
-        /// </summary>
-        Local = 1,
+        #region Test methods
 
         /// <summary>
-        /// Operation is performed remotely.
+        /// Test method for constructor.
         /// </summary>
-        Remote = 2,
+        [TestCase]
+        public void OperationMethodCollectionAttributeConstructorTest()
+        {
+            OperationMethodCollectionAttribute attribute = new OperationMethodCollectionAttribute();
 
-        /// <summary>
-        /// Operation is performed by external execution.
-        /// </summary>
-        External = 4
+            Assert.AreEqual(typeof(OperationMethod), attribute.Type);
+        }
+
+        #endregion
     }
 }
