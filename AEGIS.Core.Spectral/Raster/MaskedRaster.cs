@@ -56,6 +56,18 @@ namespace ELTE.AEGIS.Raster
         /// <value>The format of the raster.</value>
         public override RasterFormat Format { get { return _source.Format; } }
 
+        /// <summary>
+        /// Gets a value indicating whether the raster is readable.
+        /// </summary>
+        /// <value><c>true</c> if the raster is readable; otherwise, <c>false</c>.</value>
+        public override Boolean IsReadable { get { return _source.IsReadable; } }
+
+        /// <summary>
+        /// Gets a value indicating whether the raster is writable.
+        /// </summary>
+        /// <value><c>true</c> if the raster is writable; otherwise, <c>false</c>.</value>
+        public override Boolean IsWritable { get { return _source.IsWritable; } }
+
         #endregion
 
         #region Protected Raster properties
@@ -112,7 +124,7 @@ namespace ELTE.AEGIS.Raster
             _source = source;
             _rowIndex = rowIndex;
             _columnIndex = columnIndex;
-            _histogramValues = Enumerable.Repeat<Int32[]>(null, _source.NumberOfBands).ToList();
+            _histogramValues = Enumerable.Repeat<Int32[]>(null, _source.NumberOfBands).ToList();            
         }
 
         #endregion
@@ -309,7 +321,7 @@ namespace ELTE.AEGIS.Raster
             else
             {
                 // the mask is a translation of the source
-                return RasterMapper.FromMapper(source.Mapper, source.Mapper.MapCoordinate(rowStart, columnStart), source.Mapper.Scale);
+                return RasterMapper.FromMapper(source.Mapper, (Coordinate)(source.Mapper.MapCoordinate(rowStart, columnStart) - source.Mapper.MapCoordinate(0, 0)), new CoordinateVector(1, 1, 1));
             }
         }
 
