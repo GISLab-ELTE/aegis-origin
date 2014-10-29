@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -43,9 +43,9 @@ namespace ELTE.AEGIS.Geometry
             get 
             {
                 if (_holes.Count > 0)
-                    return PolygonCentroidAlgorithm.ComputeCentroid(_shell.Coordinates, _holes.Select(shell => shell.Coordinates));
+                    return PrecisionModel.MakePrecise(PolygonCentroidAlgorithm.ComputeCentroid(_shell.Coordinates, _holes.Select(shell => shell.Coordinates)));
                 else
-                    return PolygonCentroidAlgorithm.ComputeCentroid(_shell.Coordinates);
+                    return PrecisionModel.MakePrecise(PolygonCentroidAlgorithm.ComputeCentroid(_shell.Coordinates));
             } 
         }
 
@@ -188,21 +188,30 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="Polygon" /> class.
         /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public Polygon(LinearRing shell, IEnumerable<LinearRing> holes, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The reference system of the shell does not match the reference system of the polygon.
+        /// or
+        /// The reference system of a hole does not match the reference system of the polygon.
+        /// </exception>
+        public Polygon(ILinearRing shell, IEnumerable<ILinearRing> holes, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
             : base(referenceSystem, metadata)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+            if (ReferenceSystem != null && shell.ReferenceSystem != null && shell.ReferenceSystem.Equals(ReferenceSystem))
+                throw new ArgumentException("The reference system of the shell does not match the reference system of the polygon.", "shell");
 
             // initalize shell
             try
             {
-                _shell = _factory.CreateLinearRing(shell); // create new shell instance
+                _shell = Factory.CreateLinearRing(shell); // create new shell instance
                 _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
             }
             catch (ArgumentException)
@@ -214,13 +223,22 @@ namespace ELTE.AEGIS.Geometry
             _holes = new List<ILinearRing>();
             if (holes != null)
             {
-                foreach (LinearRing hole in holes)
+                foreach (ILinearRing hole in holes)
                 {
                     if (hole == null)
                         continue;
 
-                    _holes.Add(_factory.CreateLinearRing(hole.Coordinates)); // create new hole instance
-                    _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
+                    if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
+                        throw new ArgumentException("The reference system of a hole does not match the reference system of the polygon.", "holes");
+
+                    try
+                    {
+                        _holes.Add(Factory.CreateLinearRing(hole)); // create new hole instance
+                        _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
                 }
             }
         }
@@ -239,11 +257,11 @@ namespace ELTE.AEGIS.Geometry
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
-
+           
             // initalize shell
             try
             {
-                _shell = _factory.CreateLinearRing(shell); // create new shell instance
+                _shell = Factory.CreateLinearRing(shell); // create new shell instance
                 _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
             }
             catch (ArgumentException)
@@ -262,7 +280,7 @@ namespace ELTE.AEGIS.Geometry
 
                     try
                     {
-                        _holes.Add(_factory.CreateLinearRing(coordinates)); // create new hole instance
+                        _holes.Add(Factory.CreateLinearRing(coordinates)); // create new hole instance
                         _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
                     }
                     catch (ArgumentException)
@@ -275,32 +293,57 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="Polygon" /> class.
         /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
+        /// <param name="shell">The coordinates of the shell.</param>
+        /// <param name="holes">The coordinates of the holes.</param>
         /// <param name="factory">The factory of the polygon.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public Polygon(LinearRing shell, IEnumerable<LinearRing> holes, IGeometryFactory factory, IDictionary<String, Object> metadata)
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The reference system of the shell does not match the reference system of the polygon.
+        /// or
+        /// The reference system of a hole does not match the reference system of the polygon.
+        /// </exception>
+        public Polygon(ILinearRing shell, IEnumerable<ILinearRing> holes, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+            if (ReferenceSystem != null && shell.ReferenceSystem != null && shell.ReferenceSystem.Equals(ReferenceSystem))
+                throw new ArgumentException("The reference system of the shell does not match the reference system of the polygon.", "shell");
 
             // initalize shell
-            _shell = _factory.CreateLinearRing(shell.Coordinates); // create new shell instance
-            _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
+            try
+            {
+                _shell = Factory.CreateLinearRing(shell); // create new shell instance
+                _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("The shell is empty.", "shell");
+            }
 
             // initialize holes
             _holes = new List<ILinearRing>();
             if (holes != null)
             {
-                foreach (LinearRing hole in holes)
+                foreach (ILinearRing hole in holes)
                 {
                     if (hole == null)
                         continue;
 
-                    _holes.Add(_factory.CreateLinearRing(hole.Coordinates)); // create new hole instance
-                    _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
+                    if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
+                        throw new ArgumentException("The reference system of a hole does not match the reference system of the polygon.", "holes");
+
+                    try
+                    {
+                        _holes.Add(Factory.CreateLinearRing(hole)); // create new hole instance
+                        _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
                 }
             }
         }
@@ -323,7 +366,7 @@ namespace ELTE.AEGIS.Geometry
             // initalize shell
             try
             {
-                _shell = _factory.CreateLinearRing(shell); // create new shell instance
+                _shell = Factory.CreateLinearRing(shell); // create new shell instance
                 _shell.GeometryChanged += new EventHandler(Shell_GeometryChanged); // add event handler
             }
             catch (ArgumentException)
@@ -342,7 +385,7 @@ namespace ELTE.AEGIS.Geometry
 
                     try
                     {
-                        _holes.Add(_factory.CreateLinearRing(coordinates)); // create new hole instance
+                        _holes.Add(Factory.CreateLinearRing(coordinates)); // create new hole instance
                         _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
                     }
                     catch (ArgumentException)
@@ -360,16 +403,32 @@ namespace ELTE.AEGIS.Geometry
         /// Add a hole to the polygon.
         /// </summary>
         /// <param name="hole">The hole.</param>
-        /// <exception cref="System.ArgumentNullException">hole;The hole is null.</exception>
-        /// <exception cref="System.ArgumentException">The reference system of the hole does not match the reference system of the polygon.;hole</exception>
+        /// <exception cref="System.ArgumentNullException">The hole is null.</exception>
+        /// <exception cref="System.ArgumentException">The reference system of the hole does not match the reference system of the polygon.</exception>
         public virtual void AddHole(ILinearRing hole)
         {
             if (hole == null)
                 throw new ArgumentNullException("hole", "The hole is null.");
-            if (ReferenceSystem == null && hole.ReferenceSystem != null || ReferenceSystem != null && !ReferenceSystem.Equals(hole.ReferenceSystem))
+            if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
                 throw new ArgumentException("The reference system of the hole does not match the reference system of the polygon.", "hole");
 
-            _holes.Add(hole);
+            _holes.Add(Factory.CreateLinearRing(hole.Coordinates));
+            _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
+
+            OnGeometryChanged();
+        }
+
+        /// <summary>
+        /// Add a hole to the polygon.
+        /// </summary>
+        /// <param name="hole">The hole.</param>
+        /// <exception cref="System.ArgumentNullException">The hole is null.</exception>
+        public virtual void AddHole(IEnumerable<Coordinate> hole)
+        {
+            if (hole == null)
+                throw new ArgumentNullException("hole", "The hole is null.");
+            
+            _holes.Add(Factory.CreateLinearRing(hole.Select(coordinate => PrecisionModel.MakePrecise(coordinate))));
             _holes[_holes.Count - 1].GeometryChanged += new EventHandler(Hole_GeometryChanged); // add event handler
 
             OnGeometryChanged();
@@ -403,11 +462,17 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="hole">The hole.</param>
         /// <returns><c>true</c> if the polygon contains the <paramref name="hole" />; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.InvalidOperationException">There are no holes in the polygon.</exception>
+        /// <exception cref="System.ArgumentNullException">The hole is null.</exception>
+        /// <exception cref="System.ArgumentException">The reference system of the hole does not match the reference system of the polygon.</exception>
         public virtual Boolean RemoveHole(ILinearRing hole)
         {
+            if (hole == null)
+                throw new ArgumentNullException("hole", "The hole is null.");
+            if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
+                throw new ArgumentException("The reference system of the hole does not match the reference system of the polygon.", "hole");
+
             if (_holes.Count == 0)
-                throw new InvalidOperationException("There are no holes in the polygon.");
+                return false;
 
             for (Int32 i = 0; i < _holes.Count; i++)
             {
@@ -428,8 +493,18 @@ namespace ELTE.AEGIS.Geometry
         /// Removes the hole at the specified index of the polygon.
         /// </summary>
         /// <param name="index">The zero-based index of the hole to remove.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The index is less than 0.
+        /// or
+        /// The index is greater than or equal to the number of holes.
+        /// </exception>
         public virtual void RemoveHoleAt(Int32 index)
         {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
+            if (index >= _holes.Count)
+                throw new ArgumentOutOfRangeException("index", "The index is greater than or equal to the number of holes.");
+
             _holes[index].GeometryChanged -= Hole_GeometryChanged; // remove event handler
             _holes.RemoveAt(index);
 
@@ -457,7 +532,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the polygon instance.</returns>
         public override Object Clone()
         {
-            return new Polygon(_shell, _holes, _factory, Metadata);
+            return new Polygon(_shell, _holes, Factory, Metadata);
         }
 
         #endregion
@@ -496,10 +571,10 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The closure of the combinatorial boundary of the geometry.</returns>
         protected override IGeometry ComputeBoundary()
         {
-            List<ILinearRing> boundary = new List<ILinearRing>() { _factory.CreateLinearRing(_shell.Coordinates) };
-            boundary.AddRange(_holes.Select(hole => _factory.CreateLinearRing(hole.Coordinates)));
+            List<ILinearRing> boundary = new List<ILinearRing>() { Factory.CreateLinearRing(_shell.Coordinates) };
+            boundary.AddRange(_holes.Select(hole => Factory.CreateLinearRing(hole.Coordinates)));
 
-            return _factory.CreateMultiLineString(boundary);
+            return Factory.CreateMultiLineString(boundary);
         }
 
         #endregion

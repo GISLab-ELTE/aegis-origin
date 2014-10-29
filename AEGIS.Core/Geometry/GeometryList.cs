@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -35,9 +35,24 @@ namespace ELTE.AEGIS.Geometry
         {
             #region Private fields
 
+            /// <summary>
+            /// The local reference to the geometry list.
+            /// </summary>
             private readonly GeometryList<T> _localList;
+
+            /// <summary>
+            /// The version of the list during enumerator initialization.
+            /// </summary>
             private readonly Int32 _localVersion;
+
+            /// <summary>
+            /// The current index of the enumerator.
+            /// </summary>
             private Int32 _index;
+
+            /// <summary>
+            /// The current element.
+            /// </summary>
             private T _current;
 
             #endregion
@@ -138,14 +153,31 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
+        #region Private fields
+
+        /// <summary>
+        /// The default capacity of the list.
+        /// </summary>
+        private const Int32 _defaultCapacity = 4;
+
+        /// <summary>
+        /// The size of the list.
+        /// </summary>
+        private Int32 _size;
+
+        /// <summary>
+        /// The version of the list.
+        /// </summary>
+        private Int32 _version;
+
+        #endregion
+
         #region Protected fields
 
-        protected const Int32 _defaultCapacity = 4;
+        /// <summary>
+        /// The array of geometries.
+        /// </summary>
         protected T[] _geometries;
-        protected Int32 _size;
-        protected Int32 _version;
-
-        protected static T[] _emptyArray = new T[0];
 
         #endregion
 
@@ -176,7 +208,7 @@ namespace ELTE.AEGIS.Geometry
                 if (_size == 1)
                     return _geometries[0].Centroid;
 
-                return Coordinate.Centroid(_geometries.Select(x => x.Centroid)); 
+                return PrecisionModel.MakePrecise(Coordinate.Centroid(_geometries.Select(x => x.Centroid))); 
             }
         }
 
@@ -273,7 +305,7 @@ namespace ELTE.AEGIS.Geometry
         public GeometryList(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
             : base(referenceSystem, metadata)
         {
-            _geometries = _emptyArray;
+            _geometries = new T[_defaultCapacity];
             _size = 0;
             _version = 0;
         }
@@ -349,7 +381,7 @@ namespace ELTE.AEGIS.Geometry
         public GeometryList(IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
-            _geometries = _emptyArray;
+            _geometries = new T[_defaultCapacity];
             _size = 0;
             _version = 0;
         }
@@ -455,7 +487,7 @@ namespace ELTE.AEGIS.Geometry
                 throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than the number of geometries.");
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
-            if (geometry.ReferenceSystem != ReferenceSystem)
+            if (ReferenceSystem != null && geometry.ReferenceSystem != null && geometry.ReferenceSystem.Equals(ReferenceSystem))
                 throw new ArgumentException("The reference system of the geometry does not match the reference system of the collection.", "geometry");
 
             if (_size == _geometries.Length)
@@ -523,7 +555,7 @@ namespace ELTE.AEGIS.Geometry
         {
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
-            if (geometry.ReferenceSystem != ReferenceSystem)
+            if (ReferenceSystem != null && geometry.ReferenceSystem != null && geometry.ReferenceSystem.Equals(ReferenceSystem))
                 throw new ArgumentException("The reference system of the geometry does not match the reference system of the collection.", "geometry");
 
             if (_size == _geometries.Length) EnsureCapacity(_size + 1);
@@ -560,7 +592,7 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         public virtual void Clear()
         {
-            _geometries = _emptyArray;
+            _geometries = new T[_defaultCapacity];
             OnGeometryChanged();
         }
 
@@ -710,7 +742,7 @@ namespace ELTE.AEGIS.Geometry
             if (boundaryList.Count == 1)
                 return boundaryList[0];
 
-            return _factory.CreateGeometryCollection(boundaryList);
+            return Factory.CreateGeometryCollection(boundaryList);
         }
 
         #endregion
@@ -730,7 +762,7 @@ namespace ELTE.AEGIS.Geometry
                 if (newCapacity < min)
                     newCapacity = min;
 
-                if (newCapacity > 0)
+                if (newCapacity > _defaultCapacity)
                 {
                     T[] newGeometries = new T[newCapacity];
                     if (_size > 0)
@@ -741,7 +773,7 @@ namespace ELTE.AEGIS.Geometry
                 }
                 else
                 {
-                    _geometries = _emptyArray;
+                    _geometries = new T[_defaultCapacity];
                 }
             }
         }

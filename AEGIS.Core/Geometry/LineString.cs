@@ -31,7 +31,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets the centroid of the line string.
         /// </summary>
         /// <value>The centroid of the geometry.</value>
-        public override sealed Coordinate Centroid { get { return LineAlgorithms.Centroid(_coordinates); } }
+        public override sealed Coordinate Centroid { get { return PrecisionModel.MakePrecise(LineAlgorithms.Centroid(_coordinates)); } }
 
         #endregion
 
@@ -199,7 +199,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the current instance.</returns>
         public override Object Clone()
         {
-            return new LineString(_coordinates, _factory, Metadata);
+            return new LineString(_coordinates, Factory, Metadata);
         }
 
         #endregion 
@@ -241,11 +241,11 @@ namespace ELTE.AEGIS.Geometry
                 return null;
             else
             {
-                return _factory.CreateMultiPoint(
+                return Factory.CreateMultiPoint(
                     new IPoint[]
                     {
-                        _factory.CreatePoint(_coordinates[0].X, _coordinates[0].Y, _coordinates[0].Z),
-                        _factory.CreatePoint(_coordinates[_coordinates.Count - 1].X, _coordinates[_coordinates.Count - 1].Y, _coordinates[_coordinates.Count - 1].Z),
+                        Factory.CreatePoint(_coordinates[0].X, _coordinates[0].Y, _coordinates[0].Z),
+                        Factory.CreatePoint(_coordinates[_coordinates.Count - 1].X, _coordinates[_coordinates.Count - 1].Y, _coordinates[_coordinates.Count - 1].Z),
                     });
             }
         }

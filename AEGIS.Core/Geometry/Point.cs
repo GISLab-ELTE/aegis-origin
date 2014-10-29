@@ -182,7 +182,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the <see cref="Point" /> instance.</returns>
         public override Object Clone()
         {
-            return new Point(_coordinate.X, _coordinate.Y, _coordinate.Z, _factory, Metadata);
+            return new Point(_coordinate.X, _coordinate.Y, _coordinate.Z, Factory, Metadata);
         }
 
         #endregion

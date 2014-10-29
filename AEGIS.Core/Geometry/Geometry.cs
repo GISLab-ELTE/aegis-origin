@@ -28,15 +28,10 @@ namespace ELTE.AEGIS.Geometry
     {
         #region Private fields
 
+        private readonly IGeometryFactory _factory;
         private Envelope _envelope;
         private IGeometry _boundary;
         private IMetadataCollection _metadata;
-
-        #endregion
-
-        #region Protected fields
-
-        protected readonly IGeometryFactory _factory;
 
         #endregion
 

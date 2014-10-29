@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the linear ring instance.</returns>
         public override Object Clone()
         {
-            return new LinearRing(_coordinates, _factory, Metadata);
+            return new LinearRing(_coordinates, Factory, Metadata);
         }
 
         #endregion

@@ -35,9 +35,24 @@ namespace ELTE.AEGIS.Geometry
         {
             #region Private fields
 
+            /// <summary>
+            /// The local treference to the curve.
+            /// </summary>
             private Curve _localCurve;
+
+            /// <summary>
+            /// The version of the curve during enumerator initialization.
+            /// </summary>
             private Int32 _localVersion;
+
+            /// <summary>
+            /// The current index of the enumerator.
+            /// </summary>
             private Int32 _index;
+
+            /// <summary>
+            /// The current element.
+            /// </summary>
             private Coordinate _current;
 
             #endregion
@@ -140,7 +155,14 @@ namespace ELTE.AEGIS.Geometry
         
         #region Protected fields
 
+        /// <summary>
+        /// The list of coordinates.
+        /// </summary>
         protected readonly List<Coordinate> _coordinates;
+
+        /// <summary>
+        /// The version of the curve.
+        /// </summary>
         protected Int32 _version;
 
         #endregion
