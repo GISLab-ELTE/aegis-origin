@@ -19,6 +19,7 @@ using ELTE.AEGIS.Reference;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
@@ -104,8 +105,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 geoKeyDirectory.Add(1025, (Int16)((geometry.Raster.Mapper.Mode == RasterMapMode.ValueIsArea) ? 1 : 2)); // GTRasterTypeGeoKey 
 
-                imageFileDirectory.Add(33922, new Object[] { geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y }); // ModelTiepointTag
-                imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize }); // ModelPixelScaleTag 
+                imageFileDirectory.Add(33922, new Object[] { 0, 0, 0, geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y, 0 }); // ModelTiepointTag
+                imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize, 1 }); // ModelPixelScaleTag 
             }
 
             if (referenceSystem != null) // if reference system is avaible (and supported)
@@ -134,6 +135,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             if (geoKeyDirectory.Count > 0) // if any geokeys have been written
                 imageFileDirectory.Add(34735, ComputeWritableGeoData(geoKeyDirectory));
+            
+            if (geometry.Imaging != null) // add imaging data
+            {
+                imageFileDirectory.Add(57410, new Object[] { geometry.Imaging.Device.Name });
+                imageFileDirectory.Add(57411, new Object[] { geometry.Imaging.Time.ToString() });
+                imageFileDirectory.Add(57412, new Object[] { geometry.Imaging.Location.Latitude.BaseValue, geometry.Imaging.Location.Longitude.BaseValue, geometry.Imaging.Location.Height.BaseValue });
+                imageFileDirectory.Add(57413, new Object[] { geometry.Imaging.IncidenceAngle, geometry.Imaging.ViewingAngle, geometry.Imaging.SunAzimuth, geometry.Imaging.SunElevation });
+                imageFileDirectory.Add(57418, geometry.Imaging.Bands.Select(band => band.PhysicalGain).Cast<Object>().ToArray());
+                imageFileDirectory.Add(57417, geometry.Imaging.Bands.Select(band => band.PhysicalBias).Cast<Object>().ToArray());
+                imageFileDirectory.Add(57419, geometry.Imaging.Bands.Select(band => band.SolarIrradiance).Cast<Object>().ToArray());
+            }
 
             return imageFileDirectory;
         }
@@ -141,27 +153,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #endregion
 
         #region Private methods
-
-        /// <summary>
-        /// Gets the reference system of the raster image.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <returns>
-        /// The reference system of the raster image.
-        /// </returns>
-        private CoordinateReferenceSystem GetReferenceSystem(ISpectralGeometry geometry)
-        {
-            switch (((CoordinateReferenceSystem)geometry.ReferenceSystem).Type)
-            {
-                case ReferenceSystemType.Projected:
-                    return (ProjectedCoordinateReferenceSystem)geometry.ReferenceSystem;
-                case ReferenceSystemType.Geographic2D:
-                case ReferenceSystemType.Geographic3D:
-                    return (GeographicCoordinateReferenceSystem)geometry.ReferenceSystem;
-                default:
-                    return null;
-            }
-        }
 
         /// <summary>
         /// Constructs a short array form a GeoKeyDirectory.

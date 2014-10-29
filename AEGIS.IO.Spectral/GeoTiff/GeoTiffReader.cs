@@ -204,20 +204,62 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The spectral imaging scene data of the geometry.</returns>
         protected override RasterImaging ComputeRasterImaging()
         {
-            if (Path == null)
-                return null;
-
-            try
-            {   
-                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+            // the imaging data may be contained in a metafile
+            if (Path != null)
+            {
+                try
                 {
-                    return reader.ReadImaging();
+                    using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                    {
+                        return reader.ReadImaging();
+                    }
+                }
+                catch { }
+            }
+
+            // the imaging data may be contained within the tags
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(57410) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57411) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57412) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57413) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57417) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57418) &&
+                _imageFileDirectories[_currentImageIndex].ContainsKey(57419))
+            {
+                ImagingDevice device = ImagingDevices.FromName(_imageFileDirectories[_currentImageIndex][57410][0].ToString()).FirstOrDefault();
+
+                if (device == null)
+                    return null;
+
+                DateTime imagingTime = DateTime.Parse(_imageFileDirectories[_currentImageIndex][57411][0].ToString());
+                GeoCoordinate location = new GeoCoordinate(Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][0]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][1]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][2]));
+                Double incidenceAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][0]);
+                Double viewingAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][1]);
+                Double sunAzimuth = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][2]);
+                Double sunElevation = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][3]);
+
+                List<RasterImagingBand> bands = new List<RasterImagingBand>();
+
+                for (Int32 bandIndex = 0; bandIndex < device.Bands.Count &&
+                                          bandIndex < _imageFileDirectories[_currentImageIndex][57417].Length && 
+                                          bandIndex < _imageFileDirectories[_currentImageIndex][57418].Length && 
+                                          bandIndex < _imageFileDirectories[_currentImageIndex][57419].Length; bandIndex++)
+                {
+                    bands.Add(new RasterImagingBand(device.Bands[bandIndex].Description,
+                                                    Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57417][bandIndex]),
+                                                    Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57418][bandIndex]),
+                                                    Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57419][bandIndex]),
+                                                    device.Bands[bandIndex].SpectralDomain,
+                                                    device.Bands[bandIndex].SpectralRange));
+                }
+
+                if (device != null)
+                {
+                    return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bands);
                 }
             }
-            catch
-            {
-                return null;
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -339,10 +381,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             ComputeGeoKeys();
 
-            if (_currentGeoKeys == null || !_currentGeoKeys.ContainsKey(1024))
-                return null;
-
-            try
+            // read from GeoTIFF geokeys
+            if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
             {
                 switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
                 {
@@ -356,14 +396,20 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     case ReferenceSystemType.UserDefined:
                         // currenty not used
                         return null;
-                    default:
-                        return null;
                 }
             }
-            catch 
+
+            // read from metafile
+            try
             {
-                return null;
+                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                {
+                    return reader.ReadReferenceSystem();
+                }
             }
+            catch { }
+
+            return null;
         }
 
         #endregion
