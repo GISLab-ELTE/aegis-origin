@@ -78,8 +78,7 @@ namespace ELTE.AEGIS.Raster
         public RasterFloat64(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
             : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
         {
-            // generate empty values for all bands
-            _values = Enumerable.Repeat<Double[]>(null, numberOfBands).ToArray();
+            _values = Enumerable.Repeat<Double[]>(new Double[NumberOfRows * NumberOfColumns], numberOfBands).ToArray();
         }
 
         /// <summary>
@@ -128,15 +127,6 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValue">The spectral value.</param>
         protected override void ApplySetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
         {
-            // create the spectral values if the they don't exist
-            if (_values[bandIndex] == null)
-            {
-                if (spectralValue == 0)
-                    return;
-
-                _values[bandIndex] = new Double[NumberOfRows * NumberOfColumns];
-            }
-
             _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValue;
         }
 
@@ -148,18 +138,9 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetValues(Int32 rowIndex, Int32 columnIndex, UInt32[] spectralValues)
         {
-            for (Int32 k = 0; k < spectralValues.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                // create the spectral values if the they don't exist
-                if (_values[k] == null)
-                {
-                    if (spectralValues[k] == 0)
-                        continue;
-
-                    _values[k] = new Double[NumberOfRows * NumberOfColumns];
-                }
-
-                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[k];
+                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[bandIndex];
             }
         }
 
@@ -172,15 +153,6 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValue">The spectral value.</param>
         protected override void ApplySetFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
         {
-            // create the spectral values if the they don't exist
-            if (_values[bandIndex] == null)
-            {
-                if (spectralValue == 0)
-                    return;
-
-                _values[bandIndex] = new Double[NumberOfRows * NumberOfColumns];
-            }
-
             _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValue;
         }
 
@@ -192,18 +164,9 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetFloatValues(Int32 rowIndex, Int32 columnIndex, Double[] spectralValues)
         {
-            for (Int32 k = 0; k < spectralValues.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                // create the spectral values if the they don't exist
-                if (_values[k] == null)
-                {
-                    if (spectralValues[k] == 0)
-                        continue;
-
-                    _values[k] = new Double[NumberOfRows * NumberOfColumns];
-                }
-
-                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[k];
+                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[bandIndex];
             }
         }
 
@@ -216,9 +179,6 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 ApplyGetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            if (_values[bandIndex] == null)
-                return 0;
-
             return (UInt32)_values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
         }
 
@@ -231,9 +191,9 @@ namespace ELTE.AEGIS.Raster
         protected override UInt32[] ApplyGetValues(Int32 rowIndex, Int32 columnIndex)
         {
             UInt32[] values = new UInt32[_bands.Length];
-            for (Int32 k = 0; k < values.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
             {
-                values[k] = (_values[k] == null) ? 0U : (UInt32)_values[k][rowIndex * NumberOfColumns + columnIndex];
+                values[bandIndex] = (UInt32)_values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
@@ -247,9 +207,6 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ApplyGetFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            if (_values[bandIndex] == null)
-                return 0;
-
             return _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
         }
 
@@ -262,9 +219,9 @@ namespace ELTE.AEGIS.Raster
         protected override Double[] ApplyGetFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
             Double[] values = new Double[_bands.Length];
-            for (Int32 k = 0; k < values.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
             {
-                values[k] = (_values[k] == null) ? 0 : _values[k][rowIndex * NumberOfColumns + columnIndex];
+                values[bandIndex] = _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }

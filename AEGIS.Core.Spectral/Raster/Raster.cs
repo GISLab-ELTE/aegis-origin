@@ -469,7 +469,7 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentOutOfRangeException("numberOfColumns", "The number of columns is less than 0.");
             if (radiometricResolutions != null && numberOfBands != radiometricResolutions.Count)
                 throw new ArgumentException("The number of radiometric resolutions does not match the spectral resolution.", "radiometricResolutions");
-            if (radiometricResolutions != null && radiometricResolutions.Count > 0 && (radiometricResolutions.Min() < 1 || radiometricResolutions.Max() > MaxRadiometricResolution))
+            if (radiometricResolutions != null && radiometricResolutions.Count > 0 && radiometricResolutions.Min() < 1)
                 throw new ArgumentOutOfRangeException("radiometricResolutions", "Not all radiometric resolution values fall within the predefined range (1.." + MaxRadiometricResolution + ").");
 
             Factory = factory ?? AEGIS.Factory.DefaultInstance<RasterFactory>();
