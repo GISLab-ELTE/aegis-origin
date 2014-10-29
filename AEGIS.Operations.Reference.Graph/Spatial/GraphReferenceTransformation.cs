@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spatial
     /// <summary>
     /// Represents a reference system transformation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::212901", "Reference system transformation", "1.0.0", typeof(GraphReferenceTransformationCertificate))]
+    [OperationMethodImplementation("AEGIS::212901", "Reference system transformation", "1.0.0", typeof(GraphReferenceTransformationCredential))]
     public class GraphReferenceTransformation : Operation<IGeometry, IGeometry>
     {
         #region Private fields

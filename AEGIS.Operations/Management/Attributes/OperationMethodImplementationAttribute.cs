@@ -32,14 +32,14 @@ namespace ELTE.AEGIS.Operations.Management
         private readonly Version _version;
 
         /// <summary>
-        /// The type of the certificate.
+        /// The type of the credential.
         /// </summary>
-        private readonly Type _certificateType;
+        private readonly Type _credentialType;
 
         /// <summary>
-        /// The certificate initialized from the type.
+        /// The credential initialized from the type.
         /// </summary>
-        private OperationCertificate _certificate;
+        private OperationCredential _credential;
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Operations.Management
             : base(identifier, name)
         {
             _version = Version.Default;
-            _certificateType = typeof(OperationCertificate);
+            _credentialType = typeof(OperationCredential);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace ELTE.AEGIS.Operations.Management
             : base(identifier, name)
         {
             _version = Version.Parse(version);
-            _certificateType = typeof(OperationCertificate);
+            _credentialType = typeof(OperationCredential);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace ELTE.AEGIS.Operations.Management
         /// <param name="identifier">The identifier of the operation method.</param>
         /// <param name="name">The name of the operation method.</param>
         /// <param name="version">The version of the operation.</param>
-        /// <param name="certificateType">The type of the operation certificate.</param>
+        /// <param name="credentialType">The type of the operation credential.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
@@ -107,26 +107,26 @@ namespace ELTE.AEGIS.Operations.Management
         /// or
         /// The version is null.
         /// or
-        /// The certificate type is null.
+        /// The credential type is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The specified type is not an operation certificate.
+        /// The specified type is not an operation credential.
         /// or
         /// The version has no components or more than three components.
         /// </exception>
         /// <exception cref="System.FormatException">One or more components of the version do not parse into an integer.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">One or more components of the version have a value of less than 0.</exception>
-        public OperationMethodImplementationAttribute(String identifier, String name, String version, Type certificateType)
+        public OperationMethodImplementationAttribute(String identifier, String name, String version, Type credentialType)
             : base(identifier, name)
         {
-            if (certificateType == null)
-                throw new ArgumentNullException("certificateType", "The certificate type is null.");
+            if (credentialType == null)
+                throw new ArgumentNullException("credentialType", "The credential type is null.");
 
-            if (!certificateType.Equals(typeof(OperationCertificate)) && !certificateType.IsSubclassOf(typeof(OperationCertificate)))
-                throw new ArgumentException("certificateType", "The specified type is not an operation certificate.");
+            if (!credentialType.Equals(typeof(OperationCredential)) && !credentialType.IsSubclassOf(typeof(OperationCredential)))
+                throw new ArgumentException("credentialType", "The credential type is not an operation credential.");
 
             _version = Version.Parse(version);
-            _certificateType = certificateType;
+            _credentialType = credentialType;
         }
 
         #endregion
@@ -134,12 +134,12 @@ namespace ELTE.AEGIS.Operations.Management
         #region Public methods
 
         /// <summary>
-        /// Returns the certificate of the operation.
+        /// Returns the credential of the operation.
         /// </summary>
-        /// <returns>The certificate of the operation.</returns>
-        public OperationCertificate GetCertificate() 
+        /// <returns>The credential of the operation.</returns>
+        public OperationCredential GetCredential() 
         {
-            return _certificate ?? (_certificate = Activator.CreateInstance(_certificateType) as OperationCertificate);
+            return _credential ?? (_credential = Activator.CreateInstance(_credentialType) as OperationCredential);
         }
 
         #endregion

@@ -43,21 +43,21 @@ namespace ELTE.AEGIS.Tests.Operations.Management
             Assert.Throws<ArgumentNullException>(() => attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, "Test Method", null));
             Assert.Throws<ArgumentException>(() => attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, "Test Method", "1.0.0", typeof(Object)));
 
-            // test case 2: proper parameters without certificate
+            // test case 2: proper parameters without credential
 
             attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, "Test Method");
 
             Assert.AreEqual(IdentifiedObject.UserDefinedIdentifier, attribute.Identifier);
             Assert.AreEqual("Test Method", attribute.Name);
-            Assert.IsNotNull(attribute.GetCertificate());
-            Assert.IsInstanceOf<OperationCertificate>(attribute.GetCertificate());
+            Assert.IsNotNull(attribute.GetCredential());
+            Assert.IsInstanceOf<OperationCredential>(attribute.GetCredential());
 
-            // test case 3: proper parameters with certificate
+            // test case 3: proper parameters with credential
 
-            attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, "Test Method", "1.0.0", typeof(OperationCertificate));
+            attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, "Test Method", "1.0.0", typeof(OperationCredential));
 
-            Assert.IsNotNull(attribute.GetCertificate());
-            Assert.IsInstanceOf<OperationCertificate>(attribute.GetCertificate());
+            Assert.IsNotNull(attribute.GetCredential());
+            Assert.IsInstanceOf<OperationCredential>(attribute.GetCredential());
         }
 
         #endregion

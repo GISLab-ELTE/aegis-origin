@@ -46,7 +46,7 @@
     <Compile Include="ExecutionMode.cs" />
     <Compile Include="IOperation.cs" />
     <Compile Include="IOperationProvider.cs" />
-    <Compile Include="Management\Attributes\OperationCertificate.cs" />
+    <Compile Include="Management\OperationCredential.cs" />
     <Compile Include="Management\Attributes\OperationMethodImplementationAttribute.cs" />
     <Compile Include="Management\Attributes\OperationMethodCollectionAttribute.cs" />
     <Compile Include="Management\Attributes\OperationParameterCollectionAttribute.cs" />

@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Management\Attributes\OperationCertificateTest.cs" />
+    <Compile Include="Management\OperationCredentialTest.cs" />
     <Compile Include="Management\Attributes\OperationMethodImplementationAttributeTest.cs" />
     <Compile Include="Management\Attributes\OperationMethodCollectionAttributeTest.cs" />
     <Compile Include="Management\Attributes\OperationParameterCollectionAttributeTest.cs" />
