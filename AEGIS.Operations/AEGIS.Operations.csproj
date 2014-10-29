@@ -64,7 +64,6 @@
     <Compile Include="Providers\AssemblyOperationProvider.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">

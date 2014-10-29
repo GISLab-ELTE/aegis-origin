@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -15,10 +15,10 @@
 
 using System;
 
-namespace ELTE.AEGIS.Operations
+namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a version number of an operation method.
+    /// Represents a version number with major, minor and revision versions.
     /// </summary>
     public class Version : IComparable, IComparable<Version>, IEquatable<Version>
     {
@@ -31,53 +31,25 @@ namespace ELTE.AEGIS.Operations
 
         #endregion
 
-        #region Private fields
-
-        /// <summary>
-        /// The major version number.
-        /// </summary>
-        private readonly Int32 _major;
-
-        /// <summary>
-        /// The minor version number.
-        /// </summary>
-        private readonly Int32 _minor;
-
-        /// <summary>
-        /// The revision number.
-        /// </summary>
-        private readonly Int32 _revision;
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
         /// Gets the major version number.
         /// </summary>
         /// <value>The major component of the current version number.</value>
-        public Int32 Major
-        {
-            get { return _major; }
-        }
+        public Int32 Major { get; private set; }
 
         /// <summary>
         /// Gets the minor version number.
         /// </summary>
         /// <value>The minor component of the current version number.</value>
-        public Int32 Minor
-        {
-            get { return _minor; }
-        }
+        public Int32 Minor { get; private set; }
 
         /// <summary>
         /// Gets the revision number.
         /// </summary>
         /// <value>The revision component of the current version number.</value>
-        public Int32 Revision
-        {
-            get { return _revision; }
-        }
+        public Int32 Revision { get; private set; }
 
         #endregion
 
@@ -124,9 +96,9 @@ namespace ELTE.AEGIS.Operations
             if (revision < 0)
                 throw new ArgumentOutOfRangeException("revision", "The revision number is less than 0.");
 
-            _major = major;
-            _minor = minor;
-            _revision = revision;
+            Major = major;
+            Minor = minor;
+            Revision = revision;
         }
 
         #endregion
@@ -143,7 +115,7 @@ namespace ELTE.AEGIS.Operations
             if (other == null)
                 return false;
 
-            return _major == other._major;
+            return Major == other.Major;
         }
 
         #endregion
@@ -174,14 +146,14 @@ namespace ELTE.AEGIS.Operations
             if (other == null)
                 return 1;
 
-            if (_major != other._major)
-                return (_major > other._major) ? 1 : -1;
+            if (Major != other.Major)
+                return (Major > other.Major) ? 1 : -1;
  
-            if (_minor != other._minor)
-                return (_minor > other._minor) ? 1 : -1;
+            if (Minor != other.Minor)
+                return (Minor > other.Minor) ? 1 : -1;
  
-            if (_revision != other._revision)
-                return (_revision > other._revision) ? 1 : -1;
+            if (Revision != other.Revision)
+                return (Revision > other.Revision) ? 1 : -1;
  
             return 0;
         }
@@ -202,7 +174,7 @@ namespace ELTE.AEGIS.Operations
             if (ReferenceEquals(other, this))
                 return true;
 
-            return (_major == other._major) || (_minor == other._minor) || (_revision == other._revision);
+            return (Major == other.Major) || (Minor == other.Minor) || (Revision == other.Revision);
         }
 
         #endregion
@@ -223,7 +195,7 @@ namespace ELTE.AEGIS.Operations
 
             Version version = obj as Version;
 
-            return (_major == version._major) || (_minor == version._minor) || (_revision == version._revision);
+            return (Major == version.Major) || (Minor == version.Minor) || (Revision == version.Revision);
         }
 
         /// <summary>
@@ -232,7 +204,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A hash code for the current <see cref="Object" />.</returns>
         public override Int32 GetHashCode()
         {
-            return (_major << 24 | _minor << 16 | _revision) ^ 961777723;
+            return (Major << 24 | Minor << 16 | Revision) ^ 961777723;
         }
 
         /// <summary>
@@ -241,12 +213,12 @@ namespace ELTE.AEGIS.Operations
         /// <returns>A string that represents the current version.</returns>
         public override String ToString()
         {
-            return String.Concat(_major, ".", _minor, ".", _revision); 
+            return String.Concat(Major, ".", Minor, ".", Revision); 
         }
 
         #endregion
 
-        #region Public static properties
+        #region Public static instances
 
         /// <summary>
         /// Gets the default version.

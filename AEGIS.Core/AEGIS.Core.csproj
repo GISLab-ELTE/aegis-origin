@@ -144,6 +144,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitOfMeasurement.cs" />
     <Compile Include="UnitsOfMeasurement.cs" />
+    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
