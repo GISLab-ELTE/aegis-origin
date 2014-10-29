@@ -468,15 +468,15 @@ namespace ELTE.AEGIS
                 throw new ArgumentException("The scale of the Y dimension is equal to 0.", "scale");
 
             Matrix transformation = new Matrix(4, 4);
-            transformation[0, 0] = scale.X;
-            transformation[1, 1] = scale.Y;
-            transformation[2, 2] = scale.Z;
-            transformation[0, 3] = translation.X;
-            transformation[1, 3] = translation.Y;
-            transformation[2, 3] = translation.Z;
+            transformation[0, 0] = mapper.GeometryTransformation[0, 0] * scale.X;
+            transformation[1, 1] = mapper.GeometryTransformation[1, 1] * scale.Y;
+            transformation[2, 2] = mapper.GeometryTransformation[2, 2] * scale.Z;
+            transformation[0, 3] = mapper.GeometryTransformation[0, 3] + translation.X;
+            transformation[1, 3] = mapper.GeometryTransformation[1, 3] + translation.Y;
+            transformation[2, 3] = mapper.GeometryTransformation[2, 3] + translation.Z;
             transformation[3, 3] = 1;
 
-            return new RasterMapper(mapper.Mode, mapper.GeometryTransformation * transformation);
+            return new RasterMapper(mapper.Mode, transformation);
         }
 
         /// <summary>
