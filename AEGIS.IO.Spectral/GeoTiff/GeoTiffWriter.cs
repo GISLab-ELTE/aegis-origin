@@ -98,38 +98,42 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             CoordinateReferenceSystem referenceSystem = geometry.ReferenceSystem as CoordinateReferenceSystem;
 
-            if (referenceSystem == null || geometry.Raster.Mapper == null)
-                return imageFileDirectory;
-
             GeoKeyDirectory geoKeyDirectory = new GeoKeyDirectory();
-            geoKeyDirectory.Add(1025, (Int16)((geometry.Raster.Mapper.Mode == RasterMapMode.ValueIsArea) ? 1 : 2)); // GTRasterTypeGeoKey 
 
-
-            switch (referenceSystem.Type)
+            if (geometry.Raster.Mapper != null) // if mapper is available
             {
-                case ReferenceSystemType.Projected:
-                    geoKeyDirectory.Add(1024, 1); // RasterTypeGeoKey
-                    geoKeyDirectory.Add(3072, (Int16)referenceSystem.Code); // ProjectedCSTypeGeoKey
+                geoKeyDirectory.Add(1025, (Int16)((geometry.Raster.Mapper.Mode == RasterMapMode.ValueIsArea) ? 1 : 2)); // GTRasterTypeGeoKey 
 
-                    // TODO: process uder-defeined system
-                    break;
-
-                case ReferenceSystemType.Geographic2D:
-                case ReferenceSystemType.Geographic3D:
-                    geoKeyDirectory.Add(1024, 2); // RasterTypeGeoKey
-                    geoKeyDirectory.Add(2048,(Int16)referenceSystem.Code); // GeographicTypeGeoKey
-
-                    // TODO: process uder-defeined system
-                    break;
-
-                default: // other reference systems are not supported
-                    return imageFileDirectory;
+                imageFileDirectory.Add(33922, new Object[] { geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y }); // ModelTiepointTag
+                imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize }); // ModelPixelScaleTag 
             }
 
-            imageFileDirectory.Add(33922, new Object[] { geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y }); // ModelTiepointTag
-            imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize }); // ModelPixelScaleTag 
+            if (referenceSystem != null) // if reference system is avaible (and supported)
+            {
+                switch (referenceSystem.Type)
+                {
+                    case ReferenceSystemType.Projected:
+                        geoKeyDirectory.Add(1024, 1); // RasterTypeGeoKey
+                        geoKeyDirectory.Add(3072, (Int16)referenceSystem.Code); // ProjectedCSTypeGeoKey
 
-            imageFileDirectory.Add(34735, ComputeWritableGeoData(geoKeyDirectory));
+                        // TODO: process user-defined system
+                        break;
+
+                    case ReferenceSystemType.Geographic2D:
+                    case ReferenceSystemType.Geographic3D:
+                        geoKeyDirectory.Add(1024, 2); // RasterTypeGeoKey
+                        geoKeyDirectory.Add(2048, (Int16)referenceSystem.Code); // GeographicTypeGeoKey
+
+                        // TODO: process user-defined system
+                        break;
+
+                    default: // other reference systems are not supported
+                        return imageFileDirectory;
+                }
+            }
+
+            if (geoKeyDirectory.Count > 0) // if any geokeys have been written
+                imageFileDirectory.Add(34735, ComputeWritableGeoData(geoKeyDirectory));
 
             return imageFileDirectory;
         }
