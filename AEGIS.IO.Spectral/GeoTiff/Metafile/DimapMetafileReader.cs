@@ -1,4 +1,4 @@
-﻿/// <copyright file="SpotMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="DimapMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Reference;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,13 +24,15 @@ using System.Xml.Linq;
 namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 {
     /// <summary>
-    /// Represents a type for reading SPOT GeoTIFF metafiles.
+    /// Represents a type for reading Digital Image Map (Dimap) metafiles.
     /// </summary>
     /// <remarks>
-    /// SPOT metafiles are XML documents usually stored under the name <c>METADATA.DIM</c>. Thus each source file should be located in a separate folder.
-    /// The metafile contains information about imaging, location, and satellite path.
+    /// Dimap (Digital Image Map) is mainly a metadata format designed by Spot Image, Satellus and CNES (the French National Space Agency) to document digital imagemaps. It was designed taking into account the early experiences of GIS-Geospot and GIS-Image.
+    /// Dimap metadata part allows to properly describe a dataset which contains geographic information representing a digital map. Namely, metadata describes in details, in a standard way, all the characteristics of the dataset. 
+    /// The Dimap set of metadata is specifically tailored to image (raster) description, it also contains a few tags for vector types of data.
+    /// See: http://www.spotimage.fr/dimap/spec/dimap.htm
     /// </remarks>
-    public class SpotMetafileReader : GeoTiffMetafileReader
+    public class DimapMetafileReader : GeoTiffMetafileReader
     {
         #region Private fields
 
@@ -83,7 +86,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// The caller does not have the required permission for the path.
         /// </exception>
         /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public SpotMetafileReader(String path, GeoTiffMetafilePathOption option)
+        public DimapMetafileReader(String path, GeoTiffMetafilePathOption option)
             : base(path, option)
         {
             _document = null;
@@ -112,18 +115,18 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// The caller does not have the required permission for the path.
         /// </exception>
         /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public SpotMetafileReader(Uri path, GeoTiffMetafilePathOption option)
+        public DimapMetafileReader(Uri path, GeoTiffMetafilePathOption option)
             : base(path, option)
         {
             _document = null;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpotMetafileReader"/> class.
+        /// Initializes a new instance of the <see cref="DimapMetafileReader"/> class.
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        public SpotMetafileReader(Stream stream)
+        public DimapMetafileReader(Stream stream)
             : base(stream)
         {
             _document = null;
@@ -212,6 +215,57 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             }
 
             return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+        }
+
+        /// <summary>
+        /// Reads the reference system stored in the metafile stream.
+        /// </summary>
+        /// <returns>The reference system.</returns>
+        protected override IReferenceSystem ReadReferenceSystemFromStream()
+        {
+            if (_document == null)
+                _document = XDocument.Load(_stream);
+
+            IReferenceSystem referenceSystem = null;
+            XElement referenceSystemElement = _document.Element("Dimap_Document").Element("Coordinate_Reference_System");
+
+            if (referenceSystemElement == null)
+                return null;
+
+            // horizontal reference system based on type
+            XElement codeElement = referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_CODE");
+            XElement nameElement = referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_CODE");
+
+            switch (referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_TYPE").Value)
+            {
+                case "GEOGRAPHIC":
+                    if (codeElement == null)
+                        codeElement = referenceSystemElement.Element("Horizontal_CS").Element("Geographic_CS").Element("GEOGRAPHIC_CS_CODE");
+                    if (nameElement == null)
+                        nameElement = referenceSystemElement.Element("Horizontal_CS").Element("Geographic_CS").Element("GEOGRAPHIC_CS_NAME");
+
+                    if (codeElement != null)
+                        referenceSystem = Geographic2DCoordinateReferenceSystems.FromIdentifier(codeElement.Value).FirstOrDefault();
+                    if (referenceSystem == null && nameElement != null)
+                        referenceSystem = Geographic2DCoordinateReferenceSystems.FromName(nameElement.Value).FirstOrDefault();
+
+                    // TODO: process custom datums
+                    break;
+
+                case "PROJECTED":
+                    if (codeElement != null)
+                        referenceSystem = ProjectedCoordinateReferenceSystems.FromIdentifier(codeElement.Value).FirstOrDefault();
+                    if (referenceSystem == null && nameElement != null)
+                        referenceSystem = ProjectedCoordinateReferenceSystems.FromName(nameElement.Value).FirstOrDefault();
+
+                    // TODO: process custom projections
+                    break;
+                // TODO: process other horizontal reference system information
+            }
+
+            // TODO: process vertical reference system information
+
+            return referenceSystem;
         }
 
         #endregion

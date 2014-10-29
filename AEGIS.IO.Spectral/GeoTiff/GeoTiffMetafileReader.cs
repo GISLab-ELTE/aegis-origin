@@ -323,25 +323,25 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Reads the imaging information stored in the metafile stream.
         /// </summary>
-        /// <value>The imaging data.</value>
+        /// <returns>The imaging data.</returns>
         protected virtual RasterImaging ReadImagingFromStream() { return null; }
 
         /// <summary>
         /// Reads the raster mapping stored in the metafile stream.
         /// </summary>
-        /// <value>The raster mapping.</value>
+        /// <returns>The raster mapping.</returns>
         protected virtual RasterMapper ReadMappingFromStream() { return null; }
 
         /// <summary>
         /// Reads the reference system stored in the metafile stream.
         /// </summary>
-        /// <value>The reference system.</value>
+        /// <returns>The reference system.</returns>
         protected virtual IReferenceSystem ReadReferenceSystemFromStream() { return null; }
 
         /// <summary>
         /// Reads additional metadata stored in the metafile stream.
         /// </summary>
-        /// <value>The dictionary containing additional metadata.</value>
+        /// <returns>The dictionary containing additional metadata.</returns>
         protected virtual IDictionary<String, Object> ReadMetadataFromStream() { return new Dictionary<String, Object>(); }
 
         /// <summary>

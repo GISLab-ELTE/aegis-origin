@@ -174,7 +174,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             switch (device.Mission)
             {
                 case "SPOT":
-                    return new SpotMetafileReader(path, option);
+                    return new DimapMetafileReader(path, option);
                 default:
                     throw new NotSupportedException("The specified device is not supported.");
             }
@@ -197,7 +197,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             switch (device.Mission)
             {
                 case "SPOT":
-                    return new SpotMetafileReader(stream);
+                    return new DimapMetafileReader(stream);
                 default:
                     throw new NotSupportedException("The specified device is not supported.");
             }
@@ -323,7 +323,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return new SpotMetafileReader(path, option);
+                return new DimapMetafileReader(path, option);
             }
             catch { }
 
