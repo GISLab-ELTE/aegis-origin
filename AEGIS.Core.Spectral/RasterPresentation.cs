@@ -126,7 +126,7 @@ namespace ELTE.AEGIS
             if (indexOfBlueBand == indexOfGreenBand)
                 throw new ArgumentException("The green and blue bands are specified for the same index.", "indexOfBlueBand");
 
-            RasterColorSpaceBand[] bands = new RasterColorSpaceBand[Calculator.Max(indexOfRedBand, indexOfGreenBand, indexOfBlueBand)];
+            RasterColorSpaceBand[] bands = new RasterColorSpaceBand[Calculator.Max(indexOfRedBand, indexOfGreenBand, indexOfBlueBand) + 1];
 
             bands[indexOfRedBand] = RasterColorSpaceBand.Red;
             bands[indexOfGreenBand] = RasterColorSpaceBand.Green;
@@ -194,7 +194,7 @@ namespace ELTE.AEGIS
             if (indexOfBlueBand < 0)
                 throw new ArgumentOutOfRangeException("indexOfBlueBand", "The index of the blue band is less than 0.");
 
-            RasterColorSpaceBand[] bands = new RasterColorSpaceBand[Calculator.Max(indexOfRedBand, indexOfGreenBand, indexOfBlueBand)];
+            RasterColorSpaceBand[] bands = new RasterColorSpaceBand[Calculator.Max(indexOfRedBand, indexOfGreenBand, indexOfBlueBand) + 1];
 
             bands[indexOfRedBand] = RasterColorSpaceBand.Red;
             bands[indexOfGreenBand] = RasterColorSpaceBand.Green;
