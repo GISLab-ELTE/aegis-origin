@@ -19,6 +19,7 @@ using ELTE.AEGIS.Reference;
 using ELTE.AEGIS.Reference.Operations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -231,7 +232,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 if (device == null)
                     return null;
 
-                DateTime imagingTime = DateTime.Parse(_imageFileDirectories[_currentImageIndex][57411][0].ToString());
+                DateTime imagingTime = DateTime.Parse(_imageFileDirectories[_currentImageIndex][57411][0].ToString(), CultureInfo.InvariantCulture.DateTimeFormat);
                 GeoCoordinate location = new GeoCoordinate(Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][0]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][1]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][2]));
                 Double incidenceAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][0]);
                 Double viewingAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][1]);

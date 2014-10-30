@@ -23,6 +23,7 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
+    using System.Globalization;
     using GeoKeyDirectory = Dictionary<Int16, Int16>;
     // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
@@ -139,11 +140,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (geometry.Imaging != null) // add imaging data
             {
                 imageFileDirectory.Add(57410, new Object[] { geometry.Imaging.Device.Name });
-                imageFileDirectory.Add(57411, new Object[] { geometry.Imaging.Time.ToString() });
+                imageFileDirectory.Add(57411, new Object[] { geometry.Imaging.Time.ToString(CultureInfo.InvariantCulture.DateTimeFormat) });
                 imageFileDirectory.Add(57412, new Object[] { geometry.Imaging.Location.Latitude.BaseValue, geometry.Imaging.Location.Longitude.BaseValue, geometry.Imaging.Location.Height.BaseValue });
                 imageFileDirectory.Add(57413, new Object[] { geometry.Imaging.IncidenceAngle, geometry.Imaging.ViewingAngle, geometry.Imaging.SunAzimuth, geometry.Imaging.SunElevation });
-                imageFileDirectory.Add(57418, geometry.Imaging.Bands.Select(band => band.PhysicalGain).Cast<Object>().ToArray());
-                imageFileDirectory.Add(57417, geometry.Imaging.Bands.Select(band => band.PhysicalBias).Cast<Object>().ToArray());
+                imageFileDirectory.Add(57417, geometry.Imaging.Bands.Select(band => band.PhysicalGain).Cast<Object>().ToArray());
+                imageFileDirectory.Add(57418, geometry.Imaging.Bands.Select(band => band.PhysicalBias).Cast<Object>().ToArray());
                 imageFileDirectory.Add(57419, geometry.Imaging.Bands.Select(band => band.SolarIrradiance).Cast<Object>().ToArray());
             }
 

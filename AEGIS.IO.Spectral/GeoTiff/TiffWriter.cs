@@ -22,6 +22,7 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
+    using System.Globalization;
     // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
 
@@ -159,7 +160,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             // add metadata
             imageFileDirectory.Add(305, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
-            imageFileDirectory.Add(306, new Object[] { DateTime.UtcNow.ToString() }); // date time
+            imageFileDirectory.Add(306, new Object[] { DateTime.UtcNow.ToString(CultureInfo.InvariantCulture.DateTimeFormat) }); // date time
 
             if (geometry.Metadata != null)
             {

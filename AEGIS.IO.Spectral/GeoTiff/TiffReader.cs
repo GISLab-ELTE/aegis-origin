@@ -22,6 +22,7 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
+    using System.Globalization;
     // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
 
@@ -911,7 +912,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(306))
                 metadata.Add("DateTime", _imageFileDirectories[_currentImageIndex][306][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(307))
-                metadata.Add("Artist", _imageFileDirectories[_currentImageIndex][307][0]);
+                metadata.Add("Artist", DateTime.Parse(_imageFileDirectories[_currentImageIndex][307][0].ToString(), CultureInfo.InvariantCulture.DateTimeFormat));
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(308))
                 metadata.Add("HostComputer", _imageFileDirectories[_currentImageIndex][308][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(33432))
