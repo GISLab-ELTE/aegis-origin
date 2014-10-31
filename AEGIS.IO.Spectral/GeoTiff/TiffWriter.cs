@@ -17,12 +17,12 @@ using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
-    using System.Globalization;
     // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
 
