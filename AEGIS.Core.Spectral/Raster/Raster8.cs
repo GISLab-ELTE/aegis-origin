@@ -83,8 +83,14 @@ namespace ELTE.AEGIS.Raster
         public Raster8(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
             : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
         {
-            _values = Enumerable.Repeat<Byte[]>(new Byte[NumberOfRows * NumberOfColumns], numberOfBands).ToArray();
+            // generate empty values for all bands
+            _values = Enumerable.Repeat<Byte[]>(null, numberOfBands).ToArray();
             _histogramValues = Enumerable.Repeat<Int32[]>(null, numberOfBands).ToArray();
+
+            for (Int32 k = 0; k < _values.Length; k++)
+            {
+                _values[k] = new Byte[NumberOfRows * NumberOfColumns];
+            }
         }
 
         /// <summary>
@@ -153,16 +159,16 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetValues(Int32 rowIndex, Int32 columnIndex, UInt32[] spectralValues)
         {
-            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
+            for (Int32 k = 0; k < spectralValues.Length; k++)
             {
                 // modify the histrogram values if they are already calculated
-                if (_histogramValues[bandIndex] != null)
+                if (_histogramValues[k] != null)
                 {
-                    _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
-                    _histogramValues[bandIndex][(Byte)spectralValues[bandIndex]]++;
+                    _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;
+                    _histogramValues[k][(Byte)spectralValues[k]]++;
                 }
 
-                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Byte)spectralValues[bandIndex];
+                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Byte)spectralValues[k];
             }
         }
 
@@ -193,16 +199,16 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetFloatValues(Int32 rowIndex, Int32 columnIndex, Double[] spectralValues)
         {
-            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
+            for (Int32 k = 0; k < spectralValues.Length; k++)
             {
                 // modify the histrogram values if they are already calculated
-                if (_histogramValues[bandIndex] != null)
+                if (_histogramValues[k] != null)
                 {
-                    _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
-                    _histogramValues[bandIndex][(Byte)spectralValues[bandIndex]]++;
+                    _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;
+                    _histogramValues[k][(Byte)spectralValues[k]]++;
                 }
 
-                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Byte)spectralValues[bandIndex];
+                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Byte)spectralValues[k];
             }
         }
 
@@ -227,9 +233,9 @@ namespace ELTE.AEGIS.Raster
         protected override UInt32[] ApplyGetValues(Int32 rowIndex, Int32 columnIndex)
         {
             UInt32[] values = new UInt32[_bands.Length];
-            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
+            for (Int32 k = 0; k < values.Length; k++)
             {
-                values[bandIndex] = _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
+                values[k] = _values[k][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
@@ -255,9 +261,9 @@ namespace ELTE.AEGIS.Raster
         protected override Double[] ApplyGetFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
             Double[] values = new Double[_bands.Length];
-            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
+            for (Int32 k = 0; k < values.Length; k++)
             {
-                values[bandIndex] = _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
+                values[k] = _values[k][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
@@ -277,10 +283,14 @@ namespace ELTE.AEGIS.Raster
             if (_histogramValues[bandIndex] == null)
             {
                 _histogramValues[bandIndex] = new Int32[1UL << _radiometricResolutions[bandIndex]];
-
-                for (Int32 l = 0; l < _values[bandIndex].Length; l++)
+                if (_values[bandIndex] == null)
+                    _histogramValues[bandIndex][0] = NumberOfColumns * NumberOfRows;
+                else
                 {
-                    _histogramValues[bandIndex][_values[bandIndex][l]]++;
+                    for (Int32 l = 0; l < _values[bandIndex].Length; l++)
+                    {
+                        _histogramValues[bandIndex][_values[bandIndex][l]]++;
+                    }
                 }
             }
 
