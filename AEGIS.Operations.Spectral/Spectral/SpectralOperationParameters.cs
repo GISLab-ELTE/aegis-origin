@@ -415,7 +415,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _numberOfIterations ?? (_numberOfIterations =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::000000", "Number of iterations",
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223009", "Number of iterations",
                                                                       "The number of iterations for an iterative algorithm.", null)
                 );
             }
@@ -475,7 +475,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _segmentCollection ?? (_segmentCollection =
-                    OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::000000", "Segment collection", "An enumerable collection of segments.", null)
+                    OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::213060", "Segment collection", "An enumerable collection of segments.", null)
                 );
             }
         }
