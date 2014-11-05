@@ -1111,7 +1111,7 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
 
             return ApplyGetValue(trueRowIndex, trueColumnIndex, bandIndex);
         }
@@ -1157,7 +1157,7 @@ namespace ELTE.AEGIS.Raster
                 throw new NotSupportedException("The raster is not readable.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
 
             return ApplyGetValues(trueRowIndex, trueColumnIndex);
         }
@@ -1208,7 +1208,7 @@ namespace ELTE.AEGIS.Raster
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
 
             return ApplyGetFloatValue(trueRowIndex, trueColumnIndex, bandIndex);
         }
@@ -1254,7 +1254,7 @@ namespace ELTE.AEGIS.Raster
                 throw new NotSupportedException("The raster is not readable.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfRows ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
 
             return ApplyGetFloatValues(trueRowIndex, trueColumnIndex);
         }
