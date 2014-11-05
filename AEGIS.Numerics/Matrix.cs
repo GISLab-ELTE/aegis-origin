@@ -356,9 +356,9 @@ namespace ELTE.AEGIS.Numerics
             _values = new Double[NumberOfRows * NumberOfColumns];
             _version = 0;
 
-            for (Int32 rowIndex = 0; rowIndex < _values.GetLength(0); rowIndex++)
+            for (Int32 rowIndex = 0; rowIndex < source.GetLength(0); rowIndex++)
             {
-                for (Int32 columnIndex = 0; columnIndex < _values.GetLength(1); columnIndex++)
+                for (Int32 columnIndex = 0; columnIndex < source.GetLength(1); columnIndex++)
                 {
                     _values[rowIndex * NumberOfColumns + columnIndex] = source[rowIndex, columnIndex];
                 }
