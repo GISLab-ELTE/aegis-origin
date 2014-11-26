@@ -83,6 +83,9 @@ namespace ELTE.AEGIS.Raster
         public Raster16(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
             : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
         {
+            if (radiometricResolutions != null && radiometricResolutions.Count > 0 && radiometricResolutions.Max() > MaxRadiometricResolution)
+                throw new ArgumentOutOfRangeException("radiometricResolutions", "Not all radiometric resolution values fall within the predefined range (1.." + MaxRadiometricResolution + ").");
+
             // generate empty values for all bands
             _values = Enumerable.Repeat<UInt16[]>(null, numberOfBands).ToArray();
             _histogramValues = Enumerable.Repeat<Int32[]>(null, numberOfBands).ToArray();
