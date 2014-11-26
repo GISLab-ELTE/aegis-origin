@@ -36,15 +36,15 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
         {
             // normal parameters
 
-            for (Int32 i = 0; i < 10; i++)
-                for (Int32 j = 0; j < 10000; j += 2000)
-                    for (Int32 k = 0; k < 10000; k += 2000)
+            for (Int32 numberOfBands = 0; numberOfBands < 10; numberOfBands++)
+                for (Int32 numberOfRows = 0; numberOfRows < 1000; numberOfRows += 250)
+                    for (Int32 numberOfColumns = 0; numberOfColumns < 1000; numberOfColumns += 250)
                     {
-                        RasterFloat32 raster = new RasterFloat32(null, i, j, k, Enumerable.Repeat(8, i).ToArray(), null);
+                        RasterFloat32 raster = new RasterFloat32(null, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(8, numberOfBands).ToArray(), null);
 
-                        Assert.AreEqual(i, raster.NumberOfBands);
-                        Assert.AreEqual(j, raster.NumberOfRows);
-                        Assert.AreEqual(k, raster.NumberOfColumns);
+                        Assert.AreEqual(numberOfBands, raster.NumberOfBands);
+                        Assert.AreEqual(numberOfRows, raster.NumberOfRows);
+                        Assert.AreEqual(numberOfColumns, raster.NumberOfColumns);
                         Assert.AreEqual(RasterFormat.Floating, raster.Format);
                         Assert.IsFalse(raster.IsMapped);
                         Assert.IsTrue(raster.IsReadable);
@@ -78,26 +78,26 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
 
             // single values
 
-            for (Int32 i = 0; i < raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < raster.NumberOfRows; j++)
-                    for (Int32 k = 0; k < raster.NumberOfColumns; k++)
+            for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                     {
-                        raster.SetFloatValue(j, k, i, 1.0 / (i * j * k));
+                        raster.SetFloatValue(rowIndex, columnIndex, bandIndex, 1.0 / (bandIndex * rowIndex * columnIndex));
 
-                        Assert.AreEqual(1.0 / (i * j * k), raster.GetFloatValue(j, k, i), 0.00001);
+                        Assert.AreEqual(1.0 / (bandIndex * rowIndex * columnIndex), raster.GetFloatValue(rowIndex, columnIndex, bandIndex), 0.00001);
                     }
 
 
             // multiple values
 
-            for (Int32 j = 0; j < raster.NumberOfRows; j++)
-                for (Int32 k = 0; k < raster.NumberOfColumns; k++)
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                 {
-                    raster.SetFloatValues(j, k, new Double[] { 1.0 / j, 1.0 / k, 1.0 / (j * k) });
+                    raster.SetFloatValues(rowIndex, columnIndex, new Double[] { 1.0 / rowIndex, 1.0 / columnIndex, 1.0 / (rowIndex * columnIndex) });
 
-                    Assert.AreEqual(1.0 / j, raster.GetFloatValues(j, k)[0], 0.00001);
-                    Assert.AreEqual(1.0 / k, raster.GetFloatValues(j, k)[1], 0.00001);
-                    Assert.AreEqual(1.0 / (j * k), raster.GetFloatValues(j, k)[2], 0.00001);
+                    Assert.AreEqual(1.0 / rowIndex, raster.GetFloatValues(rowIndex, columnIndex)[0], 0.00001);
+                    Assert.AreEqual(1.0 / columnIndex, raster.GetFloatValues(rowIndex, columnIndex)[1], 0.00001);
+                    Assert.AreEqual(1.0 / (rowIndex * columnIndex), raster.GetFloatValues(rowIndex, columnIndex)[2], 0.00001);
                 }
 
 

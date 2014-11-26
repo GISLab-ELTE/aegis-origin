@@ -36,15 +36,15 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
         {
             // normal parameters
 
-            for (Int32 i = 0; i < 10; i++)
-                for (Int32 j = 0; j < 10000; j += 2000)
-                    for (Int32 k = 0; k < 10000; k += 2000)
+            for (Int32 numberOfBands = 0; numberOfBands < 10; numberOfBands++)
+                for (Int32 numberOfRows = 0; numberOfRows < 1000; numberOfRows += 250)
+                    for (Int32 numberOfColumns = 0; numberOfColumns < 1000; numberOfColumns += 250)
                     {
-                        Raster16 raster = new Raster16(null, i, j, k, Enumerable.Repeat(8, i).ToArray(), null);
+                        Raster16 raster = new Raster16(null, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(8, numberOfBands).ToArray(), null);
 
-                        Assert.AreEqual(i, raster.NumberOfBands);
-                        Assert.AreEqual(j, raster.NumberOfRows);
-                        Assert.AreEqual(k, raster.NumberOfColumns);
+                        Assert.AreEqual(numberOfBands, raster.NumberOfBands);
+                        Assert.AreEqual(numberOfRows, raster.NumberOfRows);
+                        Assert.AreEqual(numberOfColumns, raster.NumberOfColumns);
                         Assert.AreEqual(RasterFormat.Integer, raster.Format);
                         Assert.IsFalse(raster.IsMapped);
                         Assert.IsTrue(raster.IsReadable);
@@ -79,26 +79,26 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
 
             // single values
 
-            for (Int32 i = 0; i < raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < raster.NumberOfRows; j++)
-                    for (Int32 k = 0; k < raster.NumberOfColumns; k++)
+            for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                     {
-                        raster.SetValue(j, k, i, (UInt32)(i * j * k));
+                        raster.SetValue(rowIndex, columnIndex, bandIndex, (UInt32)(bandIndex * rowIndex * columnIndex));
 
-                        Assert.AreEqual(i * j * k, raster.GetValue(j, k, i), 0);
+                        Assert.AreEqual(bandIndex * rowIndex * columnIndex, raster.GetValue(rowIndex, columnIndex, bandIndex), 0);
                     }
 
 
             // multiple values
 
-            for (Int32 j = 0; j < raster.NumberOfRows; j++)
-                for (Int32 k = 0; k < raster.NumberOfColumns; k++)
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                 {
-                    raster.SetValues(j, k, new UInt32[] { (UInt32)j, (UInt32)k, (UInt32)(j * k) });
+                    raster.SetValues(rowIndex, columnIndex, new UInt32[] { (UInt32)rowIndex, (UInt32)columnIndex, (UInt32)(rowIndex * columnIndex) });
 
-                    Assert.AreEqual(j, raster.GetValues(j, k)[0], 0);
-                    Assert.AreEqual(k, raster.GetValues(j, k)[1], 0);
-                    Assert.AreEqual(j * k, raster.GetValues(j, k)[2], 0);
+                    Assert.AreEqual(rowIndex, raster.GetValues(rowIndex, columnIndex)[0], 0);
+                    Assert.AreEqual(columnIndex, raster.GetValues(rowIndex, columnIndex)[1], 0);
+                    Assert.AreEqual(rowIndex * columnIndex, raster.GetValues(rowIndex, columnIndex)[2], 0);
                 }
             
 
@@ -129,18 +129,18 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
             Random random = new Random();
 
             Raster16 raster = new Raster16(null, 1, 100, 100, null, null);
-            for (Int32 j = 0; j < raster.NumberOfRows; j++)
-                for (Int32 k = 0; k < raster.NumberOfColumns; k++)
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                 {
                     UInt16 value = (UInt16)random.Next();
-                    raster.SetValue(j, k, 0, value);
+                    raster.SetValue(rowIndex, columnIndex, 0, value);
 
                     histogramValues[value]++;
                 }
 
-            for (Int32 i = 0; i < raster.GetHistogramValues(0).Count; i++)
+            for (Int32 valueIndex = 0; valueIndex < raster.GetHistogramValues(0).Count; valueIndex++)
             {
-                Assert.AreEqual(histogramValues[i], raster.GetHistogramValues(0)[i]);
+                Assert.AreEqual(histogramValues[valueIndex], raster.GetHistogramValues(0)[valueIndex]);
             }
         }
 

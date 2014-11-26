@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Raster;
 using NUnit.Framework;
 using System;
@@ -36,15 +37,15 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
         {
             // normal parameters
 
-            for (Int32 i = 0; i < 10; i++)
-                for (Int32 j = 0; j < 10000; j += 2000)
-                    for (Int32 k = 0; k < 10000; k += 2000)
+            for (Int32 numberOfBands = 0; numberOfBands < 10; numberOfBands++)
+                for (Int32 numberOfRows = 0; numberOfRows < 1000; numberOfRows += 250)
+                    for (Int32 numberOfColumns = 0; numberOfColumns < 1000; numberOfColumns += 250)
                     {
-                        Raster32 raster = new Raster32(null, i, j, k, Enumerable.Repeat(8, i).ToArray(), null);
+                        Raster32 raster = new Raster32(null, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(8, numberOfBands).ToArray(), null);
 
-                        Assert.AreEqual(i, raster.NumberOfBands);
-                        Assert.AreEqual(j, raster.NumberOfRows);
-                        Assert.AreEqual(k, raster.NumberOfColumns);
+                        Assert.AreEqual(numberOfBands, raster.NumberOfBands);
+                        Assert.AreEqual(numberOfRows, raster.NumberOfRows);
+                        Assert.AreEqual(numberOfColumns, raster.NumberOfColumns);
                         Assert.AreEqual(RasterFormat.Integer, raster.Format);
                         Assert.IsFalse(raster.IsMapped);
                         Assert.IsTrue(raster.IsReadable);
@@ -78,26 +79,26 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
 
             // single values
 
-            for (Int32 i = 0; i < raster.NumberOfBands; i++)
-                for (Int32 j = 0; j < raster.NumberOfRows; j++)
+            for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                     for (Int32 k = 0; k < raster.NumberOfColumns; k++)
                     {
-                        raster.SetValue(j, k, i, (UInt32)(i * j * k));
+                        raster.SetValue(rowIndex, k, bandIndex, (UInt32)(bandIndex * rowIndex * k));
 
-                        Assert.AreEqual(i * j * k, raster.GetValue(j, k, i), 0);
+                        Assert.AreEqual(bandIndex * rowIndex * k, raster.GetValue(rowIndex, k, bandIndex), 0);
                     }
 
 
             // multiple values
 
-            for (Int32 j = 0; j < raster.NumberOfRows; j++)
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                 for (Int32 k = 0; k < raster.NumberOfColumns; k++)
                 {
-                    raster.SetValues(j, k, new UInt32[] { (UInt32)j, (UInt32)k, (UInt32)(j * k) });
+                    raster.SetValues(rowIndex, k, new UInt32[] { (UInt32)rowIndex, (UInt32)k, (UInt32)(rowIndex * k) });
 
-                    Assert.AreEqual(j, raster.GetValues(j, k)[0], 0);
-                    Assert.AreEqual(k, raster.GetValues(j, k)[1], 0);
-                    Assert.AreEqual(j * k, raster.GetValues(j, k)[2], 0);
+                    Assert.AreEqual(rowIndex, raster.GetValues(rowIndex, k)[0], 0);
+                    Assert.AreEqual(k, raster.GetValues(rowIndex, k)[1], 0);
+                    Assert.AreEqual(rowIndex * k, raster.GetValues(rowIndex, k)[2], 0);
                 }
 
 
@@ -116,6 +117,31 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
             Assert.Throws<ArgumentOutOfRangeException>(() => raster.SetValue(0, raster.NumberOfColumns, 0, 0));
             Assert.Throws<ArgumentOutOfRangeException>(() => raster.SetValue(0, 0, -1, 0));
             Assert.Throws<ArgumentOutOfRangeException>(() => raster.SetValue(0, 0, raster.NumberOfBands, 0));
+        }
+
+        /// <summary>
+        /// Test case for the histogram.
+        /// </summary>
+        [Test]
+        public void Raster32HistogramTest()
+        {
+            SparseArray<Int32> histogramValues = new SparseArray<Int32>(UInt32.MaxValue + 1L);
+            Random random = new Random();
+
+            Raster32 raster = new Raster32(null, 1, 100, 100, null, null);
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                {
+                    UInt32 value = (UInt32)random.Next();
+                    raster.SetValue(rowIndex, columnIndex, 0, value);
+
+                    histogramValues[value]++;
+                }
+
+            for (Int32 valueIndex = 0; valueIndex < raster.GetHistogramValues(0).Count; valueIndex++)
+            {
+                Assert.AreEqual(histogramValues[valueIndex], raster.GetHistogramValues(0)[valueIndex]);
+            }
         }
 
         #endregion
