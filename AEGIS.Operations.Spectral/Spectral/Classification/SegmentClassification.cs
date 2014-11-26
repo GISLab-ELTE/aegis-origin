@@ -123,7 +123,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             _segmentNumbers = new Dictionary<Segment, UInt32>();
 
             UInt32 number = 0;
-            foreach (Segment segment in _segmentCollection.Segments)
+            foreach (Segment segment in _segmentCollection.GetSegments())
             {
                 _segmentNumbers.Add(segment, number);
                 number++;

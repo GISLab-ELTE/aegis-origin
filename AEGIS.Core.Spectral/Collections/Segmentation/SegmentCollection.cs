@@ -49,36 +49,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// The raster of the collection.
         /// </summary>
         public IRaster Raster { get; set; }
-
-        /// <summary>
-        /// Gets the collection of segments.
-        /// </summary>
-        /// <value>The read-only collection containing the segments.</value>
-        public IEnumerable<Segment> Segments 
-        { 
-            get 
-            {
-                foreach (Segment segment in _segmentToIndexDictionary.Keys)
-                    yield return segment;
-
-                for (Int32 rowIndex = 0; rowIndex < Raster.NumberOfRows; rowIndex ++)
-                {
-                    for (Int32 columnIndex = 0; columnIndex < Raster.NumberOfColumns; columnIndex ++)
-                    {
-                        Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
-                        if (!_indexToSegmentDictionary.ContainsKey(index))
-                        {
-                            Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
-                            _indexToSegmentDictionary.Add(index, segment);
-                            _segmentToIndexDictionary.Add(segment, new List<Int32> { index });
-
-                            yield return segment;
-                        } 
-                    }
-                }
-            } 
-        }
-
+        
         /// <summary>
         /// Gets the segment at the specified row and column indices.
         /// </summary>
@@ -119,7 +90,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 throw new ArgumentNullException("other", "The other segment is null.");
 
             Raster = other.Raster;
-            Count = Raster.NumberOfRows * Raster.NumberOfColumns;
+            Count = other.Count;
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
 
@@ -132,7 +103,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
 
-                for (Int32 i = 0; i < other._segmentToIndexDictionary[segment].Count; i++)
+                for (Int32 i = 0; i < other._segmentToIndexDictionary[otherSegment].Count; i++)
                 {
                     _indexToSegmentDictionary.Add(otherIndices[i], segment);
                 }
@@ -144,6 +115,16 @@ namespace ELTE.AEGIS.Collections.Segmentation
         #endregion
 
         #region Public methods
+
+        /// <summary>
+        /// Determines whether the collection contains the specified segment.
+        /// </summary>
+        /// <param name="segment">The segment.</param>
+        /// <returns><c>true</c> if the collection contains the segment; otherwise <c>false</c>.</returns>
+        public Boolean Contains(Segment segment)
+        {
+            return _segmentToIndexDictionary.ContainsKey(segment);
+        }
 
         /// <summary>
         /// Returns the segment at the specified row and column indices.
@@ -181,6 +162,34 @@ namespace ELTE.AEGIS.Collections.Segmentation
             }
 
             return _indexToSegmentDictionary[index];
+        }
+
+        /// <summary>
+        /// Returns the segments within the collection.
+        /// </summary>
+        /// <returns>The collection containing the segments.</returns>
+        public IEnumerable<Segment> GetSegments()
+        {
+            // if some segments are not constructed, they must be constructed
+            if (_indexToSegmentDictionary.Count < Raster.NumberOfColumns * Raster.NumberOfRows)
+            {
+                for (Int32 rowIndex = 0; rowIndex < Raster.NumberOfRows; rowIndex++)
+                {
+                    for (Int32 columnIndex = 0; columnIndex < Raster.NumberOfColumns; columnIndex++)
+                    {
+                        Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
+                        if (!_indexToSegmentDictionary.ContainsKey(index))
+                        {
+                            Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
+                            _indexToSegmentDictionary.Add(index, segment);
+                            _segmentToIndexDictionary.Add(segment, new List<Int32> { index });
+                        }
+                    }
+                }
+            }
+
+            foreach (Segment segment in _segmentToIndexDictionary.Keys)
+                yield return segment;
         }
 
         /// <summary>
@@ -240,16 +249,6 @@ namespace ELTE.AEGIS.Collections.Segmentation
         }
 
         /// <summary>
-        /// Determines whether the collection contains the specified segment.
-        /// </summary>
-        /// <param name="segment">The segment.</param>
-        /// <returns><c>true</c> if the collection contains the segment; otherwise <c>false</c>.</returns>
-        public Boolean Contains(Segment segment)
-        {
-            return _segmentToIndexDictionary.ContainsKey(segment);
-        }
-
-        /// <summary>
         /// Returns the values of the specified segment.
         /// </summary>
         /// <param name="segment">The segment.</param>
@@ -306,7 +305,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         }
 
         /// <summary>
-        /// Gets the staring row and column index of the segment.
+        /// Gets the starting row and column index of the segment.
         /// </summary>
         /// <param name="segment">The segment.</param>
         /// <param name="rowIndex">The row index.</param>
@@ -358,7 +357,20 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (columnIndex >= Raster.NumberOfColumns)
                 throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
 
-            ApplyMergeSegments(segment, rowIndex, columnIndex);
+
+            Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
+
+            if (_indexToSegmentDictionary.ContainsKey(index))
+            {
+                Segment otherSegment = _indexToSegmentDictionary[index];
+
+                if (segment == otherSegment)
+                    return;
+
+                ApplyMergeSegments(segment, otherSegment);
+            }
+            else
+                ApplyMergeSegments(segment, index);
         }
 
         /// <summary>
@@ -386,6 +398,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 throw new ArgumentException("The first segment is not within the collection.", "first");
             if (!_segmentToIndexDictionary.ContainsKey(second))
                 throw new ArgumentException("The second segment is not within the collection.", "second");
+
+            if (first == second)
+                return;
 
             ApplyMergeSegments(first, second);
         }
@@ -455,11 +470,11 @@ namespace ELTE.AEGIS.Collections.Segmentation
                     Count--;
                 }
                 else
-                    ApplyMergeSegments(_indexToSegmentDictionary[secondIndex], firstRowIndex, firstColumnIndex);
+                    ApplyMergeSegments(_indexToSegmentDictionary[secondIndex], firstIndex);
             }
             else if (!_indexToSegmentDictionary.ContainsKey(secondIndex))
             {
-                ApplyMergeSegments(_indexToSegmentDictionary[firstIndex], secondRowIndex, secondColumnIndex);
+                ApplyMergeSegments(_indexToSegmentDictionary[firstIndex], secondIndex);
             }
             else // or merge the sets
             {
@@ -526,11 +541,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="segment">The segment.</param>
         /// <param name="rowIndex">The row index.</param>
         /// <param name="columnIndex">The column index.</param>
-        private void ApplyMergeSegments(Segment segment, Int32 rowIndex, Int32 columnIndex)
+        private void ApplyMergeSegments(Segment segment, Int32 index)
         {
-            Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
-
-            segment.AddFloatValues(Raster.GetFloatValues(rowIndex, columnIndex));
+            segment.AddFloatValues(Raster.GetFloatValues(index / Raster.NumberOfColumns, index % Raster.NumberOfColumns));
             _indexToSegmentDictionary[index] = segment;
 
             _segmentToIndexDictionary[segment].Add(index);
@@ -559,6 +572,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
             Count--;
         }
 
+        /// <summary>
+        /// Splits the specified segment.
+        /// </summary>
+        /// <param name="segment">The segment.</param>
         private void ApplySplitSegment(Segment segment)
         {
             List<Int32> indices = _segmentToIndexDictionary[segment];

@@ -236,7 +236,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             Double minimalDistance;
             Int32 minimalIndex = 0;
 
-            foreach (Segment segment in _result.Segments.ToArray())
+            Segment[] segments = _result.GetSegments().ToArray();
+
+            foreach (Segment segment in segments)
             {
                 if (!_result.Contains(segment))
                     continue;
@@ -265,7 +267,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             _clusterCenters = null;
 
-            Segment[] segments = _result.Segments.ToArray();
+            Segment[] segments = _result.GetSegments().ToArray();
 
             foreach (Segment segment in segments)
             {
@@ -288,7 +290,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 clusterMerged = false;
                 Int32 n = _result.Count;
 
-                List<Segment> segments = _result.Segments.ToList();
+                List<Segment> segments = _result.GetSegments().ToList();
 
                 for (Int32 firstIndex = 0; firstIndex < segments.Count - 1; firstIndex++)
                 {
@@ -306,7 +308,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 }
             }
         }
-
  
         #endregion
     }
