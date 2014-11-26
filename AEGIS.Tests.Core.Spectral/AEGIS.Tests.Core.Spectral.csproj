@@ -48,6 +48,8 @@
     <Compile Include="Algorithms\Resampling\BilinearResamplingAlgorithmTest.cs" />
     <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithmTest.cs" />
     <Compile Include="Algorithms\Resampling\NearestNeighbourResamplingAlgorithmTest.cs" />
+    <Compile Include="Collections\Segmentation\SegmentCollectionTest.cs" />
+    <Compile Include="Collections\Segmentation\SegmentTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RasterMapperTest.cs" />
     <Compile Include="Raster\RasterFloat32Test.cs" />
