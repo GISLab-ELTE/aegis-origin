@@ -29,9 +29,19 @@ namespace ELTE.AEGIS
         #region Private fields
 
         /// <summary>
+        /// The raster transformation matrix.
+        /// </summary>
+        private Matrix _rasterTransformation;
+
+        /// <summary>
         /// The hash code of the current object.
         /// </summary>
         private Int32 _hashCode;
+
+        /// <summary>
+        /// A value indicating whether the transformation is linear (only translation and scale are used).
+        /// </summary>
+        private Boolean _isLinearTransformation;
 
         #endregion
 
@@ -125,7 +135,16 @@ namespace ELTE.AEGIS
         /// Gets the transformation matrix used for computing raster coordinates.
         /// </summary>
         /// <value>A 4x4 matrix used for computing raster coordinates from geometry coordinates.</value>
-        public Matrix RasterTransformation { get; private set; }
+        public Matrix RasterTransformation 
+        { 
+            get 
+            {
+                if (_rasterTransformation == null)
+                    _rasterTransformation = GeometryTransformation.Invert();
+
+                return _rasterTransformation;
+            } 
+        }
 
         #endregion
 
@@ -166,10 +185,13 @@ namespace ELTE.AEGIS
                 transformation[0, 2] != 0 || transformation[1, 2] != 0)
                 throw new NotSupportedException("The specified transformation is not supported.");
 
+            _isLinearTransformation = (transformation[0, 1] == 0 && transformation[1, 0] == 0); // rotation is not specified
+
             Mode = mode;
             GeometryTransformation = transformation;
 
-            RasterTransformation = transformation.Invert();
+            if (!_isLinearTransformation)
+                _rasterTransformation = transformation.Invert();
         }
 
         #endregion
@@ -185,6 +207,11 @@ namespace ELTE.AEGIS
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Int32 rowIndex, Int32 columnIndex)
         {
+            if (_isLinearTransformation)
+                return new Coordinate(GeometryTransformation[0, 0] * columnIndex + GeometryTransformation[0, 3], 
+                                      GeometryTransformation[1, 1] * rowIndex + GeometryTransformation[1, 3],
+                                      GeometryTransformation[2, 3]);
+
             Vector result = GeometryTransformation * new Vector(columnIndex, rowIndex, 0, 1);
 
             return new Coordinate(result[0], result[1], result[2]);
@@ -199,6 +226,11 @@ namespace ELTE.AEGIS
         /// <exception cref="System.InvalidOperationException">The mapping of the raster is not defined.</exception>
         public Coordinate MapCoordinate(Double rowIndex, Double columnIndex)
         {
+            if (_isLinearTransformation)
+                return new Coordinate(GeometryTransformation[0, 0] * columnIndex + GeometryTransformation[0, 3],
+                                      GeometryTransformation[1, 1] * rowIndex + GeometryTransformation[1, 3],
+                                      GeometryTransformation[2, 3]);
+
             Vector result = GeometryTransformation * new Vector(columnIndex, rowIndex, 0, 1);
 
             return new Coordinate(result[0], result[1], result[2]);
@@ -238,10 +270,18 @@ namespace ELTE.AEGIS
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         public void MapRaster(Coordinate coordinate, out Int32 rowIndex, out Int32 columnIndex)
         {
-            Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+            if (_isLinearTransformation)
+            {
+                columnIndex = Convert.ToInt32((coordinate.X - GeometryTransformation[0, 3]) / GeometryTransformation[0, 0]);
+                rowIndex = Convert.ToInt32((coordinate.Y - GeometryTransformation[1, 3]) / GeometryTransformation[1, 1]);
+            }
+            else
+            {
+                Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
 
-            columnIndex = Convert.ToInt32(result[0]);
-            rowIndex = Convert.ToInt32(result[1]);
+                columnIndex = Convert.ToInt32(result[0]);
+                rowIndex = Convert.ToInt32(result[1]);
+            }
         }
 
         /// <summary>
@@ -252,10 +292,18 @@ namespace ELTE.AEGIS
         /// <param name="columnIndex">The zero-based row index of the value.</param>
         public void MapRaster(Coordinate coordinate, out Double rowIndex, out Double columnIndex)
         {
-            Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
+            if (_isLinearTransformation)
+            {
+                columnIndex = (coordinate.X - GeometryTransformation[0, 3]) / GeometryTransformation[0, 0];
+                rowIndex =  (coordinate.Y - GeometryTransformation[1, 3]) / GeometryTransformation[1, 1];
+            }
+            else
+            {
+                Vector result = RasterTransformation * new Vector(coordinate.X, coordinate.Y, coordinate.Z, 1);
 
-            columnIndex = result[0];
-            rowIndex = result[1];
+                columnIndex = result[0];
+                rowIndex = result[1];
+            }
         }
 
         /// <summary>
