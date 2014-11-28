@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _paletteColorClassification;
         private static SpectralOperationMethod _randomColorClassification;
         private static SpectralOperationMethod _segmentClassification;
-        private static SpectralOperationMethod _thematicClassification;
+        private static SpectralOperationMethod _referenceMatchingClassification;
 
         #endregion
 
@@ -148,6 +148,23 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Reference matching classification.
+        /// </summary>
+        public static SpectralOperationMethod ReferenceMatchingClassification
+        {
+            get
+            {
+                return _referenceMatchingClassification ?? (_referenceMatchingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213850", "Reference matching classification",
+                                                                         "In reference matching classification, a pre-classified reference raster is aligned with the current raster, with which the process matches the categories. The also process on the collection of clusters.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Local,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.SegmentCollection,
+                                                                         SpectralOperationParameters.ClassificationReferenceGeometry));
+            }
+        }
+
+        /// <summary>
         /// Segment classification.
         /// </summary>
         public static SpectralOperationMethod SegmentClassification
@@ -159,26 +176,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The classification of spectral imagery based on a collection of segments. The result data contains the segment indices as values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          SpectralOperationParameters.SegmentCollection));
-            }
-        }
-
-        /// <summary>
-        /// Thematic classification.
-        /// </summary>
-        public static SpectralOperationMethod ThematicClassification
-        {
-            get
-            {
-                return _thematicClassification ?? (_thematicClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213850", "Thematic classification",
-                                                                         "In thematic classification, a pre-classified study area is aligned with the current target area, with which the process matches the categories. The process also relies on clustering of the data, and optional initial segmentation.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.Global,
-                                                                         ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.ClassificationClusteringMethod,
-                                                                         SpectralOperationParameters.ClassificationClusteringType,
-                                                                         SpectralOperationParameters.ClassificationSegmentationMethod,
-                                                                         SpectralOperationParameters.ClassificationSegmentationType,
-                                                                         SpectralOperationParameters.ClassificationStudyArea));
             }
         }
 

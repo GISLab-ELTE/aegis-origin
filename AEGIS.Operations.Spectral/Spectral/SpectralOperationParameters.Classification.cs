@@ -26,11 +26,12 @@ namespace ELTE.AEGIS.Operations.Spectral
     {
         #region Private static fields
 
-        private static OperationParameter _classificationSegmentationMethod;
-        private static OperationParameter _classificationSegmentationType;
         private static OperationParameter _classificationClusteringMethod;
         private static OperationParameter _classificationClusteringType;
-        private static OperationParameter _classificationStudyArea;
+        private static OperationParameter _classificationReferenceGeometry;
+        private static OperationParameter _classificationSegmentationMethod;
+        private static OperationParameter _classificationSegmentationType;
+        private static OperationParameter _classificationValidationGeometry;
         private static OperationParameter _colorPalette;
         private static OperationParameter _densitySlicingThresholds;
         private static OperationParameter _lowerThresholdBoundary;
@@ -73,6 +74,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Reference spectral geometry of the classification.
+        /// </summary>
+        public static OperationParameter ClassificationReferenceGeometry
+        {
+            get
+            {
+                return _classificationReferenceGeometry ?? (_classificationReferenceGeometry =
+                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::213850", "Reference spectral geometry of the classification",
+                                                                                  "The pre-classified spectral geometry that serves as a reference area for classification.", null)
+                );
+            }
+        }
+
+        /// <summary>
         /// Segmentation method of the classification.
         /// </summary>
         public static OperationParameter ClassificationSegmentationMethod
@@ -104,15 +119,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Study area of the classification.
+        /// Validation spectral geometry of the classification.
         /// </summary>
-        public static OperationParameter ClassificationStudyArea
+        public static OperationParameter ClassificationValidationGeometry
         {
             get
             {
-                return _classificationStudyArea ?? (_classificationStudyArea =
-                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::213850", "Study area of the classification",
-                                                                                  "The pre-classified spectral geometry that serves as a study area for classification.", null)
+                return _classificationValidationGeometry ?? (_classificationValidationGeometry =
+                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::213860", "Validation spectral geometry of the classification",
+                                                                                  "The pre-classified spectral geometry that serves as validation of classification results.", null)
                 );
             }
         }
