@@ -89,7 +89,7 @@
     </ProjectReference>
     <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
       <Project>{BBF043A5-9195-43B3-8E01-459B5E66F136}</Project>
-      <Name>AEGIS.Reference</Name>
+      <Name>AEGIS.Core.Reference</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
