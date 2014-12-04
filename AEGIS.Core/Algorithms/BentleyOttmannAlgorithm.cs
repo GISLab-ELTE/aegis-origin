@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.Algorithms
     /// The Bentley–Ottmann algorithm is a sweep line algorithm for listing all crossings in a set of line segments.
     /// It extends the Shamos–Hoey algorithm, a similar previous algorithm for testing whether or not a set of line segments has any crossings.
     /// For an input consisting of n line segments with k crossings, the Bentley–Ottmann algorithm takes time O((n + k) log n).
-    /// In cases where k = o(n^2 / log n), this is an improvement on a naïve algorithm that tests every pair of segments, which takes O(n^2).
+    /// In cases where k = o(n^2 / log n), this is an improvement on a naive algorithm that tests every pair of segments, which takes O(n^2).
     /// </remarks>
     /// <seealso cref="ShamosHoeyAlgorithm"/>
     public class BentleyOttmannAlgorithm
@@ -53,6 +53,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Gets the edge details of the result.
         /// </summary>
+        /// <remarks>
+        /// Indices are assigned sequentially to the input edges from zero, skipping a number when starting a new linestring.
+        /// </remarks>
         /// <value>The <see cref="IList{Tuple}"/> containing the edge indices intersecting at the coordinates in <see cref="Result"/>.</value>
         public IList<Tuple<Int32, Int32>> Edges { get { if (!_hasResult) Compute(); return _edges; } }
 
@@ -61,7 +64,7 @@ namespace ELTE.AEGIS.Algorithms
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Algorithms.Spatial.BentleyOttmannAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
         /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
@@ -76,7 +79,7 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Algorithms.Spatial.BentleyOttmannAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
         /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
@@ -142,23 +145,25 @@ namespace ELTE.AEGIS.Algorithms
             {
                 if (currentEvent is EndPointEvent)
                 {
-                    var endPointEvent = (EndPointEvent) currentEvent;
+                    var endPointEvent = (EndPointEvent)currentEvent;
                     switch (endPointEvent.Type)
                     {
+                        // Left endpoint event: check for possible intersection with below and / or above segments.
                         case EventType.Left:
                             segment = _sweepLine.Add(endPointEvent);
                             if (segment.Above != null)
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
                                                                             segment.Above.LeftCoordinate, segment.Above.RightCoordinate);
+
                                 if (intersections.Count > 0)
                                 {
                                     var intersectionEvent = new IntersectionEvent
-                                        {
-                                            Vertex = intersections[0],
-                                            Below = segment,
-                                            Above = segment.Above
-                                        };
+                                    {
+                                        Vertex = intersections[0],
+                                        Below = segment,
+                                        Above = segment.Above
+                                    };
                                     _eventQueue.Add(intersectionEvent);
                                 }
                             }
@@ -166,18 +171,21 @@ namespace ELTE.AEGIS.Algorithms
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
                                                                             segment.Below.LeftCoordinate, segment.Below.RightCoordinate);
+
                                 if (intersections.Count > 0)
                                 {
                                     var intersectionEvent = new IntersectionEvent
-                                        {
-                                            Vertex = intersections[0],
-                                            Below = segment.Below,
-                                            Above = segment
-                                        };
+                                    {
+                                        Vertex = intersections[0],
+                                        Below = segment.Below,
+                                        Above = segment
+                                    };
                                     _eventQueue.Add(intersectionEvent);
                                 }
                             }
                             break;
+
+                        // Right endpoint event: check for possible intersection of the below and above segments.
                         case EventType.Right:
                             segment = _sweepLine.Search(endPointEvent);
                             if (segment != null)
@@ -188,14 +196,15 @@ namespace ELTE.AEGIS.Algorithms
                                                                                 segment.Above.RightCoordinate,
                                                                                 segment.Below.LeftCoordinate,
                                                                                 segment.Below.RightCoordinate);
+
                                     if (intersections.Count > 0)
                                     {
                                         var intersectionEvent = new IntersectionEvent
-                                            {
-                                                Vertex = intersections[0],
-                                                Below = segment.Below,
-                                                Above = segment.Above
-                                            };
+                                        {
+                                            Vertex = intersections[0],
+                                            Below = segment.Below,
+                                            Above = segment.Above
+                                        };
                                         if (!_eventQueue.Contains(intersectionEvent))
                                             _eventQueue.Add(intersectionEvent);
                                     }
@@ -205,9 +214,11 @@ namespace ELTE.AEGIS.Algorithms
                             break;
                     }
                 }
+
+                // Intersection point event: switch the two concerned segments and check for possible intersection with their below and above segments.
                 else if (currentEvent is IntersectionEvent)
                 {
-                    var intersectionEvent = (IntersectionEvent) currentEvent;
+                    var intersectionEvent = (IntersectionEvent)currentEvent;
                     /*
                      * Segment order before intersection: segmentBelow <-> segmentAbove <-> segment <-> segmentAboveAbove
                      * Segment order after intersection:  segmentBelow <-> segment <-> segmentAbove <-> segmentAboveAbove
@@ -215,7 +226,8 @@ namespace ELTE.AEGIS.Algorithms
                     segment = intersectionEvent.Above;
                     SweepLineSegment segmentAbove = intersectionEvent.Below;
 
-                    if (_sweepLine.Intersect(segment, segmentAbove))
+                    // Handle closing intersection points when segments (partially) overlap each other.
+                    if (intersectionEvent.IsClose)
                     {
                         if (!_sweepLine.IsAdjacent(segment.Edge, segmentAbove.Edge))
                         {
@@ -223,20 +235,48 @@ namespace ELTE.AEGIS.Algorithms
                             _edges.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
                                                       Math.Max(segment.Edge, segmentAbove.Edge)));
                         }
+                    }
+
+                    // It is possible that the previously detected intersection point is not a real intersection, because a new segment started between them,
+                    // therefore a repeated check is necessary to carry out.
+                    else if (_sweepLine.Add(intersectionEvent))
+                    {
+                        if (!_sweepLine.IsAdjacent(segment.Edge, segmentAbove.Edge))
+                        {
+                            _result.Add(currentEvent.Vertex);
+                            _edges.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
+                                                      Math.Max(segment.Edge, segmentAbove.Edge)));
+
+                            intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
+                                                                        segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate);
+
+                            if (intersections.Count > 1 && !intersections[1].Equals(intersections[0]))
+                            {
+                                var newIntersectionEvent = new IntersectionEvent
+                                {
+                                    Vertex = intersections[1],
+                                    Below = segment,
+                                    Above = segmentAbove,
+                                    IsClose = true,
+                                };
+                                _eventQueue.Add(newIntersectionEvent);
+                            }
+                        }
 
                         if (segmentAbove.Above != null)
                         {
                             intersections = LineAlgorithms.Intersection(segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate,
                                                                         segmentAbove.Above.LeftCoordinate,
                                                                         segmentAbove.Above.RightCoordinate);
+
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
                                 var newIntersectionEvent = new IntersectionEvent
-                                    {
-                                        Vertex = intersections[0],
-                                        Below = segmentAbove,
-                                        Above = segmentAbove.Above
-                                    };
+                                {
+                                    Vertex = intersections[0],
+                                    Below = segmentAbove,
+                                    Above = segmentAbove.Above
+                                };
                                 if (!_eventQueue.Contains(newIntersectionEvent))
                                     _eventQueue.Add(newIntersectionEvent);
                             }
@@ -246,14 +286,15 @@ namespace ELTE.AEGIS.Algorithms
                         {
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
                                                                         segment.Below.LeftCoordinate, segment.Below.RightCoordinate);
+
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
                                 var newIntersectionEvent = new IntersectionEvent
-                                    {
-                                        Vertex = intersections[0],
-                                        Below = segment.Below,
-                                        Above = segment
-                                    };
+                                {
+                                    Vertex = intersections[0],
+                                    Below = segment.Below,
+                                    Above = segment
+                                };
                                 if (!_eventQueue.Contains(newIntersectionEvent))
                                     _eventQueue.Add(newIntersectionEvent);
                             }

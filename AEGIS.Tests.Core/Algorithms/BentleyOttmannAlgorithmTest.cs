@@ -37,7 +37,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
 
         #endregion
 
-        #region Test setup.
+        #region Test setup
 
         /// <summary>
         /// Test fixture setup.
@@ -65,7 +65,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(20, 20)
                 });
-            Assert.AreEqual(intersections.Count, 0);
+
+            Assert.IsEmpty(intersections);
 
 
             // single linestring, one intersection
@@ -77,8 +78,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(15, 20),
                     new Coordinate(15, 10)
                 });
-            Assert.AreEqual(intersections.Count, 1);
-            Assert.AreEqual(intersections[0], new Coordinate(15, 15));
+
+            Assert.AreEqual(new[] { new Coordinate(15, 15) }, intersections);
 
 
             // multiple lines, no intersection
@@ -96,7 +97,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(10, 0)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 0);
+
+            Assert.IsEmpty(intersections);
 
 
             // multiple lines, one intersection
@@ -114,8 +116,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(10, 10)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 1);
-            Assert.AreEqual(intersections[0], new Coordinate(10, 10));
+
+            Assert.AreEqual(new[] { new Coordinate(10, 10) }, intersections);
 
 
             // multiple lines, one intersection
@@ -133,8 +135,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(15, 10)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 1);
-            Assert.AreEqual(intersections[0], new Coordinate(15, 15));
+
+            Assert.AreEqual(new[] { new Coordinate(15, 15) }, intersections);
         
 
             // multiple lines, multiple intersections
@@ -162,10 +164,13 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(10, 8)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 3);
-            Assert.AreEqual(intersections[0], new Coordinate(0, 0));
-            Assert.AreEqual(intersections[1], new Coordinate(5, 5));
-            Assert.AreEqual(intersections[2], new Coordinate(8, 8));
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(0, 0),
+                new Coordinate(5, 5),
+                new Coordinate(8, 8),
+            }, intersections);
 
 
             // multiple lines, multiple intersections
@@ -188,15 +193,17 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(3, 3)
                         }
                 });
+
             Assert.AreEqual(intersections.Count, 3);
-            var result = intersections[0] - new Coordinate(1.6, -1.2);
-            Assert.LessOrEqual(Math.Abs(result.X), Calculator.Tolerance);
-            Assert.LessOrEqual(Math.Abs(result.Y), Calculator.Tolerance);
-            Assert.AreEqual(intersections[1], new Coordinate(2, 0));
-            Assert.AreEqual(intersections[2], new Coordinate(4, 0));
+            Assert.AreEqual(intersections[0].X, 1.6, 0.0001);
+            Assert.AreEqual(intersections[0].Y, -1.2, 0.0001);
+            Assert.AreEqual(intersections[1].X, 2, 0.0001);
+            Assert.AreEqual(intersections[1].Y, 0, 0.0001);
+            Assert.AreEqual(intersections[2].X, 4, 0.0001);
+            Assert.AreEqual(intersections[2].Y, 0, 0.0001);
 
 
-            // multiple lines, multiple intersections
+            // multiple lines, multiple intersections in the same coordinate
             
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
@@ -216,13 +223,16 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(5, 0)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 3);
-            Assert.AreEqual(intersections[0], new Coordinate(5, 0));
-            Assert.AreEqual(intersections[1], new Coordinate(5, 0));
-            Assert.AreEqual(intersections[2], new Coordinate(5, 0));
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(5, 0),
+                new Coordinate(5, 0),
+                new Coordinate(5, 0),
+            }, intersections);
 
 
-            // multiple lines, multiple intersections
+            // multiple lines, multiple intersections in the same coordinate
             
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
@@ -239,8 +249,47 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                             new Coordinate(20, 10)
                         }
                 });
-            Assert.AreEqual(intersections.Count, 4);
-            Assert.AreEqual(intersections.Count(i => i.Equals(new Coordinate(10, 10))), 4);
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+            }, intersections);
+
+
+            // multiple lines, multiple intersections (even in the same coordinate)
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new[]
+                {
+                    new List<Coordinate>
+                        {
+                            new Coordinate(0, 0),
+                            new Coordinate(10, 0),
+                            new Coordinate(10, 10),
+                            new Coordinate(0, 10),
+                        },
+                    new List<Coordinate>
+                        {
+                            new Coordinate(20, 0),
+                            new Coordinate(10, 0),
+                            new Coordinate(10, 10),
+                            new Coordinate(20, 10),
+                        }
+                });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(10, 0),
+                new Coordinate(10, 0),
+                new Coordinate(10, 0),
+                new Coordinate(10, 0),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+            }, intersections);
 
 
             // single polygon, no intersection
@@ -252,7 +301,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     _factory.CreatePoint(10, 10),
                     _factory.CreatePoint(0, 10))
                         .Shell.Coordinates);
-            Assert.AreEqual(intersections.Count, 0);
+
+            Assert.IsEmpty(intersections);
 
 
             // multiple polygons, no intersection
@@ -272,10 +322,11 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         _factory.CreatePoint(15, 5))
                             .Shell.Coordinates
                 });
-            Assert.AreEqual(intersections.Count, 0);
+
+            Assert.IsEmpty(intersections);
 
 
-            // multiple polygons, multiple intersections
+            // multiple polygons, multiple intersections in the same coordinate
             
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
@@ -292,11 +343,14 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         _factory.CreatePoint(10, 20))
                             .Shell.Coordinates
                 });
-            Assert.AreEqual(intersections.Count, 4);
-            Assert.AreEqual(intersections[0], new Coordinate(10, 10));
-            Assert.AreEqual(intersections[1], new Coordinate(10, 10));
-            Assert.AreEqual(intersections[2], new Coordinate(10, 10));
-            Assert.AreEqual(intersections[3], new Coordinate(10, 10));
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+                new Coordinate(10, 10),
+            }, intersections);
 
 
             // multiple polygons, multiple intersections
@@ -316,9 +370,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         _factory.CreatePoint(5, 15))
                             .Shell.Coordinates
                 });
-            Assert.AreEqual(intersections.Count, 2);
-            Assert.AreEqual(intersections[0], new Coordinate(5, 10));
-            Assert.AreEqual(intersections[1], new Coordinate(10, 5));
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(5, 10),
+                new Coordinate(10, 5),
+            }, intersections);
 
 
             // multiple polygons, multiple intersections
@@ -337,10 +394,190 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         _factory.CreatePoint(0, 5))
                             .Shell.Coordinates
                 });
-            Assert.AreEqual(intersections.Count, 3);
-            Assert.AreEqual(intersections[0], new Coordinate(0, 5));
-            Assert.AreEqual(intersections[1], new Coordinate(0, 5));
-            Assert.AreEqual(intersections[2], new Coordinate(5, 0));
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(0, 5),
+                new Coordinate(0, 5),
+                new Coordinate(5, 0),
+            }, intersections);
+
+
+            // multiple polygons, multiple intersections (even in the same coordinate)
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new[]
+            {
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(0, 0),
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(8, 8),
+                    _factory.CreatePoint(0, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(14, 0),
+                    _factory.CreatePoint(14, 8),
+                    _factory.CreatePoint(8, 8))
+                    .Shell.Coordinates,
+            });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+            }, intersections);
+
+
+            // the previous scenario with one less coordinate
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new[]
+            {
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(0, 0),
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(8, 8),
+                    _factory.CreatePoint(0, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(14, 0),
+                    _factory.CreatePoint(8, 8))
+                    .Shell.Coordinates,
+            });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+            }, intersections);
+
+
+            // the previous scenario with an additional polygon
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new[]
+            {
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(0, 0),
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(8, 8),
+                    _factory.CreatePoint(0, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(14, 0),
+                    _factory.CreatePoint(8, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(-2, 6),
+                    _factory.CreatePoint(14, 6),
+                    _factory.CreatePoint(4, 14))
+                    .Shell.Coordinates
+            });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(0, 6),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 6),
+                new Coordinate(8, 6),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(9.5, 6),
+            }, intersections);
+
+
+            // the previous scenario with additonal polygons
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new[]
+            {
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(0, 0),
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(8, 8),
+                    _factory.CreatePoint(0, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(8, 0),
+                    _factory.CreatePoint(14, 0),
+                    _factory.CreatePoint(8, 8))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(-4, -6),
+                    _factory.CreatePoint(4, -6),
+                    _factory.CreatePoint(4, 2),
+                    _factory.CreatePoint(-4, 2))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(-2, 6),
+                    _factory.CreatePoint(14, 6),
+                    _factory.CreatePoint(4, 14))
+                    .Shell.Coordinates,
+                _factory.CreatePolygon(
+                    _factory.CreatePoint(2, 1),
+                    _factory.CreatePoint(6, 1),
+                    _factory.CreatePoint(6, 13),
+                    _factory.CreatePoint(2, 13))
+                    .Shell.Coordinates
+            });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(0, 2),
+                new Coordinate(0, 6),
+                new Coordinate(2, 2),
+                new Coordinate(2, 6),
+                new Coordinate(2, 8),
+                new Coordinate(2, 11.33333),
+                new Coordinate(3.25, 13),
+                new Coordinate(4, 0),
+                new Coordinate(4, 1),
+                new Coordinate(5.25, 13),
+                new Coordinate(6, 6),
+                new Coordinate(6, 8),
+                new Coordinate(6, 12.4),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 6),
+                new Coordinate(8, 6),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(8, 8),
+                new Coordinate(9.5, 6),
+            }, intersections.Select(coordinate => RoundCoordinate(coordinate)));
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Rounds the specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The rounded coordinate.</returns>
+        private Coordinate RoundCoordinate(Coordinate coordinate)
+        {
+            return new Coordinate(Math.Round(coordinate.X, 5), Math.Round(coordinate.Y, 5), Math.Round(coordinate.Z, 5));
         }
 
         #endregion
