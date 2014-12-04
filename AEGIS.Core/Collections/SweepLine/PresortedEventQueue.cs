@@ -26,8 +26,19 @@ namespace ELTE.AEGIS.Collections.SweepLine
     {
         #region Private fields
 
+        /// <summary>
+        /// The coordinate comparer.
+        /// </summary>
         private readonly IComparer<Coordinate> _comparer;
+
+        /// <summary>
+        /// The list of endpoint events.
+        /// </summary>
         private readonly List<EndPointEvent> _eventList;
+
+        /// <summary>
+        /// The current event index.
+        /// </summary>
         private Int32 _eventIndex;
 
         #endregion
@@ -35,10 +46,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.PresortedEventQueue" /> class.
+        /// Initializes a new instance of the <see cref="PresortedEventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public PresortedEventQueue(IList<Coordinate> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -77,10 +88,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.PresortedEventQueue" /> class.
+        /// Initializes a new instance of the <see cref="PresortedEventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public PresortedEventQueue(IEnumerable<IList<Coordinate>> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html

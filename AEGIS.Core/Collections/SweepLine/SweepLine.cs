@@ -23,91 +23,131 @@ using ELTE.AEGIS.Collections.SearchTree;
 namespace ELTE.AEGIS.Collections.SweepLine
 {
     /// <summary>
-    /// Represents a Sweep line.
+    /// Represents a sweep line.
     /// </summary>
     public sealed class SweepLine
     {
         #region Private types
 
         /// <summary>
-        /// Represents a comparer for <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLineSegment"/> instances.
+        /// Defines the intersection between two sweep line segments.
+        /// </summary>
+        private enum SweepLineIntersection         
+        { 
+            /// <summary>
+            /// Indicates that the intersection does not exist.
+            /// </summary>
+            NotExists, 
+            
+            /// <summary>
+            /// Indicates that the intersection was not passed.
+            /// </summary>
+            NotPassed, 
+            
+            /// <summary>
+            /// Indicates that the intersection was passed.
+            /// </summary>
+            Passed 
+        }
+
+        /// <summary>
+        /// Represents a comparer for <see cref="SweepLineSegment" /> instances.
         /// </summary>
         private sealed class SweepLineSegmentComparer : IComparer<SweepLineSegment>
         {
             #region Private fields
 
             /// <summary>
-            /// Stores the intersection point the sweepline has already passed.
+            /// Stores the horizontal (X coordinate) position of the sweep line.
+            /// </summary>
+            private Double _sweepLinePosition;
+
+            /// <summary>
+            /// Stores the intersections that has already been processed at the current sweep line position.
             /// </summary>
             /// <remarks>
-            /// Intersection points are registered in the containing dictionary with the segment possessing a smaller Y value for the right coordinate as a key.
-            /// If the 2 segments equals for this property, the intersection point is registered for both segments.
-            /// Data belonging to edges which were completely passed by the sweepline can be truncated.
+            /// Intersection points are registered in the containing set with both possible ordering.
             /// </remarks>
-            private IDictionary<SweepLineSegment, ISet<SweepLineSegment>> _intersections =
-                new Dictionary<SweepLineSegment, ISet<SweepLineSegment>>();
+            private readonly ISet<Tuple<SweepLineSegment, SweepLineSegment>> _intersections;
+
+            #endregion
+
+            #region Construtors
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SweepLineSegmentComparer" /> class.
+            /// </summary>
+            public SweepLineSegmentComparer()
+            {
+                _sweepLinePosition = Double.MinValue;
+                _intersections = new HashSet<Tuple<SweepLineSegment, SweepLineSegment>>();
+            }
 
             #endregion
 
             #region IComparer methods
 
             /// <summary>
-            /// Compares two <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLineSegment"/> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// Compares two <see cref="SweepLineSegment" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
             /// </summary>
             /// <remarks>
-            /// The comparator applies a complex above-below relationship between the arguments.
+            /// The comparator applies a above-below relationship between the arguments, where a "greater" segment is above the another one.
             /// </remarks>
-            /// <param name="x">The first <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLineSegment"/> to compare.</param>
-            /// <param name="y">The second <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLineSegment"/> to compare.</param>
-            /// <returns>A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>.</returns>
-            public Int32 Compare(SweepLineSegment x, SweepLineSegment y)
+            /// <param name="first">The first <see cref="SweepLineSegment" /> to compare.</param>
+            /// <param name="second">The second <see cref="SweepLineSegment" /> to compare.</param>
+            /// <returns>A signed integer that indicates the relative values of <paramref name="first" /> and <paramref name="second" />.</returns>
+            /// <exception cref="System.InvalidOperationException">Cannot compare non-overlapping sweep line segments.</exception>
+            public Int32 Compare(SweepLineSegment first, SweepLineSegment second)
             {
-                if (LineAlgorithms.Intersects(x.LeftCoordinate, x.RightCoordinate,
-                                              y.LeftCoordinate, y.RightCoordinate))
+                // Comparing non-overlapping segments is not supported.
+                if ((first.LeftCoordinate.X < second.LeftCoordinate.X || first.LeftCoordinate.X > second.RightCoordinate.X) &&
+                    (second.LeftCoordinate.X < first.LeftCoordinate.X || second.LeftCoordinate.X > first.RightCoordinate.X))
+                    throw new InvalidOperationException("Cannot compare non-overlapping sweep line segments.");
+
+                // The segments intersect.
+                SweepLineIntersection intersection = GetIntersection(first, second);
+                if (intersection != SweepLineIntersection.NotExists)
                 {
-                    CoordinateVector xDiff = x.RightCoordinate - x.LeftCoordinate;
+                    CoordinateVector xDiff = first.RightCoordinate - first.LeftCoordinate;
                     Double xGradient = xDiff.X == 0 ? Double.MaxValue : xDiff.Y / xDiff.X;
 
-                    CoordinateVector yDiff = y.RightCoordinate - y.LeftCoordinate;
+                    CoordinateVector yDiff = second.RightCoordinate - second.LeftCoordinate;
                     Double yGradient = yDiff.X == 0 ? Double.MaxValue : yDiff.Y / yDiff.X;
 
                     Int32 result = yGradient.CompareTo(xGradient);
-                    if (result == 0) result = x.LeftCoordinate.X.CompareTo(y.LeftCoordinate.X);
-                    if (result == 0) result = y.LeftCoordinate.Y.CompareTo(x.LeftCoordinate.Y);
-                    if (result == 0) result = x.RightCoordinate.X.CompareTo(y.RightCoordinate.X);
-                    if (result == 0) result = y.RightCoordinate.Y.CompareTo(x.RightCoordinate.Y);
-                    if (HasIntersection(x, y)) result *= -1;
+                    if (result == 0) result = first.LeftCoordinate.X.CompareTo(second.LeftCoordinate.X);
+                    if (result == 0) result = second.LeftCoordinate.Y.CompareTo(first.LeftCoordinate.Y);
+                    if (result == 0) result = first.RightCoordinate.X.CompareTo(second.RightCoordinate.X);
+                    if (result == 0) result = second.RightCoordinate.Y.CompareTo(first.RightCoordinate.Y);
+                    if (result == 0) result = second.Edge.CompareTo(first.Edge);
+                    if (intersection == SweepLineIntersection.Passed) result *= -1;
                     return result;
                 }
 
-                if (x.LeftCoordinate.X < y.LeftCoordinate.X)
+                // The segments does not intersect.
+                if (first.LeftCoordinate.X < second.LeftCoordinate.X)
                 {
-                    Double[] vertColl = new[] { x.LeftCoordinate.Y, x.RightCoordinate.Y };
-                    var leftLineStart = new Coordinate(y.LeftCoordinate.X, vertColl.Min());
-                    var leftLineEnd = new Coordinate(y.LeftCoordinate.X, vertColl.Max());
-                    IList<Coordinate> startIntersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate,
-                                                                                       leftLineStart, leftLineEnd);
-                    if (startIntersections.Count > 0)
-                        return startIntersections[0].Y.CompareTo(y.LeftCoordinate.Y);
-                    else
-                        return x.LeftCoordinate.X.CompareTo(y.LeftCoordinate.X);
+                    Double[] verticalCollection = new[] { first.LeftCoordinate.Y, first.RightCoordinate.Y };
+                    var verticalLineStart = new Coordinate(second.LeftCoordinate.X, verticalCollection.Min());
+                    var verticalLineEnd = new Coordinate(second.LeftCoordinate.X, verticalCollection.Max());
+                    IList<Coordinate> startIntersections = LineAlgorithms.Intersection(first.LeftCoordinate, first.RightCoordinate,
+                                                                                       verticalLineStart, verticalLineEnd);
+                    return startIntersections[0].Y.CompareTo(second.LeftCoordinate.Y);
                 }
 
-                if (x.LeftCoordinate.X > y.LeftCoordinate.X)
+                if (first.LeftCoordinate.X > second.LeftCoordinate.X)
                 {
-                    Double[] vertColl = new[] { y.LeftCoordinate.Y, y.RightCoordinate.Y };
-                    var leftLineStart = new Coordinate(x.LeftCoordinate.X, vertColl.Min());
-                    var leftLineEnd = new Coordinate(x.LeftCoordinate.X, vertColl.Max());
-                    IList<Coordinate> startIntersections = LineAlgorithms.Intersection(leftLineStart, leftLineEnd,
-                                                                                       y.LeftCoordinate, y.RightCoordinate);
+                    Double[] verticalCollection = new[] { second.LeftCoordinate.Y, second.RightCoordinate.Y };
+                    var verticalLineStart = new Coordinate(first.LeftCoordinate.X, verticalCollection.Min());
+                    var verticalLineEnd = new Coordinate(first.LeftCoordinate.X, verticalCollection.Max());
+                    IList<Coordinate> startIntersections = LineAlgorithms.Intersection(verticalLineStart, verticalLineEnd,
+                                                                                       second.LeftCoordinate, second.RightCoordinate);
 
-                    if (startIntersections.Count > 0)
-                        return x.LeftCoordinate.Y.CompareTo(startIntersections[0].Y);
-                    else
-                        return x.LeftCoordinate.X.CompareTo(y.LeftCoordinate.X);
+                    return first.LeftCoordinate.Y.CompareTo(startIntersections[0].Y);
                 }
 
-                return x.LeftCoordinate.Y.CompareTo(y.LeftCoordinate.Y);
+                // first.LeftCoordinate.X == second.LeftCoordinate.X
+                return first.LeftCoordinate.Y.CompareTo(second.LeftCoordinate.Y);
             }
 
             #endregion
@@ -115,78 +155,69 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Public methods
 
             /// <summary>
-            /// Determines whether an intersection point has been passed by the sweepline between the 2 given arguments.
+            /// Gets the intersection type between the two given sweep line segments.
             /// </summary>
-            /// <param name="x">First sweepline segment.</param>
-            /// <param name="y">Second sweepline segment.</param>
-            /// <returns><c>true</c> if an intersection point has been passed by the sweepline between the 2 given arguments; otherwise, <c>false</c>.</returns>
-            public Boolean HasIntersection(SweepLineSegment x, SweepLineSegment y)
+            /// <param name="x">First sweep line segment.</param>
+            /// <param name="y">Second sweep line segment.</param>
+            /// <returns>The type of intersection that exists between the two sweep line segments, considering the position of the sweepline.</returns>
+            public SweepLineIntersection GetIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                if (x.RightCoordinate.X <= y.RightCoordinate.X)
-                {
-                    try
-                    {
-                        return _intersections[x].Contains(y);
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        return false;
-                    }
-                }
-                if (y.RightCoordinate.X <= x.RightCoordinate.X)
-                {
-                    try
-                    {
-                        return _intersections[y].Contains(x);
-                    }
-                    catch (KeyNotFoundException)
-                    {
-                        return false;
-                    }
-                }
-                return false;
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(
+                    x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate);
+
+                if (intersections.Count == 0)
+                    return SweepLineIntersection.NotExists;
+
+                if (intersections[0].X < _sweepLinePosition)
+                    return SweepLineIntersection.Passed;
+
+                if (intersections[0].X > _sweepLinePosition)
+                    return SweepLineIntersection.NotPassed;
+
+                return (_intersections.Contains(Tuple.Create(x, y)) || _intersections.Contains(Tuple.Create(y, x)))
+                    ? SweepLineIntersection.Passed
+                    : SweepLineIntersection.NotPassed;
             }
 
             /// <summary>
-            /// Registers a passed intersection point by the sweepline between the 2 given arguments.
+            /// Registers a passed intersection point by the sweep line between the two given arguments.
             /// </summary>
-            /// <param name="x">First sweepline segment.</param>
-            /// <param name="y">Second sweepline segment.</param>
-            public void AddIntersection(SweepLineSegment x, SweepLineSegment y)
+            /// <remarks>
+            /// The position of the sweep line is updated when necessary.
+            /// </remarks>
+            /// <param name="x">First sweep line segment.</param>
+            /// <param name="y">Second sweep line segment.</param>
+            public void PassIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                if (x.RightCoordinate.X <= y.RightCoordinate.X)
-                {
-                    if (!_intersections.ContainsKey(x))
-                        _intersections.Add(x, new HashSet<SweepLineSegment>());
-                    _intersections[x].Add(y);
-                }
-                if (y.RightCoordinate.X <= x.RightCoordinate.X)
-                {
-                    if (!_intersections.ContainsKey(y))
-                        _intersections.Add(y, new HashSet<SweepLineSegment>());
-                    _intersections[y].Add(x);
-                }
-            }
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(
+                    x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate);
 
-            /// <summary>
-            /// Removes the passed intersection points registered to the <paramref name="segment"/> as a key.
-            /// </summary>
-            /// <param name="segment">The key segment.</param>
-            public void RemoveIntersection(SweepLineSegment segment)
-            {
-                _intersections.Remove(segment);
+                if (intersections.Count == 0)
+                    return;
+
+                if (intersections[0].X > _sweepLinePosition)
+                {
+                    _sweepLinePosition = intersections[0].X;
+                    _intersections.Clear();
+                }
+
+                _intersections.Add(Tuple.Create(x, y));
+                _intersections.Add(Tuple.Create(y, x));
             }
 
             #endregion
         }
 
         /// <summary>
-        /// Represents a Sweep line tree.
+        /// Represents a sweep line tree.
         /// </summary>
         private sealed class SweepLineTree : AvlTree<SweepLineSegment, SweepLineSegment>
         {
             #region Private fields
 
+            /// <summary>
+            /// The currently selected node.
+            /// </summary>
             private Node _currentNode;
 
             #endregion
@@ -194,7 +225,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Public properties
 
             /// <summary>
-            /// Gets the current Sweep line segment.
+            /// Gets the current sweep line segment.
             /// </summary>
             public SweepLineSegment Current { get { return _currentNode.Key; } }
 
@@ -203,7 +234,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Constructors
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLine.SweepLineTree"/> class.
+            /// Initializes a new instance of the <see cref="SweepLineTree" /> class.
             /// </summary>
             public SweepLineTree() : base(new SweepLineSegmentComparer()) { _currentNode = null; }
 
@@ -215,7 +246,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// Inserts the specified segment to the tree.
             /// </summary>
             /// <param name="segment">The segment.</param>
-            /// <exception cref="System.ArgumentNullException">segment;The segment is null.</exception>
+            /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
             public void Insert(SweepLineSegment segment)
             {
                 if (segment == null)
@@ -262,7 +293,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             }
 
             /// <summary>
-            /// Gets the previous (below) <see cref="SweepLineSegment"/> for the <see cref="Current"/> one.
+            /// Gets the previous (below) <see cref="SweepLineSegment" /> for the <see cref="Current" /> one.
             /// </summary>
             /// <returns>The previous segment.</returns>
             public SweepLineSegment GetPrev()
@@ -298,7 +329,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             }
 
             /// <summary>
-            /// Gets the next (above) <see cref="SweepLineSegment"/> for the <see cref="Current"/> one.
+            /// Gets the next (above) <see cref="SweepLineSegment" /> for the <see cref="Current" /> one.
             /// </summary>
             /// <returns>The next segment.</returns>
             public SweepLineSegment GetNext()
@@ -341,10 +372,24 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
         #region Private fields
 
+        /// <summary>
+        /// The source coordinates.
+        /// </summary>
         private readonly IList<Coordinate> _source;
+
+        /// <summary>
+        /// The list of endpoint indices.
+        /// </summary>
         private readonly IList<Int32> _endpoints;
 
+        /// <summary>
+        /// The sweep line tree.
+        /// </summary>
         private readonly SweepLineTree _tree;
+
+        /// <summary>
+        /// The coordinate comparer.
+        /// </summary>
         private readonly IComparer<Coordinate> _coordinateComparer;
 
         #endregion
@@ -352,7 +397,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Private properties
 
         /// <summary>
-        /// Gets whether the source of the <see cref="SweepLine"/> contains any closed line string.
+        /// Gets whether the source of the <see cref="SweepLine" /> contains any closed line string.
         /// </summary>
         private Boolean HasSourcedClosed
         {
@@ -364,9 +409,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLine"/> class.
+        /// Initializes a new instance of the <see cref="SweepLine" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a line string.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public SweepLine(IList<Coordinate> source)
         {
             if (source == null)
@@ -379,10 +425,12 @@ namespace ELTE.AEGIS.Collections.SweepLine
             if (source.Count >= 2 && source.First() == source.Last())
                 _endpoints = new List<Int32> { 0, source.Count - 2 };
         }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.SweepLine"/> class.
+        /// Initializes a new instance of the <see cref="SweepLine" /> class.
         /// </summary>
         /// <param name="source">The source coordinates.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public SweepLine(IEnumerable<IList<Coordinate>> source)
         {
             if (source == null)
@@ -413,14 +461,12 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Public methods
 
         /// <summary>
-        /// Adds a new event to the Sweep line.
+        /// Adds a new endpoint event to the sweep line.
         /// </summary>
         /// <param name="e">The event.</param>
-        /// <returns>The Sweep line segment created by addition of <paramref name="event" />.</returns>
+        /// <returns>The sweep line segment created by addition of <paramref name="event" />.</returns>
         /// <exception cref="System.ArgumentNullException">e;The event is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The event is not a left event.;e
-        /// or
         /// The edge of the event is less than 0.;e
         /// or
         /// The edge of the event is greater than the number of edges in the source.;e
@@ -431,8 +477,6 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
             if (e == null)
                 throw new ArgumentNullException("e", "The event is null.");
-            if (e.Type != EventType.Left)
-                throw new ArgumentException("The event is not a left event.", "e");
             if (e.Edge < 0)
                 throw new ArgumentException("The edge of the event is less than 0.", "e");
             if (e.Edge >= _source.Count - 1)
@@ -468,18 +512,38 @@ namespace ELTE.AEGIS.Collections.SweepLine
             }
             return segment;
         }
+
         /// <summary>
-        /// Searches the Sweep line for an event.
+        /// Adds a new intersection event to the sweep line.
+        /// Performs the order modifying effect of a possible intersection point between two directly adjacent segments.
+        /// </summary>
+        /// <remarks>
+        /// An intersection event may become invalid if the order of the segments were altered or the intersection point has been already passed by the sweep line since the enqueuing of the event.
+        /// This method is safe to be applied for invalid intersections.
+        /// </remarks>
+        /// <param name="e">The event.</param>
+        /// <returns><c>true</c> if a new, valid intersection point was found and passed between <paramref name="x" /> and <paramref name="y" />; otherwise <c>false</c>.</returns>
+        /// <exception cref="InvalidOperationException">Segment <paramref name="x" /> and <paramref name="y" /> do not intersect each other.</exception>
+        public Boolean Add(IntersectionEvent e)
+        {
+            return Intersect(e.Below, e.Above);
+        }
+
+        /// <summary>
+        /// Searches the sweep line for an endpoint event.
         /// </summary>
         /// <param name="e">The event.</param>
         /// <returns>The segment associated with the event.</returns>
         /// <exception cref="System.ArgumentNullException">e;The event is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The edge of the event is less than 0.
+        /// or
+        /// The edge of the event is greater than the number of edges in the source.
+        /// </exception>
         public SweepLineSegment Search(EndPointEvent e)
         {
             if (e == null)
                 throw new ArgumentNullException("e", "The event is null.");
-            if (e.Type != EventType.Right)
-                throw new ArgumentException("The event is not a right event.", "e");
             if (e.Edge < 0)
                 throw new ArgumentException("The edge of the event is less than 0.", "e");
             if (e.Edge >= _source.Count - 1)
@@ -506,11 +570,12 @@ namespace ELTE.AEGIS.Collections.SweepLine
             else
                 return null;
         }
+
         /// <summary>
-        /// Removes the specified Sweep line segment.
+        /// Removes the specified sweep line segment.
         /// </summary>
         /// <param name="segment">The segment.</param>
-        /// <exception cref="System.ArgumentNullException">segment;The segment is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
         public void Remove(SweepLineSegment segment)
         {
             if (segment == null)
@@ -524,36 +589,33 @@ namespace ELTE.AEGIS.Collections.SweepLine
             SweepLineSegment segmentBelow = _tree.GetPrev();
 
             if (segmentAbove != null)
-            {
                 segmentAbove.Below = segment.Below;
-            }
             if (segmentBelow != null)
-            {
                 segmentBelow.Above = segment.Above;
-            }
 
             _tree.Remove(segment);
-
-            var comparer = ((SweepLineSegmentComparer)_tree.Comparer);
-            comparer.RemoveIntersection(segment);
         }
 
         /// <summary>
         /// Performs the order modifying effect of a possible intersection point between two directly adjacent segments.
         /// </summary>
         /// <remarks>
-        /// An intersection event may become invalid if the order of the segments were altered or the intersection point have been already passed by the sweepline since the enqueuing of the event.
+        /// An intersection event may become invalid if the order of the segments were altered or the intersection point has been already passed by the sweep line since the enqueuing of the event.
         /// This method is safe to be applied for invalid intersections.
         /// </remarks>
         /// <param name="x">First segment.</param>
         /// <param name="y">Second segment.</param>
-        /// <returns><c>true</c> if a new, valid intersection point was found and passed between <paramref name="x"/> and <paramref name="y"/>; otherwise <c>false</c>.</returns>
-        /// <exception cref="InvalidOperationException">Segment <paramref name="x"/> and <paramref name="y"/> do not intersect each other.</exception>
+        /// <returns><c>true</c> if a new, valid intersection point was found and passed between <paramref name="x" /> and <paramref name="y" />; otherwise <c>false</c>.</returns>
+        /// <exception cref="InvalidOperationException">Segment <paramref name="x" /> and <paramref name="y" /> do not intersect each other.</exception>
         public Boolean Intersect(SweepLineSegment x, SweepLineSegment y)
         {
-            if (!LineAlgorithms.Intersects(x.LeftCoordinate, x.RightCoordinate,
-                                           y.LeftCoordinate, y.RightCoordinate))
+            var comparer = ((SweepLineSegmentComparer)_tree.Comparer);
+            SweepLineIntersection intersection = comparer.GetIntersection(x, y);
+
+            if (intersection == SweepLineIntersection.NotExists)
                 throw new InvalidOperationException("The given segments do not intersect each other.");
+            if (intersection == SweepLineIntersection.Passed)
+                return false;
 
             /*
              * Segment order before intersection: belowBelow <-> below <-> above <-> aboveAbove
@@ -573,13 +635,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
             else
                 return false;
 
-            var comparer = ((SweepLineSegmentComparer)_tree.Comparer);
-            if (comparer.HasIntersection(x, y))
-                return false;
-
             _tree.Remove(x);
             _tree.Remove(y);
-            comparer.AddIntersection(x, y);
+            comparer.PassIntersection(x, y);
             _tree.Insert(x);
             _tree.Insert(y);
 
@@ -600,11 +658,11 @@ namespace ELTE.AEGIS.Collections.SweepLine
         }
 
         /// <summary>
-        /// Determines whether 2 edges of a line string or a polygon shell are adjacent.
+        /// Determines whether two edges of a line string or a polygon shell are adjacent.
         /// </summary>
         /// <param name="xEdge">Identifier of the first edge.</param>
         /// <param name="yEdge">Identifier of the second edge.</param>
-        /// <returns><c>true</c> if the 2 edges are adjacent; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the two edges are adjacent; otherwise, <c>false</c>.</returns>
         public Boolean IsAdjacent(Int32 xEdge, Int32 yEdge)
         {
             if (Math.Abs(xEdge - yEdge) == 1)
