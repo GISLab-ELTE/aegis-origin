@@ -26,12 +26,27 @@ namespace ELTE.AEGIS.Algorithms
     /// </summary>
     public class ShamosHoeyAlgorithm
     {
-        #region Protected fields
+        #region Private fields
 
-        protected PresortedEventQueue _eventQueue;
-        protected SweepLine _sweepLine;
-        protected Boolean _hasResult;
-        protected Boolean _result;
+        /// <summary>
+        /// The event queue.
+        /// </summary>
+        private PresortedEventQueue _eventQueue;
+
+        /// <summary>
+        /// The sweep line.
+        /// </summary>
+        private SweepLine _sweepLine;
+
+        /// <summary>
+        /// A value indicating whether the result is computed.
+        /// </summary>
+        private Boolean _hasResult;
+
+        /// <summary>
+        /// The result of the algorithm.
+        /// </summary>
+        private Boolean _result;
 
         #endregion
 
@@ -48,7 +63,7 @@ namespace ELTE.AEGIS.Algorithms
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Algorithms.Spatial.ShamosHoeyAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
         /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
@@ -62,10 +77,10 @@ namespace ELTE.AEGIS.Algorithms
             _hasResult = false;
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Algorithms.Spatial.ShamosHoeyAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public ShamosHoeyAlgorithm(IEnumerable<IList<Coordinate>> source)
         {
             if (source == null)
@@ -76,42 +91,9 @@ namespace ELTE.AEGIS.Algorithms
             _hasResult = false;
         }
 
-
         #endregion
 
         #region Public methods
-
-        /// <summary>
-        /// Computes whether one or more line strings specified by coordinates intersects with each other.
-        /// </summary>
-        /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
-        public void Compute(IList<Coordinate> source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _eventQueue = new PresortedEventQueue(source);
-            _sweepLine = new SweepLine(source);
-            _hasResult = false;
-            Compute();
-        }
-
-        /// <summary>
-        /// Computes whether one or more line strings specified by coordinates intersects with each other.
-        /// </summary>
-        /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
-        public void Compute(IEnumerable<IList<Coordinate>> source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _eventQueue = new PresortedEventQueue(source);
-            _sweepLine = new SweepLine(source);
-            _hasResult = false;
-            Compute();
-        }
 
         /// <summary>
         /// Computes whether one or more line strings specified by coordinates intersects with each other.
@@ -126,7 +108,7 @@ namespace ELTE.AEGIS.Algorithms
             while (e != null)
             {
                 switch (e.Type)
-                { 
+                {
                     case EventType.Left:
                         segment = _sweepLine.Add(e);
                         if (segment.Above != null && _sweepLine.IsAdjacent(segment.Edge, segment.Above.Edge) && segment.LeftCoordinate == segment.Above.LeftCoordinate)
@@ -181,17 +163,18 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static Boolean Intersects(IList<Coordinate> source)
         {
             return new ShamosHoeyAlgorithm(source).Result;
         }
+
         /// <summary>
         /// Determines whether line strings specified by coordinates intersect.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static Boolean Intersects(IEnumerable<IList<Coordinate>> source)
         {
             return new ShamosHoeyAlgorithm(source).Result;
