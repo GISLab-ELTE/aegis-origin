@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using ELTE.AEGIS.Numerics;
 using System;
@@ -419,6 +420,266 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             return coordinateOrientation;
+        }
+
+        #endregion
+
+        #region Containment computation
+
+        /// <summary>
+        /// Computes whether the given coordinate is on the boundary of the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is on the boundary of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// </exception>
+        public static Boolean OnBoundary(IList<Coordinate> shell, Coordinate coordinate)
+        {
+            return OnBoundary(shell, null, coordinate);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is on the boundary of the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon <paramref name="shell" />.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is on the boundary of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// or
+        /// A hole contains less than 3 distinct coordinates.
+        /// or
+        /// The first and last coordinate of a hole do not match.
+        /// </exception>
+        public static Boolean OnBoundary(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell contains less than 3 distinct coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and last coordinate of the shell do not match.", "shell");
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    if (hole.Count < 4)
+                        throw new ArgumentException("A hole contains less than 3 distinct coordinates.", "holes");
+                    if (!hole[0].Equals(hole[hole.Count - 1]))
+                        throw new ArgumentException("The first and the last coordinate of a hole do not match.", "holes");
+                }
+            }
+
+            // Check whether the coordinate is on the shell of the polygon.
+            for (Int32 i = 0; i < shell.Count - 1; ++i)
+                if (LineAlgorithms.Contains(shell[i], shell[i + 1], coordinate))
+                    return true;
+
+            // Check whether the coordinate is on the shell of any holes in the polygon.
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    for (Int32 i = 0; i < hole.Count - 1; ++i)
+                        if (LineAlgorithms.Contains(hole[i], hole[i + 1], coordinate))
+                            return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is inside the polygon.
+        /// </summary>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is inside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// </exception>
+        public static Boolean InInterior(IList<Coordinate> shell, Coordinate coordinate)
+        {
+            return InInterior(shell, null, coordinate);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is inside the polygon.
+        /// </summary>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell (or its holes) are neither inside or outside the polygon.
+        /// </remarks>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon <paramref name="shell"/>.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is inside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// or
+        /// A hole contains less than 3 distinct coordinates.
+        /// or
+        /// The first and last coordinate of a hole do not match.
+        /// </exception>
+        public static Boolean InInterior(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell contains less than 3 distinct coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and last coordinate of the shell do not match.", "shell");
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    if (hole.Count < 4)
+                        throw new ArgumentException("A hole contains less than 3 distinct coordinates.", "holes");
+                    if (!hole[0].Equals(hole[hole.Count - 1]))
+                        throw new ArgumentException("The first and the last coordinate of a hole do not match.", "holes");
+                }
+            }
+
+            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, coordinate);
+            algorithm.Compute();
+
+            // Probably the Winding Number algorithm already detected that the coordinate is on the boundary of the polygon shell.
+            if (algorithm.IsOnBoundary.HasValue && algorithm.IsOnBoundary.Value)
+                return false;
+
+            // The value of notExterior is true if the coordinate is not outside the polygon - but it can also be on the boundary.
+            Boolean notExterior = algorithm.Result != 0;
+
+            // If the coordinate is not outside, the holes are also required to be checked.
+            if (notExterior && holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    algorithm = new WindingNumberAlgorithm(hole, coordinate);
+                    algorithm.Compute();
+
+                    // If the coordinate is inside a hole (or probably on its boundary), then it cannot be inside the polygon.
+                    if (algorithm.Result != 0)
+                        return false;
+                }
+            }
+
+            // Finally check for sure that the coordinate is not on any boundaries.
+            if (OnBoundary(shell, holes, coordinate))
+                return false;
+
+            return notExterior;
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is outside the polygon.
+        /// </summary>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// </exception>
+        public static Boolean InExterior(IList<Coordinate> shell, Coordinate coordinate)
+        {
+            return InExterior(shell, null, coordinate);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is outside the polygon.
+        /// </summary>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell (or its holes) are neither inside or outside the polygon.
+        /// </remarks>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon <paramref name="shell"/>.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell contains less than 3 distinct coordinates.
+        /// or
+        /// The first and the last coordinate of the shell do not match.
+        /// or
+        /// A hole contains less than 3 distinct coordinates.
+        /// or
+        /// The first and last coordinate of a hole do not match.
+        /// </exception>
+        public static Boolean InExterior(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell contains less than 3 distinct coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and last coordinate of the shell do not match.", "shell");
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    if (hole.Count < 4)
+                        throw new ArgumentException("A hole contains less than 3 distinct coordinates.", "holes");
+                    if (!hole[0].Equals(hole[hole.Count - 1]))
+                        throw new ArgumentException("The first and the last coordinate of a hole do not match.", "holes");
+                }
+            }
+
+            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, coordinate);
+            algorithm.Compute();
+
+            // Probably the Winding Number algorithm already detected that the coordinate is on the boundary of the polygon shell.
+            if (algorithm.IsOnBoundary.HasValue && algorithm.IsOnBoundary.Value)
+                return false;
+
+            // The value of notExterior is true if the coordinate is not outside the polygon - but it can also be on the boundary.
+            Boolean notExterior = algorithm.Result != 0;
+
+            // If the coordinate is not outside, the holes are also required to be checked.
+            if (notExterior && holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    algorithm = new WindingNumberAlgorithm(hole, coordinate);
+                    algorithm.Compute();
+
+                    // Probably the Winding Number algorithm already detected that the coordinate is on the boundary of a hole shell.
+                    if (algorithm.IsOnBoundary.HasValue && algorithm.IsOnBoundary.Value)
+                        return false;
+
+                    // If the coordinate is inside a hole (or probably on its boundary), then it cannot be outside the polygon.
+                    if (algorithm.Result != 0)
+                        notExterior = false;
+                }
+            }
+
+            // Finally check for sure that the coordinate is not on any boundaries.
+            if (OnBoundary(shell, holes, coordinate))
+                return false;
+
+            return !notExterior;
         }
 
         #endregion
