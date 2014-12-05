@@ -33,11 +33,30 @@ namespace ELTE.AEGIS.Algorithms
     {
         #region Private fields
 
+        /// <summary>
+        /// The polygon shell.
+        /// </summary>
         private IList<Coordinate> _shell;
+
+        /// <summary>
+        /// Thge coordinate.
+        /// </summary>
         private Coordinate _coordinate;
+
+        /// <summary>
+        /// A value indicating whether to verify if the given coordinate is on the shell.
+        /// </summary>
         private Boolean _verifyBoundary;
-        private Int32 _result;
+
+        /// <summary>
+        /// A value indicating whether the result is computed.
+        /// </summary>
         private Boolean _hasResult;
+
+        /// <summary>
+        /// The result of the algorithm.
+        /// </summary>
+        private Int32 _result;
 
         #endregion
 
@@ -56,9 +75,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Gets or sets the coordinate for which the Winding Number is computed.
         /// </summary>
-        /// <value>
-        /// The coordinate.
-        /// </value>
+        /// <value>The coordinate.</value>
         public Coordinate Coordinate
         {
             get { return _coordinate; }
@@ -155,18 +172,18 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="verifyBoundary">A value indicating whether to verify if the coordinate is on the boundary.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// The shell must contain at least 3 different coordinates.
+        /// The shell contains less than 3 distinct coordinates.
         /// or
-        /// The first and the last coordinates must be equal.
+        /// The first and last coordinates of the shell do not match.
         /// </exception>
         public void Compute(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary = false)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
             if (shell.Count < 4)
-                throw new ArgumentException("The shell must contain at least 3 different coordinates.", "shell");
+                throw new ArgumentException("The shell contains less than 3 distinct coordinates.", "shell");
             if (!shell[0].Equals(shell[shell.Count - 1]))
-                throw new ArgumentException("The first and the last coordinates must be equal.", "shell");
+                throw new ArgumentException("The first and last coordinates of the shell do not match.", "shell");
 
             _shell = shell;
             _coordinate = coordinate;
