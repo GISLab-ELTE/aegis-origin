@@ -509,7 +509,7 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
             else
             {
                 foreach (RTreeNode child in node.Children)
-                    if (Envelope.Overlaps(envelope.Minimum, envelope.Maximum, child.Envelope.Minimum, child.Envelope.Maximum))
+                    if (envelope.Intersects(child.Envelope))
                         SearchNode(child, envelope, geometries);
             }
         }

@@ -308,9 +308,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
         public static Boolean Intersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
-            if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
-                return false;
-
             IList<Coordinate> intersection;
             return Intersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
         }
@@ -325,9 +322,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
         public static Boolean InternalIntersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
-            if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
-                return false;
-
             IList<Coordinate> intersection;
             return InternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
         }
@@ -343,9 +337,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
         public static Boolean Intersects(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
-            if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
-                return false;
-
             Coordinate intersection;
             return Intersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection);
         }
@@ -360,9 +351,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
         public static Boolean IntersectsWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
-            if (!lineStart.IsValid || !lineEnd.IsValid || !planeCoordinate.IsValid || !planeNormalVector.IsValid)
-                return false;
-
             IList<Coordinate> intersection;
             return IntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection);
         }
@@ -382,9 +370,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
         public static IList<Coordinate> Intersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
-            if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
-                return EmptyList;
-
             IList<Coordinate> intersection;
             if (Intersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
                 return intersection;
@@ -402,9 +387,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The coordinate of the intersection. The coordinate is <c>Undefined</c> if there is no intersection.</returns>
         public static Coordinate Intersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
-            if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
-                return Coordinate.Undefined;
-
             Coordinate intersection;
             if (Intersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection))
                 return intersection;
@@ -422,9 +404,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
         public static IList<Coordinate> InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
-            if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
-                return EmptyList;
-
             IList<Coordinate> intersection;
             if (InternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
                 return intersection;
@@ -442,9 +421,6 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the line and the plane intersect; otherwise, <c>false</c>.</returns>
         public static IList<Coordinate> IntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
-            if (!lineStart.IsValid || !lineEnd.IsValid || !planeCoordinate.IsValid || !planeNormalVector.IsValid)
-                return EmptyList;
-
             IList<Coordinate> intersection;
             if (IntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection))
                 return intersection;
@@ -577,11 +553,11 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             // check for the envelope
-            if (!Envelope.Overlaps(Coordinate.LowerBound(firstLineStart, firstLineEnd), Coordinate.UpperBound(firstLineStart, firstLineEnd),
-                                   Coordinate.LowerBound(secondLineStart, secondLineEnd), Coordinate.UpperBound(secondLineStart, secondLineEnd)))
+            if (!Envelope.Intersects(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd))
             {
                 return false;
             }
+
             // compute the direction vectors
             CoordinateVector u = firstLineEnd - firstLineStart;
             CoordinateVector v = secondLineEnd - secondLineStart;
@@ -741,8 +717,7 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             // check for the envelope
-            if (!Envelope.Overlaps(Coordinate.LowerBound(firstLineStart, firstLineEnd), Coordinate.UpperBound(firstLineStart, firstLineEnd),
-                                   Coordinate.LowerBound(secondLineStart, secondLineEnd), Coordinate.UpperBound(secondLineStart, secondLineEnd)))
+            if (!Envelope.Intersects(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd))
             {
                 return false;
             }
