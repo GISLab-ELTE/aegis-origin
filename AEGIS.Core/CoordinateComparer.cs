@@ -28,18 +28,18 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Compares two <see cref="Coordinate" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
         /// </summary>
-        /// <param name="x">The first <see cref="Coordinate" /> to compare.</param>
-        /// <param name="y">The second <see cref="Coordinate" /> to compare.</param>
-        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
-        public Int32 Compare(Coordinate x, Coordinate y)
+        /// <param name="first">The first <see cref="Coordinate" /> to compare.</param>
+        /// <param name="second">The second <see cref="Coordinate" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="first" /> and <paramref name="second" />.</returns>
+        public Int32 Compare(Coordinate first, Coordinate second)
         {
-            if (x.X < y.X)
+            if (first.X < second.X)
                 return -1;
-            if (x.X > y.X)
+            if (first.X > second.X)
                 return 1;
-            if (x.Y < y.Y)
+            if (first.Y < second.Y)
                 return -1;
-            return x.Y > y.Y ? 1 : 0;
+            return first.Y > second.Y ? 1 : 0;
         }
 
         #endregion

@@ -29,7 +29,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
     /// </summary>
     public class Event : IComparable<Event>
     {
-        #region Public fields
+        #region Public properties
 
         /// <summary>
         /// Gets or sets the polygon vertex associated with the event.

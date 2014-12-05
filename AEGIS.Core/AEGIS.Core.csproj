@@ -73,7 +73,6 @@
     <Compile Include="Collections\SearchTree\ISearchTreeEnumerator.cs" />
     <Compile Include="Collections\SearchTree\ISearchTree.cs" />
     <Compile Include="Collections\SearchTree\RedBlackTree.cs" />
-    <Compile Include="Collections\SweepLine\CoordinateComparer.cs" />
     <Compile Include="Collections\SweepLine\Event.cs" />
     <Compile Include="Collections\SweepLine\EventQueue.cs" />
     <Compile Include="Collections\SweepLine\PresortedEventQueue.cs" />
