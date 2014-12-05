@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -20,12 +20,12 @@ using System.Linq;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents an evelope in spatial coordinate space.
+    /// Represents an envelope in spatial coordinate space.
     /// </summary>
 	[Serializable]
     public class Envelope : IEquatable<Envelope>
     {
-        #region Static instances
+        #region Public static instances
 
         /// <summary>
         /// Represents the undefined <see cref="Envelope" /> value. This field is constant.
@@ -39,86 +39,79 @@ namespace ELTE.AEGIS
 
         #endregion
 
-        #region Private fields
-
-        private readonly Coordinate _minimum;
-        private readonly Coordinate _maximum;
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
         /// Gets the minimum X value.
         /// </summary>
         /// <value>The minimum X value.</value>
-        public Double MinX { get { return _minimum.X; } }
+        public Double MinX { get { return Minimum.X; } }
 
         /// <summary>
         /// Gets the minimum Y value.
         /// </summary>
         /// <value>The minimum Y value.</value>
-        public Double MinY { get { return _minimum.Y; } }
+        public Double MinY { get { return Minimum.Y; } }
 
         /// <summary>
         /// Gets the minimum Z value.
         /// </summary>
         /// <value>The minimum Z value.</value>
-        public Double MinZ { get { return _minimum.Z; } }
+        public Double MinZ { get { return Minimum.Z; } }
 
         /// <summary>
         /// Gets the maximum X value.
         /// </summary>
         /// <value>The maximum X value.</value>
-        public Double MaxX { get { return _maximum.X; } }
+        public Double MaxX { get { return Maximum.X; } }
 
         /// <summary>
         /// Gets the maximum Y value.
         /// </summary>
         /// <value>The maximum Y value.</value>
-        public Double MaxY { get { return _maximum.Y; } }
+        public Double MaxY { get { return Maximum.Y; } }
 
         /// <summary>
         /// Gets the maximum Z value.
         /// </summary>
         /// <value>The maximum Z value.</value>
-        public Double MaxZ { get { return _maximum.Z; } }
+        public Double MaxZ { get { return Maximum.Z; } }
 
         /// <summary>
         /// Gets the minimal coordinate in all dimensions.
         /// </summary>
         /// <value>The minimal coordinate in all dimensions.</value>
-        public Coordinate Minimum { get { return _minimum; } }
+        public Coordinate Minimum { get; private set; }
 
         /// <summary>
         /// Gets the maximal coordinate in all dimensions.
         /// </summary>
         /// <value>The maximal coordinate in all dimensions.</value>
-        public Coordinate Maximum { get { return _maximum; } }
+        public Coordinate Maximum { get; private set; }
 
         /// <summary>
         /// Gets the center coordinate in all dimensions.
         /// </summary>
         /// <value>The center coordinate in all dimensions.</value>
-        public Coordinate Center { get { return new Coordinate((_minimum.X + _maximum.X) / 2, (_minimum.Y + _maximum.Y) / 2, (_minimum.Z + _maximum.Z) / 2); } }
+        public Coordinate Center { get { return new Coordinate((Minimum.X + Maximum.X) / 2, (Minimum.Y + Maximum.Y) / 2, (Minimum.Z + Maximum.Z) / 2); } }
 
         /// <summary>
         /// Indicates whether the extent of the instance is zero in all dimensions.
         /// </summary>
         /// <value><c>true</c> if the extent is zero in all dimensions; otherwise, <c>false</c>.</value>
-        public Boolean IsEmpty { get { return _minimum.Equals(_maximum); } }
+        public Boolean IsEmpty { get { return Minimum.Equals(Maximum); } }
 
         /// <summary>
         /// Indicates whether the instance has valid coordinates.
         /// </summary>
         /// <value><c>true</c> if all coordinates are numbers; otherwise, <c>false</c>.</value>
-        public Boolean IsValid { get { return _minimum.IsValid && _maximum.IsValid; } }
+        public Boolean IsValid { get { return Minimum.IsValid && Maximum.IsValid; } }
 
         /// <summary>
         /// Indicates whether the instance has zero extent in the Z dimension.
         /// </summary>
         /// <value><c>true</c> if the instance has zero extent in the Z dimension; otherwise, <c>false</c>.</value>
-        public Boolean IsPlanar { get { return _minimum.Z == _maximum.Z; } }
+        public Boolean IsPlanar { get { return Minimum.Z == Maximum.Z; } }
 
         /// <summary>
         /// Gets the surface of the rectangle.
@@ -129,9 +122,9 @@ namespace ELTE.AEGIS
             get
             {
                 if (IsPlanar)
-                    return (_maximum.X - _minimum.X) * (_maximum.Y - _minimum.Y);
+                    return (Maximum.X - Minimum.X) * (Maximum.Y - Minimum.Y);
                 else
-                    return 2 * (_maximum.X - _minimum.X) * (_maximum.Y - _minimum.Y) + 2 * (_maximum.X - _minimum.X) * (_maximum.Z - _minimum.Z) + 2 * (_maximum.Y - _minimum.Y) * (_maximum.Z - _minimum.Z);
+                    return 2 * (Maximum.X - Minimum.X) * (Maximum.Y - Minimum.Y) + 2 * (Maximum.X - Minimum.X) * (Maximum.Z - Minimum.Z) + 2 * (Maximum.Y - Minimum.Y) * (Maximum.Z - Minimum.Z);
             }
         }
 
@@ -139,7 +132,7 @@ namespace ELTE.AEGIS
         /// Gets the volume of the rectangle.
         /// </summary>
         /// <value>The volume of the rectangle. The volume is zero in case of planar rectangles.</value>
-        public Double Volume { get { return (_maximum.X - _minimum.X) * (_maximum.Y - _minimum.Y) * (_maximum.Z - _minimum.Z); } }
+        public Double Volume { get { return (Maximum.X - Minimum.X) * (Maximum.Y - Minimum.Y) * (Maximum.Z - Minimum.Z); } }
 
         #endregion
 
@@ -156,8 +149,8 @@ namespace ELTE.AEGIS
         /// <param name="secondZ">The second Z coordinate.</param>
         public Envelope(Double firstX, Double secondX, Double firstY, Double secondY, Double firstZ, Double secondZ)
         {
-            _maximum = new Coordinate(Math.Max(firstX, secondX), Math.Max(firstY, secondY), Math.Max(firstZ, secondZ));
-            _minimum = new Coordinate(Math.Min(firstX, secondX), Math.Min(firstY, secondY), Math.Min(firstZ, secondZ));
+            Maximum = new Coordinate(Math.Max(firstX, secondX), Math.Max(firstY, secondY), Math.Max(firstZ, secondZ));
+            Minimum = new Coordinate(Math.Min(firstX, secondX), Math.Min(firstY, secondY), Math.Min(firstZ, secondZ));
         }
 
         #endregion
@@ -171,9 +164,9 @@ namespace ELTE.AEGIS
         /// <returns><c>true</c> if the envelope contains <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
         public Boolean Contains(Coordinate coordinate)
         {
-            return _minimum.X <= coordinate.X && coordinate.X <= _maximum.X &&
-                   _minimum.Y <= coordinate.Y && coordinate.Y <= _maximum.Y &&
-                   _minimum.Z <= coordinate.Z && coordinate.Z <= _maximum.Z;
+            return Minimum.X <= coordinate.X && coordinate.X <= Maximum.X &&
+                   Minimum.Y <= coordinate.Y && coordinate.Y <= Maximum.Y &&
+                   Minimum.Z <= coordinate.Z && coordinate.Z <= Maximum.Z;
         }
 
         /// <summary>
@@ -183,9 +176,94 @@ namespace ELTE.AEGIS
         /// <returns><c>true</c> if the envelope contains <paramref name="other" />; otherwise, <c>false</c>.</returns>
         public Boolean Contains(Envelope other)
         {
-            return _minimum.X <= other._minimum.X && other._maximum.X <= _maximum.X &&
-                   _minimum.Y <= other._minimum.Y && other._maximum.Y <= _maximum.Y &&
-                   _minimum.Z <= other._minimum.Z && other._maximum.Z <= _maximum.Z;
+            if (other == null)
+                return false;
+
+            return Minimum.X <= other.Minimum.X && other.Maximum.X <= Maximum.X &&
+                   Minimum.Y <= other.Minimum.Y && other.Maximum.Y <= Maximum.Y &&
+                   Minimum.Z <= other.Minimum.Z && other.Maximum.Z <= Maximum.Z;
+        }
+
+        /// <summary>
+        /// Determines whether the instance crosses another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope crosses <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Crosses(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return !Disjoint(other) && !Equals(other);
+        }
+
+        /// <summary>
+        /// Determines whether the instance is disjoint from another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope is disjoint from <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Disjoint(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return Maximum.X < other.Minimum.X || Minimum.X > other.Maximum.X ||
+                   Maximum.Y < other.Minimum.Y || Minimum.Y > other.Maximum.Y ||
+                   Maximum.Z < other.Minimum.Z || Minimum.Z > other.Maximum.Z;  
+        }
+
+        /// <summary>
+        /// Determines whether the instance intersects another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope intersects <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Intersects(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return !Disjoint(other);
+        }
+
+        /// <summary>
+        /// Determines whether the instance overlaps another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope overlaps <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Overlaps(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return !Disjoint(other) && !Equals(other);
+        }
+
+        /// <summary>
+        /// Determines whether the instance touches another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope touches <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Touches(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return !Disjoint(other) && (Minimum.X == other.Maximum.X || Maximum.X == other.Minimum.X ||
+                                        Minimum.Y == other.Maximum.Y || Maximum.Y == other.Minimum.Y ||
+                                        Minimum.Z == other.Maximum.Z || Maximum.Z == other.Minimum.Z);
+        }
+
+        /// <summary>
+        /// Determines whether the instance is within another envelope.
+        /// </summary>
+        /// <param name="other">The other envelope.</param>
+        /// <returns><c>true</c> if the envelope is within <paramref name="other" />; otherwise, <c>false</c>.</returns>
+        public Boolean Within(Envelope other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Contains(this);
         }
 
         #endregion
@@ -202,7 +280,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, another)) return false;
             if (ReferenceEquals(this, another)) return true;
 
-            return (_minimum.Equals(another._minimum) && _maximum.Equals(another._maximum));
+            return (Minimum.Equals(another.Minimum) && Maximum.Equals(another.Maximum));
         }
 
         #endregion
@@ -219,7 +297,7 @@ namespace ELTE.AEGIS
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
 
-            return (obj is Envelope && _minimum == ((Envelope)obj)._minimum && _maximum == ((Envelope)obj)._maximum);
+            return (obj is Envelope && Minimum == ((Envelope)obj).Minimum && Maximum == ((Envelope)obj).Maximum);
         }
 
         /// <summary>
@@ -228,7 +306,7 @@ namespace ELTE.AEGIS
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override Int32 GetHashCode()
         {
-            return (_minimum.GetHashCode() >> 2) ^ _maximum.GetHashCode() ^ 190130741;
+            return (Minimum.GetHashCode() >> 2) ^ Maximum.GetHashCode() ^ 190130741;
         }
 
         /// <summary>
@@ -241,16 +319,9 @@ namespace ELTE.AEGIS
                 return "INVALID";
 
             if (IsEmpty)
-                return "EMPTY";
+                return String.Format("EMPTY ({0} {1} {2})", Minimum.X, Minimum.Y, Minimum.Z);
 
-            return "(" + _minimum.X + " " + _minimum.Y + " " + _minimum.Z + ", " + 
-                         _minimum.X + " " + _maximum.Y + " " + _minimum.Z + ", " +
-                         _maximum.X + " " + _maximum.Y + " " + _minimum.Z + ", " +
-                         _maximum.X + " " + _minimum.Y + " " + _minimum.Z + ", " +
-                         _minimum.X + " " + _minimum.Y + " " + _maximum.Z + ", " +
-                         _minimum.X + " " + _maximum.Y + " " + _maximum.Z + ", " +
-                         _maximum.X + " " + _maximum.Y + " " + _maximum.Z + ", " +
-                         _maximum.X + " " + _minimum.Y + " " + _maximum.Z + ")";
+            return String.Format("({0} {1} {2}, {3} {4} {5})", Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
         }
 
         #endregion
@@ -264,6 +335,9 @@ namespace ELTE.AEGIS
         /// <returns>The <see cref="Envelope" /> created from the coordinates.</returns>
         public static Envelope FromCoordinates(params Coordinate[] coordinates)
         {
+            if (coordinates == null || coordinates.Length == 0)
+                return Envelope.Undefined;
+
             return new Envelope(coordinates.Min(coordinate => coordinate.X), coordinates.Max(coordinate => coordinate.X),
                                 coordinates.Min(coordinate => coordinate.Y), coordinates.Max(coordinate => coordinate.Y),
                                 coordinates.Min(coordinate => coordinate.Z), coordinates.Max(coordinate => coordinate.Z));
@@ -276,6 +350,9 @@ namespace ELTE.AEGIS
         /// <returns>The <see cref="Envelope" /> created from the coordinates.</returns>
         public static Envelope FromCoordinates(IEnumerable<Coordinate> coordinates)
         {
+            if (coordinates == null || !coordinates.Any())
+                return Envelope.Undefined;
+
             return new Envelope(coordinates.Min(coordinate => coordinate.X), coordinates.Max(coordinate => coordinate.X),
                                 coordinates.Min(coordinate => coordinate.Y), coordinates.Max(coordinate => coordinate.Y),
                                 coordinates.Min(coordinate => coordinate.Z), coordinates.Max(coordinate => coordinate.Z));
@@ -288,6 +365,9 @@ namespace ELTE.AEGIS
         /// <returns>The <see cref="Envelope" /> created from the envelopes.</returns>
         public static Envelope FromEnvelopes(params Envelope[] envelopes)
         {
+            if (envelopes == null || envelopes.Length == 0)
+                return Envelope.Undefined;
+
             return new Envelope(envelopes.Min(envelope => envelope.Minimum.X), envelopes.Max(envelope => envelope.Maximum.X),
                                 envelopes.Min(envelope => envelope.Minimum.Y), envelopes.Max(envelope => envelope.Maximum.Y),
                                 envelopes.Min(envelope => envelope.Minimum.Z), envelopes.Max(envelope => envelope.Maximum.Z));
@@ -300,6 +380,9 @@ namespace ELTE.AEGIS
         /// <returns>The <see cref="Envelope" /> created from the envelopes.</returns>
         public static Envelope FromEnvelopes(IEnumerable<Envelope> envelopes)
         {
+            if (envelopes == null || !envelopes.Any())
+                return Envelope.Undefined;
+
             return new Envelope(envelopes.Min(envelope => envelope.Minimum.X), envelopes.Max(envelope => envelope.Maximum.X),
                                 envelopes.Min(envelope => envelope.Minimum.Y), envelopes.Max(envelope => envelope.Maximum.Y),
                                 envelopes.Min(envelope => envelope.Minimum.Z), envelopes.Max(envelope => envelope.Maximum.Z));
@@ -312,39 +395,135 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Determines whether the envelope contains the specified coordinate.
         /// </summary>
-        /// <param name="envelopeMinimum">The envelope minimum coordinate.</param>
-        /// <param name="envelopeMaximum">The envelope maximum coordinate.</param>
-        /// <param name="coordinate">The coordinate.</param>
-        /// <returns><c>true</c> if the envelope contains <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
-        public static Boolean Contains(Coordinate envelopeMinimum, Coordinate envelopeMaximum, Coordinate coordinate)
+        /// <param name="first">The first coordiante of the envelope.</param>
+        /// <param name="second">The second coordinate of the envelope.</param>
+        /// <param name="coordinate">The examined coordinate.</param>
+        /// <returns><c>true</c> if the envelope defined by <paramref name="first"/> and <paramref name="second"/> contains <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Contains(Coordinate first, Coordinate second, Coordinate coordinate)
         {
-            return envelopeMinimum.X <= coordinate.X && coordinate.X <= envelopeMaximum.X && envelopeMinimum.Y <= coordinate.Y && coordinate.Y <= envelopeMaximum.Y && envelopeMinimum.Z <= coordinate.Z && coordinate.Z <= envelopeMaximum.Z;
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Contains(coordinate);
         }
 
         /// <summary>
         /// Determines whether the first envelope contains the second envelope.
         /// </summary>
-        /// <param name="firstEnvelopeMinimum">The first envelope minimum coordinate.</param>
-        /// <param name="firstEnvelopeMaximum">The first envelope maximum coordinate.</param>
-        /// <param name="secondEnvelopeMinimum">The second envelope minimum coordinate.</param>
-        /// <param name="secondEnvelopeMaximum">The second envelope maximum coordinate.</param>
-        /// <returns><c>true</c> if the envelope the first envelope contains the second envelope; otherwise, <c>false</c>.</returns>
-        public static Boolean Contains(Coordinate firstEnvelopeMinimum, Coordinate firstEnvelopeMaximum, Coordinate secondEnvelopeMinimum, Coordinate secondEnvelopeMaximum)
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> contains the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Contains(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
         {
-            return Contains(firstEnvelopeMinimum, firstEnvelopeMaximum, secondEnvelopeMinimum) && Contains(firstEnvelopeMinimum, firstEnvelopeMaximum, secondEnvelopeMaximum);
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Contains(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope crosses the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> crosses the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Crosses(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Crosses(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope is disjoint from the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> is disjoint from the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Disjoint(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Disjoint(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope is equal to the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> is equal to the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Equals(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Equals(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope intersects the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> intersects the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Intersects(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Intersects(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
         }
 
         /// <summary>
         /// Determines whether the first envelope overlaps the second envelope.
         /// </summary>
-        /// <param name="firstEnvelopeMinimum">The first envelope minimum coordinate.</param>
-        /// <param name="firstEnvelopeMaximum">The first envelope maximum coordinate.</param>
-        /// <param name="secondEnvelopeMinimum">The second envelope minimum coordinate.</param>
-        /// <param name="secondEnvelopeMaximum">The second envelope maximum coordinate.</param>
-        /// <returns><c>true</c> if the envelope the first envelope overlaps the second envelope; otherwise, <c>false</c>.</returns>
-        public static Boolean Overlaps(Coordinate firstEnvelopeMinimum, Coordinate firstEnvelopeMaximum, Coordinate secondEnvelopeMinimum, Coordinate secondEnvelopeMaximum)
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> overlaps the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Overlaps(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
         {
-            return !(firstEnvelopeMinimum.X > secondEnvelopeMaximum.X || firstEnvelopeMaximum.X < secondEnvelopeMinimum.X || firstEnvelopeMaximum.Y < secondEnvelopeMinimum.Y || firstEnvelopeMinimum.Y > secondEnvelopeMaximum.Y || firstEnvelopeMaximum.Z < secondEnvelopeMinimum.Z || firstEnvelopeMinimum.Z > secondEnvelopeMaximum.Z);
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Overlaps(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope touches the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> touches the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Touches(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Touches(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
+        }
+
+        /// <summary>
+        /// Determines whether the first envelope is within the second envelope.
+        /// </summary>
+        /// <param name="first">The first coordinate of the first envelope.</param>
+        /// <param name="second">The second coordinate of the first envelope.</param>
+        /// <param name="third">The first coordinate of the second envelope.</param>
+        /// <param name="fourth">The second coordinate of the second envelope.</param>
+        /// <returns><c>true</c> if the defined by <paramref name="first"/> and <paramref name="second"/> is within the envelope defined by <paramref name="third"/> and <paramref name="fourth"/>; otherwise, <c>false</c>.</returns>
+        public static Boolean Within(Coordinate first, Coordinate second, Coordinate third, Coordinate fourth)
+        {
+            Envelope envelope = new Envelope(first.X, second.X, first.Y, second.Y, first.Z, second.Z);
+
+            return envelope.Within(new Envelope(third.X, fourth.X, third.Y, fourth.Y, third.Z, fourth.Z));
         }
 
         #endregion
