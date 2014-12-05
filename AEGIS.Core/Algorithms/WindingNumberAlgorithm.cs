@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using System;
 using System.Collections.Generic;
@@ -19,21 +20,24 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Algorithms
 {
     /// <summary>
-    /// Represents a type for running the Winding Number algorithm.
+    /// Represents a type for performing the Winding Number algorithm.
     /// </summary>
     /// <remarks>
     /// The Winding Number method counts the number of times the polygon winds around a coordinate. 
-    /// The coordinate outside only when this "winding number" is zero; otherwise, the coordinate is inside.
+    /// When the coordinate is outside, the value of the winding number is zero; otherwise, the coordinate is inside.
+    /// However, the winding number is not defined for coordinates on the boundary of the polygon, it might be both a non-zero or a zero value.
+    /// For an input consisting of n line segments, the Winding Number algorithm has a linear complexity of O(2n).
     /// The algorithm assumes that the specified coordinates are valid, ordered, distinct and in the same plane.
     /// </remarks>
     public class WindingNumberAlgorithm
     {
-        #region Protected fields
+        #region Private fields
 
-        protected IList<Coordinate> _shell;
-        protected Coordinate _coordinate;
-        protected Int32 _result;
-        protected Boolean _hasResult;
+        private IList<Coordinate> _shell;
+        private Coordinate _coordinate;
+        private Boolean _verifyBoundary;
+        private Int32 _result;
+        private Boolean _hasResult;
 
         #endregion
 
@@ -46,24 +50,42 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.InvalidOperationException">The value is null.</exception>
         public IList<Coordinate> Shell
         {
-            get { return _shell; }
-            set
-            {
-                if (value == null) throw new InvalidOperationException("The value is null.");
-                if (_shell != value) { _shell = value; _hasResult = false; }
-            }
+            get { return _shell.AsReadOnly(); }
         }
 
         /// <summary>
         /// Gets or sets the coordinate for which the Winding Number is computed.
         /// </summary>
-        /// <value>The coordinate.</value>
+        /// <value>
+        /// The coordinate.
+        /// </value>
         public Coordinate Coordinate
         {
             get { return _coordinate; }
-            set 
+            set
             {
-                if (_coordinate != value) { _coordinate = value; _hasResult = false; }
+                if (_coordinate != value)
+                { 
+                    _coordinate = value; 
+                    _hasResult = false; 
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets of sets a values indicating whether to verify if the given coordinate is on the shell.
+        /// </summary>
+        /// <value><c>true</c> to verify whether <see cref="Coordinate" /> is on the <see cref="Shell" />; otherwise <c>false</c>.</value>
+        public Boolean VerifyBoundary
+        {
+            get { return _verifyBoundary; }
+            set
+            {
+                if (_verifyBoundary != value) 
+                { 
+                    _verifyBoundary = value; 
+                    _hasResult = false; 
+                }
             }
         }
 
@@ -81,6 +103,15 @@ namespace ELTE.AEGIS.Algorithms
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the given coordinate is on the shell.
+        /// </summary>
+        /// <remarks>
+        /// Requesting the value of this property does not execute the computation of the algorithm.
+        /// </remarks>
+        /// <value><c>true</c> if the <see cref="Coordinate" /> is <b>certainly</b> on the <see cref="Shell" />, <c>false</c> if <b>certainly</b> not; otherwise <c>null</c>.</value>
+        public Boolean? IsOnBoundary { get; protected set; }
+
         #endregion
 
         #region Contructors
@@ -90,14 +121,25 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="coordinate">The coordinate for which the Winding Number is calculated.</param>
+        /// <param name="verifyBoundary">A value indicating whether to verify if the coordinate is on the boundary.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate)
+        /// <exception cref="System.ArgumentException">
+        /// The shell must contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates must be equal.
+        /// </exception>
+        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary = false)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell must contain at least 3 different coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and the last coordinates must be equal.", "shell");
 
             _shell = shell;
             _coordinate = coordinate;
+            _verifyBoundary = verifyBoundary;
             _hasResult = false;
         }
 
@@ -110,14 +152,25 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="coordinate">The coordinate for which the Winding Number is calculated.</param>
+        /// <param name="verifyBoundary">A value indicating whether to verify if the coordinate is on the boundary.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public void Compute(IList<Coordinate> shell, Coordinate coordinate)
+        /// <exception cref="System.ArgumentException">
+        /// The shell must contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates must be equal.
+        /// </exception>
+        public void Compute(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary = false)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell must contain at least 3 different coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and the last coordinates must be equal.", "shell");
 
             _shell = shell;
             _coordinate = coordinate;
+            _verifyBoundary = verifyBoundary;
             _hasResult = false;
             Compute();
         }
@@ -130,24 +183,69 @@ namespace ELTE.AEGIS.Algorithms
             // source: http://geomalgorithms.com/a03-_inclusion.html
 
             _result = 0;
+            IsOnBoundary = null;
 
-            // loop through all edges of the polygon
+            // Loop through all edges of the polygon.
             for (Int32 i = 0; i < _shell.Count - 1; i++)
-            { 
-                if (_shell[i].Y <= _coordinate.Y)
+            {
+                Orientation orientation;
+
+                // An upward crossing.
+                if (_shell[i].Y <= _coordinate.Y && _shell[i + 1].Y > _coordinate.Y)
                 {
-                    if (_shell[i + 1].Y > _coordinate.Y) // an upward crossing
-                        if (Coordinate.Orientation(_shell[i], _shell[i + 1], _coordinate) == Orientation.CounterClockwise)
-                            ++_result; // have  a valid up intersect
+                    orientation = Coordinate.Orientation(_coordinate, _shell[i], _shell[i + 1]);
+                    switch (orientation)
+                    {
+                        case Orientation.CounterClockwise:
+                            // Has a valid up intersect.
+                            ++_result;
+                            break;
+                        case Orientation.Collinear:
+                            // The winding number is not defined for coordinates on the boundary.
+                            IsOnBoundary = true;
+                            break;
+                    }
                 }
-                else
+                // A downward crossing.
+                else if (_shell[i].Y > _coordinate.Y && _shell[i + 1].Y <= _coordinate.Y)
                 {
-                    if (_shell[i + 1].Y <= _coordinate.Y) // a downward crossing
-                        if (Coordinate.Orientation(_shell[i], _shell[i + 1], _coordinate) == Orientation.Clockwise)
-                            --_result; // have  a valid down intersect
+                    orientation = Coordinate.Orientation(_coordinate, _shell[i], _shell[i + 1]);
+                    switch (orientation)
+                    {
+                        case Orientation.Clockwise:
+                            // Has a valid down intersect.
+                            --_result;
+                            break;
+                        case Orientation.Collinear:
+                            // The winding number is not defined for coordinates on the boundary.
+                            IsOnBoundary = true;
+                            break;
+                    }
                 }
             }
+
+            if (!IsOnBoundary.HasValue && _verifyBoundary)
+                CheckBoundary();
+
             _hasResult = true;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Checks whether the given coordinate is on the shell.
+        /// </summary>
+        private void CheckBoundary()
+        {
+            IsOnBoundary = false;
+            for (Int32 i = 0; i < _shell.Count - 1; i++)
+                if (LineAlgorithms.Contains(_shell[i], _shell[i + 1], _coordinate))
+                {
+                    IsOnBoundary = true;
+                    break;
+                }
         }
 
         #endregion
@@ -157,10 +255,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon.
+        /// </remarks>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate" />; otherwise <c>false</c>.</returns>
         public static Boolean IsInsidePolygon(IList<Coordinate> shell, Coordinate coordinate)
         {
             return (new WindingNumberAlgorithm(shell, coordinate).Result != 0);
@@ -169,11 +269,13 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon or the holes.
+        /// </remarks>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="holes">The coordinates of the polygon holes.</param>
         /// <param name="coordinate">The coordinate.</param>
-        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate" />; otherwise <c>false</c>.</returns>
         public static Boolean IsInsidePolygon(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate)
         {
             if (new WindingNumberAlgorithm(shell, coordinate).Result == 0)
