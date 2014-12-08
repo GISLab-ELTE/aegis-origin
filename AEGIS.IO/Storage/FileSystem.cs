@@ -474,6 +474,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         /// <summary>
         /// Opens a stream on the specified path with read/write access.
+        /// </summary>
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
         /// <returns>A stream in the specified mode and path, with read/write access.</returns>
@@ -509,6 +510,7 @@ namespace ELTE.AEGIS.IO.Storage
 
         /// <summary>
         /// Opens a stream asynchronously on the specified path with read/write access.
+        /// </summary>
         /// <param name="path">The path of a file to open.</param>
         /// <param name="mode">A value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
         /// <returns>A stream in the specified mode and path, with read/write access.</returns>
