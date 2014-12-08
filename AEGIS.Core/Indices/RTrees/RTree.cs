@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Indices.Spatial.RTree
+namespace ELTE.AEGIS.Indices.RTrees
 {
     /// <summary>
     /// Represents a 3D R-Tree, which contains a collection of <see cref="IGeometry" /> instances.
@@ -33,7 +33,14 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         {
             #region Private fields
 
+            /// <summary>
+            /// The envelope of the node.
+            /// </summary>
             private Envelope _envelope;
+
+            /// <summary>
+            /// The parent node.
+            /// </summary>
             private RTreeNode _parent;
 
             #endregion
@@ -171,11 +178,6 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
             /// <param name="node">The node to be removed.</param>
             public void RemoveChild(RTreeNode node)
             {
-                if (node == null)
-                    throw new ArgumentNullException("The node is null", "node");
-                if (Children == null || !Children.Contains(node))
-                    throw new ArgumentException("The specified node is not a child node.", "nodeToRemove");
-
                 Children.Remove(node);
 
                 if (ChildrenCount == 0)
@@ -217,16 +219,6 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
                 return enlarged.Surface - Envelope.Surface;
             }
 
-            /// <summary>
-            /// Determines whether the node contains the parameter child.
-            /// </summary>
-            /// <param name="child">The child.</param>
-            /// <returns></returns>
-            public Boolean ContainsChild(RTreeNode child)
-            {
-                return (Children != null) && Children.Contains(child);
-            }
-
             #endregion
         }
 
@@ -237,25 +229,46 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <summary>
         /// The default minimum child count. This field is constant.
         /// </summary>
-        private const Int32 DefaultMinChildCount = 2;
+        private const Int32 DefaultMinChildCount = 8;
 
         /// <summary>
         /// The default maximum child count. This field is constant.
         /// </summary>
-        private const Int32 DefaultMaxChildCount = 8;
+        private const Int32 DefaultMaxChildCount = 12;
 
         #endregion
 
         #region Protected fields
 
+        /// <summary>
+        /// The root node.
+        /// </summary>
         protected RTreeNode _root;
+
+        /// <summary>
+        /// The number of geometries in the tree.
+        /// </summary>
         protected Int32 _numberOfGeometries;
+
+        /// <summary>
+        /// The height of the tree.
+        /// </summary>
         protected Int32 _height;
+
+        /// <summary>
+        /// The minimum number of children.
+        /// </summary>
         protected Int32 _minChildren;
 
         #endregion
 
         #region ISpatialIndex properties
+
+        /// <summary>
+        /// Gets a value indicating whether the index is read-only.
+        /// </summary>
+        /// <value><c>true</c> if the index is read-only; otherwise, <c>false</c>.</value>
+        public Boolean IsReadOnly { get { return false; } }
 
         /// <summary>
         /// Gets the number of indexed geometries.
@@ -305,18 +318,14 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The minimum number of child nodes is less than 1.
         /// or
-        /// The maximum number of child nodes is less than 2.
-        /// or
-        /// The maximum number of child nodes is less than double of the minimum number.
+        /// The maximum number of child nodes is less than or equal to the minimum number of child nodes.
         /// </exception>
         public RTree(Int32 minChildren, Int32 maxChildren)
         {
             if (minChildren < 1)
                 throw new ArgumentOutOfRangeException("minChildren", "The minimum number of child nodes is less than 1.");
-            if (maxChildren < 2)
-                throw new ArgumentOutOfRangeException("maxChildren", "The maximum number of child nodes is less than 2.");
-            if (minChildren > maxChildren / 2)
-                throw new ArgumentOutOfRangeException("maxChildren", "The maximum number of child nodes is less than double of the minimum number.");
+            if (minChildren >= maxChildren)
+                throw new ArgumentOutOfRangeException("maxChildren", "The maximum number of child nodes is less than or equal to the minimum number of child nodes.");
 
             _root = new RTreeNode(maxChildren);
             _numberOfGeometries = 0;
@@ -382,12 +391,11 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// Determines whether the specified geometry is indexed.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns><c>true</c> if the specified geometry is indexed; otherwisem <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
+        /// <returns><c>true</c> if the specified geometry is indexed; otherwise <c>false</c>.</returns>
         public virtual Boolean Contains(IGeometry geometry)
         {
             if (geometry == null)
-                throw new ArgumentNullException("geometry", "The geometry is null.");
+                return false;
 
             return ContainsGeometry(geometry, _root);
         }
@@ -522,9 +530,6 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <returns><c>true</c>, if the element contains the geometry, otherwise, <c>false</c>.</returns>
         protected Boolean ContainsGeometry(IGeometry geometry, RTreeNode node)
         {
-            if (node == null)
-                return false;
-
             if (node.IsLeafContainer && node.Children != null && node.Children.Any(x => x.Geometry == geometry))
                 return true;
 
@@ -554,10 +559,7 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
             if (leafContainer == null)
                 return false;
 
-            RTreeNode nodeToRemove = leafContainer.Children.FirstOrDefault(x => x.Geometry == geometry);
-
-            if (nodeToRemove == null)
-                return false;
+            RTreeNode nodeToRemove = leafContainer.Children.First(x => x.Geometry == geometry);
 
             leafContainer.RemoveChild(nodeToRemove);
 
@@ -779,9 +781,6 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <exception cref="System.ArgumentException">The node collection is empty.;nodes</exception>
         protected virtual RTreeNode PickNext(IList<RTreeNode> nodes)
         {
-            if (nodes.Count == 0)
-                throw new ArgumentException("The node collection is empty.", "nodes");
-
             RTreeNode result = nodes[0];
             nodes.RemoveAt(0);
             return result;

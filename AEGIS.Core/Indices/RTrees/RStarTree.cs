@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Indices.Spatial.RTree
+namespace ELTE.AEGIS.Indices.RTrees
 {
 
     /// <summary>
@@ -46,6 +46,11 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// </summary>
         /// <param name="minChildren">The minimum number of children contained in a node.</param>
         /// <param name="maxChildren">The maximum number of children contained in a node.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The minimum number of child nodes is less than 1.
+        /// or
+        /// The maximum number of child nodes is less than or equal to the minimum number of child nodes.
+        /// </exception>
         public RStarTree(Int32 minChildren, Int32 maxChildren) : base(minChildren, maxChildren) { }
 
         #endregion
@@ -76,7 +81,7 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
             Int32 minIndex = MinChildren;
             Double minOverlap = ComputeOverlap(Envelope.FromEnvelopes(alongChosenAxis.GetRange(0, MinChildren).Select(x => x.Envelope)),
                     Envelope.FromEnvelopes(alongChosenAxis.GetRange(MinChildren, alongChosenAxis.Count - MinChildren).Select(x => x.Envelope)));
-            //ChooseSplitIndex
+            // ChooseSplitIndex
 
             for (Int32 i = MinChildren + 1; i <= MaxChildren - MinChildren + 1; i++)
             {
@@ -118,22 +123,21 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <returns>The node where the new node should be added.</returns>
         protected override RTreeNode ChooseNodeToAdd(Envelope envelope, Int32 height)
         {
-            //source: The R*-tree: An Efficient and Robust Access Method for Points and Rectangles
-            //page 4, method name in the paper: ChooseSubTree
+            // source: The R*-tree: An Efficient and Robust Access Method for Points and Rectangles, page 4, method name in the paper: ChooseSubTree
 
             RTreeNode n = _root;
             int h = 0;
             while (!n.IsLeafContainer && h != height)
             {
-                //if the childpointer points to leafcontainers, determine the minimum overlap cost
+                // if the childpointer points to leafcontainers, determine the minimum overlap cost
                 if (n.ChildrenCount > 0 && n.Children[0].IsLeafContainer)
                 {
-                    //determine the exact minimum overlap cost
+                    // determine the exact minimum overlap cost
                     n = ChooseNode(n.Children, envelope);
 
-                    //another option is to determine the NEARLY minimum overlap cost
+                    // another option is to determine the NEARLY minimum overlap cost
                 }
-                else //determine the minimum area cost
+                else // determine the minimum area cost
                 {
                     Double minimumEnlargement = Double.MaxValue;
                     Double minimumSurface = Double.MaxValue;
@@ -222,12 +226,12 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <returns></returns>
         private Boolean OverflowTreatment(RTreeNode overflownNode, Boolean canReinsert, Int32 height)
         {
-            if (canReinsert) //reinsert
+            if (canReinsert) // reinsert
             {
                 ReInsert(overflownNode, height);
                 return false;
             }
-            else //split
+            else // split
             {
                 RTreeNode first, second;
                 SplitNode(overflownNode, out first, out second);
@@ -238,7 +242,7 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
                     overflownNode.Parent.AddChild(first);
                     overflownNode.Parent.AddChild(second);
                 }
-                else //case when the root is splitted
+                else // case when the root is splitted
                 {
                     _root = new RTreeNode(overflownNode.MaxChildren);
                     _root.AddChild(first);
@@ -258,8 +262,8 @@ namespace ELTE.AEGIS.Indices.Spatial.RTree
         /// <param name="height">The height.</param>
         private void ReInsert(RTreeNode overflownNode, Int32 height)
         {
-            //The number of elements we will reinsert. 
-            //Experiments shown that the 30% of the maximum children yields the best performance
+            // the number of elements we will reinsert
+            // experiments shown that the 30% of the maximum children yields the best performance
             Int32 p = Convert.ToInt32(Math.Round(0.3 * MaxChildren)); 
 
             List<RTreeNode> nodesInOrder = overflownNode.Children.

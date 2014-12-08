@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -16,13 +16,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace ELTE.AEGIS.Indices.Spatial
+namespace ELTE.AEGIS.Indices
 {
     /// <summary>
     /// Defines behavior of spatial indices.
     /// </summary>
     public interface ISpatialIndex
     {
+        /// <summary>
+        /// Gets a value indicating whether the index is read-only.
+        /// </summary>
+        /// <value><c>true</c> if the index is read-only; otherwise, <c>false</c>.</value>
+        Boolean IsReadOnly { get; }
+
         /// <summary>
         /// Gets the number of indexed geometries.
         /// </summary>
@@ -58,7 +64,6 @@ namespace ELTE.AEGIS.Indices.Spatial
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns><c>true</c> if the specified geometry is indexed; otherwisem <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         Boolean Contains(IGeometry geometry);
 
         /// <summary>

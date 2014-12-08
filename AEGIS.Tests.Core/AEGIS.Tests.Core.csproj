@@ -56,8 +56,8 @@
     <Compile Include="Collections\SparseArrayTest.cs" />
     <Compile Include="CoordinateTest.cs" />
     <Compile Include="EnvelopeTest.cs" />
-    <Compile Include="Indices\Spatial\RTree\RStarTreeTest.cs" />
-    <Compile Include="Indices\Spatial\RTree\RTreeTest.cs" />
+    <Compile Include="Indices\RTree\RStarTreeTest.cs" />
+    <Compile Include="Indices\RTree\RTreeTest.cs" />
     <Compile Include="Management\InversionOfControl\ContainerTest.cs" />
     <Compile Include="PrecisionModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

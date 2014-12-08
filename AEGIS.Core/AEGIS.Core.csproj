@@ -63,8 +63,8 @@
     <Compile Include="Management\Attributes\IdentifiedObjectFactoryMethodAttribute.cs" />
     <Compile Include="Collections\Heap.cs" />
     <Compile Include="Collections\IHeap.cs" />
-    <Compile Include="Indices\Spatial\RTree\RStarTree.cs" />
-    <Compile Include="Indices\Spatial\RTree\RTree.cs" />
+    <Compile Include="Indices\RTrees\RStarTree.cs" />
+    <Compile Include="Indices\RTrees\RTree.cs" />
     <Compile Include="Management\Attributes\IdentifiedObjectInstanceAttribute.cs" />
     <Compile Include="Metadata\MetadataCollection.cs" />
     <Compile Include="Metadata\MetadataFactory.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Geometry\Polygon.cs" />
     <Compile Include="Geometry\Surface.cs" />
     <Compile Include="Geometry\Triangle.cs" />
-    <Compile Include="Indices\Spatial\ISpatialIndex.cs" />
+    <Compile Include="Indices\ISpatialIndex.cs" />
     <Compile Include="IPoint.cs" />
     <Compile Include="IPolygon.cs" />
     <Compile Include="IGeometryRelateOperator.cs" />
