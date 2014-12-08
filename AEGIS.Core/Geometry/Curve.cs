@@ -13,11 +13,11 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using System.Linq;
 using ELTE.AEGIS.Algorithms;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Geometry
 {
@@ -210,7 +210,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets a value indicating whether the curve is closed.
         /// </summary>
         /// <value><c>true</c> if the starting and ending coordinates are equal; otherwise, <c>false</c>.</value>
-        public virtual Boolean IsClosed { get { return _coordinates[0].Equals(_coordinates[_coordinates.Count - 1]); } }
+        public virtual Boolean IsClosed { get { return _coordinates.Count > 0 && _coordinates[0].Equals(_coordinates[_coordinates.Count - 1]); } }
 
         /// <summary>
         /// Gets a value indicating whether the curve is a ring.

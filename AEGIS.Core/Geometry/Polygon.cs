@@ -105,7 +105,6 @@ namespace ELTE.AEGIS.Geometry
                 }
 
                 // check for any intersection
-                // check for any intersection
                 if (ShamosHoeyAlgorithm.Intersects(ringList))
                     return false;
 

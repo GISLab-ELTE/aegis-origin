@@ -32,7 +32,7 @@ namespace ELTE.AEGIS.Geometry
         /// <value>
         /// <c>true</c> if the linear ring is simple and all coordinates of the linear ring are valid; otherwise, <c>false</c>.
         /// </value>
-        public override Boolean IsValid { get { return base.IsValid && base.IsSimple; } }
+        public override Boolean IsValid { get { return base.IsValid && IsSimple; } }
 
         #endregion
 
