@@ -48,6 +48,7 @@
     <Compile Include="Algorithms\PolygonAlgorithmsTest.cs" />
     <Compile Include="Algorithms\PolygonCentroidAlgorithmTest.cs" />
     <Compile Include="Algorithms\ShamosHoeyAlgorithmTest.cs" />
+    <Compile Include="Algorithms\WeilerAthertonAlgorithmTest.cs" />
     <Compile Include="Algorithms\WindingNumberAlgorithmTest.cs" />
     <Compile Include="Collections\HeapTest.cs" />
     <Compile Include="Collections\ReadOnlySetTest.cs" />
