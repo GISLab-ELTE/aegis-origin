@@ -53,10 +53,16 @@
     <Compile Include="Algorithms\WeilerAthertonAlgorithm.cs" />
     <Compile Include="Algorithms\WindingNumberAlgorithm.cs" />
     <Compile Include="Angle.cs" />
+    <Compile Include="BasicLineString.cs" />
+    <Compile Include="BasicPolygon.cs" />
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SearchTree\BTree.cs" />
     <Compile Include="Collections\SparseArray.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="IBasicGeometry.cs" />
+    <Compile Include="IBasicLineString.cs" />
+    <Compile Include="IBasicPoint.cs" />
+    <Compile Include="IBasicPolygon.cs" />
     <Compile Include="IGeometryMeasureOperator.cs" />
     <Compile Include="IGeometryOperatorFactory.cs" />
     <Compile Include="IGeometryOverlayOperator.cs" />

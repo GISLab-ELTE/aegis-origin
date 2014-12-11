@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -112,7 +112,32 @@ namespace ELTE.AEGIS.Algorithms
         #region IsValid computation
 
         /// <summary>
-        /// Determines whether a polygon is valid.
+        /// Determines whether the specified polygon is valid.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns><c>true</c> if the polygon is valid; otherwise false.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsValid(IBasicPolygon polygon)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return IsValid(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates));
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is valid.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <returns><c>true</c> if the polygon is valid; otherwise false.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsValid(IList<Coordinate> shell)
+        {
+            return IsValid(shell, null);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is valid.
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="holes">The coordinates of the polygon holes.</param>
@@ -126,6 +151,7 @@ namespace ELTE.AEGIS.Algorithms
             // check for existence
             if (shell.Count == 0 && holes == null)
                 return true;
+
             if (shell.Count == 0 && holes.Any(hole => (hole != null || hole.Count > 0)))
                 return false;
 
@@ -143,6 +169,9 @@ namespace ELTE.AEGIS.Algorithms
                     return false;
             }
 
+            IList<IList<Coordinate>> ringList = new List<IList<Coordinate>>();
+            ringList.Add(shell);
+
             // holes
             if (holes != null)
             {
@@ -159,8 +188,15 @@ namespace ELTE.AEGIS.Algorithms
                         if (hole[i - 1].Equals(hole[i])) // check for distinct coordinates
                             return false;
                     }
+
+                    ringList.Add(hole);
                 }
             }
+
+            // check for any intersection
+            if (ShamosHoeyAlgorithm.Intersects(ringList))
+                return false;
+
             return true;
         }
 
