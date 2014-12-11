@@ -65,52 +65,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets a value indicating whether the polygon is valid.
         /// </summary>
         /// <value><c>true</c> if the polygon is considered to be valid; otherwise, <c>false</c>.</value>
-        public override Boolean IsValid
-        {
-            get
-            {
-                if (_shell.Count == 0 && _holes.Count == 0)
-                    return true;
-
-                if (_shell.Count == 0 && _holes.Count > 0)
-                    return false;
-
-                // check the shell
-                if (!_shell.IsValid)
-                    return false;
-
-                Double zValue = _shell.StartCoordinate.Z;
-                if (_shell.Coordinates.Any(coordinate => coordinate.Z != zValue))
-                    return false;
-
-                if (PolygonAlgorithms.Orientation(_shell.Coordinates) != Orientation.CounterClockwise)
-                    return false;
-
-                IList<IList<Coordinate>> ringList = new List<IList<Coordinate>>();
-                ringList.Add(_shell.Coordinates);
-
-                // check the holes
-                for (Int32 i = 0; i < _holes.Count; i++)
-                {
-                    if (!_holes[i].IsValid)
-                        return false;
-
-                    if (_holes[i].Coordinates.Any(coordinate => coordinate.Z != zValue))
-                        return false;
-
-                    if (PolygonAlgorithms.Orientation(_holes[i].Coordinates) != Orientation.Clockwise)
-                        return false;
-
-                    ringList.Add(_holes[i].Coordinates);
-                }
-
-                // check for any intersection
-                if (ShamosHoeyAlgorithm.Intersects(ringList))
-                    return false;
-
-                return true;
-            }
-        }
+        public override Boolean IsValid { get { return PolygonAlgorithms.IsValid(this); } }
 
         #endregion
 
@@ -156,6 +111,28 @@ namespace ELTE.AEGIS.Geometry
             { 
                 return _shell.Length + _holes.Sum(hole => hole.Length); 
             } 
+        }
+
+        #endregion
+
+        #region IBasicPolygon properties (explicit)
+
+        /// <summary>
+        /// Gets the shell of the polygon.
+        /// </summary>
+        /// <value>The <see cref="IBasicLineString" /> representing the shell of the polygon.</value>
+        IBasicLineString IBasicPolygon.Shell
+        {
+            get { return Shell; }
+        }
+
+        /// <summary>
+        /// Gets the holes of the polygon.
+        /// </summary>
+        /// <value>The <see cref="IList{IBasicCurve}" /> containing the holes of the polygon.</value>
+        IList<IBasicLineString> IBasicPolygon.Holes
+        {
+            get { return Holes.Cast<IBasicLineString>().ToList(); }
         }
 
         #endregion
@@ -396,6 +373,20 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
+        #region IBasicPolygon methods (explicit)
+
+        /// <summary>
+        /// Gets a hole at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the hole to get.</param>
+        /// <returns>The hole at the specified index.</returns>
+        IBasicLineString IBasicPolygon.GetHole(Int32 index)
+        {
+            return GetHole(index);
+        }
+
+        #endregion
+
         #region IPolygon methods
 
         /// <summary>
@@ -442,7 +433,7 @@ namespace ELTE.AEGIS.Geometry
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The index is less than 0.
         /// or
-        /// Index is equal to or greater than the number of coordinates.
+        /// Index is equal to or greater than the number of holes.
         /// </exception>
         public virtual ILinearRing GetHole(Int32 index)
         {
@@ -451,7 +442,7 @@ namespace ELTE.AEGIS.Geometry
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
             if (index >= _holes.Count)
-                throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than the number of coordinates.");
+                throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than the number of holes.");
 
             return _holes[index];
         }

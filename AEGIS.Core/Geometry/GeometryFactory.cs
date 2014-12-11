@@ -268,7 +268,7 @@ namespace ELTE.AEGIS.Geometry
             if (source == null)
                 throw new ArgumentNullException("source", "The source line string is null.");
 
-            return new LineString(source.Coordinates, this, source.Metadata);
+            return new LineString(source, this, source.Metadata);
         }
 
         #endregion
@@ -451,7 +451,7 @@ namespace ELTE.AEGIS.Geometry
             if (other == null)
                 throw new ArgumentNullException("other", "The other linear ring is null.");
 
-            return new LinearRing(other.Coordinates, this, other.Metadata);
+            return new LinearRing(other, this, other.Metadata);
         }
 
         #endregion

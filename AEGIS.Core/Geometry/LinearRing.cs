@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region ICurve methods
+        #region ILineString methods
 
         /// <summary>
         /// Sets the coordinate at the specified index.
@@ -119,10 +119,6 @@ namespace ELTE.AEGIS.Geometry
 
             OnGeometryChanged();
         }
-
-        #endregion
-
-        #region LineString methods
 
         /// <summary>
         /// Adds a coordinate to the end of the linear ring.

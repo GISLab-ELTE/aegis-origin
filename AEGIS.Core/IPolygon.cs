@@ -24,25 +24,19 @@ namespace ELTE.AEGIS
     /// <remarks>
     /// A polygon is a planar surface defined by 1 exterior boundary and 0 or more interior boundaries. Each interior boundary defines a hole in the polygon.
     /// </remarks>
-    public interface IPolygon : ISurface
+    public interface IPolygon : ISurface, IBasicPolygon
     {
         /// <summary>
         /// Gets the shell of the polygon.
         /// </summary>
         /// <value>The <see cref="ILinearRing" /> representing the shell of the polygon.</value>
-        ILinearRing Shell { get; }
-
-        /// <summary>
-        /// Gets the number of holes of the polygon.
-        /// </summary>
-        /// <value>The number of holes in the <see cref="ILinearRing" />.</value>
-        Int32 HoleCount { get; }
+        new ILinearRing Shell { get; }
 
         /// <summary>
         /// Gets the holes of the polygon.
         /// </summary>
         /// <value>The <see cref="IList{ILinearRing}" /> containing the holes of the polygon.</value>
-        IList<ILinearRing> Holes { get; }
+        new IList<ILinearRing> Holes { get; }
 
         /// <summary>
         /// Add a hole to the polygon.
@@ -59,11 +53,11 @@ namespace ELTE.AEGIS
         /// <returns>The hole at the specified index.</returns>
         /// <exception cref="System.InvalidOperationException">There are no holes in the polygon.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// index;The index is less than 0.
+        /// The index is less than 0.
         /// or
-        /// index;Index is equal to or greater than the number of coordinates.
+        /// Index is equal to or greater than the number of coordinates.
         /// </exception>
-        ILinearRing GetHole(Int32 index);
+        new ILinearRing GetHole(Int32 index);
 
         /// <summary>
         /// Removes a hole from the polygon.

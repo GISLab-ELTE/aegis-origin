@@ -21,7 +21,7 @@ namespace ELTE.AEGIS
     /// <summary>
     /// Defines general behavior for geometry in coordinate space.
     /// </summary>
-    public interface IGeometry : IMetadataProvider, ICloneable
+    public interface IGeometry : IBasicGeometry, IMetadataProvider, ICloneable
     {
         /// <summary>
         /// Gets the factory of the geometry.
@@ -42,10 +42,10 @@ namespace ELTE.AEGIS
         String Name { get; }
 
         /// <summary>
-        /// Gets the inherent dimension of the geometry.
+        /// Gets the model of the geometry.
         /// </summary>
-        /// <value>The inherent dimension of the geometry. The inherent dimension is always less than or equal to the coordinate dimension.</value>
-        Int32 Dimension { get; }
+        /// <value>The model of the geometry.</value>
+        GeometryModel GeometryModel { get; }
 
         /// <summary>
         /// Gets the coordinate dimension of the geometry.
@@ -60,22 +60,10 @@ namespace ELTE.AEGIS
         Int32 SpatialDimension { get; }
 
         /// <summary>
-        /// Gets the model of the geometry.
-        /// </summary>
-        /// <value>The model of the geometry.</value>
-        GeometryModel GeometryModel { get; }
-
-        /// <summary>
         /// Gets the reference system of the geometry.
         /// </summary>
         /// <value>The reference system of the geometry.</value>
         IReferenceSystem ReferenceSystem { get; }
-
-        /// <summary>
-        /// Gets the minimum bounding <see cref="Envelope" /> of the geometry.
-        /// </summary>
-        /// <value>The minimum bounding box of the geometry.</value>
-        Envelope Envelope { get; }
 
         /// <summary>
         /// Gets the bounding <see cref="IGeometry" />.
@@ -90,6 +78,12 @@ namespace ELTE.AEGIS
         Coordinate Centroid { get; }
 
         /// <summary>
+        /// Gets the minimum bounding <see cref="Envelope" /> of the geometry.
+        /// </summary>
+        /// <value>The minimum bounding box of the geometry.</value>
+        Envelope Envelope { get; }
+
+        /// <summary>
         /// Gets a value indicating whether the geometry is valid.
         /// </summary>
         /// <value><c>true</c> if the geometry is considered to be empty; otherwise, <c>false</c>.</value>
@@ -100,12 +94,6 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <value><c>true</c> if the geometry is considered to be simple; otherwise, <c>false</c>.</value>
         Boolean IsSimple { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the geometry is valid.
-        /// </summary>
-        /// <value><c>true</c> if the geometry is considered to be valid; otherwise, <c>false</c>.</value>
-        Boolean IsValid { get; }
 
         /// <summary>
         /// Occurs when the geometry is changed.

@@ -3,7 +3,7 @@
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -115,30 +115,6 @@ namespace ELTE.AEGIS.Compatibility
         public static T GeometryN<T>(this IGeometryCollection<T> geometry, Int32 index) where T : IGeometry
         {
             return geometry[index];
-        }
-
-        #endregion
-
-        #region ICurve
-
-        /// <summary>
-        /// Gets the staring point.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <returns>The first point of the <see cref="ICurve" />.</returns>
-        public static IPoint StartPoint(this ICurve geometry) 
-        {
-            return geometry.Factory.CreatePoint(geometry.StartCoordinate.X, geometry.StartCoordinate.Y, geometry.StartCoordinate.Z);
-        }
-
-        /// <summary>
-        /// Gets the ending point.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <returns>The last point of the <see cref="ICurve" />.</returns>
-        public static IPoint EndPoint(this ICurve geometry)
-        {
-            return geometry.Factory.CreatePoint(geometry.EndCoordinate.X, geometry.EndCoordinate.Y, geometry.EndCoordinate.Z);
         }
 
         #endregion

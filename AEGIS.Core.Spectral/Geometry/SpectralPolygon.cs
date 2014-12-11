@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Geometry
 {
@@ -186,6 +187,28 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
+        #region IBasicPolygon properties (explicit)
+
+        /// <summary>
+        /// Gets the shell of the polygon.
+        /// </summary>
+        /// <value>The <see cref="IBasicLineString" /> representing the shell of the polygon.</value>
+        IBasicLineString IBasicPolygon.Shell
+        {
+            get { return Shell; }
+        }
+
+        /// <summary>
+        /// Gets the holes of the polygon.
+        /// </summary>
+        /// <value>The <see cref="IList{IBasicCurve}" /> containing the holes of the polygon.</value>
+        IList<IBasicLineString> IBasicPolygon.Holes
+        {
+            get { return Holes.Cast<IBasicLineString>().ToList(); }
+        }
+
+        #endregion
+
         #region IPolygon properties
 
         /// <summary>
@@ -303,6 +326,20 @@ namespace ELTE.AEGIS.Geometry
             _polygon = _factory.GetFactory<IGeometryFactory>().CreatePolygon(shell, holes, metadata);
 
             _polygon.GeometryChanged += new EventHandler(Polygon_GeometryChanged);
+        }
+
+        #endregion
+
+        #region IBasicPolygon methods (explicit)
+
+        /// <summary>
+        /// Gets a hole at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the hole to get.</param>
+        /// <returns>The hole at the specified index.</returns>
+        IBasicLineString IBasicPolygon.GetHole(Int32 index)
+        {
+            return GetHole(index);
         }
 
         #endregion
