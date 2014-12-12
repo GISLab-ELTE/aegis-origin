@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LineAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,15 +24,6 @@ namespace ELTE.AEGIS.Algorithms
     /// </summary>
     public static class LineAlgorithms
     {
-        #region Private static properties
-
-        /// <summary>
-        /// Gets the empty list.
-        /// </summary>
-        private static IList<Coordinate> EmptyList { get { return new List<Coordinate>(); } }
-
-        #endregion
-
         #region Centroid computation
 
         /// <summary>
@@ -47,6 +38,20 @@ namespace ELTE.AEGIS.Algorithms
                 return Coordinate.Undefined;
 
             return new Coordinate((lineStart.X + lineEnd.X) / 2, (lineStart.Y + lineEnd.Y) / 2, (lineStart.Z + lineEnd.Z) / 2);
+        }
+
+        /// <summary>
+        /// Computes the centroid of a line string.
+        /// </summary>
+        /// <param name="lineString">The line string.</param>
+        /// <returns>>The centroid of the line string. The centroid is <c>Undefined</c> if either coordinates are invalid or there are no coordinates specified.</returns>
+        /// <exception cref="System.ArgumentNullException">The line string is null.</exception>
+        public static Coordinate Centroid(IBasicLineString lineString)
+        {
+            if (lineString == null)
+                throw new ArgumentNullException("lineString", "The line string is null.");
+
+            return Centroid(lineString.Coordinates);
         }
 
         /// <summary>
@@ -106,7 +111,7 @@ namespace ELTE.AEGIS.Algorithms
             if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
                 return false;
             
-            return CoordinateVector.IsParalell(firstVector, secondVector) && Distance(firstCoordinate, firstVector, secondCoordinate) <= Calculator.Tolerance;
+            return CoordinateVector.IsParallel(firstVector, secondVector) && Distance(firstCoordinate, firstVector, secondCoordinate) <= Calculator.Tolerance;
         }
 
         #endregion
@@ -134,7 +139,7 @@ namespace ELTE.AEGIS.Algorithms
                 return true;
 
             // check the envelope
-            if (!Envelope.Contains(Coordinate.LowerBound(lineStart, lineEnd), Coordinate.UpperBound(lineStart, lineEnd), coordinate))
+            if (!Envelope.Contains(lineStart, lineEnd, coordinate))
                 return false;
 
             // check the distance from the line
@@ -309,7 +314,7 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean Intersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            return Intersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
+            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
         }
 
         /// <summary>
@@ -323,7 +328,7 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean InternalIntersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            return InternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
+            return ComputeInternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
         }
 
         /// <summary>
@@ -338,7 +343,7 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean Intersects(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
             Coordinate intersection;
-            return Intersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection);
+            return ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection);
         }
 
         /// <summary>
@@ -352,7 +357,7 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean IntersectsWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
             IList<Coordinate> intersection;
-            return IntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection);
+            return ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection);
         }
 
 
@@ -371,10 +376,10 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> Intersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            if (Intersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
+            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
                 return intersection;
             else
-                return EmptyList;
+                return new List<Coordinate>();
         }
 
         /// <summary>
@@ -388,7 +393,7 @@ namespace ELTE.AEGIS.Algorithms
         public static Coordinate Intersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
             Coordinate intersection;
-            if (Intersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection))
+            if (ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection))
                 return intersection;
             else
                 return Coordinate.Undefined;
@@ -405,10 +410,10 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            if (InternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
+            if (ComputeInternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
                 return intersection;
             else
-                return EmptyList;
+                return new List<Coordinate>();
         }
 
         /// <summary>
@@ -422,12 +427,11 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> IntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
             IList<Coordinate> intersection;
-            if (IntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection))
+            if (ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection))
                 return intersection;
             else
-                return EmptyList;
+                return new List<Coordinate>();
         }
-
 
         #endregion
 
@@ -450,12 +454,12 @@ namespace ELTE.AEGIS.Algorithms
             CoordinateVector u = (firstLineEnd - firstLineStart).Normalize();
             CoordinateVector v = (secondLineEnd - secondLineStart).Normalize();
 
-            return CoordinateVector.IsParalell(u, v) && Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) <= Calculator.Tolerance;
+            return CoordinateVector.IsParallel(u, v) && Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) <= Calculator.Tolerance;
         }
 
         #endregion
 
-        #region IsParalell computation
+        #region IsParallel computation
 
         /// <summary>
         /// Determines whether two lines are parallel.
@@ -465,13 +469,13 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondLineStart">The starting coordinate of the second line.</param>
         /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
         /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
-        public static Boolean IsParalell(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
+        public static Boolean IsParallel(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
                 return false;
 
             // check if the directional vectors are parallel
-            return CoordinateVector.IsParalell(firstLineEnd - firstLineStart, secondLineEnd - secondLineStart);
+            return CoordinateVector.IsParallel(firstLineEnd - firstLineStart, secondLineEnd - secondLineStart);
         }
 
         /// <summary>
@@ -482,17 +486,17 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondCoordinate">The coordinate of the second line.</param>
         /// <param name="secondVector">The direction vector of the second line.</param>
         /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
-        public static Boolean IsParalell(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
+        public static Boolean IsParallel(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
             if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
                 return false;
 
-            return CoordinateVector.IsParalell(firstVector, secondVector);
+            return CoordinateVector.IsParallel(firstVector, secondVector);
         }
 
         #endregion
 
-        #region Private intersection computation
+        #region Private intersection computation methods
 
         /// <summary>
         /// Computes the intersection of two lines.
@@ -503,7 +507,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
         /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
         /// <returns><c>true</c> if the lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean Intersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
+        private static Boolean ComputeIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
         {
             intersection = null;
 
@@ -564,7 +568,7 @@ namespace ELTE.AEGIS.Algorithms
             CoordinateVector w = firstLineStart - secondLineStart;
 
             // check for parallel lines
-            if (CoordinateVector.IsParalell(u, v))
+            if (CoordinateVector.IsParallel(u, v))
             {
                 // the starting or ending coordinate of the second line must be on the first line
                 Double b = (secondLineStart - firstLineStart) * u / (u * u);
@@ -631,14 +635,14 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondVector">The direction vector of the second line.</param>
         /// <param name="intersection">The coordinate of intersection.</param>
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean Intersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, out Coordinate intersection)
+        private static Boolean ComputeIntersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, out Coordinate intersection)
         {
             // source: http://geomalgorithms.com/a05-_intersect-1.html
 
             intersection = Coordinate.Undefined;
 
             // if they are parallel, they must also be collinear
-            if (CoordinateVector.IsParalell(firstVector, secondVector))
+            if (CoordinateVector.IsParallel(firstVector, secondVector))
             {
                 intersection = (Distance(firstCoordinate, firstVector, secondCoordinate) <= Calculator.Tolerance) ? firstCoordinate : Coordinate.Undefined;
                 return true;
@@ -673,7 +677,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
         /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
         /// <returns><c>true</c> if the lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
+        private static Boolean ComputeInternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
         {
             intersection = null;
 
@@ -727,7 +731,7 @@ namespace ELTE.AEGIS.Algorithms
             CoordinateVector w = firstLineStart - secondLineStart;
 
             // check for parallel lines
-            if (CoordinateVector.IsParalell(u, v))
+            if (CoordinateVector.IsParallel(u, v))
             {
                 // the starting or ending coordinate of the second line must be on the first line
                 Double b = (secondLineStart - firstLineStart) * u / (u * u);
@@ -794,7 +798,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="planeNormalVector">The normal vector of the plane.</param>
         /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
         /// <returns><c>true</c> if the line and the plane intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean IntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, out IList<Coordinate> intersection)
+        private static Boolean ComputeIntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, out IList<Coordinate> intersection)
         {
             // source: http://geomalgorithms.com/a05-_intersect-1.html
 

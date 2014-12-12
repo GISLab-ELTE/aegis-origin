@@ -292,8 +292,8 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
-        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are parallel; otherwise false.</returns>
-        public static Boolean IsParalell(CoordinateVector x, CoordinateVector y)
+        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are parallel; otherwise <c>false</c>.</returns>
+        public static Boolean IsParallel(CoordinateVector x, CoordinateVector y)
         {
             return Math.Abs(x._x * y._y - x._y * y._x) <= Calculator.Tolerance && Math.Abs(x._x * y._z - x._z * y._z) <= Calculator.Tolerance;
         }
@@ -303,7 +303,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
-        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are perpendicular; otherwise false.</returns>
+        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are perpendicular; otherwise <c>false</c>.</returns>
         public static Boolean IsPerpendicular(CoordinateVector x, CoordinateVector y)
         {
             return x._x * y._x + x._y * y._y + x._z * y._z <= Calculator.Tolerance;
