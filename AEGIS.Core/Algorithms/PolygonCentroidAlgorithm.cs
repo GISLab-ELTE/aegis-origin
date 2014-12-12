@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonCentroidAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -22,15 +22,41 @@ namespace ELTE.AEGIS.Algorithms
     /// <summary>
     /// Represents an algorithm for computing polygon centroid.
     /// </summary>
+    /// <remarks>
+    /// The algorithm assumes that the source polygon is valid. 
+    /// </remarks>
     public class PolygonCentroidAlgorithm
     {
         #region Private fields
 
-        private IEnumerable<Coordinate> _shell;
-        private IEnumerable<IEnumerable<Coordinate>> _holes;
+        /// <summary>
+        /// The coordinates of the polygon shell.
+        /// </summary>
+        private IList<Coordinate> _shell;
+
+        /// <summary>
+        /// The collection of coordinates representing the polygon holes.
+        /// </summary>
+        private IEnumerable<IList<Coordinate>> _holes;
+
+        /// <summary>
+        /// The centroid of the polygon.
+        /// </summary>
         private Coordinate _result;
+
+        /// <summary>
+        /// A value indicating whether the result has been computed.
+        /// </summary>
         private Boolean _hasResult;
+
+        /// <summary>
+        /// The area of the polygon.
+        /// </summary>
         private Double _area;
+
+        /// <summary>
+        /// The base coordinate.
+        /// </summary>
         private Coordinate _baseCoordinate;
 
         #endregion
@@ -38,32 +64,34 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the shell coordinates.
+        /// Gets the coordinates of the polygon shell.
         /// </summary>
-        /// <value>The coordinates of the shell in counterclockwise order.</value>
-        /// <exception cref="System.InvalidOperationException">The value is null.</exception>
-        public IEnumerable<Coordinate> Shell
+        /// <value>The read-only list of coordinates representing the polygon shell.</value>
+        public IList<Coordinate> Shell
         {
-            get { return _shell; }
-            set 
+            get 
             {
-                if (value == null) throw new InvalidOperationException("The value is null.");
-                if (_shell != value) { _shell = value; _hasResult = false; }
+                if (_shell.IsReadOnly)
+                    return _shell;
+                else
+                    return _shell.AsReadOnly(); 
             }
         }
 
         /// <summary>
-        /// Gets or sets the coordinates of the holes.
+        /// Gets collection of coordinates representing the polygon holes.
         /// </summary>
-        /// <value>The coordinates of the holes in clockwise order.</value>
-        public IEnumerable<IEnumerable<Coordinate>> Holes
+        /// <value>The collection of coordinates representing the polygon holes.</value>
+        public IEnumerable<IList<Coordinate>> Holes
         {
-            get { return _holes; }
-            set { if (_holes != value) _holes = value; _hasResult = false; }
+            get 
+            { 
+                return _holes.Select(hole => hole.IsReadOnly ? hole : hole.AsReadOnly()); 
+            }
         }
 
         /// <summary>
-        /// Gets the result of the computation.
+        /// Gets the result of the algorithm.
         /// </summary>
         /// <value>The centroid of the polygon.</value>
         public Coordinate Result 
@@ -83,8 +111,23 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
         /// </summary>
-        /// <param name="shell">The coordinates of the shell in counterclockwise order.</param>
-        public PolygonCentroidAlgorithm(IEnumerable<Coordinate> shell) 
+        /// <param name="source">The source polygon.</param>
+        public PolygonCentroidAlgorithm(IBasicPolygon source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            _shell = source.Shell.Coordinates;
+            _holes = source.Holes.Select(hole => hole.Coordinates);
+            _result = Coordinate.Undefined;
+            _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        public PolygonCentroidAlgorithm(IList<Coordinate> shell) 
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -98,9 +141,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
         /// </summary>
-        /// <param name="shell">The coordinates of the shell in counterclockwise order.</param>
-        /// <param name="holes">The sequences of hole coordinates in clockwise order.</param>
-        public PolygonCentroidAlgorithm(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes) 
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="holes">The collection of coordinates representing the polygon holes.</param>
+        public PolygonCentroidAlgorithm(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes) 
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -116,13 +159,8 @@ namespace ELTE.AEGIS.Algorithms
         #region Public methods
 
         /// <summary>
-        /// Computes the centroid.
+        /// Computes the centroid of the polygon.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">
-        /// The number of coordinates in less than 3.
-        /// or
-        /// The coordinates do not represent a surface.
-        /// </exception>
         public void Compute()
         {
             if (_hasResult)
@@ -154,75 +192,33 @@ namespace ELTE.AEGIS.Algorithms
         /// </exception>
         protected void ComputeForShell()
         {
-            IList<Coordinate> shellList = _shell as IList<Coordinate>;
+            Double resultX = 0, resultY = 0;
+            _area = 0;
 
-            if (shellList != null)
+            if (_shell.Count < 3) // if there are not enough coordinates
             {
-                Double resultX = 0, resultY = 0;
-                _area = 0;
-
-                if (shellList.Count < 3) // if there are not enough coordinates
-                {
-                    throw new InvalidOperationException("The number of coordinates in less than 3.");
-                }
-
-                for (Int32 i = 0; i < shellList.Count - 1; i++)
-                {
-                    if (shellList[i].Z != shellList[0].Z)
-                    {
-                        throw new InvalidOperationException("The coordinates do not represent a surface.");
-                    }
-
-                    resultX += (shellList[i].X + shellList[i + 1].X) * (shellList[i].X * shellList[i + 1].Y - shellList[i + 1].X * shellList[i].Y);
-                    resultY += (shellList[i].Y + shellList[i + 1].Y) * (shellList[i].X * shellList[i + 1].Y - shellList[i + 1].X * shellList[i].Y);
-                    _area += shellList[i].X * shellList[i + 1].Y - shellList[i + 1].X * shellList[i].Y;
-                }
-
-                resultX /= (6 * _area);
-                resultY /= (6 * _area);
-
-                _result = new Coordinate(resultX, resultY, shellList[0].Z);
                 _hasResult = true;
+                return;
             }
-            else
+
+            for (Int32 i = 0; i < _shell.Count - 1; i++)
             {
-                using (IEnumerator<Coordinate> enumerator = _shell.GetEnumerator())
+                if (_shell[i].Z != _shell[0].Z) // the coordinates are not in one plane
                 {
-                    Double resultX = 0, resultY = 0, resultZ = 0;
-                    _area = 0;
-
-                    Int32 number = 0;
-                    if (enumerator.MoveNext())
-                    {
-                        Coordinate first = enumerator.Current, second;
-                        number++;
-                        resultZ = first.Z;
-                        while (enumerator.MoveNext())
-                        {
-                            second = enumerator.Current;
-                            number++;
-
-                            if (second.Z != first.Z)
-                                throw new InvalidOperationException("The coordinates do not represent a surface.");
-
-                            resultX += (first.X + second.X) * (first.X * second.Y - second.X * first.Y);
-                            resultY += (first.Y + second.Y) * (first.X * second.Y - second.X * first.Y);
-                            _area += first.X * second.Y - second.X * first.Y;
-
-                            first = second;
-                        }
-
-                        resultX /= (6 * _area);
-                        resultY /= (6 * _area);
-
-                        _result = new Coordinate(resultX, resultY, resultZ);
-                        _hasResult = true;
-                    }
-
-                    if (number < 3) // if there are not enough coordinates
-                        throw new InvalidOperationException("The number of coordinates in less than 3.");
+                    _hasResult = true;
+                    return;
                 }
+
+                resultX += (_shell[i].X + _shell[i + 1].X) * (_shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y);
+                resultY += (_shell[i].Y + _shell[i + 1].Y) * (_shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y);
+                _area += _shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y;
             }
+
+            resultX /= (6 * _area);
+            resultY /= (6 * _area);
+
+            _result = new Coordinate(resultX, resultY, _shell[0].Z);
+            _hasResult = true;
         }
 
         /// <summary>
@@ -238,35 +234,24 @@ namespace ELTE.AEGIS.Algorithms
             Double resultX = 0, resultY = 0, resultZ = 0;
             _area = 0;
 
-            IList<Coordinate> shellList = _shell as IList<Coordinate>;
+            _baseCoordinate = _shell[0];
+            resultZ = _shell[0].Z;
 
-            if (shellList != null)
+            AddCoordinates(_shell, 1, ref resultX, ref resultY);
+
+            if (_hasResult)
+                return;
+
+            foreach (IList<Coordinate> hole in _holes)
             {
-                _baseCoordinate = shellList[0];
-                resultZ = shellList[0].Z;
+                if (_hasResult)
+                    return;
 
-                AddCoordinates(shellList, 1, ref resultX, ref resultY);
-            }
-            else
-            {
-                if (_shell.Count() < 3)
-                    throw new InvalidOperationException("The number of coordinates in less than 3.");
-
-                _baseCoordinate = _shell.First();
-                resultZ = _baseCoordinate.Z;
-
-                AddCoordinates(_shell, 1, ref resultX, ref resultY);
+                AddCoordinates(hole, -1, ref resultX, ref resultY);            
             }
 
-            foreach (IEnumerable<Coordinate> hole in _holes)
-            {
-                IList<Coordinate> holeList = hole as IList<Coordinate>;
-
-                if (holeList != null)
-                    AddCoordinates(holeList, -1, ref resultX, ref resultY);
-                else
-                    AddCoordinates(hole, -1, ref resultX, ref resultY);
-            }
+            if (_hasResult)
+                return;
 
             resultX = _result.X / 3 / _area;
             resultY = _result.Y / 3 / _area;
@@ -290,61 +275,18 @@ namespace ELTE.AEGIS.Algorithms
         protected void AddCoordinates(IList<Coordinate> coordinates, Int32 sign, ref Double resultX, ref Double resultY)
         {
             if (coordinates.Count < 3) // if there are not enough coordinates
-                throw new InvalidOperationException("The number of coordinates in less than 3.");
+                _hasResult = true;
 
             for (Int32 i = 0; i < coordinates.Count - 1; i++)
             {
                 if (coordinates[i].Z != coordinates[0].Z)
-                    throw new InvalidOperationException("The coordinates do not represent a surface.");
+                    _hasResult = true;
 
                 AddTriangle(_baseCoordinate, coordinates[i], coordinates[i + 1], sign, ref resultX, ref resultY);
             }
 
             if (coordinates[coordinates.Count - 1].Z != coordinates[0].Z)
-                throw new InvalidOperationException("The coordinates do not represent a surface.");
-        }
-
-        /// <summary>
-        /// Add a list of coordinates.
-        /// </summary>
-        /// <param name="coordinates">The coordinates.</param>
-        /// <param name="sign">The sign of the coordinates (positive for shell, negative for hole).</param>
-        /// <param name="resultX">The X coordinate of the result.</param>
-        /// <param name="resultY">The Y coordinate of the result.</param>
-        /// <exception cref="System.InvalidOperationException">
-        /// The coordinates do not represent a surface.
-        /// or
-        /// The number of coordinates in less than 3.
-        /// </exception>
-        protected void AddCoordinates(IEnumerable<Coordinate> coordinates, Int32 sign, ref Double resultX, ref Double resultY)
-        {
-            using (IEnumerator<Coordinate> enumerator = coordinates.GetEnumerator())
-            {
-                Int32 number = 0;
-
-                if (enumerator.MoveNext())
-                {
-                    Coordinate first = enumerator.Current, second;
-                    number++;
-
-                    while (enumerator.MoveNext())
-                    {
-                        second = enumerator.Current;
-                        number++;
-
-                        if (second.Z != first.Z)
-                            throw new InvalidOperationException("The coordinates do not represent a surface.");
-
-                        AddTriangle(_baseCoordinate, first, second, sign, ref resultX, ref resultY);
-                        first = second;
-                    }
-                }
-
-                if (number < 3) // if there are not enough coordinates
-                {
-                    throw new InvalidOperationException("The number of coordinates in less than 3.");
-                }
-            }
+                _hasResult = true;
         }
 
         /// <summary>
@@ -370,11 +312,24 @@ namespace ELTE.AEGIS.Algorithms
         #region Public static methods
 
         /// <summary>
-        /// Compute the centroid of the polygon from the shell coordinates.
+        /// Compute the centroid of the polygon.
         /// </summary>
-        /// <param name="shell">The coordinates of the shell in conterclockwise order.</param>
+        /// <param name="source">The polygon.</param>
         /// <returns>The centroid of the polygon.</returns>
-        public static Coordinate ComputeCentroid(IEnumerable<Coordinate> shell)
+        public static Coordinate ComputeCentroid(IBasicPolygon source)
+        {
+            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(source);
+            algorithm.Compute();
+
+            return algorithm.Result;
+        }
+
+        /// <summary>
+        /// Compute the centroid of the polygon.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <returns>The centroid of the polygon.</returns>
+        public static Coordinate ComputeCentroid(IList<Coordinate> shell)
         {
             PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(shell);
             algorithm.Compute();
@@ -383,12 +338,12 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         /// <summary>
-        /// Compute the centroid of the polygon from the shell and hole coordinates.
+        /// Compute the centroid of the polygon.
         /// </summary>
-        /// <param name="shell">The coordinates of the shell in counterclockwise order.</param>
-        /// <param name="holes">The sequences of hole coordinates in clockwise order.</param>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="holes">The collection of coordinates representing the poolygon holes.</param>
         /// <returns>The centroid of the polygon.</returns>
-        public static Coordinate ComputeCentroid(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes)
+        public static Coordinate ComputeCentroid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes)
         {
             PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(shell, holes);
             algorithm.Compute();

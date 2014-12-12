@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonAlgorithmsTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -26,8 +26,10 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms.Spatial
     [TestFixture]
     public class PolygonAlgorithmsTest
     {
+        #region Test methods
+
         /// <summary>
-        /// Test case for the <see cref="Orientation" /> method.
+        /// Tests the <see cref="Orientation" /> method.
         /// </summary>
         [Test]
         public void PolygonAlgorithmsOrientationTest()
@@ -87,7 +89,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms.Spatial
         }
 
         /// <summary>
-        /// Test case for the containment methods.
+        /// Tests the containment methods.
         /// </summary>
         [Test]
         public void PolygonAlgorithmsContainmentTest()
@@ -284,5 +286,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms.Spatial
             Assert.IsTrue(PolygonAlgorithms.InExterior(shell, new[] { hole1, hole2 }, coordinate));
             Assert.IsFalse(PolygonAlgorithms.OnBoundary(shell, new[] { hole1, hole2 }, coordinate));
         }
+
+        #endregion
     }
 }

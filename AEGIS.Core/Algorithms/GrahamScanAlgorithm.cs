@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GrahamScanAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -28,15 +28,18 @@ namespace ELTE.AEGIS.Algorithms
     /// </remarks>
     public class GrahamScanAlgorithm
     {
-        #region Protected types
+        #region Private types
 
         /// <summary>
         /// Represents a comparer used by the Graham scan algorithm.
         /// </summary>
-        protected class GrahamComparer : IComparer<Coordinate>
+        private class GrahamComparer : IComparer<Coordinate>
         {
             #region Private fields
 
+            /// <summary>
+            /// The origin coordinate.
+            /// </summary>
             private Coordinate _origin;
 
             #endregion
@@ -85,10 +88,21 @@ namespace ELTE.AEGIS.Algorithms
 
         #endregion
 
-        #region Protected fields
+        #region Private fields
 
-        protected IList<Coordinate> _shell;
+        /// <summary>
+        /// The list of source coordinates.
+        /// </summary>
+        protected IList<Coordinate> _source;
+
+        /// <summary>
+        /// The approximate convex hull of the source.
+        /// </summary>
         protected Coordinate[] _result;
+
+        /// <summary>
+        /// A value indicating whether the result has been computed.
+        /// </summary>
         protected Boolean _hasResult;
 
         #endregion
@@ -96,23 +110,24 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the coordinates of the polygon shell.
+        /// Gets the source coordinates.
         /// </summary>
-        /// <value>The coordinates of the polygon shell.</value>
-        /// <exception cref="System.InvalidOperationException">The value is null.</exception>
-        public IList<Coordinate> Shell
+        /// <value>The read-only list of source coordinates.</value>
+        public IList<Coordinate> Source
         {
-            get { return _shell; }
-            set
+            get 
             {
-                if (value == null) throw new InvalidOperationException("The value is null.");
-                if (_shell != value) { _shell = value; _hasResult = false; }
+                if (_source.IsReadOnly)
+                    return _source;
+                else
+                    return _source.AsReadOnly(); 
             }
         }
+
         /// <summary>
         /// Gets the result of the algorithm.
         /// </summary>
-        /// <value>The coordinates of the convex hull in a ring.</value>
+        /// <value>The list of approximate convex hull coordinates.</value>
         public IList<Coordinate> Result
         {
             get
@@ -132,15 +147,26 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="source">The source coordinates.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        protected GrahamScanAlgorithm(IBasicPolygon source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            _source = source.Shell.Coordinates;
+            _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrahamScanAlgorithm" /> class.
+        /// </summary>
+        /// <param name="source">The source coordinates.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         protected GrahamScanAlgorithm(IList<Coordinate> source) 
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
-            if (PolygonAlgorithms.Orientation(source) != Orientation.CounterClockwise)
-                throw new ArgumentException("The source coordinates are not in counter clockwise orientation.", "source");
-
-            _shell = source;
+            _source = source;
             _hasResult = false;
         }
 
@@ -151,26 +177,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the convex hull.
         /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell in counter clockwise order.</param>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public void Compute(IList<Coordinate> shell)
-        {
-            if (shell == null)
-                throw new ArgumentNullException("shell", "The shell is null.");
-
-            _shell = shell;
-            _hasResult = false;
-            Compute();
-        }
-        /// <summary>
-        /// Computes the convex hull.
-        /// </summary>
         public void Compute()
         {
             // source: http://en.wikipedia.org/wiki/Graham_scan
 
-            Coordinate[] coordinates = new Coordinate[_shell.Count];
-            _shell.CopyTo(coordinates, 0);
+            Coordinate[] coordinates = new Coordinate[_source.Count];
+            _source.CopyTo(coordinates, 0);
 
             // search for the minimal coordinate
 
@@ -220,13 +232,25 @@ namespace ELTE.AEGIS.Algorithms
         #region Public static methods
 
         /// <summary>
-        /// Computes the convex hull of the source coordinates.
+        /// Computes the convex hull of the specified polygon.
         /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell in counter clockwise order.</param>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public static IList<Coordinate> ComputeConvexHull(IList<Coordinate> shell)
+        /// <param name="source">The source polygon.</param>
+        /// <returns>The convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ComputeConvexHull(IBasicPolygon source)
         {
-            return new GrahamScanAlgorithm(shell).Result;
+            return new GrahamScanAlgorithm(source).Result;
+        }
+
+        /// <summary>
+        /// Computes the convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <returns>The convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ComputeConvexHull(IList<Coordinate> source)
+        {
+            return new GrahamScanAlgorithm(source).Result;
         }
 
         #endregion

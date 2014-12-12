@@ -1,9 +1,9 @@
 ﻿/// <copyright file="BentleyFaustPreparataAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -30,17 +30,18 @@ namespace ELTE.AEGIS.Algorithms
     /// </remarks>
     public class BentleyFaustPreparataAlgorithm
     {
-        #region Protected types
+        #region Private types
 
         /// <summary>
         /// Represents a range bin.
         /// </summary>
-        protected struct RangeBin
+        private struct RangeBin
         {
             /// <summary>
             /// Gets or sets the minimum of the bin.
             /// </summary>
             public Int32? Min { get; set; }
+
             /// <summary>
             /// Gets or sets the maximum of the bin.
             /// </summary>
@@ -49,10 +50,21 @@ namespace ELTE.AEGIS.Algorithms
 
         #endregion
 
-        #region Protected fields
+        #region Private fields
 
+        /// <summary>
+        /// The list of source coordinates.
+        /// </summary>
         protected IList<Coordinate> _source;
+
+        /// <summary>
+        /// The approximate convex hull of the source.
+        /// </summary>
         protected Coordinate[] _result;
+
+        /// <summary>
+        /// A value indicating whether the result has been computed.
+        /// </summary>
         protected Boolean _hasResult;
 
         #endregion
@@ -60,23 +72,24 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the source coordinates.
+        /// Gets the source coordinates.
         /// </summary>
-        /// <value>The source coordinates.</value>
-        /// <exception cref="System.InvalidOperationException">The value is null.</exception>
+        /// <value>The read-only list of source coordinates.</value>
         public IList<Coordinate> Source
         {
-            get { return _source; }
-            set 
-            { 
-                if (value == null) throw new InvalidOperationException("The value is null.");
-                if (_source != value) { _source = value; _hasResult = false; }
+            get
+            {
+                if (_source.IsReadOnly)
+                    return _source;
+                else
+                    return _source.AsReadOnly();
             }
         }
+
         /// <summary>
         /// Gets the result of the algorithm.
         /// </summary>
-        /// <value>The coordinates of the convex hull in a ring.</value>
+        /// <value>The list of approximate convex hull coordinates.</value>
         public IList<Coordinate> Result 
         {
             get
@@ -96,7 +109,21 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="source">The source coordinates.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        protected BentleyFaustPreparataAlgorithm(IList<Coordinate> source) 
+        public BentleyFaustPreparataAlgorithm(IBasicPolygon source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            _source = source.Shell.Coordinates;
+            _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BentleyFaustPreparataAlgorithm" /> class.
+        /// </summary>
+        /// <param name="source">The source coordinates.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public BentleyFaustPreparataAlgorithm(IList<Coordinate> source) 
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -273,12 +300,22 @@ namespace ELTE.AEGIS.Algorithms
         #region Public static methods
 
         /// <summary>
-        /// Computes the approximate convex hull of the source coordinates.
+        /// Computes the approximate convex hull of the specified polygon.
         /// </summary>
-        /// <param name="source">The source coordinates.</param>
+        /// <param name="source">The source polygon.</param>
         /// <returns>The approximate convex hull of <see cref="source" />.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        /// <exception cref="System.InvalidOperationException">Source coordinates are not planar.</exception>
+        public static IList<Coordinate> ComputeApproximateConvexHull(IBasicPolygon source)
+        {
+            return new BentleyFaustPreparataAlgorithm(source).Result;
+        }
+
+        /// <summary>
+        /// Computes the approximate convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <returns>The approximate convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static IList<Coordinate> ComputeApproximateConvexHull(IList<Coordinate> source)
         {
             return new BentleyFaustPreparataAlgorithm(source).Result;
