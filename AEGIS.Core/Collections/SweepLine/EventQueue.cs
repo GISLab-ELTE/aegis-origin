@@ -71,7 +71,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Private fields
 
             /// <summary>
-            /// Stores an inner <see cref="CoordinateComparer"/> instance.
+            /// An inner <see cref="CoordinateComparer" /> instance.
             /// </summary>
             private readonly CoordinateComparer _coordinateComparer = new CoordinateComparer();
 
@@ -116,7 +116,14 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
         #region Private fields
 
+        /// <summary>
+        /// The coordinate comparer.
+        /// </summary>
         private readonly IComparer<Coordinate> _comparer;
+
+        /// <summary>
+        /// The event heap.
+        /// </summary>
         private readonly EventHeap _eventHeap;
 
         #endregion
@@ -124,10 +131,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.EventQueue" /> class.
+        /// Initializes a new instance of the <see cref="EventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public EventQueue(IList<Coordinate> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -141,8 +148,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
             Int32 compare;
             for (Int32 i = 0; i < source.Count - 1; i++)
             {
-                var firstEvent = new EndPointEvent { Edge = i, Vertex = source[i] };
-                var secondEvent = new EndPointEvent { Edge = i, Vertex = source[i + 1] };
+                EndPointEvent firstEvent = new EndPointEvent { Edge = i, Vertex = source[i] };
+                EndPointEvent secondEvent = new EndPointEvent { Edge = i, Vertex = source[i + 1] };
 
                 compare = _comparer.Compare(source[i], source[i + 1]);
                 if (compare == 0) continue;
@@ -164,10 +171,10 @@ namespace ELTE.AEGIS.Collections.SweepLine
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Collections.SweepLine.EventQueue" /> class.
+        /// Initializes a new instance of the <see cref="EventQueue" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public EventQueue(IEnumerable<IList<Coordinate>> source)
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
@@ -186,8 +193,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
 
                 for (Int32 i = 0; i < coordinateList.Count - 1; i++)
                 {
-                    var firstEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i] };
-                    var secondEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i + 1] };
+                    EndPointEvent firstEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i] };
+                    EndPointEvent secondEvent = new EndPointEvent { Edge = index, Vertex = coordinateList[i + 1] };
 
                     compare = _comparer.Compare(coordinateList[i], coordinateList[i + 1]);
                     if (compare == 0) continue;
@@ -229,7 +236,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Adds an intersection event to the queue.
         /// </summary>
         /// <param name="intersectionEvent">The intersection event.</param>
-        /// <exception cref="System.ArgumentNullException">intersectionEvent;The instersection event is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The instersection event is null.</exception>
         public void Add(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)
@@ -253,7 +260,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// </summary>
         /// <param name="intersectionEvent">The intersection event.</param>
         /// <returns><c>true</c> if the queue contains the <paramref name="intersectionEvent"/>; otherwise <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">intersectionEvent;The instersection event is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The instersection event is null.</exception>
         public Boolean Contains(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)

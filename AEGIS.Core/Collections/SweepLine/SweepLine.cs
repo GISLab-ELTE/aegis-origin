@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SweepLine.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -14,11 +14,11 @@
 /// <author>Roberto Giachetta</author>
 /// <author>Máté Cserép</author>
 
+using ELTE.AEGIS.Algorithms;
+using ELTE.AEGIS.Collections.SearchTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ELTE.AEGIS.Algorithms;
-using ELTE.AEGIS.Collections.SearchTree;
 
 namespace ELTE.AEGIS.Collections.SweepLine
 {
@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     return result;
                 }
 
-                // The segments does not intersect.
+                // The segments do not intersect.
                 if (first.LeftCoordinate.X < second.LeftCoordinate.X)
                 {
                     Double[] verticalCollection = new[] { first.LeftCoordinate.Y, first.RightCoordinate.Y };
