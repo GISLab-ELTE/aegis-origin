@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
         #region Test methods
 
         /// <summary>
-        /// Test case for distinct polygons.
+        /// Tests distinct polygons.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmDistinctTest()
@@ -55,7 +55,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     });
 
             // Verification
-            Assert.IsEmpty(algorithm.Internal);
+            Assert.IsEmpty(algorithm.InternalClips);
 
             Assert.AreEqual(new[]
             {
@@ -67,8 +67,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -80,12 +80,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(20, 10),
                     new Coordinate(20, 0)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for polygon cxontainign the other polygon.
+        /// Tests a polygon containing the other polygon.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmContainTest()
@@ -120,8 +120,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 20),
                     new Coordinate(10, 10)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -133,14 +133,14 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(0, 30),
                     new Coordinate(0, 0)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
-            Assert.IsEmpty(algorithm.ExternalB);
+            Assert.IsEmpty(algorithm.ExternalClipsB);
         }
 
         /// <summary>
-        /// Test case for tangent polygons.
+        /// Tests tangent polygons.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmTangentTest()
@@ -165,7 +165,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     });
 
             // Verification
-            Assert.IsEmpty(algorithm.Internal);
+            Assert.IsEmpty(algorithm.InternalClips);
 
             Assert.AreEqual(new[]
             {
@@ -177,8 +177,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -190,8 +190,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 0)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         
 
             // Data
@@ -214,7 +214,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     });
 
             // Verification
-            Assert.IsEmpty(algorithm.Internal);
+            Assert.IsEmpty(algorithm.InternalClips);
 
             Assert.AreEqual(new[]
             {
@@ -226,8 +226,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -240,12 +240,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 0)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for convex polygons.
+        /// Tests convex polygons.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmConvexTest()
@@ -280,8 +280,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 5),
                     new Coordinate(10, 5)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -295,8 +295,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 5),
                     new Coordinate(5, 10)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -310,12 +310,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 5)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for concave polygons.
+        /// Tests concave polygons.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmConcaveTest()
@@ -358,8 +358,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(18, 30),
                     new Coordinate(12, 0)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -393,8 +393,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(40, 30),
                     new Coordinate(50, 25)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -426,12 +426,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(50, 25),
                     new Coordinate(50, 5)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell).Select(list => list.Select(coordinate => RoundCoordinate(coordinate))));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for multiple clips.
+        /// Tests multiple clips.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmMultipleClipTest()
@@ -486,8 +486,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(42, 30),
                     new Coordinate(48, 0)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -523,8 +523,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(50, 30),
                     new Coordinate(50, 0)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -564,12 +564,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(50, 0),
                     new Coordinate(48, 0)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for polygon containing another polygon (with holes).
+        /// Tests a polygon containing another polygon (with holes).
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleContainTest()
@@ -619,7 +619,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(8, 4)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
             Assert.AreEqual(new[]
             {
                 new[]
@@ -633,7 +633,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         new Coordinate(5, 5)
                     }
                 }
-            }, algorithm.Internal.Select(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Holes.Select(hole => hole)));
 
             Assert.AreEqual(new[]
             {
@@ -647,8 +647,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -670,12 +670,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(7, 5),
                     new Coordinate(5, 5)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for overlapping polygons (with holes).
+        /// Tests overlapping polygons (with holes).
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleOverlapTest()
@@ -727,8 +727,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(7, 4),
                     new Coordinate(8, 4)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -746,8 +746,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -769,12 +769,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(5, 4)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for tangnet polygons (with holes).
+        /// Tests tangent polygons (with holes).
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleTangentTest()
@@ -827,8 +827,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(7, 4),
                     new Coordinate(8, 4)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -844,8 +844,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -867,12 +867,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(5, 4)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for polygons with holes.
+        /// Tests polygons with holes.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleFrameTest()
@@ -941,8 +941,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(5, 8)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -970,8 +970,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(7, 5),
                     new Coordinate(8, 5)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -999,12 +999,12 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(4, 7)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for clips of polygons (with holes).
+        /// Tests clips of polygons (with holes).
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleClipTest()
@@ -1047,28 +1047,28 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
             // Verification
             WeilerAthertonAlgorithm algorithm = new WeilerAthertonAlgorithm(shellA, holesA, shellB, null);
 
-            var internals = algorithm.Internal.Select(clip => clip.Shell).ToList();
+            var internals = algorithm.InternalClips.Select(clip => clip.Shell).ToList();
             Assert.AreEqual(internals.Count, 2);
             Assert.AreEqual(internals[0].Count, 7);
             Assert.AreEqual(internals[1].Count, 7);
-            Assert.IsEmpty(algorithm.Internal.SelectMany(clip => clip.Holes));
+            Assert.IsEmpty(algorithm.InternalClips.SelectMany(clip => clip.Holes));
 
-            var externalA = algorithm.ExternalA.Select(clip => clip.Shell).ToList();
+            var externalA = algorithm.ExternalClipsA.Select(clip => clip.Shell).ToList();
             Assert.AreEqual(externalA.Count, 2);
             Assert.AreEqual(externalA[0].Count, 9);
             Assert.AreEqual(externalA[1].Count, 7);
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
-            var externalB = algorithm.ExternalB.Select(clip => clip.Shell).ToList();
+            var externalB = algorithm.ExternalClipsB.Select(clip => clip.Shell).ToList();
             Assert.AreEqual(externalB.Count, 3);
             Assert.AreEqual(externalB[0].Count, 7);
             Assert.AreEqual(externalB[1].Count, 6);
             Assert.AreEqual(externalB[2].Count, 8);
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         /// <summary>
-        /// Test case for intersection polygon holes.
+        /// Tests intersecting polygon holes.
         /// </summary>
         [Test]
         public void WeilerAthertonAlgorithmHoleIntersectTest()
@@ -1128,7 +1128,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(10, 6),
                     new Coordinate(10, 12)
                 }
-            }, algorithm.Internal.Select(clip => clip.Shell));
+            }, algorithm.InternalClips.Select(clip => clip.Shell));
             Assert.AreEqual(new[]
             {
                 new[]
@@ -1142,7 +1142,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                         new Coordinate(8, 9)
                     }
                 }
-            }, algorithm.Internal.Select(clip => clip.Holes));
+            }, algorithm.InternalClips.Select(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -1170,8 +1170,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(3, 9),
                     new Coordinate(4, 9)
                 }
-            }, algorithm.ExternalA.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalA.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsA.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsA.SelectMany(clip => clip.Holes));
 
             Assert.AreEqual(new[]
             {
@@ -1191,8 +1191,8 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                     new Coordinate(8, 8),
                     new Coordinate(8, 9)
                 }
-            }, algorithm.ExternalB.Select(clip => clip.Shell));
-            Assert.IsEmpty(algorithm.ExternalB.SelectMany(clip => clip.Holes));
+            }, algorithm.ExternalClipsB.Select(clip => clip.Shell));
+            Assert.IsEmpty(algorithm.ExternalClipsB.SelectMany(clip => clip.Holes));
         }
 
         #endregion

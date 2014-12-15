@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BentleyOttmannAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -14,9 +14,10 @@
 /// <author>Roberto Giachetta</author>
 /// <author>Máté Cserép</author>
 
+using ELTE.AEGIS.Collections.SweepLine;
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Collections.SweepLine;
+using System.Linq;
 
 namespace ELTE.AEGIS.Algorithms
 {
@@ -32,32 +33,87 @@ namespace ELTE.AEGIS.Algorithms
     /// <seealso cref="ShamosHoeyAlgorithm"/>
     public class BentleyOttmannAlgorithm
     {
-        #region Protected fields
+        #region Private fields
 
-        protected EventQueue _eventQueue;
-        protected SweepLine _sweepLine;
-        protected Boolean _hasResult;
-        protected List<Coordinate> _result;
-        protected List<Tuple<Int32, Int32>> _edges;
+        /// <summary>
+        /// The list of source coordinates.
+        /// </summary>
+        private readonly IList<Coordinate> _source;
+
+        /// <summary>
+        /// The list of intersection coordinates.
+        /// </summary>
+        private List<Coordinate> _intersections;
+
+        /// <summary>
+        /// The list of intersection edge indices in the source list.
+        /// </summary>
+        private List<Tuple<Int32, Int32>> _edgeIndices;
+
+        /// <summary>
+        /// The event queue.
+        /// </summary>
+        private readonly EventQueue _eventQueue;
+
+        /// <summary>
+        /// The sweep line.
+        /// </summary>
+        private readonly SweepLine _sweepLine;
+
+        /// <summary>
+        /// A values indicating whether the result was already computed.
+        /// </summary>
+        private Boolean _hasResult;
 
         #endregion
 
         #region Public properties
 
         /// <summary>
-        /// Gets the result.
+        /// Gets the source coordinates.
         /// </summary>
-        /// <value>The <see cref="IList{Coordinate}"/> containing the intersection coordinates.</value>
-        public IList<Coordinate> Result { get { if (!_hasResult) Compute(); return _result; } }
+        /// <value>The read-only list of source coordinates.</value>
+        public IList<Coordinate> Source
+        {
+            get
+            {
+                if (_source.IsReadOnly)
+                    return _source;
+                else
+                    return _source.AsReadOnly();
+            }
+        }
 
         /// <summary>
-        /// Gets the edge details of the result.
+        /// Gets the intersection coordinates.
         /// </summary>
+        /// <value>The list of intersection coordinates.</value>
+        public IList<Coordinate> Intersections 
+        { 
+            get 
+            { 
+                if (!_hasResult) 
+                    Compute(); 
+                return _intersections; 
+            } 
+        }
+
+        /// <summary>
+        /// Gets the indices of intersecting edges.
+        /// </summary>
+        /// <value>The list of intersecting edge indices with respect to <see cref="Source" /> coordinates.</value>
         /// <remarks>
         /// Indices are assigned sequentially to the input edges from zero, skipping a number when starting a new linestring.
         /// </remarks>
-        /// <value>The <see cref="IList{Tuple}"/> containing the edge indices intersecting at the coordinates in <see cref="Result"/>.</value>
-        public IList<Tuple<Int32, Int32>> Edges { get { if (!_hasResult) Compute(); return _edges; } }
+        public IList<Tuple<Int32, Int32>> EdgeIndices 
+        { 
+            get 
+            { 
+                if (!_hasResult) 
+                    Compute(); 
+                return _edgeIndices; 
+            } 
+        }
 
         #endregion
 
@@ -66,13 +122,30 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
-        /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <param name="source">The line string.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public BentleyOttmannAlgorithm(IBasicLineString source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            _source = source.Coordinates;
+            _eventQueue = new EventQueue(source.Coordinates);
+            _sweepLine = new SweepLine(source.Coordinates);
+            _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
+        /// </summary>
+        /// <param name="source">The coordinates of the line string.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public BentleyOttmannAlgorithm(IList<Coordinate> source)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
+            _source = source;
             _eventQueue = new EventQueue(source);
             _sweepLine = new SweepLine(source);
             _hasResult = false;
@@ -81,12 +154,35 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
-        /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <param name="source">The collection of line strings.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public BentleyOttmannAlgorithm(IEnumerable<IBasicLineString> source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+
+            _source = new List<Coordinate>();
+            foreach (IBasicLineString linestring in source)
+                (_source as List<Coordinate>).AddRange(linestring.Coordinates);
+
+            _eventQueue = new EventQueue(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
+            _sweepLine = new SweepLine(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
+            _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
+        /// </summary>
+        /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public BentleyOttmannAlgorithm(IEnumerable<IList<Coordinate>> source)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
+
+            _source = new List<Coordinate>();
+            foreach (IList<Coordinate> linestring in source)
+                (_source as List<Coordinate>).AddRange(linestring);
 
             _eventQueue = new EventQueue(source);
             _sweepLine = new SweepLine(source);
@@ -100,43 +196,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the intersection of one or more line strings.
         /// </summary>
-        /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
-        public void Compute(IList<Coordinate> source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source);
-            _hasResult = false;
-            Compute();
-        }
-        /// <summary>
-        /// Computes the intersection of one or more line strings.
-        /// </summary>
-        /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
-        public void Compute(IEnumerable<IList<Coordinate>> source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source);
-            _hasResult = false;
-            Compute();
-        }
-
-        /// <summary>
-        /// Computes the intersection of one or more line strings.
-        /// </summary>
         public void Compute()
         {
             // source: http://geomalgorithms.com/a09-_intersect-3.html
 
-            _result = new List<Coordinate>();
-            _edges = new List<Tuple<Int32, Int32>>();
+            _intersections = new List<Coordinate>();
+            _edgeIndices = new List<Tuple<Int32, Int32>>();
             Event currentEvent = _eventQueue.Next();
             SweepLineSegment segment;
             IList<Coordinate> intersections;
@@ -145,7 +210,7 @@ namespace ELTE.AEGIS.Algorithms
             {
                 if (currentEvent is EndPointEvent)
                 {
-                    var endPointEvent = (EndPointEvent)currentEvent;
+                    EndPointEvent endPointEvent = (EndPointEvent)currentEvent;
                     switch (endPointEvent.Type)
                     {
                         // Left endpoint event: check for possible intersection with below and / or above segments.
@@ -158,7 +223,7 @@ namespace ELTE.AEGIS.Algorithms
 
                                 if (intersections.Count > 0)
                                 {
-                                    var intersectionEvent = new IntersectionEvent
+                                    IntersectionEvent intersectionEvent = new IntersectionEvent
                                     {
                                         Vertex = intersections[0],
                                         Below = segment,
@@ -174,7 +239,7 @@ namespace ELTE.AEGIS.Algorithms
 
                                 if (intersections.Count > 0)
                                 {
-                                    var intersectionEvent = new IntersectionEvent
+                                    IntersectionEvent intersectionEvent = new IntersectionEvent
                                     {
                                         Vertex = intersections[0],
                                         Below = segment.Below,
@@ -199,7 +264,7 @@ namespace ELTE.AEGIS.Algorithms
 
                                     if (intersections.Count > 0)
                                     {
-                                        var intersectionEvent = new IntersectionEvent
+                                        IntersectionEvent intersectionEvent = new IntersectionEvent
                                         {
                                             Vertex = intersections[0],
                                             Below = segment.Below,
@@ -218,7 +283,7 @@ namespace ELTE.AEGIS.Algorithms
                 // Intersection point event: switch the two concerned segments and check for possible intersection with their below and above segments.
                 else if (currentEvent is IntersectionEvent)
                 {
-                    var intersectionEvent = (IntersectionEvent)currentEvent;
+                    IntersectionEvent intersectionEvent = (IntersectionEvent)currentEvent;
                     /*
                      * Segment order before intersection: segmentBelow <-> segmentAbove <-> segment <-> segmentAboveAbove
                      * Segment order after intersection:  segmentBelow <-> segment <-> segmentAbove <-> segmentAboveAbove
@@ -231,8 +296,8 @@ namespace ELTE.AEGIS.Algorithms
                     {
                         if (!_sweepLine.IsAdjacent(segment.Edge, segmentAbove.Edge))
                         {
-                            _result.Add(currentEvent.Vertex);
-                            _edges.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
+                            _intersections.Add(currentEvent.Vertex);
+                            _edgeIndices.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
                                                       Math.Max(segment.Edge, segmentAbove.Edge)));
                         }
                     }
@@ -243,8 +308,8 @@ namespace ELTE.AEGIS.Algorithms
                     {
                         if (!_sweepLine.IsAdjacent(segment.Edge, segmentAbove.Edge))
                         {
-                            _result.Add(currentEvent.Vertex);
-                            _edges.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
+                            _intersections.Add(currentEvent.Vertex);
+                            _edgeIndices.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
                                                       Math.Max(segment.Edge, segmentAbove.Edge)));
 
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
@@ -252,7 +317,7 @@ namespace ELTE.AEGIS.Algorithms
 
                             if (intersections.Count > 1 && !intersections[1].Equals(intersections[0]))
                             {
-                                var newIntersectionEvent = new IntersectionEvent
+                                IntersectionEvent newIntersectionEvent = new IntersectionEvent
                                 {
                                     Vertex = intersections[1],
                                     Below = segment,
@@ -271,7 +336,7 @@ namespace ELTE.AEGIS.Algorithms
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
-                                var newIntersectionEvent = new IntersectionEvent
+                                IntersectionEvent newIntersectionEvent = new IntersectionEvent
                                 {
                                     Vertex = intersections[0],
                                     Below = segmentAbove,
@@ -289,7 +354,7 @@ namespace ELTE.AEGIS.Algorithms
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
-                                var newIntersectionEvent = new IntersectionEvent
+                                IntersectionEvent newIntersectionEvent = new IntersectionEvent
                                 {
                                     Vertex = intersections[0],
                                     Below = segment.Below,
@@ -314,22 +379,45 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the intersection coordinates of a line string.
         /// </summary>
-        /// <param name="source">The source coordinates representing a single line string.</param>
-        /// <returns>The <see cref="T:System.Collections.Generic.IList{Coordinate}"/> containing the intersection coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <param name="source">The line string.</param>
+        /// <returns>The list of intersection coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> Intersection(IBasicLineString source)
+        {
+            return new BentleyOttmannAlgorithm(source).Intersections;
+        }
+
+        /// <summary>
+        /// Computes the intersection coordinates of a line string.
+        /// </summary>
+        /// <param name="source">The coordinates of the line string.</param>
+        /// <returns>The list of intersection coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static IList<Coordinate> Intersection(IList<Coordinate> source)
         {
-            return new BentleyOttmannAlgorithm(source).Result;
+            return new BentleyOttmannAlgorithm(source).Intersections;
         }
+
         /// <summary>
         /// Computes the intersection coordinates of multiple line strings.
         /// </summary>
-        /// <param name="source">The source coordinates representing multiple line strings.</param>
-        /// <returns>The <see cref="T:System.Collections.Generic.IList{Coordinate}"/> containing the intersection coordinates.</returns>
-        /// <exception cref="System.ArgumentNullException">source;The source is null.</exception>
+        /// <param name="source">The collection of line strings.</param>
+        /// <returns>The list of intersection coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> Intersection(IEnumerable<IBasicLineString> source)
+        {
+            return new BentleyOttmannAlgorithm(source).Intersections;
+        }
+
+        /// <summary>
+        /// Computes the intersection coordinates of multiple line strings.
+        /// </summary>
+        /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <returns>The list of intersection coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static IList<Coordinate> Intersection(IEnumerable<IList<Coordinate>> source)
         {
-            return new BentleyOttmannAlgorithm(source).Result;
+            return new BentleyOttmannAlgorithm(source).Intersections;
         }
 
         #endregion

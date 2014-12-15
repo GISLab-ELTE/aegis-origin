@@ -1,5 +1,5 @@
 ﻿/// <copyright file="WeilerAthertonAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -32,13 +32,23 @@ namespace ELTE.AEGIS.Algorithms
         #region Private types
 
         /// <summary>
-        /// The kinds of the intersection points.
+        /// Defines the kinds of the intersection points.
         /// </summary>
         private enum IntersectionMode
         {
-            Unknown,
+            /// <summary>
+            /// Indicates that the intersection is an entry point.
+            /// </summary>
             Entry,
+
+            /// <summary>
+            /// Indicates that the intersection is an exit point.
+            /// </summary>
             Exit,
+
+            /// <summary>
+            /// Indicates that the intersection is neither entry, nor exit.
+            /// </summary>
             Virtual
         }
 
@@ -90,29 +100,65 @@ namespace ELTE.AEGIS.Algorithms
             }
         }
 
+        /// <summary>
+        /// Represents a polygon clip.
+        /// </summary>
+        private class Clip
+        {
+            /// <summary>
+            /// The shell of the clip.
+            /// </summary>
+            public IList<Coordinate> Shell { get; set; }
+
+            /// <summary>
+            /// The holes of the clip.
+            /// </summary>
+            public List<IList<Coordinate>> Holes { get; private set; }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Clip" /> class.
+            /// </summary>
+            public Clip()
+                : this(null, null)
+            { }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Clip" /> class.
+            /// </summary>
+            /// <param name="shell">The shell.</param>
+            public Clip(IList<Coordinate> shell)
+                : this(shell, null)
+            { }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Clip" /> class.
+            /// </summary>
+            /// <param name="shell">The shell.</param>
+            /// <param name="holes">The holes.</param>
+            public Clip(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes)
+            {
+                Shell = shell;
+
+                if (holes == null)
+                    Holes = new List<IList<Coordinate>>();
+                else
+                    Holes = new List<IList<Coordinate>>(holes);
+            }
+        }
+
         #endregion
 
         #region Private fields
 
         /// <summary>
-        /// The shell of the first polygon.
+        /// The first polygon.
         /// </summary>
-        private IList<Coordinate> _shellA;
+        private readonly IBasicPolygon _polygonA;
 
         /// <summary>
-        /// The shell of the second polygon.
+        /// The second polygon.
         /// </summary>
-        private IList<Coordinate> _shellB;
-
-        /// <summary>
-        /// The holes of the first polygon.
-        /// </summary>
-        private IList<IList<Coordinate>> _holesA;
-
-        /// <summary>
-        /// The holes of the second polygon.
-        /// </summary>
-        private IList<IList<Coordinate>> _holesB;
+        private readonly IBasicPolygon _polygonB;
 
         /// <summary>
         /// The intersection collection.
@@ -120,65 +166,146 @@ namespace ELTE.AEGIS.Algorithms
         private IntersectionCollection _intersections;
 
         /// <summary>
+        /// The shell of the first polygon.
+        /// </summary>
+        private LinkedList<Coordinate> _shellA;
+
+        /// <summary>
+        /// The shell of the second polygon.
+        /// </summary>
+        private LinkedList<Coordinate> _shellB;
+
+        /// <summary>
+        /// The array containing the holes of the first polygon.
+        /// </summary>
+        private LinkedList<Coordinate>[] _holesA;
+
+        /// <summary>
+        /// The array containing the holes of the second polygon.
+        /// </summary>
+        private LinkedList<Coordinate>[] _holesB;
+
+        /// <summary>
+        /// The list of hole indices contained within the first polygon.
+        /// </summary>
+        private List<Int32> _containedHoleIndicesA;
+
+        /// <summary>
+        /// The list of hole indices contained within the second polygon.
+        /// </summary>
+        private List<Int32> _containedHoleIndicesB;
+
+        /// <summary>
         /// The list of internal clips.
         /// </summary>
-        private List<Clip> _internal;
+        private List<Clip> _internalClips;
 
         /// <summary>
         /// The list of external clips for the first polygon.
         /// </summary>
-        private List<Clip> _externalA;
+        private List<Clip> _externalClipsA;
 
         /// <summary>
         /// The list of external clips for the second polygon.
         /// </summary>
-        private List<Clip> _externalB;
+        private List<Clip> _externalClipsB;
+
+        /// <summary>
+        /// A vlaue indicating whether the found intersections are phony.
+        /// </summary>
+        private Boolean _phonyIntersections;
 
         /// <summary>
         /// A value indicating whether the algorithm has computed the result.
         /// </summary>
         private Boolean _hasResult;
 
+        /// <summary>
+        /// A value indicating whether to compute the external clips.
+        /// </summary>
+        private Boolean _computeExternalClips;
+
         #endregion
 
         #region Public properties
 
         /// <summary>
-        /// Gets the common, internal clip parts.
+        /// Gets the first polygon.
         /// </summary>
-        /// <value>The polygon coordinates of the common, internal clips.</value>
-        public IList<Clip> Internal
-        {
-            get
+        /// <value>The first polygon.</value>
+        public IBasicPolygon FirstPolygon { get { return _polygonA; } }
+
+        /// <summary>
+        /// Gets the second polygon.
+        /// </summary>
+        /// <value>The second polygon.</value>
+        public IBasicPolygon SecondPolygon { get { return _polygonB; } }
+
+        /// <summary>
+        /// A value indicating whether to compute the external clips of the polygons.
+        /// </summary>
+        /// <value><c>true</c> if the algorithm should compute the external clips of the polygons, otherwise <c>false</c>.</value>
+        public Boolean ComputeExternalClips 
+        { 
+            get { return _computeExternalClips; }
+            set
             {
-                if (!_hasResult) Compute();
-                return _internal;
+                if (_computeExternalClips != value)
+                {
+                    _computeExternalClips = value;
+
+                    if (_computeExternalClips)
+                    {
+                        _hasResult = false;
+                    }
+                    else
+                    {
+                        _externalClipsA = null;
+                        _externalClipsB = null;
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// Gets the external clips for the first subject polygon.
+        /// Gets the internal clips.
         /// </summary>
-        /// <value>The polygon coordinates of the external clips for the first subject polygon.</value>
-        public IList<Clip> ExternalA
+        /// <value>The list of polygons representing the internal clips of the two subject polygons.</value>
+        public IList<IBasicPolygon> InternalClips
         {
             get
             {
-                if (!_hasResult) Compute();
-                return _externalA;
+                if (!_hasResult) 
+                    Compute();
+                return _internalClips.Select(clip => new BasicPolygon(clip.Shell, clip.Holes)).ToList<IBasicPolygon>();
             }
         }
 
         /// <summary>
-        /// Gets the external clips for the second subject polygon.
+        /// Gets the external clips for the first polygon.
         /// </summary>
-        /// <value>The polygon coordinates of the external clips for the second subject polygon.</value>
-        public IList<Clip> ExternalB
+        /// <value>The list of polygons representing the external clips of the first subject polygon.</value>
+        public IList<IBasicPolygon> ExternalClipsA
         {
             get
             {
-                if (!_hasResult) Compute();
-                return _externalB;
+                if (!_hasResult) 
+                    Compute();
+                return _externalClipsA.Select(clip => new BasicPolygon(clip.Shell, clip.Holes)).ToList<IBasicPolygon>();
+            }
+        }
+
+        /// <summary>
+        /// Gets the external clips for the second polygon.
+        /// </summary>
+        /// <value>The list of polygons representing the external clips of the second subject polygon.</value>
+        public IList<IBasicPolygon> ExternalClipsB
+        {
+            get
+            {
+                if (!_hasResult) 
+                    Compute();
+                return _externalClipsB.Select(clip => new BasicPolygon(clip.Shell, clip.Holes)).ToList<IBasicPolygon>();
             }
         }
 
@@ -187,29 +314,119 @@ namespace ELTE.AEGIS.Algorithms
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
         /// </summary>
-        /// <param name="shellA">The source coordinates representing the first subject polygon.</param>
-        /// <param name="shellB">The source coordinates representing the second subject polygon.</param>
-        /// <exception cref="ArgumentNullException">One or both of the subject polygons are null.</exception>
-        /// <exception cref="ArgumentException">One or both of the subject polygons do not have enough coordinates.</exception>
-        public WeilerAthertonAlgorithm(IList<Coordinate> shellA, IList<Coordinate> shellB)
-            :this(shellA, null, shellB, null)
-        {}
+        /// <param name="polygonA">The first polygon.</param>
+        /// <param name="polygonB">The second polygon.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The first polygon is null.
+        /// or
+        /// The second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IBasicPolygon polygonA, IBasicPolygon polygonB)
+            : this(polygonA, polygonB, true)
+        { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm"/> class.
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
         /// </summary>
-        /// <param name="shellA">The source coordinates representing the first subject polygon.</param>
-        /// <param name="shellB">The source coordinates representing the second subject polygon.</param>
-        /// <param name="holesA">The source coordinates representing the holes in the first subject polygon.</param>
-        /// <param name="holesB">The source coordinates representing the holes in the second subject polygon.</param>
-        /// <exception cref="ArgumentNullException">One or both of the subject polygons are null.</exception>
-        /// <exception cref="ArgumentException">One or both of the subject polygons do not have enough coordinates.</exception>
-        public WeilerAthertonAlgorithm(IList<Coordinate> shellA, IList<IList<Coordinate>> holesA,
-                                       IList<Coordinate> shellB, IList<IList<Coordinate>> holesB)
+        /// <param name="polygonA">The first polygon.</param>
+        /// <param name="polygonB">The second polygon.</param>
+        /// <param name="computeExternalClips">A value indicating whether to compute the external clips.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The first polygon is null.
+        /// or
+        /// The second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IBasicPolygon polygonA, IBasicPolygon polygonB, Boolean computeExternalClips)
         {
-            Initialize(shellA, holesA, shellB, holesB);
+            if (polygonA == null)
+                throw new ArgumentNullException("first", "The first polygon is null.");
+            if (polygonB == null)
+                throw new ArgumentNullException("second", "The second polygon is null.");
+
+            _polygonA = polygonA;
+            _polygonB = polygonB;
+            _hasResult = false;
+            _computeExternalClips = computeExternalClips;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
+        /// </summary>
+        /// <param name="shellA">The shell of the first polygon.</param>
+        /// <param name="shellB">The shell of the second polygon.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell of the first polygon is null.
+        /// or
+        /// The shell of the second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IList<Coordinate> shellA, IList<Coordinate> shellB)
+            : this(shellA, shellB, true) 
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
+        /// </summary>
+        /// <param name="shellA">The shell of the first polygon.</param>
+        /// <param name="shellB">The shell of the second polygon.</param>
+        /// <param name="computeExternalClips">A value indicating whether to compute the external clips.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell of the first polygon is null.
+        /// or
+        /// The shell of the second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IList<Coordinate> shellA, IList<Coordinate> shellB, Boolean computeExternalClips)
+        {
+            if (shellA == null)
+                throw new ArgumentNullException("shellA", "The shell of the first polygon is null.");            
+            if (shellB == null)
+                throw new ArgumentNullException("shellB", "The shell of the second polygon is null.");
+            
+            _polygonA = new BasicPolygon(shellA);
+            _polygonB = new BasicPolygon(shellB);
+            _hasResult = false;
+            _computeExternalClips = computeExternalClips;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
+        /// </summary>
+        /// <param name="first">The first polygon.</param>
+        /// <param name="second">The second polygon.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The first polygon is null.
+        /// or
+        /// The second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IList<Coordinate> firstShell, IEnumerable<IList<Coordinate>> firstHoles, IList<Coordinate> secondShell, IEnumerable<IList<Coordinate>> secondHoles)
+            : this (firstShell, firstHoles, secondShell, secondHoles, true)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WeilerAthertonAlgorithm" /> class.
+        /// </summary>
+        /// <param name="first">The first polygon.</param>
+        /// <param name="second">The second polygon.</param>
+        /// <param name="computeExternalClips">A value indicating whether to compute the external clips.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The first polygon is null.
+        /// or
+        /// The second polygon is null.
+        /// </exception>
+        public WeilerAthertonAlgorithm(IList<Coordinate> firstShell, IEnumerable<IList<Coordinate>> firstHoles, IList<Coordinate> secondShell, IEnumerable<IList<Coordinate>> secondHoles, Boolean computeExternalClips)
+        {
+            if (firstShell == null)
+                throw new ArgumentNullException("firstShell", "The shell of the first polygon is null.");
+            if (secondShell == null)
+                throw new ArgumentNullException("secondShell", "The shell of the second polygon is null.");
+
+            _polygonA = new BasicPolygon(firstShell, firstHoles);
+            _polygonB = new BasicPolygon(secondShell, secondHoles);
+            _hasResult = false;
+            _computeExternalClips = computeExternalClips;
         }
 
         #endregion
@@ -221,98 +438,179 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         public void Compute()
         {
-            _intersections = new IntersectionCollection();
-            _internal = new List<Clip>();
-            _externalA = new List<Clip>();
-            _externalB = new List<Clip>();
-            Boolean falseIntersections = false;
+            Initialize();
+            FindIntersections();
 
-            var listShellA = new LinkedList<Coordinate>(_shellA);
-            var listShellB = new LinkedList<Coordinate>(_shellB);
-            listShellA.RemoveLast();
-            listShellB.RemoveLast();
+            // Determine contained holes with no intersection points.
+            _containedHoleIndicesA = Enumerable.Range(0, _polygonA.HoleCount).ToList();
+            for (Int32 holeIndex = 0; holeIndex < _holesA.Length; ++holeIndex)
+                if (_intersections.Any(intersection => _holesA[holeIndex].Contains(intersection.Position)))
+                {
+                    _containedHoleIndicesA.Remove(holeIndex);
+                }
 
-            // Look for intersections.
-            Intersect(_shellA, listShellA, _shellB, listShellB);
-
-            var listHolesA = new LinkedList<Coordinate>[_holesA.Count];
-            for (Int32 i = 0; i < _holesA.Count; ++i)
-            {
-                listHolesA[i] = new LinkedList<Coordinate>(_holesA[i]);
-                listHolesA[i].RemoveLast();
-                Intersect(_holesA[i], listHolesA[i], _shellB, listShellB);
-            }
-
-            var listHolesB = new LinkedList<Coordinate>[_holesB.Count];
-            for (Int32 i = 0; i < _holesB.Count; ++i)
-            {
-                listHolesB[i] = new LinkedList<Coordinate>(_holesB[i]);
-                listHolesB[i].RemoveLast();
-                Intersect(_shellA, listShellA, _holesB[i], listHolesB[i]);
-            }
-
-            for (Int32 i = 0; i < _holesA.Count; ++i)
-                for (Int32 j = 0; j < _holesB.Count; ++j)
-                    Intersect(_holesA[i], listHolesA[i], _holesB[j], listHolesB[j]);
+            _containedHoleIndicesB = Enumerable.Range(0, _polygonB.HoleCount).ToList();
+            for (Int32 holeIndex = 0; holeIndex < _holesB.Length; ++holeIndex)
+                if (_intersections.Any(intersection => _holesB[holeIndex].Contains(intersection.Position)))
+                {
+                    _containedHoleIndicesB.Remove(holeIndex);
+                }
 
             // Intersection points exist.
             if (_intersections.Count > 0)
             {
+                ComputeInternalClips();
+
+                if (_computeExternalClips)
+                {
+                    ComputeExternalClipsA();
+                    ComputeExternalClipsB();
+                }
+
+                // Holes created by intersecting holes.
+                ComputeInternalClipHoles();
+
+                _intersections.Clear();
+            }
+            else // No intersection point found.
+            {
+                ComputeCompleteClips();
+            }
+
+            // Dealing with contained holes (not intersected in any way).
+            ComputeContainedHolesA();
+
+            if (_hasResult)
+                return;
+            
+            ComputeContainedHolesB();
+            
+            _hasResult = true;
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Initializes the computation.
+        /// </summary>
+        private void Initialize()
+        {
+            // Initialize results.
+
+            _intersections = new IntersectionCollection();
+            _internalClips = new List<Clip>();
+            _externalClipsA = new List<Clip>();
+            _externalClipsB = new List<Clip>();
+            _phonyIntersections = false;
+
+            // Initialize lists.
+
+            _shellA = new LinkedList<Coordinate>(_polygonA.Shell);
+            _shellA.RemoveLast();
+            _shellB = new LinkedList<Coordinate>(_polygonB.Shell);
+            _shellB.RemoveLast();
+
+            _holesA = new LinkedList<Coordinate>[_polygonA.HoleCount];
+            for (Int32 holeIndex = 0; holeIndex < _polygonA.HoleCount; ++holeIndex)
+            {
+                _holesA[holeIndex] = new LinkedList<Coordinate>(_polygonA.Holes[holeIndex]);
+                _holesA[holeIndex].RemoveLast();
+            }
+
+            _holesB = new LinkedList<Coordinate>[_polygonB.HoleCount];
+            for (Int32 holeIndex = 0; holeIndex < _polygonB.HoleCount; ++holeIndex)
+            {
+                _holesB[holeIndex] = new LinkedList<Coordinate>(_polygonB.Holes[holeIndex]);
+                _holesB[holeIndex].RemoveLast();
+            }
+        }
+
+        /// <summary>
+        /// Finds the intersections of the subject polygons.
+        /// </summary>
+        private void FindIntersections()
+        {
+            // Look for intersections.
+            FindIntersections(_polygonA.Shell.Coordinates, _shellA, _polygonB.Shell.Coordinates, _shellB);
+
+            for (Int32 holeIndexA = 0; holeIndexA < _polygonA.HoleCount; ++holeIndexA)
+            {
+                FindIntersections(_polygonA.Holes[holeIndexA].Coordinates, _holesA[holeIndexA], _polygonB.Shell.Coordinates, _shellB);
+            }
+
+            for (Int32 holeIndexB = 0; holeIndexB < _polygonB.HoleCount; ++holeIndexB)
+            {
+                FindIntersections(_polygonA.Shell.Coordinates, _shellA, _polygonB.Holes[holeIndexB].Coordinates, _holesB[holeIndexB]);
+            }
+
+            for (Int32 holeIndexA = 0; holeIndexA < _polygonA.HoleCount; ++holeIndexA)
+                for (Int32 holeIndexB = 0; holeIndexB < _polygonB.HoleCount; ++holeIndexB)
+                    FindIntersections(_polygonA.Holes[holeIndexA].Coordinates, _holesA[holeIndexA], _polygonB.Holes[holeIndexB].Coordinates, _holesB[holeIndexB]);
+
+            // If intersection points exist.
+            if (_intersections.Count > 0)
+            {
                 // Entering / Exiting intersection point separation (from A to B).
-                var currentNode = listShellA.First;
+                LinkedListNode<Coordinate> currentNode = _shellA.First;
                 while (currentNode != null)
                 {
                     if (_intersections.Contains(currentNode.Value))
                     {
-                        var prevNode = currentNode.Previous ?? listShellA.Last;
-                        var nextNode = currentNode.Next ?? listShellA.First;
+                        LinkedListNode<Coordinate> prevNode = currentNode.Previous ?? _shellA.Last;
+                        LinkedListNode<Coordinate> nextNode = currentNode.Next ?? _shellA.First;
 
-                        var prevCentroid = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value);
-                        var nextCentroid = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value);
+                        Coordinate prevCentroid = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value);
+                        Coordinate nextCentroid = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value);
 
-                        if (!PolygonAlgorithms.InInterior(_shellB, _holesB, prevCentroid) &&
-                            PolygonAlgorithms.InInterior(_shellB, _holesB, nextCentroid))
+                        if (!PolygonAlgorithms.InInterior(_polygonB, prevCentroid) &&
+                            PolygonAlgorithms.InInterior(_polygonB, nextCentroid))
+                        {
                             _intersections[currentNode.Value].Mode = IntersectionMode.Entry;
-
-                        else if (!PolygonAlgorithms.InExterior(_shellB, _holesB, prevCentroid) &&
-                                 PolygonAlgorithms.InExterior(_shellB, _holesB, nextCentroid))
+                        }
+                        else if (!PolygonAlgorithms.InExterior(_polygonB, prevCentroid) &&
+                                 PolygonAlgorithms.InExterior(_polygonB, nextCentroid))
+                        {
                             _intersections[currentNode.Value].Mode = IntersectionMode.Exit;
-
-                        else if (PolygonAlgorithms.InExterior(_shellB, _holesB, prevCentroid) &&
-                                 PolygonAlgorithms.InExterior(_shellB, _holesB, nextCentroid))
+                        }
+                        else if (PolygonAlgorithms.InExterior(_polygonB, prevCentroid) &&
+                                 PolygonAlgorithms.InExterior(_polygonB, nextCentroid))
+                        {
                             _intersections.Remove(currentNode.Value);
-
+                        }
                         else
+                        {
                             _intersections[currentNode.Value].Mode = IntersectionMode.Virtual;
-
+                        }
 
                     }
                     currentNode = currentNode.Next;
                 }
 
-                foreach (var listHole in listHolesA)
+                foreach (LinkedList<Coordinate> listHole in _holesA)
                 {
                     currentNode = listHole.First;
                     while (currentNode != null)
                     {
                         if (_intersections.Contains(currentNode.Value))
                         {
-                            var prevNode = currentNode.Previous ?? listHole.Last;
-                            var nextNode = currentNode.Next ?? listHole.First;
+                            LinkedListNode<Coordinate> prevNode = currentNode.Previous ?? listHole.Last;
+                            LinkedListNode<Coordinate> nextNode = currentNode.Next ?? listHole.First;
 
-                            var prevCentroid = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value);
-                            var nextCentroid = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value);
+                            Coordinate prevCentroid = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value);
+                            Coordinate nextCentroid = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value);
 
-                            if (!PolygonAlgorithms.InInterior(_shellB, _holesB, prevCentroid) &&
-                                PolygonAlgorithms.InInterior(_shellB, _holesB, nextCentroid))
+                            if (!PolygonAlgorithms.InInterior(_polygonB, prevCentroid) &&
+                                PolygonAlgorithms.InInterior(_polygonB, nextCentroid))
                                 _intersections[currentNode.Value].Mode = IntersectionMode.Entry;
 
-                            else if (!PolygonAlgorithms.InExterior(_shellB, _holesB, prevCentroid) &&
-                                     PolygonAlgorithms.InExterior(_shellB, _holesB, nextCentroid))
+                            else if (!PolygonAlgorithms.InExterior(_polygonB, prevCentroid) &&
+                                     PolygonAlgorithms.InExterior(_polygonB, nextCentroid))
                                 _intersections[currentNode.Value].Mode = IntersectionMode.Exit;
 
-                            else if (PolygonAlgorithms.InExterior(_shellB, _holesB, prevCentroid) &&
-                                     PolygonAlgorithms.InExterior(_shellB, _holesB, nextCentroid))
+                            else if (PolygonAlgorithms.InExterior(_polygonB, prevCentroid) &&
+                                     PolygonAlgorithms.InExterior(_polygonB, nextCentroid))
                                 _intersections.Remove(currentNode.Value);
 
                             else
@@ -329,344 +627,25 @@ namespace ELTE.AEGIS.Algorithms
                 _intersections.FirstOrDefault(intersection => intersection.Mode == IntersectionMode.Entry) == null)
             {
                 _intersections.Clear();
-                falseIntersections = true;
+                _phonyIntersections = true;
             }
-
-            // Determine contained holes with no intersection points.
-            var containedHolesA = new List<Int32>(_holesA.Count);
-            containedHolesA.AddRange(Enumerable.Range(0, _holesA.Count));
-            for (Int32 i = 0; i < listHolesA.Length; ++i)
-                if (_intersections.Any(intersection => listHolesA[i].Contains(intersection.Position)))
-                    containedHolesA.Remove(i);
-
-            var containedHolesB = new List<Int32>(_holesB.Count);
-            containedHolesB.AddRange(Enumerable.Range(0, _holesB.Count));
-            for (Int32 i = 0; i < listHolesB.Length; ++i)
-                if (_intersections.Any(intersection => listHolesB[i].Contains(intersection.Position)))
-                    containedHolesB.Remove(i);
-
-            // Intersection points exist.
-            if (_intersections.Count > 0)
-            {
-                // Internal
-                List<Coordinate> checkPositions =
-                    _intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry &&
-                                                         intersection.NodeA.List == listShellA)
-                                  .Select(intersection => intersection.Position).ToList();
-                while (checkPositions.Count > 0)
-                {
-                    List<Coordinate> shell = new List<Coordinate>();
-                    LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
-                    Boolean isFollowingA = true;
-
-                    shell.Add(current.Value);
-                    checkPositions.Remove(current.Value);
-
-                    do
-                    {
-                        current = current.Next ?? current.List.First;
-                        shell.Add(current.Value);
-
-                        if (_intersections.Contains(current.Value))
-                        {
-                            var next = current.Next ?? current.List.First;
-                            var prev = current.Previous ?? current.List.Last;
-                            if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
-                                  (_intersections[next.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[prev.Value].Mode == IntersectionMode.Exit ||
-                                   _intersections[prev.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[next.Value].Mode == IntersectionMode.Exit)))
-                                isFollowingA = !isFollowingA;
-
-                            current = isFollowingA
-                                          ? _intersections[current.Value].NodeA
-                                          : _intersections[current.Value].NodeB;
-                            checkPositions.Remove(current.Value);
-                        }
-                    } while (current.Value != shell[0]);
-                    if (shell.Count > 3) _internal.Add(new Clip(shell));
-                }
-
-                // External A
-                checkPositions = _intersections.Where(intersection => intersection.Mode == IntersectionMode.Exit)
-                                               .Select(intersection => intersection.Position).ToList();
-                while (checkPositions.Count > 0)
-                {
-                    List<Coordinate> shell = new List<Coordinate>();
-                    LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
-                    Boolean isFollowingA = true;
-
-                    shell.Add(current.Value);
-                    checkPositions.Remove(current.Value);
-
-                    do
-                    {
-                        if (isFollowingA)
-                            current = current.Next ?? current.List.First;
-                        else
-                            current = current.Previous ?? current.List.Last;
-                        shell.Add(current.Value);
-
-                        if (_intersections.Contains(current.Value))
-                        {
-                            var next = current.Next ?? current.List.First;
-                            var prev = current.Previous ?? current.List.Last;
-                            if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
-                                  (_intersections[next.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[prev.Value].Mode == IntersectionMode.Exit ||
-                                   _intersections[prev.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[next.Value].Mode == IntersectionMode.Exit)))
-                                isFollowingA = !isFollowingA;
-
-                            current = isFollowingA
-                                          ? _intersections[current.Value].NodeA
-                                          : _intersections[current.Value].NodeB;
-                            checkPositions.Remove(current.Value);
-                        }
-                    } while (current.Value != shell[0]);
-                    if (shell.Count > 3) _externalA.Add(new Clip(shell));
-                }
-
-                // External B
-                checkPositions = _intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry)
-                                               .Select(intersection => intersection.Position).ToList();
-                while (checkPositions.Count > 0)
-                {
-                    var shell = new List<Coordinate>();
-                    LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeB;
-                    Boolean isFollowingA = false;
-
-                    shell.Add(current.Value);
-                    checkPositions.Remove(current.Value);
-
-                    do
-                    {
-                        if (!isFollowingA)
-                            current = current.Next ?? current.List.First;
-                        else
-                            current = current.Previous ?? current.List.Last;
-                        shell.Add(current.Value);
-
-                        if (_intersections.Contains(current.Value))
-                        {
-                            var next = current.Next ?? current.List.First;
-                            var prev = current.Previous ?? current.List.Last;
-                            if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
-                                  (_intersections[next.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[prev.Value].Mode == IntersectionMode.Exit ||
-                                   _intersections[prev.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[next.Value].Mode == IntersectionMode.Exit)))
-                                isFollowingA = !isFollowingA;
-
-                            current = isFollowingA
-                                          ? _intersections[current.Value].NodeA
-                                          : _intersections[current.Value].NodeB;
-                            checkPositions.Remove(current.Value);
-                        }
-                    } while (current.Value != shell[0]);
-                    if (shell.Count > 3) _externalB.Add(new Clip(shell));
-                }
-
-                // Holes created by intersecting holes
-                checkPositions =
-                    new List<Coordinate>(_intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry &&
-                                                                              intersection.NodeA.List != listShellA &&
-                                                                              intersection.NodeB.List != listShellB)
-                                                       .Select(intersection => intersection.Position));
-                while (checkPositions.Count > 0)
-                {
-                    var hole = new List<Coordinate>();
-                    LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
-                    Boolean isFollowingA = true;
-
-                    hole.Add(current.Value);
-                    checkPositions.Remove(current.Value);
-
-                    do
-                    {
-                        current = current.Previous ?? current.List.Last;
-                        hole.Add(current.Value);
-
-                        if (_intersections.Contains(current.Value))
-                        {
-                            var next = current.Next ?? current.List.First;
-                            var prev = current.Previous ?? current.List.Last;
-                            if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
-                                  (_intersections[next.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[prev.Value].Mode == IntersectionMode.Exit ||
-                                   _intersections[prev.Value].Mode == IntersectionMode.Entry &&
-                                   _intersections[next.Value].Mode == IntersectionMode.Exit)))
-                                isFollowingA = !isFollowingA;
-
-                            current = isFollowingA
-                                          ? _intersections[current.Value].NodeA
-                                          : _intersections[current.Value].NodeB;
-                            checkPositions.Remove(current.Value);
-                        }
-                    } while (current.Value != hole[0]);
-                    AddHoleToResult(_internal, hole);
-                }
-
-                _intersections.Clear();
-            }
-            else // No intersection point found
-            {
-                Boolean isAinB = _shellA.All(position => !PolygonAlgorithms.InExterior(_shellB, _holesB, position));
-                Boolean isBinA = _shellB.All(position => !PolygonAlgorithms.InExterior(_shellA, _holesA, position));
-
-                var shellA = listShellA.ToList();
-                shellA.Add(shellA.First());
-
-                var shellB = listShellB.ToList();
-                shellB.Add(shellB.First());
-
-                if (isAinB && !falseIntersections) // B contains A
-                {
-                    _internal.Add(new Clip(shellA));
-                    _externalB.Add(new Clip(shellB));
-                }
-                else if (isBinA && !falseIntersections) // A contains B
-                {
-                    _internal.Add(new Clip(shellB));
-                    _externalA.Add(new Clip(shellA));
-                }
-                else // A and B are distinct
-                {
-                    _externalA.Add(new Clip(shellA));
-                    _externalB.Add(new Clip(shellB));
-                }
-            }
-
-            // Dealing with contained holes (not intersected in any way).
-            ContainedHolesA:
-
-                foreach (Int32 index in containedHolesA)
-                {
-                    foreach (Clip clip in _internal)
-                        if (!PolygonAlgorithms.InExterior(clip.Shell, _holesA[index][0]))
-                        {
-                            _externalB.Add(new Clip(_holesA[index]));
-                            AddHoleToResult(_internal, _holesA[index]);
-                            goto ContainedHolesB;
-                        }
-
-                    for (Int32 i = 0; i < _externalA.Count; ++i)
-                        if (!PolygonAlgorithms.InExterior(_externalA[i].Shell, _holesA[index][0]))
-                        {
-                            AddHoleToResult(_externalA, _holesA[index]);
-                            goto ContainedHolesB;
-                        }
-                }
-
-            ContainedHolesB:
-
-                foreach (Int32 index in containedHolesB)
-                {
-                    for (Int32 i = 0; i < _internal.Count; ++i)
-                        if (!PolygonAlgorithms.InExterior(_internal[i].Shell, _holesB[index][0]))
-                        {
-                            _externalA.Add(new Clip(_holesB[index]));
-                            AddHoleToResult(_internal, _holesB[index]);
-                            goto ContainedHolesEnd;
-                        }
-
-                    for (Int32 i = 0; i < _externalB.Count; ++i)
-                        if (!PolygonAlgorithms.InExterior(_externalB[i].Shell, _holesB[index][0]))
-                        {
-                            AddHoleToResult(_externalB, _holesB[index]);
-                            goto ContainedHolesEnd;
-                        }
-                }
-
-            ContainedHolesEnd:
-
-                _hasResult = true;
-        }
-
-        #endregion
-
-        #region Private methods
-
-        /// <summary>
-        /// Initializes the <see cref="WeilerAthertonAlgorithm"/>.
-        /// </summary>
-        /// <param name="shellA">The source coordinates representing the first subject polygon.</param>
-        /// <param name="shellB">The source coordinates representing the second subject polygon.</param>
-        /// <param name="holesA">The source coordinates representing the holes in the first subject polygon.</param>
-        /// <param name="holesB">The source coordinates representing the holes in the second subject polygon.</param>
-        /// <exception cref="ArgumentNullException">One or both of the subject polygons are null.</exception>
-        /// <exception cref="ArgumentException">One or both of the subject polygons do not have enough coordinates.</exception>
-        private void Initialize(IList<Coordinate> shellA, IList<IList<Coordinate>> holesA,
-                                  IList<Coordinate> shellB, IList<IList<Coordinate>> holesB)
-        {
-            // Shell A
-            if (shellA == null)
-                throw new ArgumentNullException("shellA", "The first subject is null.");
-            if (shellA.Count < 4)
-                throw new ArgumentException("The first subject must contain at least 3 different coordinates.", "shellA");
-            if (!shellA[0].Equals(shellA[shellA.Count - 1]))
-                throw new ArgumentException("The first and the last coordinates of the first subject must be equal.", "shellA");
-            _shellA = shellA;
-
-            // Shell B
-            if (shellB == null)
-                throw new ArgumentNullException("shellB", "The second subject is null.");
-            if (shellB.Count < 4)
-                throw new ArgumentException("The second subject must contain at least 3 different coordinates.", "shellB");
-            if (!shellB[0].Equals(shellB[shellB.Count - 1]))
-                throw new ArgumentException("The first and the last coordinates of the second subject must be equal.", "shellB");
-            _shellB = shellB;
-
-            // Holes in subject A
-            if (holesA != null)
-            {
-                foreach (IList<Coordinate> hole in holesA)
-                {
-                    if (hole == null)
-                        throw new ArgumentNullException("holesA", "A hole in the first subject is null.");
-                    if (hole.Count < 4)
-                        throw new ArgumentException("A hole in the first subject does not contain at least 3 different coordinates.", "holesA");
-                    if (!hole[0].Equals(hole[hole.Count - 1]))
-                        throw new ArgumentException("The first and the last coordinates of a hole in the first subject are not equal.", "holesA");
-                }
-                _holesA = holesA;
-            }
-            else
-                _holesA = new List<IList<Coordinate>>();
-
-            // Holes in subject B
-            if (holesB != null)
-            {
-                foreach (IList<Coordinate> hole in holesB)
-                {
-                    if (hole == null)
-                        throw new ArgumentNullException("holesB", "A hole in the second subject is null.");
-                    if (hole.Count < 4)
-                        throw new ArgumentException("A hole in the  second subject does not contain at least 3 different coordinates.", "holesB");
-                    if (!hole[0].Equals(hole[hole.Count - 1]))
-                        throw new ArgumentException( "The first and the last coordinates of a hole in the second subject are not equal.", "holesB");
-                }
-                _holesB = holesB;
-            }
-            else
-                _holesB = new List<IList<Coordinate>>();
-
-            _hasResult = false;
         }
 
         /// <summary>
-        /// Calculates and adds the found intersections to the collection <see cref="_intersections"/> between 2 polygons with holes.
+        /// Finds the intersections of the specified rings.
         /// </summary>
-        /// <param name="subjectA">The shell of the first subject polygon.</param>
-        /// <param name="subjectB">The shell of the second subject polygon.</param>
-        /// <param name="listA">The linked list of the nodes for the first subject polygon.</param>
-        /// <param name="listB">The linked list of the nodes for the second subject polygon.</param>
-        private void Intersect(IList<Coordinate> subjectA, LinkedList<Coordinate> listA,
-                                 IList<Coordinate> subjectB, LinkedList<Coordinate> listB)
+        /// <param name="ringA">The shell a.</param>
+        /// <param name="listA">The list of coordinates in the first polygon.</param>
+        /// <param name="ringB">The shell b.</param>
+        /// <param name="listB">The list of coordinates in the second polygon.</param>
+        private void FindIntersections(IList<Coordinate> ringA, LinkedList<Coordinate> listA, IList<Coordinate> ringB, LinkedList<Coordinate> listB)
         {
-            var algorithm = new BentleyOttmannAlgorithm(new[] {subjectA, subjectB});
-            var positions = algorithm.Result;
-            var edges = algorithm.Edges;
+            if (Envelope.FromCoordinates(ringA).Disjoint(Envelope.FromCoordinates(ringB)))
+                return;
+
+            BentleyOttmannAlgorithm algorithm = new BentleyOttmannAlgorithm(new List<IList<Coordinate>> { ringA, ringB });
+            IList<Coordinate> positions = algorithm.Intersections;
+            IList<Tuple<Int32, Int32>> edges = algorithm.EdgeIndices;
 
             for (Int32 i = 0; i < positions.Count; ++i)
             {
@@ -674,50 +653,343 @@ namespace ELTE.AEGIS.Algorithms
                     continue;
 
                 LinkedListNode<Coordinate> nodeA, nodeB;
-                if (!subjectA.Contains(positions[i]))
+                if (!ringA.Contains(positions[i]))
                 {
                     // Insert intersection point into vertex lists
-                    var location = listA.Find(subjectA[edges[i].Item1]);
+                    LinkedListNode<Coordinate> location = listA.Find(ringA[edges[i].Item1]);
+
                     // Find the proper position for the intersection point when multiple intersection occurs on a single edge
                     while (location.Next != null && _intersections.Contains(location.Next.Value) &&
                            (positions[i] - location.Value).Length > (location.Next.Value - location.Value).Length)
                         location = location.Next;
+
                     nodeA = listA.AddAfter(location, positions[i]);
                 }
                 else
-                    nodeA = listA.Find(positions[i]);
-
-                if (!subjectB.Contains(positions[i]))
                 {
-                    var location = listB.Find(subjectB[edges[i].Item2 - subjectA.Count]);
+                    nodeA = listA.Find(positions[i]);
+                }
+
+                if (!ringB.Contains(positions[i]))
+                {
+                    LinkedListNode<Coordinate> location = listB.Find(ringB[edges[i].Item2 - ringA.Count]);
+
                     while (location.Next != null && _intersections.Contains(location.Next.Value) &&
                            (positions[i] - location.Value).Length > (location.Next.Value - location.Value).Length)
                         location = location.Next;
+
                     nodeB = listB.AddAfter(location, positions[i]);
                 }
                 else
+                {
                     nodeB = listB.Find(positions[i]);
+                }
 
-                _intersections.Add(new IntersectionElement {Position = positions[i], NodeA = nodeA, NodeB = nodeB});
+                _intersections.Add(new IntersectionElement { Position = positions[i], NodeA = nodeA, NodeB = nodeB });
             }
         }
 
         /// <summary>
+        /// Compute the internal clips.
+        /// </summary>
+        private void ComputeInternalClips()
+        {
+            List<Coordinate> checkPositions =
+                    _intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry && intersection.NodeA.List == _shellA)
+                                  .Select(intersection => intersection.Position).ToList();
+
+            while (checkPositions.Count > 0)
+            {
+                List<Coordinate> shell = new List<Coordinate>();
+                LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
+                Boolean isFollowingA = true;
+
+                shell.Add(current.Value);
+                checkPositions.Remove(current.Value);
+
+                do
+                {
+                    current = current.Next ?? current.List.First;
+                    shell.Add(current.Value);
+
+                    if (_intersections.Contains(current.Value))
+                    {
+                        LinkedListNode<Coordinate> next = current.Next ?? current.List.First;
+                        LinkedListNode<Coordinate> prev = current.Previous ?? current.List.Last;
+                        if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
+                              (_intersections[next.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[prev.Value].Mode == IntersectionMode.Exit ||
+                               _intersections[prev.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[next.Value].Mode == IntersectionMode.Exit))) 
+                        {
+                            isFollowingA = !isFollowingA;
+                        }
+
+                        current = isFollowingA
+                                      ? _intersections[current.Value].NodeA
+                                      : _intersections[current.Value].NodeB;
+                        checkPositions.Remove(current.Value);
+                    }
+                } while (current.Value != shell[0]);
+
+                if (shell.Count > 3)
+                    _internalClips.Add(new Clip(shell));
+            }
+        }
+
+        /// <summary>
+        /// Compute the external clips for the first polygon.
+        /// </summary>
+        private void ComputeExternalClipsA()
+        {
+            List<Coordinate> checkPositions = _intersections.Where(intersection => intersection.Mode == IntersectionMode.Exit)
+                                                            .Select(intersection => intersection.Position).ToList();
+            while (checkPositions.Count > 0)
+            {
+                List<Coordinate> shell = new List<Coordinate>();
+                LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
+                Boolean isFollowingA = true;
+
+                shell.Add(current.Value);
+                checkPositions.Remove(current.Value);
+
+                do
+                {
+                    if (isFollowingA)
+                        current = current.Next ?? current.List.First;
+                    else
+                        current = current.Previous ?? current.List.Last;
+                    shell.Add(current.Value);
+
+                    if (_intersections.Contains(current.Value))
+                    {
+                        LinkedListNode<Coordinate> next = current.Next ?? current.List.First;
+                        LinkedListNode<Coordinate> prev = current.Previous ?? current.List.Last;
+
+                        if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
+                              (_intersections[next.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[prev.Value].Mode == IntersectionMode.Exit ||
+                               _intersections[prev.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[next.Value].Mode == IntersectionMode.Exit)))
+                        {
+                            isFollowingA = !isFollowingA;
+                        }
+
+                        current = isFollowingA
+                                      ? _intersections[current.Value].NodeA
+                                      : _intersections[current.Value].NodeB;
+                        checkPositions.Remove(current.Value);
+                    }
+                } while (current.Value != shell[0]);
+
+                if (shell.Count > 3)
+                    _externalClipsA.Add(new Clip(shell));
+            }
+        }
+
+        /// <summary>
+        /// Compute the external clips for the second polygon.
+        /// </summary>
+        private void ComputeExternalClipsB()
+        {
+            List<Coordinate> checkPositions = checkPositions = _intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry)
+                                                   .Select(intersection => intersection.Position).ToList();
+            while (checkPositions.Count > 0)
+            {
+                List<Coordinate> shell = new List<Coordinate>();
+                LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeB;
+                Boolean isFollowingA = false;
+
+                shell.Add(current.Value);
+                checkPositions.Remove(current.Value);
+
+                do
+                {
+                    if (!isFollowingA)
+                        current = current.Next ?? current.List.First;
+                    else
+                        current = current.Previous ?? current.List.Last;
+                    shell.Add(current.Value);
+
+                    if (_intersections.Contains(current.Value))
+                    {
+                        LinkedListNode<Coordinate> next = current.Next ?? current.List.First;
+                        LinkedListNode<Coordinate> prev = current.Previous ?? current.List.Last;
+
+                        if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
+                              (_intersections[next.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[prev.Value].Mode == IntersectionMode.Exit ||
+                               _intersections[prev.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[next.Value].Mode == IntersectionMode.Exit)))
+                        {
+                            isFollowingA = !isFollowingA;
+                        }
+
+                        current = isFollowingA
+                                      ? _intersections[current.Value].NodeA
+                                      : _intersections[current.Value].NodeB;
+                        checkPositions.Remove(current.Value);
+                    }
+                } while (current.Value != shell[0]);
+
+                if (shell.Count > 3)
+                    _externalClipsB.Add(new Clip(shell));
+            }
+        }
+
+        /// <summary>
+        /// Completes complete clips (in case of no intersection).
+        /// </summary>
+        public void ComputeCompleteClips()
+        {
+            Boolean isAinB = _polygonA.Shell.Coordinates.All(position => !PolygonAlgorithms.InExterior(_polygonB, position));
+            Boolean isBinA = _polygonB.Shell.Coordinates.All(position => !PolygonAlgorithms.InExterior(_polygonA, position));
+
+            List<Coordinate> finalShellA = _shellA.ToList();
+            finalShellA.Add(finalShellA[0]);
+
+            List<Coordinate> finalShellB = _shellB.ToList();
+            finalShellB.Add(finalShellB[0]);
+
+            if (isAinB && !_phonyIntersections) // B contains A
+            {
+                _internalClips.Add(new Clip(finalShellA));
+                _externalClipsB.Add(new Clip(finalShellB));
+            }
+            else if (isBinA && !_phonyIntersections) // A contains B
+            {
+                _internalClips.Add(new Clip(finalShellB));
+                _externalClipsA.Add(new Clip(finalShellA));
+            }
+            else // A and B are distinct
+            {
+                _externalClipsA.Add(new Clip(finalShellA));
+                _externalClipsB.Add(new Clip(finalShellB));
+            }
+        }
+
+        /// <summary>
+        /// Compute the holes contained within the first polygon.
+        /// </summary>
+        private void ComputeContainedHolesA() 
+        {
+            foreach (Int32 index in _containedHoleIndicesA)
+            {
+                foreach (Clip clip in _internalClips)
+                    if (!PolygonAlgorithms.InExterior(clip.Shell, _polygonA.Holes[index].Coordinates[0]))
+                    {
+                        _externalClipsB.Add(new Clip { Shell = _polygonA.Holes[index].Coordinates });
+                        AddHoleToResult(_internalClips, _polygonA.Holes[index].Coordinates);
+                        ComputeContainedHolesB();
+
+                        if (_hasResult)
+                            return;
+                    }
+
+                foreach (Clip clip in _externalClipsA)
+                    if (!PolygonAlgorithms.InExterior(clip.Shell, _polygonA.Holes[index].Coordinates[0]))
+                    {
+                        AddHoleToResult(_externalClipsA, _polygonA.Holes[index].Coordinates);
+                        ComputeContainedHolesB();
+
+                        if (_hasResult)
+                            return;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Compute the holes contained within the second polygon.
+        /// </summary>
+        private void ComputeContainedHolesB()
+        {
+            foreach (Int32 index in _containedHoleIndicesB)
+            {
+                foreach(Clip clip in _internalClips)
+                    if (!PolygonAlgorithms.InExterior(clip.Shell, _polygonB.Holes[index].Coordinates[0]))
+                    {
+                        _externalClipsA.Add(new Clip { Shell = _polygonB.Holes[index].Coordinates });
+                        AddHoleToResult(_internalClips, _polygonB.Holes[index].Coordinates);
+                        _hasResult = true;
+                        return;
+                    }
+
+                foreach (Clip clip in _externalClipsB)
+                    if (!PolygonAlgorithms.InExterior(clip.Shell, _polygonB.Holes[index].Coordinates[0]))
+                    {
+                        AddHoleToResult(_externalClipsB, _polygonB.Holes[index].Coordinates);
+                        _hasResult = true;
+                        return;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Computes the holes of the internal clips.
+        /// </summary>
+        private void ComputeInternalClipHoles()
+        {
+            List<Coordinate> checkPositions =
+                new List<Coordinate>(_intersections.Where(intersection => intersection.Mode == IntersectionMode.Entry &&
+                                                                          intersection.NodeA.List != _shellA &&
+                                                                          intersection.NodeB.List != _shellB)
+                                                   .Select(intersection => intersection.Position));
+            while (checkPositions.Count > 0)
+            {
+                List<Coordinate> hole = new List<Coordinate>();
+                LinkedListNode<Coordinate> current = _intersections[checkPositions[0]].NodeA;
+                Boolean isFollowingA = true;
+
+                hole.Add(current.Value);
+                checkPositions.Remove(current.Value);
+
+                do
+                {
+                    current = current.Previous ?? current.List.Last;
+                    hole.Add(current.Value);
+
+                    if (_intersections.Contains(current.Value))
+                    {
+                        LinkedListNode<Coordinate> next = current.Next ?? current.List.First;
+                        LinkedListNode<Coordinate> prev = current.Previous ?? current.List.Last;
+                        if (!(_intersections.Contains(next.Value) && _intersections.Contains(prev.Value) &&
+                              (_intersections[next.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[prev.Value].Mode == IntersectionMode.Exit ||
+                               _intersections[prev.Value].Mode == IntersectionMode.Entry &&
+                               _intersections[next.Value].Mode == IntersectionMode.Exit)))
+                            isFollowingA = !isFollowingA;
+
+                        current = isFollowingA
+                                      ? _intersections[current.Value].NodeA
+                                      : _intersections[current.Value].NodeB;
+                        checkPositions.Remove(current.Value);
+                    }
+                } while (current.Value != hole[0]);
+
+                AddHoleToResult(_internalClips, hole);
+            }
+        }
+
+
+
+        /// <summary>
         /// Adds the hole to the corresponding element in a shell set.
         /// </summary>
-        /// <remarks>
-        /// The method will look for the first shell in a linear search that contains the hole and execute the addition.
-        /// </remarks>
         /// <param name="resultSet">The result set.</param>
         /// <param name="hole">The hole.</param>
         /// <returns><c>true</c> if the hole was added to a shell; otherwise <c>false</c>.</returns>
+        /// <remarks>
+        /// The method will look for the first shell in a linear search that contains the hole and execute the addition.
+        /// </remarks>
         private Boolean AddHoleToResult(IList<Clip> resultSet, IList<Coordinate> hole)
         {
-            foreach (Clip clip in resultSet)
+
+            for (Int32 resultIndex = 0; resultIndex < resultSet.Count; resultIndex++)
             {
-                if (hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate)))
+                if (hole.All(coordinate => !PolygonAlgorithms.InExterior(resultSet[resultIndex].Shell, coordinate)))
                 {
-                    clip.Holes.Add(hole);
+
+                    resultSet[resultIndex].Holes.Add(hole);
                     return true;
                 }
             }
@@ -731,30 +1003,31 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the common parts of two subject polygons by clipping them.
         /// </summary>
-        /// <param name="shellA">The source coordinates representing the first subject polygon.</param>
-        /// <param name="shellB">The source coordinates representing the second subject polygon.</param>
-        /// <returns>The polygon coordinates of the common, internal clips.</returns>
-        /// <exception cref="ArgumentNullException">One or both of the subject polygons are null.</exception>
-        /// <exception cref="ArgumentException">One or both of the subject polygons do not have enough coordinates.</exception>
-        public static IList<Clip> Intersection(IList<Coordinate> shellA, IList<Coordinate> shellB)
+        /// <param name="polygonA">The first polygon.</param>
+        /// <param name="polygonB">The second polygon.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The first polygon is null.
+        /// or
+        /// The second polygon is null.
+        /// </exception>
+        public static IList<IBasicPolygon> Intersection(IBasicPolygon polygonA, IBasicPolygon polygonB)
         {
-            return Intersection(shellA, null, shellB, null);
+            return new WeilerAthertonAlgorithm(polygonA, polygonB, false).InternalClips;
         }
 
         /// <summary>
         /// Computes the common parts of two subject polygons by clipping them.
         /// </summary>
-        /// <param name="shellA">The source coordinates representing the first subject polygon.</param>
-        /// <param name="shellB">The source coordinates representing the second subject polygon.</param>
-        /// <param name="holesA">The source coordinates representing the holes in the first subject polygon.</param>
-        /// <param name="holesB">The source coordinates representing the holes in the second subject polygon.</param>
-        /// <returns>The polygon coordinates of the common, internal clips.</returns>
-        /// <exception cref="ArgumentNullException">One or both of the subject polygons are null.</exception>
-        /// <exception cref="ArgumentException">One or both of the subject polygons do not have enough coordinates.</exception>
-        public static IList<Clip> Intersection(IList<Coordinate> shellA, IList<IList<Coordinate>> holesA,
-                                               IList<Coordinate> shellB, IList<IList<Coordinate>> holesB)
+        /// <param name="shellA">The shell of the first polygon.</param>
+        /// <param name="shellB">The shell of the second polygon.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell of the first polygon is null.
+        /// or
+        /// The shell of the second polygon is null.
+        /// </exception>
+        public static IList<IBasicPolygon> Intersection(IList<Coordinate> shellA, IList<Coordinate> shellB)
         {
-            return new WeilerAthertonAlgorithm(shellA, holesA, shellB, holesB).Internal;
+            return new WeilerAthertonAlgorithm(shellA, shellB, false).InternalClips;
         }
 
         #endregion
