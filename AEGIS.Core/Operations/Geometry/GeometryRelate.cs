@@ -1,5 +1,5 @@
 ﻿///<copyright file="GeometryRelate.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -38,29 +38,14 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Contains(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Contains(geometry, otherGeometry);
-            }
-        }
-
-        /// <summary>
-        /// Determines whether a <see cref="IGeometry" /> instance spatially covers another <see cref="IGeometry" />.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="otherGeometry">The other geometry.</param>
-        /// <returns><c>true</c> if the geometry spatially covers the other geometry; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The geometry is null.
-        /// or
-        /// The other geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
-        public static Boolean Covers(this IGeometry geometry, IGeometry otherGeometry)
-        {
-            using (IGeometryRelateOperator op = GetOperator(geometry))
-            {
-                return op.Covers(geometry, otherGeometry);
             }
         }
 
@@ -78,6 +63,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Crosses(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Crosses(geometry, otherGeometry);
@@ -98,6 +88,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Disjoint(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Disjoint(geometry, otherGeometry);
@@ -118,6 +113,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Equals(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Equals(geometry, otherGeometry);
@@ -138,6 +138,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Intersects(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Intersects(geometry, otherGeometry);
@@ -158,6 +163,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Overlaps(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Overlaps(geometry, otherGeometry);
@@ -178,6 +188,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         public static Boolean Touches(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Touches(geometry, otherGeometry);
@@ -202,6 +217,11 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// </exception>
         public static Boolean Within(this IGeometry geometry, IGeometry otherGeometry)
         {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+            if (otherGeometry == null)
+                throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
             using (IGeometryRelateOperator op = GetOperator(geometry))
             {
                 return op.Within(geometry, otherGeometry);
@@ -217,8 +237,8 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns>The relate operator of the specified geometry, if any; otherwise, the default relate operator.</returns>
-        public static IGeometryRelateOperator GetOperator(IGeometry geometry)
-        { 
+        private static IGeometryRelateOperator GetOperator(IGeometry geometry)
+        {
             IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
 
             if (factory == null)
