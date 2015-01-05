@@ -1,5 +1,5 @@
 ﻿///<copyright file="IGeometryRelateOperator.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -35,20 +35,6 @@ namespace ELTE.AEGIS
         /// </exception>
         /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
         Boolean Contains(IGeometry geometry, IGeometry otherGeometry);
-
-        /// <summary>
-        /// Determines whether a <see cref="IGeometry" /> instance spatially covers another <see cref="IGeometry" />.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="otherGeometry">The other geometry.</param>
-        /// <returns><c>true</c> if the geometry spatially covers the other geometry; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The geometry is null.
-        /// or
-        /// The other geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry types.</exception>
-        Boolean Covers(IGeometry geometry, IGeometry otherGeometry);
 
         /// <summary>
         /// Determines whether a <see cref="IGeometry" /> instance spatially crosses another <see cref="IGeometry" />.
