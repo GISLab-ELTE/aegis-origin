@@ -356,10 +356,9 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Merges a (supported type of) geometry into the graph.
         /// </summary>
-        /// <remarks>
-        /// The supported types are <see cref="ILinearRing"/>, <see cref="IPolygon"/>, and <see cref="IMultiPolygon"/>.
-        /// </remarks>
         /// <param name="geometry">The geometry to merge.</param>
+        /// <exception cref="System.ArgumentException">The specified geometry type is not supported.</exception>
+        /// <remarks>The supported types are <see cref="ILinearRing" />, <see cref="IPolygon" />, and <see cref="IMultiPolygon" />.</remarks>
         public void MergeGeometry(IGeometry geometry)
         {
             if (geometry is IPoint)
@@ -372,6 +371,8 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 MergeMultiPolygon(geometry as IMultiPolygon);
+
+            throw new ArgumentException("The specified geometry type is not supported.");
         }
 
         /// <summary>
