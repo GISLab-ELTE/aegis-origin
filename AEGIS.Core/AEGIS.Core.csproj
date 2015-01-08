@@ -128,9 +128,6 @@
     <Compile Include="ITriangle.cs" />
     <Compile Include="Management\Conditions.cs" />
     <Compile Include="Management\InversionOfControl\IContainer.cs" />
-    <Compile Include="Operations\Geometry\GeometryMeasure.cs" />
-    <Compile Include="Operations\Geometry\GeometryOverlay.cs" />
-    <Compile Include="Operations\Geometry\GeometryRelate.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="GeoVector.cs" />
     <Compile Include="CoordinateVector.cs" />
@@ -175,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\Topology\" />
+    <Folder Include="Operations\Geometry\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
