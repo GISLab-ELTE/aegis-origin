@@ -174,7 +174,6 @@
     <Compile Include="Topology\IHalfedge.cs" />
     <Compile Include="Topology\IHalfedgeGraph.cs" />
     <Compile Include="Topology\IVertex.cs" />
-    <Compile Include="Topology\Operations.cs" />
     <Compile Include="Topology\Tag.cs" />
     <Compile Include="UnitQuantityType.cs" />
     <Compile Include="ICurve.cs" />
