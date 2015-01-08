@@ -134,6 +134,24 @@
     <Compile Include="ITriangle.cs" />
     <Compile Include="Management\Conditions.cs" />
     <Compile Include="Management\InversionOfControl\IContainer.cs" />
+    <Compile Include="Operations\Geometry\BentleyFaustPreparataConvexHullOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\Geometry\GeometryOperations.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\Geometry\GeometryOperatorFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\Geometry\GrahamScanConvexHullOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\Geometry\HalfedgeGeometryOverlayOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Operations\Geometry\HalfedgeGeometryRelateOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Orientation.cs" />
     <Compile Include="GeoVector.cs" />
     <Compile Include="CoordinateVector.cs" />
@@ -178,7 +196,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\Topology\" />
-    <Folder Include="Operations\Geometry\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
