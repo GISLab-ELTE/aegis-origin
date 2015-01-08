@@ -63,6 +63,12 @@
     <Compile Include="IBasicLineString.cs" />
     <Compile Include="IBasicPoint.cs" />
     <Compile Include="IBasicPolygon.cs" />
+    <Compile Include="IGeometryBufferOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IGeometryConvexHullOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="IGeometryMeasureOperator.cs" />
     <Compile Include="IGeometryOperatorFactory.cs" />
     <Compile Include="IGeometryOverlayOperator.cs" />

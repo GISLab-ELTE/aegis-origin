@@ -1,5 +1,5 @@
 ﻿///<copyright file="IGeometryOverlayOperator.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -22,26 +22,6 @@ namespace ELTE.AEGIS
     /// </summary>
     public interface IGeometryOverlayOperator : IDisposable
     {
-        /// <summary>
-        /// Computes the buffer of the specified <see cref="IGeometry" /> instance.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="distance">The buffer distance.</param>
-        /// <returns>The buffer of the specified <see cref="IGeometry" /> instance.</returns>
-        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">The distance is negative.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
-        IGeometry Buffer(IGeometry geometry, Double distance);
-
-        /// <summary>
-        /// Computes the convex hull of the specified <see cref="IGeometry" /> instance.
-        /// </summary>
-        /// <param name="geometry">The geometry.</param>
-        /// <returns>The convex hull of the <see cref="IGeometry" /> instance.</returns>
-        /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
-        IGeometry ConvexHull(IGeometry geometry);
-
         /// <summary>
         /// Computes the difference between the specified <see cref="IGeometry" /> instances.
         /// </summary>
