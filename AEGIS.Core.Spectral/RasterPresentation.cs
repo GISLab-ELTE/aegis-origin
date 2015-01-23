@@ -16,7 +16,6 @@
 using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ELTE.AEGIS
@@ -51,8 +50,8 @@ namespace ELTE.AEGIS
         /// <summary>
         /// The color map.
         /// </summary>
-        /// <value>The color map used in pseuso-color and density slicing modes.</value>
-        public IDictionary<Int32, UInt32[]> ColorMap { get { return new ReadOnlyDictionary<Int32, UInt32[]>(_colorMap); } }
+        /// <value>The read-only color map used in pseuso-color and density slicing modes.</value>
+        public IDictionary<Int32, UInt32[]> ColorMap { get { return _colorMap.AsReadOnly(); } }
         
         /// <summary>
         /// The color space.
@@ -63,7 +62,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// The bands of the color space.
         /// </summary>
-        /// <value>The read-only list of colos space bands.</value>
+        /// <value>The read-only list of color space bands.</value>
         public IList<RasterColorSpaceBand> Bands { get { return Array.AsReadOnly(_bands); } }
 
         #endregion
@@ -76,11 +75,11 @@ namespace ELTE.AEGIS
         /// <param name="model">The presentation model.</param>
         /// <param name="colorSpace">The color space.</param>
         /// <param name="bands">The bands.</param>
-        /// <exception cref="System.ArgumentException">Pseudo-color and dencity slicing models must define a color map.</exception>
+        /// <exception cref="System.ArgumentException">Pseudo-color and density slicing models must define a color map.</exception>
         public RasterPresentation(RasterPresentationModel model, RasterColorSpace colorSpace, params RasterColorSpaceBand[] bands)
         {
             if (model == RasterPresentationModel.DensitySlicing || model == RasterPresentationModel.PseudoColor)
-                throw new ArgumentException("Pseudo-color and dencity slicing models must define a color map.", "model");
+                throw new ArgumentException("Pseudo-color and density slicing models must define a color map.", "model");
 
             Model = model;
             ColorSpace = colorSpace;
@@ -92,12 +91,12 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="model">The presentation model.</param>
         /// <param name="colorMap">The color map.</param>
-        /// <exception cref="System.ArgumentException">Only pseudo-color and dencity slicing models may define a color map.</exception>
+        /// <exception cref="System.ArgumentException">Only pseudo-color and density slicing models may define a color map.</exception>
         /// <exception cref="System.ArgumentNullException">The color map is null.</exception>
         public RasterPresentation(RasterPresentationModel model, IDictionary<Int32, UInt32[]> colorMap)
         {
             if (model != RasterPresentationModel.DensitySlicing && model != RasterPresentationModel.PseudoColor)
-                throw new ArgumentException("Only pseudo-color and dencity slicing models may define a color map.", "model");
+                throw new ArgumentException("Only pseudo-color and density slicing models can define a color map.", "model");
             if (colorMap == null)
                 throw new ArgumentNullException("colorMap", "The color map is null.");
 
@@ -269,6 +268,16 @@ namespace ELTE.AEGIS
         public static RasterPresentation CreatePresudoColorPresentation(IDictionary<Int32, UInt32[]> colorMap)
         {
             return new RasterPresentation(RasterPresentationModel.PseudoColor, colorMap);
+        }
+
+        /// <summary>
+        /// Creates a density slicing presentation using a color map.
+        /// </summary>
+        /// <returns>A density slicing presentation using a color map.</returns>
+        /// <exception cref="System.ArgumentNullException">The color map is null.</exception>
+        public static RasterPresentation CreateDencitySlicingPresentation(IDictionary<Int32, UInt32[]> colorMap)
+        {
+            return new RasterPresentation(RasterPresentationModel.DensitySlicing, colorMap);
         }
 
         #endregion
