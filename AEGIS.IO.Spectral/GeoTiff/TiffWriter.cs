@@ -158,6 +158,24 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(277, new Object[] { (UInt32)geometry.Raster.NumberOfBands }); // samples per pixel
             imageFileDirectory.Add(339, new Object[] { (UInt16)format }); // sample format
 
+            // add color palette
+            if (photometricInterpretation == TiffPhotometricInterpretation.PaletteColor)
+            {
+                Object[] colorMap = new Object[3 * Calculator.Pow(2, geometry.Raster.RadiometricResolutions[0])];
+                
+                for (Int32 valueIndex = 0; valueIndex < colorMap.Length / 3; valueIndex++)
+                {
+                    if (!geometry.Presentation.ColorMap.ContainsKey(valueIndex))
+                        continue;
+
+                    colorMap[3 * valueIndex] = geometry.Presentation.ColorMap[valueIndex][0];
+                    colorMap[3 * valueIndex + 1] = geometry.Presentation.ColorMap[valueIndex][1];
+                    colorMap[3 * valueIndex + 2] = geometry.Presentation.ColorMap[valueIndex][2];
+                }
+
+                imageFileDirectory.Add(320, colorMap);
+            }
+
             // add metadata
             imageFileDirectory.Add(305, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
             imageFileDirectory.Add(306, new Object[] { DateTime.UtcNow.ToString(CultureInfo.InvariantCulture.DateTimeFormat) }); // date time
@@ -346,6 +364,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                         default:
                             throw new InvalidDataException("The specified presentation is not supported.");
                     }
+                case RasterPresentationModel.PseudoColor:
+                    return TiffPhotometricInterpretation.PaletteColor;
                 default:
                     throw new InvalidDataException("The specified presentation is not supported.");
             }

@@ -876,6 +876,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.CIELab);
                 case TiffPhotometricInterpretation.YCbCr:
                     return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.YCbCr);
+                case TiffPhotometricInterpretation.PaletteColor:
+                    Dictionary<Int32, UInt32[]> colorMap = new Dictionary<Int32, UInt32[]>();
+                    for (Int32 entryIndex = 0; entryIndex < _imageFileDirectories[_currentImageIndex][320].Length; entryIndex += 3)
+                    {
+                        colorMap.Add(entryIndex / 3, new UInt32[] { 
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][320][entryIndex]),
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][320][entryIndex + 1]),
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][320][entryIndex + 2]) 
+                        });
+                    }
+                    return RasterPresentation.CreatePresudoColorPresentation(colorMap);
                 default:
                     return null; // TODO: support other interpretations
             }
