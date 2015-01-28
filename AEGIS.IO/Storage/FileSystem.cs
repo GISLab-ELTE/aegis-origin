@@ -1,5 +1,5 @@
 ﻿/// <copyright file="FileSystem.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -1148,6 +1148,51 @@ namespace ELTE.AEGIS.IO.Storage
         public async virtual Task<String> GetFileNameWithoutExtensionAsync(String path)
         {
             return await Task.Run(() => GetFileNameWithoutExtension(path));
+        }
+
+        /// <summary>
+        /// Returns the extension for a specified path.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public abstract String GetExtension(String path);
+
+        /// <summary>
+        /// Returns the extension for a specified path asynchronously.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The path does not exist.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported by the file system.</exception>
+        /// <exception cref="ConnectionException">
+        /// No connection is available to the specified path.
+        /// or
+        /// No connection is available to the file system.
+        /// </exception>
+        public async virtual Task<String> GetExtensionAsync(String path)
+        {
+            return await Task.Run(() => GetExtension(path));
         }
 
         /// <summary>

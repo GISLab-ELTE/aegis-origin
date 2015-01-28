@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LocalFileSystem.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -789,6 +789,34 @@ namespace ELTE.AEGIS.IO.Storage
             try
             {
                 return Path.GetFileNameWithoutExtension(path);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(MessagePathInvalidFormat, "path", ex);
+            }
+        }
+
+        /// <summary>
+        /// Returns the extension for a specified path.
+        /// </summary>
+        /// <param name="path">The path of a file.</param>
+        /// <returns>The extension for <paramref name="path" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// </exception>
+        public override String GetExtension(String path)
+        {
+            if (path == null)
+                throw new ArgumentNullException("path", MessagePathIsNull);
+            if (String.IsNullOrWhiteSpace(path))
+                throw new ArgumentException(MessagePathIsEmpty, "path");
+
+            try
+            {
+                return Path.GetExtension(path);
             }
             catch (ArgumentException ex)
             {
