@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ReferenceMatchingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -222,9 +222,17 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                             break;
                     }
 
-                    
-                    Coordinate coordinate = referenceRaster.Mapper.MapCoordinate(rowIndex, columnIndex);
-                    _source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
+                    // match the source coordinates
+                    if (!referenceRaster.IsMapped || !_source.Raster.IsMapped || _source.Raster.Coordinates.SequenceEqual(referenceRaster.Coordinates))
+                    {
+                        sourceColumnIndex = columnIndex;
+                        sourceRowIndex = rowIndex;
+                    }
+                    else
+                    {
+                        Coordinate coordinate = referenceRaster.Mapper.MapCoordinate(rowIndex, columnIndex);
+                        _source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
+                    }
 
                     // check if the reference location is available in the source
                     if (sourceRowIndex < 0 || sourceRowIndex >= Source.Raster.NumberOfRows || sourceColumnIndex < 0 || sourceColumnIndex >= Source.Raster.NumberOfColumns)
