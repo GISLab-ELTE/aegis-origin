@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryStreamWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -118,6 +118,11 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         private Boolean _disposed;
 
+        /// <summary>
+        /// A value indicating whether to dispose the underlying stream.
+        /// </summary>
+        private Boolean _disposeBaseStream;
+
         #endregion
 
         #region Protected fields
@@ -214,6 +219,7 @@ namespace ELTE.AEGIS.IO
             : this(ResolveStream(path), format, parameters)
         {
             Path = path;
+            _disposeBaseStream = true;
         }
 
         /// <summary>
@@ -270,6 +276,7 @@ namespace ELTE.AEGIS.IO
             Format = format;
             _parameters = parameters;
             _baseStream = stream;
+            _disposeBaseStream = false;
             _disposed = false;
         }
 
@@ -390,7 +397,8 @@ namespace ELTE.AEGIS.IO
 
             if (disposing)
             {
-                _baseStream.Dispose();
+                if (_disposeBaseStream)
+                    _baseStream.Dispose();
                 if (_parameters != null)
                     _parameters.Clear();
             }
