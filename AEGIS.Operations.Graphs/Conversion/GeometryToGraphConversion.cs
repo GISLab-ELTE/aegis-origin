@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryToGraphConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -90,7 +90,7 @@ namespace ELTE.AEGIS.Operations.Conversion
             : base(source, target, GraphOperationMethods.GeometryToGraphConversion, parameters)
         {
             _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(GraphOperationParameters.BidirectionalConversion));
-            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace ELTE.AEGIS.Operations.Conversion
             : base(source, target, method, parameters)
         {
             _bidirectionalConversion = Convert.ToBoolean(ResolveParameter(GraphOperationParameters.BidirectionalConversion));
-            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
 
         #endregion

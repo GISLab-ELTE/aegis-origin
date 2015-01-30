@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryPolygonization.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -60,8 +60,8 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GeometryPolygonization(IGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, GraphOperationMethods.GeometryPolygonization, parameters)
         {
-            _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
-            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
+            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, _source.Factory);
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
 
         #endregion
@@ -75,15 +75,15 @@ namespace ELTE.AEGIS.Operations.Conversion
         {
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(GraphOperationParameters.BidirectionalConversion, true);
-            parameters.Add(OperationParameters.MetadataPreservation, _metadataPreservation);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, _metadataPreservation);
 
             _networkConversion = new GeometryToNetworkConversion(_source, parameters);
             _networkConversion.Execute();
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(GraphOperationParameters.GeometryDimension, 2);
-            parameters.Add(OperationParameters.GeometryFactory, _factory);
-            parameters.Add(OperationParameters.MetadataPreservation, _metadataPreservation);
+            parameters.Add(CommonOperationParameters.GeometryFactory, _factory);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, _metadataPreservation);
 
             _geometryConversion = new GraphToGeometryConversion(_networkConversion.Result, parameters);
             _geometryConversion.Execute();

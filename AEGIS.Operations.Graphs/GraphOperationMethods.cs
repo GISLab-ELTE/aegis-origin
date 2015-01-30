@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GraphOperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -280,8 +280,8 @@ namespace ELTE.AEGIS.Operations
                         "AEGIS::212185", "Geometry polygonization",
                         "Converts geometries of any kind to polygonial representation.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
-                        OperationParameters.GeometryFactory,
-                        OperationParameters.MetadataPreservation
+                        CommonOperationParameters.GeometryFactory,
+                        CommonOperationParameters.MetadataPreservation
                     ));
             }
         }
@@ -299,7 +299,7 @@ namespace ELTE.AEGIS.Operations
                         "Converts geometries to a single graph representation. The resulting graph can match the original directions of the geometry lines, os can be bidirectional.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.BidirectionalConversion,
-                        OperationParameters.MetadataPreservation
+                        CommonOperationParameters.MetadataPreservation
                     ));
             }
         }
@@ -317,7 +317,7 @@ namespace ELTE.AEGIS.Operations
                         "Converts geometries to a single network representation. The resulting network can match the original directions of the geometry lines, os can be bidirectional.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.BidirectionalConversion,
-                        OperationParameters.MetadataPreservation
+                        CommonOperationParameters.MetadataPreservation
                     ));
             }
         }
@@ -335,8 +335,8 @@ namespace ELTE.AEGIS.Operations
                         "Converts a graph to geometry representation. The dimension of the extracted geometries can be limited to points (0), curves (1) and surfaces (2). The factory of the resulting geometries can also be specified.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.GeometryDimension,
-                        OperationParameters.GeometryFactory,
-                        OperationParameters.MetadataPreservation
+                        CommonOperationParameters.GeometryFactory,
+                        CommonOperationParameters.MetadataPreservation
                     ));
             }
         }

@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GraphToGeometryConversionTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -25,6 +25,9 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
 {
+    /// <summary>
+    /// Test fixture for the <see cref="GraphToGeometryConversion" /> class.
+    /// </summary>
     [TestFixture]
     public class GraphToGeometryConversionTest
     {
@@ -45,8 +48,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
         [SetUp]
         public void SetUp()
         {
-            Guid guid = Guid.NewGuid();
-
             _referenceSystemMock = new Mock<IReferenceSystem>(MockBehavior.Strict);
         }
 
@@ -55,7 +56,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
         #region Test methods
 
         /// <summary>
-        /// Test case for converting points.
+        /// Tests point conversion.
         /// </summary>
         [Test]
         public void GraphToGeometryConversionPointsTest()
@@ -70,7 +71,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             GeometryGraph graph = new GeometryGraph(_referenceSystemMock.Object, null);
             coordinates.ForEach(coordinate => graph.AddVertex(coordinate));
 
-            // test case 1: without metadata
+
+            // without metadata
 
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, object>();
             parameters[GraphOperationParameters.GeometryDimension] = 0;
@@ -88,7 +90,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             foreach (IPoint point in result as IMultiPoint)
                 Assert.IsTrue(coordinates.Contains(point.Coordinate));
 
-            // test case 2: with metadata
+
+            // with metadata
 
             graph = new GeometryGraph(_referenceSystemMock.Object, null);
             coordinates.ForEach(coordinate =>
@@ -101,7 +104,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
 
             parameters = new Dictionary<OperationParameter, object>();
             parameters[GraphOperationParameters.GeometryDimension] = 0;
-            parameters[OperationParameters.MetadataPreservation] = true;
+            parameters[CommonOperationParameters.MetadataPreservation] = true;
 
             conversion = new GraphToGeometryConversion(graph, parameters);
 
@@ -121,7 +124,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
         }
 
         /// <summary>
-        /// Test case for converting lines.
+        /// Tests line conversion.
         /// </summary>
         [Test]
         public void GraphToGeometryConversionLinesTest()
@@ -142,7 +145,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
                     graph.AddEdge(graph.GetVertex(coordinates[i - 1]), graph.GetVertex(coordinates[i]));
             }
 
-            // test case 1: only points
+
+            // only points
 
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, object>();
             parameters[GraphOperationParameters.GeometryDimension] = 0;
@@ -160,7 +164,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             foreach (IPoint point in result as IMultiPoint)
                 Assert.IsTrue(coordinates.Contains(point.Coordinate));
 
-            // test case 2: only lines
+
+            // only lines
 
             parameters = new Dictionary<OperationParameter, object>();
             parameters[GraphOperationParameters.GeometryDimension] = 1;
@@ -181,7 +186,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
                 Assert.IsTrue(coordinates.Contains(lineString.EndCoordinate));
             }
 
-            // test case 3: points and lines
+
+            // points and lines
 
             List<Coordinate> newCoordinates = new List<Coordinate>();
             for (Int32 i = 100; i < 200; i++)
@@ -217,12 +223,12 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
         }
 
         /// <summary>
-        /// Test case for converting polygons.
+        /// Tests polygon conversion.
         /// </summary>
         [Test]
         public void GraphToGeometryConversionPolygonsTest()
         {
-            // test case 1: single polygon
+            // single polygon
 
             Coordinate[] coordinates = new Coordinate[4];
             coordinates[0] = new Coordinate(10, 10);
@@ -261,7 +267,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             for (Int32 i = 0; i < coordinates.Length; i++)
                 Assert.IsTrue((result as IPolygon).Shell.Coordinates.Contains(coordinates[i]));
 
-            // test case 2: multiple polygons
+
+            // multiple polygons
 
             coordinates = new Coordinate[4];
             coordinates[0] = new Coordinate(110, 110);
@@ -288,7 +295,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             Assert.IsTrue(result is IMultiPolygon);
             Assert.IsTrue((result as IMultiPolygon).Count == 2);
 
-            // test case 3: touching polygons
+
+            // touching polygons
 
             coordinates = new Coordinate[3];
             coordinates[0] = new Coordinate(10, 20);
@@ -314,7 +322,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             Assert.IsTrue(result is IMultiPolygon);
             Assert.IsTrue((result as IMultiPolygon).Count == 3);
 
-            // test case 4: arbitary shape polygon
+
+            // arbitary shape polygon
 
             coordinates = new Coordinate[7];
             coordinates[0] = new Coordinate(10, 10);

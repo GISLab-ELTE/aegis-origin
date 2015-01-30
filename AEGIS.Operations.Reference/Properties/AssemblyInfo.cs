@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Eötvös Loránd University (ELTE), Faculty of Informatics")]
 [assembly: AssemblyProduct("AEGIS.Operations.Reference")]
-[assembly: AssemblyCopyright("Copyright © Roberto Giachetta 2013-2014")]
+[assembly: AssemblyCopyright("Copyright © Roberto Giachetta 2013-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

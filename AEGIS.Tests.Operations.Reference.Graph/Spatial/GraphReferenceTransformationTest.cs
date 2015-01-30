@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GraphReferenceTransformationTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -26,7 +26,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Test.Operations.Spatial
 {
     /// <summary>
-    /// Test fixture for the <see cref="GraphReferenceTransformation"/> class.
+    /// Test fixture for the <see cref="GraphReferenceTransformation" /> class.
     /// </summary>
     [TestFixture]
     public class GraphReferenceTransformationTest
@@ -34,9 +34,9 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
         #region Test methods
 
         /// <summary>
-        /// Test for operation execution with metadata.
+        /// Tests operation execution.
         /// </summary>
-        [TestCase]
+        [Test]
         public void GraphReferenceTransformationExecuteTest()
         {
             // test case 1: with metadata
@@ -73,7 +73,7 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-            parameters.Add(OperationParameters.MetadataPreservation, metadataPreservation);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, metadataPreservation);
 
             GraphReferenceTransformation transformation = new GraphReferenceTransformation(sourceGraph, parameters);
             transformation.Execute();
@@ -195,7 +195,7 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-            parameters.Add(OperationParameters.MetadataPreservation, metadataPreservation);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, metadataPreservation);
 
             GraphReferenceTransformation transformation = new GraphReferenceTransformation(sourceGraph, parameters);
             transformation.Execute();

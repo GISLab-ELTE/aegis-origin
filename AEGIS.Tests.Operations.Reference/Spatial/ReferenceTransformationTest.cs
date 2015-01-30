@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-            parameters.Add(OperationParameters.MetadataPreservation, metadataPreservation);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, metadataPreservation);
 
             ReferenceTransformation transformation = new ReferenceTransformation(sourcePoint, parameters);
             transformation.Execute();
@@ -203,7 +203,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-            parameters.Add(OperationParameters.MetadataPreservation, metadataPreservation);
+            parameters.Add(CommonOperationParameters.MetadataPreservation, metadataPreservation);
 
             ReferenceTransformation transformation = new ReferenceTransformation(sourceLine, parameters);
             transformation.Execute();

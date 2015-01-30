@@ -1,9 +1,9 @@
 ﻿/// <copyright file="OperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace ELTE.AEGIS.Operations
     /// Represents a collection of known <see cref="OperationParameter" /> instances.
     /// </summary>
     [OperationParameterCollection]
-    public class OperationParameters
+    public class CommonOperationParameters
     {
         #region Query fields
 
@@ -43,7 +44,7 @@ namespace ELTE.AEGIS.Operations
             get
             {
                 if (_all == null)
-                    _all = typeof(OperationParameters).GetProperties().
+                    _all = typeof(CommonOperationParameters).GetProperties().
                                                        Where(property => property.Name != "All").
                                                        Select(property => property.GetValue(null, null) as OperationParameter).
                                                        ToArray();
@@ -86,6 +87,8 @@ namespace ELTE.AEGIS.Operations
 
         private static OperationParameter _geometryFactory;
         private static OperationParameter _metadataPreservation;
+        private static OperationParameter _numberOfParts;
+        private static OperationParameter _overlapMargin;
 
         #endregion
 
@@ -100,7 +103,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _geometryFactory ?? (_geometryFactory =
                     OperationParameter.CreateOptionalParameter<IGeometryFactory>(
-                        "222161", "Geometry factory",
+                        "221001", "Geometry factory",
                         "The factory used for producing resulting geometry instances.", null,
                         (IGeometryFactory)null
                     ));
@@ -116,13 +119,46 @@ namespace ELTE.AEGIS.Operations
             {
                 return _metadataPreservation ?? (_metadataPreservation =
                     OperationParameter.CreateOptionalParameter<Boolean>(
-                        "AEGIS::222905", "Metadata preservation",
+                        "AEGIS::221005", "Metadata preservation",
                         "Indicates whether the metadata should be perserved suring transformation.", null,
                         false
                     ));
             }
         }
 
+        /// <summary>
+        /// Number of parts.
+        /// </summary>
+        public static OperationParameter NumberOfParts
+        {
+            get
+            {
+                return _numberOfParts ?? (_numberOfParts =
+                    OperationParameter.CreateOptionalParameter<Int32>(
+                        "AEGIS::221561", "Number of parts",
+                        "The number of parts to create during partitioning.", null,
+                        1,
+                        Conditions.IsPositive()
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Overlap zone.
+        /// </summary>
+        public static OperationParameter OverlapMargin
+        {
+            get
+            {
+                return _overlapMargin ?? (_overlapMargin =
+                    OperationParameter.CreateOptionalParameter<Double>(
+                        "AEGIS::221575", "Overlap margin",
+                        "The margin by which the individual parts should overlap after partitiining.", null,
+                        0,
+                        Conditions.IsNotNegative()
+                    ));
+            }
+        }
 
         #endregion
     }

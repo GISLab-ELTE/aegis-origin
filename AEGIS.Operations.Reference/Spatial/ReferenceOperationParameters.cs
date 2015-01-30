@@ -1,9 +1,9 @@
 ﻿/// <copyright file="ReferenceOperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _targetReferenceSystem ?? (_targetReferenceSystem =
                     OperationParameter.CreateRequiredParameter<IReferenceSystem>(
-                        "AEGIS::222901", "Target reference system", 
+                        "AEGIS::221701", "Target reference system", 
                         "The reference system in which the geometry should be translated.", null
                     ));
             }

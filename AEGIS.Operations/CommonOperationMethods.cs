@@ -1,4 +1,4 @@
-﻿/// <copyright file="ReferenceOperationMethods.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="GenericOperationMethods.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -13,18 +13,16 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Operations.Spatial
+namespace ELTE.AEGIS.Operations
 {
     /// <summary>
-    /// Represents a collection of known <see cref="OperationMethod" /> instances for reference operations.
+    /// Represents a collection of known <see cref="OperationMethod" /> instances.
     /// </summary>
-    [OperationMethodCollection]
-    public static class ReferenceOperationMethods
+    public class CommonOperationMethods
     {
         #region Query fields
 
@@ -43,10 +41,10 @@ namespace ELTE.AEGIS.Operations.Spatial
             get
             {
                 if (_all == null)
-                    _all = typeof(ReferenceOperationMethods).GetProperties().
-                                                    Where(property => property.Name != "All").
-                                                    Select(property => property.GetValue(null, null) as OperationMethod).
-                                                    ToArray();
+                    _all = typeof(CommonOperationMethods).GetProperties().
+                                                           Where(property => property.Name != "All").
+                                                           Select(property => property.GetValue(null, null) as OperationMethod).
+                                                           ToArray();
                 return Array.AsReadOnly(_all);
             }
         }
@@ -85,26 +83,27 @@ namespace ELTE.AEGIS.Operations.Spatial
 
         #region Private static fields
 
-        private static OperationMethod _referenceTransformation;
+        private static OperationMethod _binaryGeometryPartitioning;
 
         #endregion
 
         #region Public static properties
 
         /// <summary>
-        /// Reference system transformation.
+        /// Binary geometry partitioning.
         /// </summary>
-        public static OperationMethod ReferenceTransformation
+        public static OperationMethod BinaryGeometryPartitioning
         {
             get
             {
-                return _referenceTransformation ?? (_referenceTransformation = OperationMethod.CreateMethod<IGeometry, IGeometry>(
-                        "AEGIS::212901", "Reference system transformation",
-                        "Transforms the specified geometry the a new reference system.",
+                return _binaryGeometryPartitioning ?? (_binaryGeometryPartitioning = OperationMethod.CreateMethod<IGeometry, IGeometryCollection<IGeometry>>(
+                        "AEGIS::211501", "Binary geometry partitioning",
+                        "Defines a partitioning method based in recursive binary splitting of the source.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
-                        ReferenceOperationParameters.TargetReferenceSystem,
                         CommonOperationParameters.GeometryFactory,
-                        CommonOperationParameters.MetadataPreservation)
+                        CommonOperationParameters.MetadataPreservation,
+                        CommonOperationParameters.NumberOfParts,
+                        CommonOperationParameters.OverlapMargin)
                 );
             }
         }

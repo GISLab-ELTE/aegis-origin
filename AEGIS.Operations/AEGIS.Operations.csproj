@@ -51,7 +51,8 @@
     <Compile Include="Management\Attributes\OperationMethodCollectionAttribute.cs" />
     <Compile Include="Management\Attributes\OperationParameterCollectionAttribute.cs" />
     <Compile Include="Operation.cs" />
-    <Compile Include="OperationParameters.cs" />
+    <Compile Include="CommonOperationMethods.cs" />
+    <Compile Include="CommonOperationParameters.cs" />
     <Compile Include="OperationState.cs">
       <SubType>Code</SubType>
     </Compile>

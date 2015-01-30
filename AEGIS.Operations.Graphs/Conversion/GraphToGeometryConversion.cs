@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GraphToGeometryConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -334,9 +334,9 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GraphToGeometryConversion(IGeometryGraph source, IGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, GraphOperationMethods.GraphToGeometryConversion, parameters)
         {
-            _factory = ResolveParameter<IGeometryFactory>(OperationParameters.GeometryFactory, _source.Factory);
+            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, _source.Factory);
             _dimension = Convert.ToInt32(ResolveParameter(GraphOperationParameters.GeometryDimension));
-            _metadataPreservation = Convert.ToBoolean(ResolveParameter(OperationParameters.MetadataPreservation));
+            _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
 
         #endregion
