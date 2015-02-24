@@ -1,5 +1,5 @@
 ﻿/// <copyright file="DouglasPeuckerAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Bence Molnár</author>
+/// <author>Roberto Giachetta</author>
 
 using System;
 using System.Collections.Generic;
@@ -23,12 +24,11 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents a type for executing the Douglas-Peucker algorithm.
     /// </summary>
     /// <remarks>
-    /// Douglas-Peucker algorithm is used to reduce vertexes in the specified delta tolerance in O(n^2) runtime. 
+    /// Douglas-Peucker (or Ramer-Douglas-Peucker) algorithm is used to reduce vertices in a line string, resulting in a similar line string in O(n^2) runtime.
     /// The algorithm assumes, that the source is a simple line string without circle.
     /// </remarks>
     public class DouglasPeuckerAlgorithm
     {
-
         #region Private fields
 
         /// <summary>
@@ -44,7 +44,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// The simplified line string.
         /// </summary>
-        private List<Coordinate> _result;
+        private Coordinate[] _result;
+
+        /// <summary>
+        /// The marks on the coordinates.
+        /// </summary>
+        private Boolean[] _marks;
 
         /// <summary>
         /// A value indicating whether the result has been computed.
@@ -117,21 +122,23 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         public void Compute()
         {
-            Boolean[] isCoordianteMarked = new Boolean[_source.Count]; // Array that tells if the i-th point is marked or not.
+            _marks = new Boolean[_source.Count];
 
-            // Marking first and last point.
-            isCoordianteMarked[0] = isCoordianteMarked[_source.Count - 1] = true;
+            // mark the first and last coordinates
+            _marks[0] = _marks[_source.Count - 1] = true;
 
-            // Calling the recursive method that
-            DecimateCoordinates(0, _source.Count - 1, isCoordianteMarked);
+            SimplifySegment(0, _source.Count - 1); // recursive simplification of the source
 
-            // Creating result list of marked points.
-
-            _result = new List<Coordinate>();
-            for (Int32 coordinateIndex = 0; coordinateIndex < _source.Count; coordinateIndex++)
+            // create the result based on the marked coordinates
+            _result = new Coordinate[_marks.Count(value => value)];
+            Int32 resultIndex = 0;
+            for (Int32 sourceIndex = 0; sourceIndex < _source.Count; sourceIndex++)
             {
-                if (isCoordianteMarked[coordinateIndex])
-                    _result.Add(_source.ElementAt(coordinateIndex));
+                if (_marks[sourceIndex])
+                {
+                    _result[resultIndex] = _source[sourceIndex];
+                    resultIndex++;
+                }
             }
 
             _hasResult = true;
@@ -142,65 +149,37 @@ namespace ELTE.AEGIS.Algorithms
         #region Protected methods
 
         /// <summary>
-        /// Decimates the coordinates.
+        /// Simplifies a segment of the line string.
         /// </summary>
-        /// <param name="startIndex">Index of the starting coordinate.</param>
-        /// <param name="endIndex">Index of the ending coordinate.</param>
-        /// <param name="isCoordinateMarkedArray">The array of values indicating whether the coordinate is marked.</param>
-        protected void DecimateCoordinates(Int32 startIndex, Int32 endIndex, Boolean[] isCoordinateMarkedArray)
+        /// <param name="startIndex">The strating index of the segment.</param>
+        /// <param name="endIndex">The ending index of the segment.</param>
+        protected void SimplifySegment(Int32 startIndex, Int32 endIndex)
         {
-            // Setting initial values.
-            Double maxd2 = 0;
-            Int32 maxi = startIndex;
-
-            // There's nothing to decimate.
-            if (endIndex <= startIndex + 1)
+            if (endIndex <= startIndex + 1) // the segment is a line
                 return;
 
-            // Getting start and endcoordinate of actual segment.
-            Coordinate startCoordinate = _source.ElementAt(startIndex);
-            Coordinate endCoordinate = _source.ElementAt(endIndex);
+            Double maxDistance = 0;
+            Int32 maxIndex = startIndex;
 
-            // Counting vector of segment pointing from start to end coordinate.
-            CoordinateVector segmentVector = new CoordinateVector(endCoordinate.X - startCoordinate.X,
-                endCoordinate.Y - startCoordinate.Y, endCoordinate.Z - startCoordinate.Z);
-            Double squaredSegmentLength = CoordinateVector.DotProduct(segmentVector, segmentVector);
-
-            // Iterating through the points beetween the start and end coordinate at the linstring.
-            for (Int32 i = startIndex + 1; i < endIndex; i++)
+            // find the the most distant coordinate from the line between the starting and ending coordinates
+            for (Int32 coordinateIndex = startIndex + 1; coordinateIndex < endIndex; coordinateIndex++)
             {
-                Double distance;
+                Double distance = LineAlgorithms.Distance(_source[startIndex], _source[endIndex], _source[coordinateIndex]);
 
-                // Actual point between the specified start an end coordinate of segment.
-                Coordinate vi = _source.ElementAt(i);
-                CoordinateVector actualVertexVector = new CoordinateVector(vi.X - startCoordinate.X, vi.Y - startCoordinate.Y,
-                                                            vi.Z - startCoordinate.Z);
-                Double vectorProduct = CoordinateVector.DotProduct(segmentVector, actualVertexVector);
-
-                if (vectorProduct <= 0)
-                    distance = Math.Pow(Coordinate.Distance(startCoordinate, vi), 2);
-                else if (squaredSegmentLength <= vectorProduct)
-                    distance = Math.Pow(Coordinate.Distance(endCoordinate, vi), 2);
-                else
+                if (distance > maxDistance)
                 {
-                    Double b = vectorProduct / squaredSegmentLength;
-                    Coordinate Pb = startCoordinate + b * segmentVector;
-                    distance = Math.Pow(Coordinate.Distance(vi, Pb), 2);
+                    maxIndex = coordinateIndex;
+                    maxDistance = distance;
                 }
-
-                if (distance <= maxd2)
-                    continue;
-
-                maxi = i;
-                maxd2 = distance;
             }
 
-            if (maxd2 <= _delta * _delta) 
+            if (maxDistance <= _delta) // the distance is smaller than the delta, the all coordinates should be removed
                 return;
 
-            isCoordinateMarkedArray[maxi] = true;
-            DecimateCoordinates(startIndex, maxi, isCoordinateMarkedArray);
-            DecimateCoordinates(maxi, startIndex, isCoordinateMarkedArray);
+            // recursively simplify both segments
+            _marks[maxIndex] = true;
+            SimplifySegment(startIndex, maxIndex);
+            SimplifySegment(maxIndex, startIndex);
         }
 
         #endregion
