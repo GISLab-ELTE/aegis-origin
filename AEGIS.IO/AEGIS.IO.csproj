@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
     <Compile Include="Shapefile\DBaseField.cs" />
     <Compile Include="Shapefile\DBaseHeader.cs" />
     <Compile Include="Shapefile\DBaseStreamReader.cs" />
