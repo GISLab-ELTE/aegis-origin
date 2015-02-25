@@ -47,8 +47,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapefile\ShapefileReaderTest.cs" />
     <Compile Include="Shapefile\ShapefileWriterTest.cs" />
-    <Compile Include="WellKnown\GeometryConverterTest.cs" />
-    <Compile Include="WellKnown\IdentifiedObjectConverterTest.cs" />
+    <Compile Include="WellKnown\WellKnownBinaryConverterTest.cs" />
+    <Compile Include="WellKnown\WellKnownTextConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

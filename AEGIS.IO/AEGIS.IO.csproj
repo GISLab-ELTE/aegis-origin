@@ -68,8 +68,8 @@
     <Compile Include="Storage\Operation\FileSystemOperationResult.cs" />
     <Compile Include="Storage\Operation\FileSystemOperationResultCode.cs" />
     <Compile Include="WellKnown\Compatility\GeometryCompatibility.cs" />
-    <Compile Include="WellKnown\GeometryConverter.WellKnownBinary.cs" />
-    <Compile Include="WellKnown\GeometryConverter.WellKnownText.cs" />
+    <Compile Include="WellKnown\WellKnownBinaryConverter.cs" />
+    <Compile Include="WellKnown\WellKnownTextConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapefile\Shape.cs" />
     <Compile Include="Shapefile\ShapefileReader.cs" />
@@ -77,7 +77,6 @@
     <Compile Include="Shapefile\ShapeType.cs" />
     <Compile Include="Utilities\ByteOrder.cs" />
     <Compile Include="Utilities\EndianBitConverter.cs" />
-    <Compile Include="WellKnown\IdentifiedObjectConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">

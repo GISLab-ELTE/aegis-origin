@@ -1,5 +1,5 @@
-﻿/// <copyright file="GeometryConverter.WellKnownBinary.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+﻿/// <copyright file="WellKnownBinaryConverter.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.IO.WellKnown
     /// <summary>
     /// Represents a converter for Well-known Binary (WKB) representation.
     /// </summary>
-    public static partial class GeometryConverter
+    public static class WellKnownBinaryConverter
     {
         #region Private types
 

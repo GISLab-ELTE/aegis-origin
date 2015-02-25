@@ -1,9 +1,9 @@
-﻿/// <copyright file="GeometryConverterTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+﻿/// <copyright file="WellKnownTextConverterTest.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -20,12 +20,31 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.IO.WellKnown
 {
+    /// <summary>
+    /// Test fixture for the <see cref="WellKnownBinaryConverter" /> class.
+    /// </summary>
     [TestFixture]
-    public class GeometryConverterTest
+    public class WellKnownBinaryConverterTest
     {
+        #region Private fields
+
+        /// <summary>
+        /// The array of geometries.
+        /// </summary>
         private IGeometry[] _geometries;
+
+        /// <summary>
+        /// The geometry factory.
+        /// </summary>
         private IGeometryFactory _factory;
 
+        #endregion
+
+        #region Test setup
+
+        /// <summary>
+        /// Test setup.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
@@ -45,28 +64,25 @@ namespace ELTE.AEGIS.Tests.IO.WellKnown
             };
         }
 
-        [TestCase]
-        public void GeometryConverterWellKnownBinaryTest()
+        #endregion
+
+        #region Test methods
+
+        /// <summary>
+        /// Tests the conversion for geometries
+        /// </summary>
+        [Test]
+        public void WellKnownBinaryConverterGeometryTest()
         {
             foreach (IGeometry geometry in _geometries)
             {
-                Byte[] wkb = GeometryConverter.ToWellKnownBinary(geometry);
-                IGeometry converted = GeometryConverter.ToGeometry(wkb, _factory);
+                Byte[] wkb = WellKnownBinaryConverter.ToWellKnownBinary(geometry);
+                IGeometry converted = WellKnownBinaryConverter.ToGeometry(wkb, _factory);
 
                 Assert.AreEqual(0, new GeometryComparer().Compare(geometry, converted));
             }
         }
 
-        [TestCase]
-        public void GeometryConverterWellKnownTextTest()
-        {
-            foreach (IGeometry geometry in _geometries)
-            {
-                String wkt = GeometryConverter.ToWellKnownText(geometry);
-                IGeometry converted = GeometryConverter.ToGeometry(wkt, _factory);
-
-                Assert.AreEqual(0, new GeometryComparer().Compare(geometry, converted));
-            }
-        }
+        #endregion
     }
 }
