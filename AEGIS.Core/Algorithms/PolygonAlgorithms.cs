@@ -351,6 +351,20 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the orientation of a polygon.
         /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The orientation of the polygon shell. If the polygon is invalid <c>Undefined</c> is returned.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static Orientation Orientation(IBasicPolygon polygon)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return Orientation(polygon.Shell.Coordinates);
+        }
+
+        /// <summary>
+        /// Computes the orientation of a polygon.
+        /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <returns>The orientation of the polygon. If the polygon is invalid <c>Undefined</c> is returned.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
