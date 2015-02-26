@@ -49,6 +49,7 @@
     <Compile Include="Algorithms\LineAlgorithms.cs" />
     <Compile Include="Algorithms\PolygonAlgorithms.cs" />
     <Compile Include="Algorithms\PolygonCentroidAlgorithm.cs" />
+    <Compile Include="Algorithms\RandomPolygonGenerator.cs" />
     <Compile Include="Algorithms\ShamosHoeyAlgorithm.cs" />
     <Compile Include="Algorithms\WeilerAthertonAlgorithm.cs" />
     <Compile Include="Algorithms\WindingNumberAlgorithm.cs" />
