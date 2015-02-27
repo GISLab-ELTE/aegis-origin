@@ -46,6 +46,7 @@
     <Compile Include="Algorithms\BentleyOttmannAlgorithmTest.cs" />
     <Compile Include="Algorithms\DouglasPeuckerAlgorithmTest.cs" />
     <Compile Include="Algorithms\GrahamScanAlgorithmTest.cs" />
+    <Compile Include="Algorithms\MonotoneSubdivisionAlgorithmTest.cs" />
     <Compile Include="Algorithms\PolygonAlgorithmsTest.cs" />
     <Compile Include="Algorithms\PolygonCentroidAlgorithmTest.cs" />
     <Compile Include="Algorithms\RandomPolygonGeneratorTest.cs" />
