@@ -157,10 +157,17 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("shell", "The shell is null.");
             if (shell.Count < 4)
                 throw new ArgumentException("The shell must contain at least 3 different coordinates.", "shell");
-            if (!shell[0].Equals(shell[shell.Count - 1]))
-                throw new ArgumentException("The first and the last coordinates must be equal.", "shell");
 
-            _shell = shell;
+            if (shell[0].Equals(shell[shell.Count - 1]))
+            {
+                _shell = shell;
+            }
+            else
+            {
+                _shell = new List<Coordinate>(shell);
+                _shell.Add(shell[0]);
+            }
+
             _coordinate = coordinate;
             _verifyBoundary = verifyBoundary;
             _hasResult = false;
