@@ -1,5 +1,5 @@
 ﻿/// <copyright file="DimapMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -53,7 +53,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <summary>
         /// Gets the default file name of the metafile.
         /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
         protected override String DefaultFileName
         {
             get { return "metadata.dim"; }
@@ -218,11 +217,37 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         }
 
         /// <summary>
+        /// Reads the raster mapping stored in the metafile stream.
+        /// </summary>
+        /// <returns>The raster mapping.</returns>
+        protected override RasterMapper ReadMappingFromStream()
+        {
+            if (_document == null)
+                _document = XDocument.Load(_stream);
+
+            List<RasterCoordinate> coordinates = new List<RasterCoordinate>(4);
+
+            foreach (XElement vertexElement in _document.Element("Dimap_Document").Element("Dataset_Frame").Elements("Vertex"))
+            {
+                RasterCoordinate coordinate = new RasterCoordinate(
+                    Int32.Parse(vertexElement.Element("FRAME_ROW").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
+                    Int32.Parse(vertexElement.Element("FRAME_COL").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
+                    Double.Parse(vertexElement.Element("FRAME_LAT").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
+                    Double.Parse(vertexElement.Element("FRAME_LON").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat)
+                );
+
+                coordinates.Add(coordinate);
+            }
+
+            return RasterMapper.FromCoordinates(RasterMapMode.ValueIsArea, coordinates);
+        }
+
+        /// <summary>
         /// Reads the reference system stored in the metafile stream.
         /// </summary>
         /// <returns>The reference system.</returns>
         protected override IReferenceSystem ReadReferenceSystemFromStream()
-        {
+        {            
             if (_document == null)
                 _document = XDocument.Load(_stream);
 
@@ -234,7 +259,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 
             // horizontal reference system based on type
             XElement codeElement = referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_CODE");
-            XElement nameElement = referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_CODE");
+            XElement nameElement = referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_NAME");
 
             switch (referenceSystemElement.Element("Horizontal_CS").Element("HORIZONTAL_CS_TYPE").Value)
             {

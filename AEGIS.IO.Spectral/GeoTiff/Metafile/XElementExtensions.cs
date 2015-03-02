@@ -1,5 +1,5 @@
 ﻿/// <copyright file="XElementExtensions.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -27,7 +27,18 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         #region Extension methods
 
         /// <summary>
-        /// Gets the first (in document order) child element with the specified name.
+        /// Gets the first child element (in document order) with the specified name by ignoring culture and case.
+        /// </summary>
+        /// <param name="element">The base element.</param>
+        /// <param name="name">The name of the child element.</param>
+        /// <returns>A <see cref="XElement"/> that matches the specified name, or <c>null</c>.</returns>
+        public static XElement Element(this XElement element, String name)
+        {
+            return Element(element, name, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Gets the first child element (in document order) with the specified name.
         /// </summary>
         /// <param name="element">The base element.</param>
         /// <param name="name">The name of the child element.</param>
@@ -36,17 +47,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         public static XElement Element(this XElement element, String name, StringComparison comparison)
         {
             return element.Elements().FirstOrDefault(child => child.Name.LocalName.Equals(name, comparison));
-        }
-
-        /// <summary>
-        /// Gets the first (in document order) child element with the specified name by ignoring culture and case.
-        /// </summary>
-        /// <param name="element">The base element.</param>
-        /// <param name="name">The name of the child element.</param>
-        /// <returns>A <see cref="XElement"/> that matches the specified name, or <c>null</c>.</returns>
-        public static XElement Element(this XElement element, String name)
-        {
-            return Element(element, name, StringComparison.InvariantCultureIgnoreCase);
         }
 
         #endregion
