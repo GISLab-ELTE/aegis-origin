@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterCoordinate.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -45,6 +45,35 @@ namespace ELTE.AEGIS
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RasterCoordinate" /> struct.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index.</param>
+        /// <param name="columnIndex">The zero-based column index.</param>
+        /// <param name="x">The X component of the model coordinate.</param>
+        /// <param name="y">The Y component of the model coordinate.</param>
+        public RasterCoordinate(Int32 rowIndex, Int32 columnIndex, Double x, Double y)
+        {
+            RowIndex = rowIndex;
+            ColumnIndex = columnIndex;
+            Coordinate = new Coordinate(x, y);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RasterCoordinate" /> struct.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index.</param>
+        /// <param name="columnIndex">The zero-based column index.</param>
+        /// <param name="x">The X component of the model coordinate.</param>
+        /// <param name="y">The Y component of the model coordinate.</param>
+        /// <param name="z">The Z component of the model coordinate.</param>
+        public RasterCoordinate(Int32 rowIndex, Int32 columnIndex, Double x, Double y, Double z)
+        {
+            RowIndex = rowIndex;
+            ColumnIndex = columnIndex;
+            Coordinate = new Coordinate(x, y, z);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RasterCoordinate" /> struct.

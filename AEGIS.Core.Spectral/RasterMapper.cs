@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterMapper.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -393,10 +393,10 @@ namespace ELTE.AEGIS
         #region Public static factory methods
 
         /// <summary>
-        /// Creates a raster mapper raster coordinates.
+        /// Creates a raster mapper from raster coordinates.
         /// </summary>
         /// <param name="mode">The raster mapping mode.</param>
-        /// <param name="coordinates">The coordinates.</param>
+        /// <param name="coordinates">The array of coordinates.</param>
         /// <returns>The raster mapper created by linear interpolation of the coordinates.</returns>
         /// <exception cref="System.ArgumentNullException">The array of coordinates is null.</exception>
         /// <exception cref="System.ArgumentException">
@@ -408,6 +408,26 @@ namespace ELTE.AEGIS
         {
             if (coordinates == null)
                 throw new ArgumentNullException("The array of coordinates is null.", "coordinates");
+
+            return FromCoordinates(mode, coordinates as IList<RasterCoordinate>);
+        }
+
+        /// <summary>
+        /// Creates a raster mapper from raster coordinates.
+        /// </summary>
+        /// <param name="mode">The raster mapping mode.</param>
+        /// <param name="coordinates">The list of coordinates.</param>
+        /// <returns>The raster mapper created by linear interpolation of the coordinates.</returns>
+        /// <exception cref="System.ArgumentNullException">The array of coordinates is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of coordinates with distinct column index is less than 2.
+        /// or
+        /// The number of coordinates with distinct row index is less than 2.
+        /// </exception>
+        public static RasterMapper FromCoordinates(RasterMapMode mode, IList<RasterCoordinate> coordinates)
+        {
+            if (coordinates == null)
+                throw new ArgumentNullException("The list of coordinates is null.", "coordinates");
             if (coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().Count() < 2)
                 throw new ArgumentException("The number of coordinates with distinct column index is less than 2.", "coordinates");
             if (coordinates.Select(coordinate => coordinate.RowIndex).Distinct().Count() < 2)
@@ -418,11 +438,11 @@ namespace ELTE.AEGIS
             Int32[] columnIndices = coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().ToArray();
             Int32[] rowIndices = coordinates.Select(coordinate => coordinate.ColumnIndex).Distinct().ToArray();
 
-            Matrix matrix = new Matrix(coordinates.Length, 3);
-            Vector vectorX = new Vector(coordinates.Length);
-            Vector vectorY = new Vector(coordinates.Length);
+            Matrix matrix = new Matrix(coordinates.Count, 3);
+            Vector vectorX = new Vector(coordinates.Count);
+            Vector vectorY = new Vector(coordinates.Count);
 
-            for (Int32 coordinateIndex = 0; coordinateIndex < coordinates.Length; coordinateIndex++)
+            for (Int32 coordinateIndex = 0; coordinateIndex < coordinates.Count; coordinateIndex++)
             { 
                 matrix[coordinateIndex, 0] = coordinates[coordinateIndex].ColumnIndex;
                 matrix[coordinateIndex, 1] = coordinates[coordinateIndex].RowIndex;
