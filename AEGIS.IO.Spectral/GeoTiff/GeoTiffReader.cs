@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -197,7 +197,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
         #endregion
 
-        #region TiffReader protected methods
+        #region Protected TiffReader methods
 
         /// <summary>
         /// Computes the spectral imaging scene data of the geometry.
@@ -371,7 +371,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return RasterMapper.FromTransformation(mode, transformation);
             }
 
-            throw new InvalidDataException("Model space data is in invalid format.");
+            // read from metafile
+            try
+            {
+                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                {
+                    return reader.ReadMapping();
+                }
+            }
+            catch { }
+
+            throw new InvalidDataException("Model space data is unavailable.");
         }
 
         /// <summary>
