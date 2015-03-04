@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -50,6 +50,23 @@ namespace ELTE.AEGIS.Geometry
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
+        /// </summary>
+        public GeometryFactory()
+            : this(PrecisionModel.Default, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
+        /// </summary>
+        /// <param name="referenceSystem">The reference system.</param>
+        public GeometryFactory(IReferenceSystem referenceSystem)
+            : this(PrecisionModel.Default, referenceSystem)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
