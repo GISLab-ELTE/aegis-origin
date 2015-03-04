@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Raster.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -472,7 +472,7 @@ namespace ELTE.AEGIS.Raster
             if (radiometricResolutions != null && radiometricResolutions.Count > 0 && radiometricResolutions.Min() < 1)
                 throw new ArgumentOutOfRangeException("radiometricResolutions", "Not all radiometric resolution values fall within the predefined range (1.." + MaxRadiometricResolution + ").");
 
-            Factory = factory ?? AEGIS.Factory.DefaultInstance<RasterFactory>();
+            Factory = factory ?? new RasterFactory();
 
             NumberOfBands = numberOfBands;
             NumberOfRows = numberOfRows;

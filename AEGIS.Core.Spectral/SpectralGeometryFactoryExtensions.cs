@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralGeometryFactoryExtensions.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,13 +13,15 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
+using ELTE.AEGIS.Raster;
 using System;
 using System.Collections.Generic;
 
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Provides extensions to <see cref="IGeometryFactory"/> for producing <see cref="ISpectralGeometry"/> instances.
+    /// Provides extensions to <see cref="IGeometryFactory" /> for producing <see cref="ISpectralGeometry" /> instances.
     /// </summary>
     public static class SpectralGeometryFactoryExtensions
     {
@@ -3275,9 +3277,20 @@ namespace ELTE.AEGIS
                 {
                     factory.SetFactoryFor<ISpectralGeometry>(Factory.GetInstance<ISpectralGeometryFactory>(factory));
                 }
-                else // if not the default implemenentation is registered
+                else // if no default implementation is registered
                 {
-                    factory.SetFactoryFor<ISpectralGeometry>(Factory.GetInstance<Geometry.SpectralGeometryFactory>(factory));
+                    // requires a raster factory
+                    IRasterFactory rasterFactory;
+                    if (Factory.HasDefaultInstance<IRasterFactory>())
+                    {
+                        rasterFactory = Factory.DefaultInstance<IRasterFactory>();
+                    }
+                    else
+                    {
+                        rasterFactory = new RasterFactory();
+                    }
+
+                    factory.SetFactoryFor<ISpectralGeometry>(new SpectralGeometryFactory(factory, rasterFactory));
                 }
             }
         }

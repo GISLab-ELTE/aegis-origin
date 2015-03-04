@@ -76,7 +76,7 @@ namespace ELTE.AEGIS.Metadata
         /// <param name="factory">The factory of the collection.</param>
         public MetadataCollection(IMetadataFactory factory) : base() 
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<MetadataFactory>();
+            _factory = factory ?? new MetadataFactory();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Metadata
         /// <param name="factory">The factory of the collection.</param>
         public MetadataCollection(Int32 capacity, IMetadataFactory factory) : base(capacity) 
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<MetadataFactory>();
+            _factory = factory ?? new MetadataFactory();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace ELTE.AEGIS.Metadata
         public MetadataCollection(IDictionary<String, Object> source, IMetadataFactory factory)
             : base(source) 
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<MetadataFactory>();
+            _factory = factory ?? new MetadataFactory();
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Metadata
         public MetadataCollection(IMetadataCollection source, IMetadataFactory factory)
             : base(source)
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<MetadataFactory>();
+            _factory = factory ?? new MetadataFactory();
         }
 
         #endregion

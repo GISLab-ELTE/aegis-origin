@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralGeometryFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -43,15 +43,25 @@ namespace ELTE.AEGIS.Geometry
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpectralGeometryFactory"/> class.
+        /// Initializes a new instance of the <see cref="SpectralGeometryFactory" /> class.
         /// </summary>
         /// <param name="geometryFactory">The geometry factory.</param>
-        /// <exception cref="System.ArgumentNullException">The geometry factory is null.</exception>
+        /// <param name="rasterFactory">The raster factory.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The geometry factory is null.
+        /// or
+        /// The raster factory is null.
+        /// </exception>
         public SpectralGeometryFactory(IGeometryFactory geometryFactory, IRasterFactory rasterFactory) 
-            : base(geometryFactory ?? Factory.DefaultInstance<IGeometryFactory>(), rasterFactory ?? Factory.DefaultInstance<RasterFactory>())
+            : base(geometryFactory, rasterFactory)
         {
-            _geometryFactory = geometryFactory ?? Factory.DefaultInstance<IGeometryFactory>();
-            _rasterFactory = rasterFactory ?? Factory.DefaultInstance<IRasterFactory>();
+            if (geometryFactory == null)
+                throw new ArgumentNullException("geometryFactory", "The geometry factory is null.");
+            if (rasterFactory == null)
+                throw new ArgumentNullException("rasterFactory", "The raster factory is null.");
+
+            _geometryFactory = geometryFactory ?? new GeometryFactory();
+            _rasterFactory = rasterFactory ?? new RasterFactory();
         }
 
         #endregion

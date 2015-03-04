@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -795,7 +795,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         public GeometryGraph(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
-            : this(new GeometryGraphFactory(referenceSystem == null ? AEGIS.Factory.DefaultInstance<GeometryFactory>() : AEGIS.Factory.GetInstance<GeometryFactory>(referenceSystem)), metadata, vertexEqualityComparer, edgeEqualityComparer)
+            : this(new GeometryGraphFactory(new GeometryFactory(referenceSystem)), metadata, vertexEqualityComparer, edgeEqualityComparer)
         {
         }
 
@@ -818,7 +818,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="metadata">The metadata.</param>
         public GeometryGraph(IGeometryGraphFactory factory, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<GeometryGraphFactory>();
+            _factory = factory ?? new GeometryGraphFactory(new GeometryFactory());
             _metadata = _factory.GetFactory<IGeometryFactory>().CreateMetadata(metadata);
 
             _envelope = null;

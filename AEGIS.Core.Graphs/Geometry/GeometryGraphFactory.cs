@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GeometryGraphFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -35,9 +35,13 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="GeometryGraphFactory" /> class.
         /// </summary>
         /// <param name="geometryFactory">The geometry factory.</param>
-        public GeometryGraphFactory(IGeometryFactory geometryFactory) : base(geometryFactory ?? Factory.DefaultInstance<IGeometryFactory>())
+        /// <exception cref="System.ArgumentNullException">The geometry factory is null.</exception>
+        public GeometryGraphFactory(IGeometryFactory geometryFactory) : base(geometryFactory)
         {
-            _geometryFactory = geometryFactory ?? Factory.DefaultInstance<IGeometryFactory>();
+            if (geometryFactory == null)
+                throw new ArgumentNullException("geometryFactory", "The geometry factory is null.");
+
+            _geometryFactory = geometryFactory;
         }
 
         #endregion

@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace ELTE.AEGIS.Geometry
         {
             PrecisionModel = precisionModel ?? PrecisionModel.Default;
             ReferenceSystem = referenceSystem;
-            _metadataFactory = Factory.DefaultInstance<IMetadataFactory>();
+            _metadataFactory = new MetadataFactory();
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace ELTE.AEGIS.Geometry
         {
             PrecisionModel = precisionModel ?? PrecisionModel.Default;
             ReferenceSystem = referenceSystem;
-            _metadataFactory = metadataFactory ?? Factory.DefaultInstance<IMetadataFactory>();
+            _metadataFactory = metadataFactory ?? new MetadataFactory();
         }
 
         #endregion

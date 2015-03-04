@@ -173,7 +173,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="metadata">The metadata.</param>
         protected Geometry(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
         {
-            _factory = referenceSystem == null ? AEGIS.Factory.DefaultInstance<GeometryFactory>() : AEGIS.Factory.GetInstance<GeometryFactory>(referenceSystem);
+            _factory = new GeometryFactory(referenceSystem);
             _metadata = _factory.CreateMetadata(metadata);
 
             _envelope = null;
@@ -187,7 +187,7 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="metadata">The metadata.</param>
         protected Geometry(IGeometryFactory factory, IDictionary<String, Object> metadata)
         {
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<GeometryFactory>();
+            _factory = factory ?? new GeometryFactory();
             _metadata = _factory.CreateMetadata(metadata);
 
             _envelope = null;

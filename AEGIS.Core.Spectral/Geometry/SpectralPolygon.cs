@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralPolygon.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Raster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -285,7 +286,7 @@ namespace ELTE.AEGIS.Geometry
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
 
-            _factory = referenceSystem == null ? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>() : AEGIS.Factory.GetInstance<SpectralGeometryFactory>(referenceSystem);
+            _factory = new SpectralGeometryFactory(new GeometryFactory(referenceSystem), new RasterFactory());
 
             Raster = raster;
             Presentation = presentation;
@@ -317,7 +318,7 @@ namespace ELTE.AEGIS.Geometry
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
 
-            _factory = factory ?? AEGIS.Factory.DefaultInstance<SpectralGeometryFactory>();
+            _factory = factory ?? new SpectralGeometryFactory(new GeometryFactory(), new RasterFactory());
 
             Raster = raster;
             Presentation = presentation;

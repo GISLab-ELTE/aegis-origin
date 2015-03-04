@@ -419,10 +419,8 @@ namespace ELTE.AEGIS.Operations.Geometry
         {
             IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
 
-            if (factory == null)
-                return Factory.DefaultInstance<IGeometryOperatorFactory>().Buffer;
-
-            return factory.Buffer;
+            // TODO: create buffer operator
+            return null;
         }
 
         /// <summary>
@@ -449,10 +447,8 @@ namespace ELTE.AEGIS.Operations.Geometry
         { 
             IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
 
-            if (factory == null)
-                return Factory.DefaultInstance<IGeometryOperatorFactory>().Measure;
-
-            return factory.Measure;
+            // TODO: create measure operator
+            return null;
         }
 
         /// <summary>
