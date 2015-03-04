@@ -1,4 +1,4 @@
-﻿/// <copyright file="ContainerTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="ConcurrentContainerTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -22,17 +22,17 @@ using System;
 namespace ELTE.AEGIS.Tests.Management.InversionOfControl
 {
     /// <summary>
-    /// Test fixture for the <see cref="Container" /> class.
+    /// Test fixture for the <see cref="ConcurrentContainer" /> class.
     /// </summary>
     [TestFixture]
-    public class ContainerTest
+    public class ConcurrentContainerTest
     {
         #region Private fields
 
         /// <summary>
         /// The container.
         /// </summary>
-        private Container _container;
+        private ConcurrentContainer _container;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         [SetUp]
         public void SetUp()
         {
-            _container = new Container();
+            _container = new ConcurrentContainer();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="Register" /> method.
         /// </summary>
         [Test]
-        public void ContainerRegisterTest()
+        public void ConcurrentContainerRegisterTest()
         {
             // registration by type
 
@@ -147,7 +147,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="RegisterInstance" /> method.
         /// </summary>
         [Test]
-        public void ContainerRegisterInstanceTest()
+        public void ConcurrentContainerRegisterInstanceTest()
         {
             // registration by type
 
@@ -230,7 +230,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="Resolve" /> method.
         /// </summary>
         [Test]
-        public void ContainerResolveTest()
+        public void ConcurrentContainerResolveTest()
         {
             // unnamed registration
 
@@ -334,7 +334,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="ResolveInstance" /> method.
         /// </summary>
         [Test]
-        public void ContainerResolveInstanceTest()
+        public void ConcurrentContainerResolveInstanceTest()
         {
             // unnamed registration
 
@@ -396,7 +396,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="TryResolve" /> method.
         /// </summary>
         [Test]
-        public void ContainerTryResolveTest()
+        public void ConcurrentContainerTryResolveTest()
         {
             // unnamed registration
 
@@ -449,7 +449,7 @@ namespace ELTE.AEGIS.Tests.Management.InversionOfControl
         /// Tests the <see cref="TryResolveInstance" /> method.
         /// </summary>
         [Test]
-        public void ContainerTryResolveInstanceTest()
+        public void ConcurrentContainerTryResolveInstanceTest()
         {
             // unnamed registration
 

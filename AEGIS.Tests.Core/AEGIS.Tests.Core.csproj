@@ -62,6 +62,7 @@
     <Compile Include="EnvelopeTest.cs" />
     <Compile Include="Indices\RTrees\RStarTreeTest.cs" />
     <Compile Include="Indices\RTrees\RTreeTest.cs" />
+    <Compile Include="Management\InversionOfControl\ConcurrentContainerTest.cs" />
     <Compile Include="Management\InversionOfControl\ContainerTest.cs" />
     <Compile Include="PrecisionModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

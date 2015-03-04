@@ -82,6 +82,7 @@
     <Compile Include="Indices\RTrees\RStarTree.cs" />
     <Compile Include="Indices\RTrees\RTree.cs" />
     <Compile Include="Management\Attributes\IdentifiedObjectInstanceAttribute.cs" />
+    <Compile Include="Management\InversionOfControl\ConcurrentContainer.cs" />
     <Compile Include="Metadata\MetadataCollection.cs" />
     <Compile Include="Metadata\MetadataFactory.cs" />
     <Compile Include="Collections\SearchTree\AvlTree.cs" />
