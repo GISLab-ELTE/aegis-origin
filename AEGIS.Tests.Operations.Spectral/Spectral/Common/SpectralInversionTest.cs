@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralInversionTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,11 +13,13 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spectral;
 using ELTE.AEGIS.Operations.Spectral.Common;
-using NUnit.Framework;
+using ELTE.AEGIS.Raster;
 using Moq;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 {
     /// <summary>
-    /// Test fixture for the <see cref="SpectralInversion"/> class.
+    /// Test fixture for the <see cref="SpectralInversion" /> class.
     /// </summary>
     [TestFixture]
     public class SpectralInversionTest
@@ -48,7 +50,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         public void SetUp()
         {
             _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
-            _rasterMock.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
+            _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
@@ -68,14 +70,16 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         #region Test methods
 
         /// <summary>
-        /// Test case for operation execution.
+        /// Tests operation execution.
         /// </summary>
         [Test]
         public void SpectralInversionExecuteTest()
         {
+            IGeometryFactory factory = new GeometryFactory();
+
             // integer values
 
-            SpectralInversion operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
+            SpectralInversion operation = new SpectralInversion(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -97,7 +101,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.BandIndex, 0);
 
-            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new SpectralInversion(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -117,7 +121,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
 
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
-            operation = new SpectralInversion(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
+            operation = new SpectralInversion(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)

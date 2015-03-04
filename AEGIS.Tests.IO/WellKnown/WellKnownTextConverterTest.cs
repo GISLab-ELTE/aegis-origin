@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.IO.WellKnown;
 using ELTE.AEGIS.Reference;
 using NUnit.Framework;
@@ -49,7 +50,7 @@ namespace ELTE.AEGIS.Tests.IO.WellKnown
         [SetUp]
         public void SetUp()
         {
-            _factory = Factory.DefaultInstance<IGeometryFactory>();
+            _factory = new GeometryFactory();
 
             _geometries = new IGeometry[]
             {

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GaussianBlurFilterTransformationTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,10 +13,12 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spectral;
 using ELTE.AEGIS.Operations.Spectral.Filtering;
+using ELTE.AEGIS.Raster;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -26,7 +28,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for the <see cref="GaussianBlurFilterTransformation"/> class.
+    /// Test fixture for the <see cref="GaussianBlurFilterTransformation" /> class.
     /// </summary>
     [TestFixture]
     public class GaussianBlurFilterTransformationTest
@@ -49,7 +51,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         public void SetUp()
         {
             _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
-            _rasterMock.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
+            _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
@@ -73,14 +75,16 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         #region Test methods
 
         /// <summary>
-        /// Test method for operation execution.
+        /// Tests operation execution.
         /// </summary>
         [Test]
         public void GaussianBlurFilterTransformationExecuteTest()
         {
+            IGeometryFactory factory = new GeometryFactory();
+
             // integer values with default parameters
 
-            GaussianBlurFilterTransformation operation = new GaussianBlurFilterTransformation(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
+            GaussianBlurFilterTransformation operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -101,7 +105,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.FilterRadius, 3);
 
-            operation = new GaussianBlurFilterTransformation(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -122,7 +126,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.BandIndex, 1);
 
-            operation = new GaussianBlurFilterTransformation(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -139,7 +143,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
-            operation = new GaussianBlurFilterTransformation(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), null);
+            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="AStarAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -34,11 +34,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         #region Private fields
 
         /// <summary>
-        /// The mock of the reference system.
-        /// </summary>
-        private Mock<IReferenceSystem> _referenceSystemMock;
-
-        /// <summary>
         /// The source graph.
         /// </summary>
         private IGeometryGraph _sourceGraph;
@@ -69,9 +64,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         [SetUp]
         public void SetUp()
         {
-            _referenceSystemMock = new Mock<IReferenceSystem>(MockBehavior.Strict);
+            IGeometryFactory factory = new GeometryFactory();
 
-            _sourceGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
+            _sourceGraph = factory.CreateNetwork();
 
             // vertices
             IGraphVertex vertex1 = _sourceGraph.AddVertex(new Coordinate(0, 0));
@@ -108,7 +103,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
             _targetVertex = vertex5;
 
             // result graph
-            _resultGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
+            _resultGraph = factory.CreateNetwork();
 
             // vertices
             vertex1 = _resultGraph.AddVertex(new Coordinate(0, 0), CreateDistanceMetadata(0));
@@ -127,7 +122,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.ShortestPath
         #region Test methods
 
         /// <summary>
-        /// Test case for operation execution.
+        /// Tests operation execution.
         /// </summary>
         [Test]
         public void AStarAlgorithmExecuteTest()

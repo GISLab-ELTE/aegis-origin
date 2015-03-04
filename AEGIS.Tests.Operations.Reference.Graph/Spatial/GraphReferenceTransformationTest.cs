@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spatial;
 using ELTE.AEGIS.Reference;
@@ -39,13 +40,13 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
         [Test]
         public void GraphReferenceTransformationExecuteTest()
         {
-            // test case 1: with metadata
+            // with metadata
 
             TestExecuteForReferenceSystems(true);
             TestExecuteForGraphs(true);
 
 
-            // test case 2: without metadata
+            // without metadata
 
             TestExecuteForReferenceSystems(false);
             TestExecuteForGraphs(false);
@@ -56,16 +57,16 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
         #region Private methods
 
         /// <summary>
-        /// Test execution for multiple reference systems.
+        /// Tests execution for multiple reference systems.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
         private void TestExecuteForReferenceSystems(Boolean metadataPreservation)
         {
             Coordinate sourceCoordinate = new Coordinate(10, 10);
-            IGeometryGraph sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph(new Coordinate[] { sourceCoordinate });
+            IGeometryGraph sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph(new Coordinate[] { sourceCoordinate });
 
 
-            // test case 1: projected to projected
+            // projected to projected
 
             GeoCoordinate sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Reverse(sourceCoordinate);
             GeoCoordinate expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
@@ -85,14 +86,14 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(sourceGraph.Metadata, resultGraph.Metadata);
 
 
-            // test case 2: geographic to projected
+            // geographic to projected
 
             sourceGeoCoordinate = new GeoCoordinate(Angle.FromDegree(45), Angle.FromDegree(45));
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
             expectedCoordinate = ProjectedCoordinateReferenceSystems.WGS84_WorldMercator.Projection.Forward(expectedGeoCoordinate);
 
             sourceCoordinate = new Coordinate(45, 45);
-            sourceGraph = Factory.GetInstance<IGeometryFactory>(Geographic2DCoordinateReferenceSystems.HD72).CreateGraph(new Coordinate[] { sourceCoordinate });
+            sourceGraph = new GeometryFactory(Geographic2DCoordinateReferenceSystems.HD72).CreateGraph(new Coordinate[] { sourceCoordinate });
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -105,13 +106,13 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(expectedCoordinate, resultGraph.Vertices[0].Coordinate);
 
 
-            // test case 3: projected to geographic
+            // projected to geographic
 
             sourceCoordinate = new Coordinate(10, 10);
             sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Reverse(sourceCoordinate);
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
 
-            sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph(new Coordinate[] { sourceCoordinate });
+            sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph(new Coordinate[] { sourceCoordinate });
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, Geographic2DCoordinateReferenceSystems.WGS84);
@@ -125,14 +126,14 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(expectedGeoCoordinate.Longitude.GetValue(UnitsOfMeasurement.Degree), resultGraph.Vertices[0].Coordinate.Y);
 
 
-            // test case 4: projected to projected (reverse)
+            // projected to projected (reverse)
 
             sourceCoordinate = new Coordinate(10, 10);
             sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.WGS84_WorldMercator.Projection.Reverse(sourceCoordinate);
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Reverse(sourceGeoCoordinate);
             expectedCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Forward(expectedGeoCoordinate);
 
-            sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreateGraph(new Coordinate[] { sourceCoordinate });
+            sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreateGraph(new Coordinate[] { sourceCoordinate });
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.HD72_EOV);
@@ -145,24 +146,9 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(expectedCoordinate, resultGraph.Vertices[0].Coordinate);
 
 
-            // test case 5: same reference system
+            // same reference system
 
-            sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreateGraph(new Coordinate[] { sourceCoordinate });
-
-            parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-
-            transformation = new GraphReferenceTransformation(sourceGraph, parameters);
-            transformation.Execute();
-
-            resultGraph = transformation.Result as IGeometryGraph;
-
-            Assert.AreEqual(sourceGraph.Vertices[0].Coordinate, resultGraph.Vertices[0].Coordinate);
-
-
-            // test case 6: no source reference system
-
-            sourceGraph = Factory.DefaultInstance<IGeometryFactory>().CreateGraph(new Coordinate[] { sourceCoordinate });
+            sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreateGraph(new Coordinate[] { sourceCoordinate });
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -175,7 +161,22 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(sourceGraph.Vertices[0].Coordinate, resultGraph.Vertices[0].Coordinate);
 
 
-            // test case 7: no target reference system
+            // no source reference system
+
+            sourceGraph = new GeometryFactory().CreateGraph(new Coordinate[] { sourceCoordinate });
+
+            parameters = new Dictionary<OperationParameter, Object>();
+            parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
+
+            transformation = new GraphReferenceTransformation(sourceGraph, parameters);
+            transformation.Execute();
+
+            resultGraph = transformation.Result as IGeometryGraph;
+
+            Assert.AreEqual(sourceGraph.Vertices[0].Coordinate, resultGraph.Vertices[0].Coordinate);
+
+
+            // no target reference system
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, null);
@@ -184,14 +185,14 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
         }
 
         /// <summary>
-        /// Test execution for multiple graphs.
+        /// Tests execution for multiple graphs.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
         private void TestExecuteForGraphs(Boolean metadataPreservation)
         {
-            // test case 1: empty graph
+            // empty graph
 
-            IGeometryGraph sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph();
+            IGeometryGraph sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph();
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -207,11 +208,11 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             Assert.AreEqual(sourceGraph.Metadata, resultGraph.Metadata);
 
 
-            // test cas 2: graph with points and edges
+            // graph with points and edges
 
             Coordinate[] coordinates = new Coordinate[] { new Coordinate(10, 10), new Coordinate(20, 20), new Coordinate(30, 30) };
 
-            sourceGraph = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph();
+            sourceGraph = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGraph();
             IGraphVertex[] vertices = coordinates.Select(coordinate => sourceGraph.AddVertex(coordinate)).ToArray();
 
             sourceGraph.AddEdge(vertices[0], vertices[1]);
@@ -239,10 +240,10 @@ namespace ELTE.AEGIS.Test.Operations.Spatial
             }
 
 
-            // test case 9: not supported geometry
+            // not supported geometry
 
             Mock<IGeometry> geometryMock = new Mock<IGeometry>(MockBehavior.Loose);
-            geometryMock.Setup(geometry => geometry.Factory).Returns(() => Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV));
+            geometryMock.Setup(geometry => geometry.Factory).Returns(() => new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV));
             geometryMock.Setup(geometry => geometry.ReferenceSystem).Returns(() => ProjectedCoordinateReferenceSystems.HD72_EOV);
 
             transformation = new GraphReferenceTransformation(geometryMock.Object, parameters);

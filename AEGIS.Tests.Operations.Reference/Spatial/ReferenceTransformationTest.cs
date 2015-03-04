@@ -1,9 +1,9 @@
 ﻿/// <copyright file="ReferenceTransformationTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spatial;
 using ELTE.AEGIS.Reference;
@@ -26,7 +27,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spatial
 {
     /// <summary>
-    /// Test fixture for the <see cref="ReferenceTransformation"/> class.
+    /// Test fixture for the <see cref="ReferenceTransformation" /> class.
     /// </summary>
     [TestFixture]
     public class ReferenceTransformationTest
@@ -34,18 +35,18 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         #region Test methods
 
         /// <summary>
-        /// Test for operation execution with metadata.
+        /// Tests operation execution.
         /// </summary>
-        [TestCase]
+        [Test]
         public void ReferenceTransformationExecuteTest()
         {
-            // test case 1: with metadata
+            // with metadata
 
             TestExecuteForReferenceSystems(true);
             TestExecuteForGeometries(true);
 
 
-            // test case 2: without metadata
+            // without metadata
 
             TestExecuteForReferenceSystems(false);
             TestExecuteForGeometries(false);
@@ -56,19 +57,19 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         #region Private methods
 
         /// <summary>
-        /// Test execution for multiple reference systems by using points.
+        /// Tests execution for multiple reference systems by using points.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
         private void TestExecuteForReferenceSystems(Boolean metadataPreservation)
         {
-            // test case 1: projected to projected
+            // projected to projected
 
             Coordinate sourceCoordinate = new Coordinate(10, 10);
             GeoCoordinate sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Reverse(sourceCoordinate);
             GeoCoordinate expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
             Coordinate expectedCoordinate = ProjectedCoordinateReferenceSystems.WGS84_WorldMercator.Projection.Forward(expectedGeoCoordinate);
 
-            IPoint sourcePoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePoint(10, 10);
+            IPoint sourcePoint = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePoint(10, 10);
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -83,13 +84,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(sourcePoint.Metadata, resultPoint.Metadata);
 
 
-            // test case 2: geographic to projected
+            // geographic to projected
 
             sourceGeoCoordinate = new GeoCoordinate(Angle.FromDegree(45), Angle.FromDegree(45));
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
             expectedCoordinate = ProjectedCoordinateReferenceSystems.WGS84_WorldMercator.Projection.Forward(expectedGeoCoordinate);
 
-            sourcePoint = Factory.GetInstance<IGeometryFactory>(Geographic2DCoordinateReferenceSystems.HD72).CreatePoint(45, 45);
+            sourcePoint = new GeometryFactory(Geographic2DCoordinateReferenceSystems.HD72).CreatePoint(45, 45);
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -102,13 +103,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
 
 
-            // test case 3: projected to geographic
+            // projected to geographic
 
             sourceCoordinate = new Coordinate(10, 10);
             sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Reverse(sourceCoordinate);
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Forward(sourceGeoCoordinate);
 
-            sourcePoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePoint(sourceCoordinate);
+            sourcePoint = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePoint(sourceCoordinate);
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, Geographic2DCoordinateReferenceSystems.WGS84);
@@ -122,14 +123,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(expectedGeoCoordinate.Longitude.GetValue(UnitsOfMeasurement.Degree), resultPoint.Coordinate.Y);
 
 
-            // test case 4: projected to projected (reverse)
+            // projected to projected (reverse)
 
             sourceCoordinate = new Coordinate(10, 10);
             sourceGeoCoordinate = ProjectedCoordinateReferenceSystems.WGS84_WorldMercator.Projection.Reverse(sourceCoordinate);
             expectedGeoCoordinate = GeographicTransformations.HD72_WGS84_V1.Reverse(sourceGeoCoordinate);
             expectedCoordinate = ProjectedCoordinateReferenceSystems.HD72_EOV.Projection.Forward(expectedGeoCoordinate);
 
-            sourcePoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreatePoint(10, 10);
+            sourcePoint = new GeometryFactory(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreatePoint(10, 10);
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.HD72_EOV);
@@ -142,24 +143,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(expectedCoordinate, resultPoint.Coordinate);
 
 
-            // test case 5: same reference system
+            // same reference system
 
-            sourcePoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreatePoint(10, 10);
-
-            parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
-
-            transformation = new ReferenceTransformation(sourcePoint, parameters);
-            transformation.Execute();
-
-            resultPoint = transformation.Result as IPoint;
-
-            Assert.AreEqual(sourcePoint.Coordinate, resultPoint.Coordinate);
-
-
-            // test case 6: no source reference system
-
-            sourcePoint = Factory.DefaultInstance<IGeometryFactory>().CreatePoint(10, 10);
+            sourcePoint = new GeometryFactory(ProjectedCoordinateReferenceSystems.WGS84_WorldMercator).CreatePoint(10, 10);
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -172,7 +158,22 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             Assert.AreEqual(sourcePoint.Coordinate, resultPoint.Coordinate);
 
 
-            // test case 7: no target reference system
+            // no source reference system
+
+            sourcePoint = new GeometryFactory().CreatePoint(10, 10);
+
+            parameters = new Dictionary<OperationParameter, Object>();
+            parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
+
+            transformation = new ReferenceTransformation(sourcePoint, parameters);
+            transformation.Execute();
+
+            resultPoint = transformation.Result as IPoint;
+
+            Assert.AreEqual(sourcePoint.Coordinate, resultPoint.Coordinate);
+
+
+            // no target reference system
 
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, null);
@@ -181,7 +182,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         }
 
         /// <summary>
-        /// Test execution for multiple geometry types.
+        /// Tests execution for multiple geometry types.
         /// </summary>
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
         private void TestExecuteForGeometries(Boolean metadataPreservation)
@@ -197,9 +198,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 1: lines
+            // lines
 
-            ILine sourceLine = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLine(sourceCoordinates[0], sourceCoordinates[1]);
+            ILine sourceLine = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLine(sourceCoordinates[0], sourceCoordinates[1]);
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(ReferenceOperationParameters.TargetReferenceSystem, ProjectedCoordinateReferenceSystems.WGS84_WorldMercator);
@@ -221,7 +222,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
 
             // test case 2: line strings
 
-            ILineString sourceLineString = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLineString(sourceCoordinates);
+            ILineString sourceLineString = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLineString(sourceCoordinates);
 
             transformation = new ReferenceTransformation(sourceLineString, parameters);
             transformation.Execute();
@@ -237,9 +238,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 3: linear rings
+            // linear rings
 
-            ILinearRing sourceLinearRing = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLinearRing(sourceCoordinates);
+            ILinearRing sourceLinearRing = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateLinearRing(sourceCoordinates);
 
             transformation = new ReferenceTransformation(sourceLinearRing, parameters);
             transformation.Execute();
@@ -255,9 +256,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 4: polygon without hole
+            // polygon without hole
 
-            IPolygon sourcePolygon = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePolygon(sourceCoordinates);
+            IPolygon sourcePolygon = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePolygon(sourceCoordinates);
 
             transformation = new ReferenceTransformation(sourcePolygon, parameters);
             transformation.Execute();
@@ -273,9 +274,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 5: polygon with hole
+            // polygon with hole
 
-            sourcePolygon = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePolygon(sourceCoordinates, new Coordinate[][] { sourceCoordinates });
+            sourcePolygon = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreatePolygon(sourceCoordinates, new Coordinate[][] { sourceCoordinates });
 
             transformation = new ReferenceTransformation(sourcePolygon, parameters);
             transformation.Execute();
@@ -296,9 +297,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 5: multi point
+            // multi point
 
-            IMultiPoint sourceMultiPoint = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiPoint(sourceCoordinates);
+            IMultiPoint sourceMultiPoint = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiPoint(sourceCoordinates);
 
             transformation = new ReferenceTransformation(sourceMultiPoint, parameters);
             transformation.Execute();
@@ -314,9 +315,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 6: multi linestring
+            // multi linestring
 
-            IMultiLineString sourceMultiLineString = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiLineString(Enumerable.Repeat(sourceLineString, 5));
+            IMultiLineString sourceMultiLineString = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiLineString(Enumerable.Repeat(sourceLineString, 5));
 
             transformation = new ReferenceTransformation(sourceMultiLineString, parameters);
             transformation.Execute();
@@ -332,9 +333,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 7: multi polygon
+            // multi polygon
 
-            IMultiPolygon sourceMultiPolygon = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiPolygon(Enumerable.Repeat(sourcePolygon, 5));
+            IMultiPolygon sourceMultiPolygon = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateMultiPolygon(Enumerable.Repeat(sourcePolygon, 5));
 
             transformation = new ReferenceTransformation(sourceMultiPolygon, parameters);
             transformation.Execute();
@@ -350,9 +351,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 8: geometry collection
+            // geometry collection
 
-            IGeometryCollection<IGeometry> sourceCollection = Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGeometryCollection(new IGeometry[] { sourceLine, sourceLineString, sourceLinearRing, sourcePolygon });
+            IGeometryCollection<IGeometry> sourceCollection = new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV).CreateGeometryCollection(new IGeometry[] { sourceLine, sourceLineString, sourceLinearRing, sourcePolygon });
 
             transformation = new ReferenceTransformation(sourceCollection, parameters);
             transformation.Execute();
@@ -383,10 +384,10 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
             }
 
 
-            // test case 9: not supported geometry
+            // not supported geometry
 
             Mock<IGeometry> geometryMock = new Mock<IGeometry>(MockBehavior.Loose);
-            geometryMock.Setup(geometry => geometry.Factory).Returns(() => Factory.GetInstance<IGeometryFactory>(ProjectedCoordinateReferenceSystems.HD72_EOV));
+            geometryMock.Setup(geometry => geometry.Factory).Returns(() => new GeometryFactory(ProjectedCoordinateReferenceSystems.HD72_EOV));
             geometryMock.Setup(geometry => geometry.ReferenceSystem).Returns(() => ProjectedCoordinateReferenceSystems.HD72_EOV);
 
             transformation = new ReferenceTransformation(geometryMock.Object, parameters);

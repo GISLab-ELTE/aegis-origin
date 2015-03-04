@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralResamplingTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -14,9 +14,11 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Algorithms.Resampling;
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Operations;
 using ELTE.AEGIS.Operations.Spectral;
 using ELTE.AEGIS.Operations.Spectral.Resampling;
+using ELTE.AEGIS.Raster;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -49,7 +51,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
         public void SetUp()
         {
             _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
-            _rasterMock.Setup(raster => raster.Factory).Returns(Factory.DefaultInstance<IRasterFactory>());
+            _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.IsMapped).Returns(false);
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
@@ -79,6 +81,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
         [Test]
         public void SpectralResamplingExecuteTest()
         {
+            IGeometryFactory factory = new GeometryFactory();
+
             // integer values
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
@@ -86,7 +90,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             parameters.Add(SpectralOperationParameters.NumberOfRows, 10);
             parameters.Add(SpectralOperationParameters.NumberOfColumns, 5);
 
-            SpectralResampling operation = new SpectralResampling(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            SpectralResampling operation = new SpectralResampling(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
 
@@ -112,7 +116,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
 
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
-            operation = new SpectralResampling(Factory.DefaultInstance<IGeometryFactory>().CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new SpectralResampling(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             result = operation.Result;

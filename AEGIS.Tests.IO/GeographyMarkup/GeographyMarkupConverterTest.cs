@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Daniel Ballagi</author>
 
+using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.IO.GeographyMarkup;
 using NUnit.Framework;
 using System;
@@ -49,7 +50,7 @@ namespace ELTE.AEGIS.Tests.IO.GeographyMarkup
         [SetUp]
         public void SetUp()
         {
-            _factory = Factory.DefaultInstance<IGeometryFactory>();
+            _factory = new GeometryFactory();
 
             _geometries = new IGeometry[]
             {

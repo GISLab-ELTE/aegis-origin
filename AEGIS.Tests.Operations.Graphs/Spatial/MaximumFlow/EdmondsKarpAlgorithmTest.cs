@@ -1,5 +1,5 @@
 ﻿/// <copyright file="EdmondsKarpAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -34,11 +34,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.MaximumFlow
         #region Private fields
 
         /// <summary>
-        /// The mock of the reference system.
-        /// </summary>
-        private Mock<IReferenceSystem> _referenceSystemMock;
-
-        /// <summary>
         /// The source graph.
         /// </summary>
         private IGeometryGraph _sourceGraph;
@@ -68,11 +63,12 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.MaximumFlow
         [SetUp]
         public void SetUp()
         {
-            _referenceSystemMock = new Mock<IReferenceSystem>(MockBehavior.Strict);
-
             // source: http://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm
 
-            _sourceGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
+            IGeometryFactory factory = new GeometryFactory();
+
+            // source graph
+            _sourceGraph = factory.CreateNetwork();
 
             // vertices
             IGraphVertex vertexA = _sourceGraph.AddVertex(new Coordinate(0, 2));
@@ -114,7 +110,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.MaximumFlow
             _targetVertex = vertexG;
 
             // result graph
-            _resultGraph = Factory.GetInstance<GeometryGraphFactory>(_referenceSystemMock.Object).CreateNetwork();
+            _resultGraph = factory.CreateNetwork();
 
             // vertices
             vertexA = _resultGraph.AddVertex(new Coordinate(0, 2));
@@ -144,7 +140,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.MaximumFlow
         #region Test methods
 
         /// <summary>
-        /// Test case for operation execution.
+        /// Tests operation execution.
         /// </summary>
         [Test]
         public void EdmondsKarpAlgorithmExecuteTest()
