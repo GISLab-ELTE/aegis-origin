@@ -741,16 +741,18 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The resulting raster.</returns>
         protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
         {
+            IRasterFactory factory = _source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>();
+
             if (State == OperationState.Initialized)
             {
-                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(new SpectralTransformationService(this, format,
-                                                                                                                numberOfBands, numberOfRows, numberOfColumns, 
-                                                                                                                radiometricResolutions), 
+                return factory.CreateRaster(new SpectralTransformationService(this, format,
+                                                                              numberOfBands, numberOfRows, numberOfColumns, 
+                                                                              radiometricResolutions), 
                                                                               mapper);
             }
             else
             {
-                return Factory.DefaultInstance<IRasterFactory>().CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+                return factory.CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
             }
         }
 
