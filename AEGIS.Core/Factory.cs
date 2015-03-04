@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Factory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -94,14 +94,10 @@ namespace ELTE.AEGIS
                 _container = new Container();
 
                 _container.Register<IMetadataFactory, MetadataFactory>();
-                _container.Register<MetadataFactory, MetadataFactory>();
                 _container.Register<IGeometryFactory, GeometryFactory>();
-                _container.Register<GeometryFactory, GeometryFactory>();
 
                 _container.RegisterInstance<IMetadataFactory>(metadataFactory);
-                _container.RegisterInstance<MetadataFactory>(metadataFactory);
                 _container.RegisterInstance<IGeometryFactory>(geometryFactory);
-                _container.RegisterInstance<GeometryFactory>(geometryFactory);
 
                 _version = 0;
             }
