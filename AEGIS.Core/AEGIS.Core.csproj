@@ -61,6 +61,7 @@
     <Compile Include="Collections\SearchTree\BTree.cs" />
     <Compile Include="Collections\SparseArray.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="FactoryRegistry.cs" />
     <Compile Include="IBasicGeometry.cs" />
     <Compile Include="IBasicLineString.cs" />
     <Compile Include="IBasicPoint.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="IGeometryMeasureOperator.cs" />
     <Compile Include="IGeometryOperatorFactory.cs" />
     <Compile Include="IGeometryOverlayOperator.cs" />
+    <Compile Include="FactoryContractAttribute.cs" />
     <Compile Include="Management\Attributes\IdentifiedObjectCollectionAttribute.cs" />
     <Compile Include="Management\Attributes\IdentifiedObjectFactoryAttribute.cs" />
     <Compile Include="Management\Attributes\IdentifiedObjectFactoryMethodAttribute.cs" />
