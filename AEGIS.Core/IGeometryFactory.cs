@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IGeometryFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Geometry;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,7 @@ namespace ELTE.AEGIS
     /// <summary>
     /// Defines behavior for factories producing <see cref="IGeometry" /> instances.
     /// </summary>
+    [FactoryContract(Product = typeof(IGeometry), DefaultBehavior = typeof(GeometryFactory))]
     public interface IGeometryFactory : IFactory
     {
         #region Properties
