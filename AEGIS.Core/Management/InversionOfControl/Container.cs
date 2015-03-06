@@ -918,9 +918,9 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// The service does not implement the contract.
         /// </exception>
         /// <exception cref="System.ArgumentException">The service cannot be instantiated based on the specified parameters.</exception>
-        public ContractType Resolve<ContractType>(String name, Object[] parameters)
+        public ContractType Resolve<ContractType>(String name, params Object[] parameters)
         {
-            return (ContractType)Resolve(typeof(ContractType).FullName);
+            return (ContractType)Resolve(typeof(ContractType), name, parameters);
         }
 
         /// <summary>
@@ -937,7 +937,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            return (ContractType)Resolve(typeof(ContractType).FullName, parameters);
+            return (ContractType)Resolve(typeof(ContractType), typeof(ContractType).FullName, parameters);
         }
 
         /// <summary>
@@ -1073,25 +1073,12 @@ namespace ELTE.AEGIS.Management.InversionOfControl
             if (!_typeMapping.ContainsKey(name))
                 throw new InvalidOperationException(MessageServiceIsNotRegistered);
 
-            try
-            {
-                // invoke the specified service using the default contructor
-                ConstructorInfo constructor = _typeMapping[name].Behavior.GetConstructors()[0];
+            Object resolvedInstance;
 
-                // resolve all internal services
-                ParameterInfo[] parameters = constructor.GetParameters();
-                Object[] resolvedParameters = new Object[parameters.Length];
-                for (Int32 paramIndex = 0; paramIndex < parameters.Length; paramIndex++)
-                {
-                    resolvedParameters[paramIndex] = Resolve(parameters[paramIndex].ParameterType);
-                }
+            if (!TryResolve(name, out resolvedInstance))
+                throw new InvalidOperationException(MessageServiceParametersMissing);
 
-                return constructor.Invoke(resolvedParameters);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException(MessageServiceParametersMissing, ex);
-            }
+            return resolvedInstance;
         }
 
         /// <summary>
@@ -1113,40 +1100,12 @@ namespace ELTE.AEGIS.Management.InversionOfControl
             if (!_typeMapping.ContainsKey(name))
                 throw new InvalidOperationException(MessageServiceIsNotRegistered);
 
-            // check all constructors for matching parameters
-            foreach (ConstructorInfo constructor in _typeMapping[name].Behavior.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
-            {
-                ParameterInfo[] constructorParameterInfos = constructor.GetParameters();
-                Object[] constructorParameters = new Object[constructorParameterInfos.Length];
-                Int32 parameterIndex = 0;
+            Object resolvedInstance;
 
-                // check whether the parameter is specified, or can be resolved
-                for (Int32 i = 0; i < constructorParameterInfos.Length; i++)
-                {
-                    if (parameterIndex < parameters.Length &&
-                        (parameters[parameterIndex] == null ||
-                         IsDescendant(constructorParameterInfos[i].ParameterType, parameters[parameterIndex].GetType())))
-                    {
-                        constructorParameters[i] = parameters[parameterIndex];
-                        parameterIndex++;
-                    }
-                    else if (!TryResolve(constructorParameterInfos[i].ParameterType, out constructorParameters[i]))
-                    {
-                        // if not specitied, or it cannot be resolved, try the default value
-                        constructorParameters[i] = constructorParameterInfos[i].ParameterType.IsValueType ? Activator.CreateInstance(constructorParameterInfos[i].ParameterType) : null;
-                    }
-                }
+            if (!TryResolve(name, parameters, out resolvedInstance))
+                throw new ArgumentException(MessageServiceParametersInvalid, "parameters");
 
-                // try to instantiate the service
-                try
-                {
-                    return constructor.Invoke(constructorParameters);
-                }
-                catch { }
-            }
-
-            // if no service has been constructed, the parameters are not valid
-            throw new ArgumentException(MessageServiceParametersInvalid, "parameters");
+            return resolvedInstance;
         }
 
         /// <summary>
@@ -1351,7 +1310,6 @@ namespace ELTE.AEGIS.Management.InversionOfControl
 
                 resolvedInstance = constructor.Invoke(resolvedParameters);
                 return true;
-
             }
             catch
             {
@@ -1379,38 +1337,47 @@ namespace ELTE.AEGIS.Management.InversionOfControl
             if (!_typeMapping.ContainsKey(name))
                 return false;
 
-            Boolean parameterResolveSuccess = true;
-
             // check all constructors for matching parameters
             foreach (ConstructorInfo constructor in _typeMapping[name].Behavior.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
             {
-                ParameterInfo[] constructorParameterInfos = constructor.GetParameters();
-                Object[] constructorParameters = new Object[constructorParameterInfos.Length];
+                ParameterInfo[] constructorParamInfos = constructor.GetParameters();
+                Object[] constructorParams = new Object[constructorParamInfos.Length];
                 Int32 providedParamIndex = 0;
+                Boolean allResolved = true;
 
                 // check whether the parameter is specified, or can be resolved
-                for (Int32 requiredParamIndex = 0; requiredParamIndex < constructorParameterInfos.Length && parameterResolveSuccess; requiredParamIndex++)
+                for (Int32 requiredParamIndex = 0; requiredParamIndex < constructorParamInfos.Length && allResolved; requiredParamIndex++)
                 {
-                    if (parameters != null && (providedParamIndex < parameters.Length && (parameters[providedParamIndex] == null || IsDescendant(constructorParameterInfos[requiredParamIndex].ParameterType, parameters[providedParamIndex].GetType()))))
+                    if (parameters != null && 
+                        providedParamIndex < parameters.Length && (parameters[providedParamIndex] == null || 
+                        IsMatching(parameters[providedParamIndex].GetType(), constructorParamInfos[requiredParamIndex].ParameterType)))
                     {
-                        constructorParameters[requiredParamIndex] = parameters[providedParamIndex];
+                        constructorParams[requiredParamIndex] = parameters[providedParamIndex];
                         providedParamIndex++;
                     }
                     else
                     {
-                        if (!TryResolve(constructorParameterInfos[requiredParamIndex].ParameterType, out constructorParameters[requiredParamIndex]))
+                        if (!TryResolve(constructorParamInfos[requiredParamIndex].ParameterType, out constructorParams[requiredParamIndex]))
                         {
-                            parameterResolveSuccess = false;
+                            allResolved = false;
                         }
                     }
                 }
 
+                // check whether all parameters which required resolving were resolved
+                if (!allResolved)
+                    continue;
+
+                // check whether all parameters were used
+                if (providedParamIndex < parameters.Length)
+                    continue;
+                
                 // try to instantiate the service
                 try
                 {
-                    if (parameterResolveSuccess)
+                    if (allResolved)
                     {
-                        resolvedInstance = constructor.Invoke(constructorParameters);
+                        resolvedInstance = constructor.Invoke(constructorParams);
                         return true;
                     }
                 }
@@ -1569,11 +1536,24 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         #region Protected static methods
 
         /// <summary>
+        /// Determines whether a type matches another type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="otherType">The other type.</param>
+        /// <returns><c>true</c> if the type matches the other type; otherwise, <c>false</c>.</returns>
+        protected static Boolean IsMatching(Type type, Type otherType)
+        {
+            return type.Equals(otherType) || // same types
+                   type.IsSubclassOf(otherType) || type.GetInterfaces().Contains(otherType) || // descendant types
+                   type.GetInterfaces().Contains(typeof(IConvertible)) && otherType.GetInterfaces().Contains(typeof(IConvertible)); // both are convertible
+        }
+
+        /// <summary>
         /// Determines whether the a type a descendant of another type.
         /// </summary>
         /// <param name="baseType">The base type.</param>
         /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the base type is a parent of the other type.</returns>
+        /// <returns><c>true</c> if the base type is a parent of the other type; otherwise, <c>false</c>.</returns>
         protected static Boolean IsDescendant(Type baseType, Type type)
         {
             return type.IsSubclassOf(baseType) || type.GetInterface(baseType.Name) != null;
