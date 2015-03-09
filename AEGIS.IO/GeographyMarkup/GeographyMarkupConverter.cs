@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.IO.GeographyMarkup
         /// <returns>The <see cref="IGeometry" /> representation of the geometry.</returns>
         public static IGeometry ToGeometry(XElement node, IReferenceSystem referenceSystem)
         {
-            return ToGeometry(node, Factory.GetInstance<IGeometryFactory>(referenceSystem));
+            return ToGeometry(node, FactoryRegistry.GetFactory<IGeometryFactory>(referenceSystem));
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace ELTE.AEGIS.IO.GeographyMarkup
                 throw new ArgumentNullException("The geometry node is null.", "node");
 
             if (factory == null)
-                factory = Factory.DefaultInstance<IGeometryFactory>();
+                factory = FactoryRegistry.GetFactory<IGeometryFactory>();
 
             IGeometry resultGeometry = null;
 
@@ -188,7 +188,7 @@ namespace ELTE.AEGIS.IO.GeographyMarkup
         /// <returns>The <see cref="IGeometry" /> representation of the geometry.</returns>
         public static IGeometry ToGeometry(String source, IReferenceSystem referenceSystem)
         {
-            return ToGeometry(source, Factory.GetInstance<IGeometryFactory>(referenceSystem));
+            return ToGeometry(source, FactoryRegistry.GetFactory<IGeometryFactory>(referenceSystem));
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace ELTE.AEGIS.IO.GeographyMarkup
                 throw new ArgumentNullException("The geometry text is null.", "source");
 
             if (factory == null)
-                factory = Factory.DefaultInstance<IGeometryFactory>();
+                factory = FactoryRegistry.GetFactory<IGeometryFactory>();
 
             StringReader sr = new StringReader(source);
             XDocument doc = XDocument.Load(sr);

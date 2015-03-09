@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// </exception>
         public static IGeometry ToGeometry(Byte[] source, IReferenceSystem referenceSystem)
         {
-            return ToGeometry(source, Factory.GetInstance<IGeometryFactory>(referenceSystem));
+            return ToGeometry(source, FactoryRegistry.GetFactory<IGeometryFactory>(referenceSystem));
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace ELTE.AEGIS.IO.WellKnown
                 throw new ArgumentException("The source is empty.", "source");
 
             if (factory == null)
-                factory = Factory.DefaultInstance<IGeometryFactory>();
+                factory = FactoryRegistry.GetFactory<IGeometryFactory>();
 
             try
             {

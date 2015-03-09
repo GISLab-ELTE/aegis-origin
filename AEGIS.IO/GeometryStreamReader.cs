@@ -487,9 +487,9 @@ namespace ELTE.AEGIS.IO
             if (_factory == null)
             {
                 if (_factoryType == null)
-                    _factory = AEGIS.Factory.DefaultInstance<IGeometryFactory>();
+                    _factory = FactoryRegistry.GetFactory<IGeometryFactory>();
                 else
-                    _factory = (IGeometryFactory)AEGIS.Factory.DefaultInstance(_factoryType);
+                    _factory = (IGeometryFactory)FactoryRegistry.GetFactory(_factoryType);
 
             }
             return _factory;
@@ -505,15 +505,15 @@ namespace ELTE.AEGIS.IO
             if (_factory == null)
             {
                 if (_factoryType == null)
-                    _factory = AEGIS.Factory.GetInstance<IGeometryFactory>(referenceSystem);
+                    _factory = FactoryRegistry.GetFactory<IGeometryFactory>();
                 else
-                    _factory = (IGeometryFactory)AEGIS.Factory.GetInstance(_factoryType, referenceSystem);
+                    _factory = (IGeometryFactory)FactoryRegistry.GetFactory(_factoryType, referenceSystem);
 
             }
 
             if (referenceSystem != null && !_factory.ReferenceSystem.Equals(referenceSystem))
             {
-                _factory = (IGeometryFactory)AEGIS.Factory.GetInstance(_factory.GetType(), referenceSystem);
+                _factory = (IGeometryFactory)FactoryRegistry.GetFactory(_factory.GetType(), referenceSystem);
             }
 
             return _factory;

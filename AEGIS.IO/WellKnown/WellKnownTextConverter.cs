@@ -1,5 +1,5 @@
 ﻿/// <copyright file="WellKnownTextConverter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -154,7 +154,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <exception cref="System.IO.InvalidDataException">The content of the text is invalid.</exception>
         public static IGeometry ToGeometry(String text, IReferenceSystem referenceSystem)
         {
-            return ToGeometry(text, Factory.GetInstance<IGeometryFactory>(referenceSystem));
+            return ToGeometry(text, FactoryRegistry.GetFactory<IGeometryFactory>(referenceSystem));
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace ELTE.AEGIS.IO.WellKnown
                 throw new ArgumentException("text", "The text is empty.");
 
             if (factory == null)
-                factory = Factory.DefaultInstance<IGeometryFactory>();
+                factory = FactoryRegistry.GetFactory<IGeometryFactory>(); 
 
             try
             {
