@@ -326,7 +326,7 @@ namespace ELTE.AEGIS
                 if (!overwrite && _container.IsRegistered(factoryContract))
                     return;
 
-                Attribute factoryContractAttribute = factoryContract.GetCustomAttribute(typeof(FactoryContractAttribute), false);
+                FactoryContractAttribute factoryContractAttribute = factoryContract.GetCustomAttribute(typeof(FactoryContractAttribute), false) as FactoryContractAttribute;
 
                 // the contract can only be registered if the attribute exists
                 if (factoryContractAttribute != null)
@@ -337,10 +337,10 @@ namespace ELTE.AEGIS
                         _container.UnregisterInstance(factoryContract);
                     }
 
-                    _container.Register(factoryContract, (factoryContractAttribute as FactoryContractAttribute).DefaultBehavior, true);
-                    _container.Register((factoryContractAttribute as FactoryContractAttribute).Product.FullName,
+                    _container.Register(factoryContract, factoryContractAttribute.DefaultBehavior, true);
+                    _container.Register(factoryContractAttribute.Product.FullName,
                                         factoryContract, 
-                                        (factoryContractAttribute as FactoryContractAttribute).DefaultBehavior, true);
+                                        factoryContractAttribute.DefaultBehavior, true);
                 }
             }
 
@@ -407,6 +407,11 @@ namespace ELTE.AEGIS
         private const String FactoryContractIsNull = "The factory contract is null.";
 
         /// <summary>
+        /// Exception message in case the factory is null. This field is constant.
+        /// </summary>
+        private const String FactoryIsNull = "The factory is null.";
+
+        /// <summary>
         /// Exception message in case the specified factory has no default behavior. This field is constant.
         /// </summary>
         private const String NoDefaultBehavior = "The specified factory has no default behavior.";
@@ -466,6 +471,34 @@ namespace ELTE.AEGIS
         #endregion
 
         #region Public static methods
+
+        /// <summary>
+        /// Returns the contract of the specified factory.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
+        /// <returns>The contract of the specfied factory.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        public static Type GetContract(IFactory factory)
+        {
+            if (factory == null)
+                throw new ArgumentNullException("factory", FactoryIsNull);
+
+            return GetContract(factory.GetType());
+        }
+
+        /// <summary>
+        /// Returns the contract of the specified factory behavior.
+        /// </summary>
+        /// <param name="factoryBehavior">The factory behavior.</param>
+        /// <returns>The contract of the specfied factory behavior.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory behavior is null.</exception>
+        public static Type GetContract(Type factoryBehavior)
+        {
+            if (factoryBehavior == null)
+                throw new ArgumentNullException("factoryBehavior", FactoryBehaviorIsNull);
+
+            return factoryBehavior.GetInterfaces().FirstOrDefault(inter => inter.GetInterfaces().Contains(typeof(IFactory)));
+        }
 
         /// <summary>
         /// Returns the default factory behavior for the specified factory contract.

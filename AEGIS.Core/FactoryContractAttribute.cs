@@ -20,7 +20,7 @@ namespace ELTE.AEGIS
     /// <summary>
     /// Indicates that the interface is a factory contract.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Interface, AllowMultiple = true, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
     public class FactoryContractAttribute : Attribute
     {
         #region Public properties
