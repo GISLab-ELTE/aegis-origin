@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HalfedgeGraph.Face.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -326,8 +326,8 @@ namespace ELTE.AEGIS.Topology
             /// <returns>The polygon geometry representing the face.</returns>
             public IPolygon ToGeometry(IGeometryFactory factory = null)
             {
-                if (factory == null) 
-                    factory = Factory.DefaultInstance<IGeometryFactory>();
+                if (factory == null)
+                    factory = FactoryRegistry.GetFactory<IGeometryFactory>();
 
                 return factory.CreatePolygon(Vertices.Select(vertex => vertex.Position),
                                              Holes.Select(hole => hole.Vertices.Select(vertex => vertex.Position).Reverse()));
