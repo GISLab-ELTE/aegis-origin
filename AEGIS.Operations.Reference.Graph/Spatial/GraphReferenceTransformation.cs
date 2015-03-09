@@ -83,7 +83,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             }
 
             if (_factory == null)
-                _factory = (IGeometryFactory)Factory.GetInstance(_source.Factory, _targetReferenceSystem);
+                _factory = (IGeometryFactory)FactoryRegistry.GetFactory(FactoryRegistry.GetContract(_source.Factory), _targetReferenceSystem);
         }
 
         /// <summary>

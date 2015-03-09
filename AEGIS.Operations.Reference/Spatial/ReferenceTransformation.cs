@@ -19,6 +19,7 @@ using ELTE.AEGIS.Reference;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace ELTE.AEGIS.Operations.Spatial
 {
@@ -83,7 +84,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             }
 
             if (_factory == null)
-                _factory = (IGeometryFactory)Factory.GetInstance(_source.Factory, _targetReferenceSystem);
+                _factory = (IGeometryFactory)FactoryRegistry.GetFactory(FactoryRegistry.GetContract(_source.Factory), _targetReferenceSystem);
         }
 
         /// <summary>
