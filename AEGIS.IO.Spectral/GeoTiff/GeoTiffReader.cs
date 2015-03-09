@@ -324,7 +324,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // compute with model tie points
-            if (modelTiePointsArray != null && modelTiePointsArray.Length > 6 || (modelTiePointsArray.Length == 6 && modelPixelScaleArray.Length == 3))
+            if (modelTiePointsArray != null && (modelTiePointsArray.Length > 6 || (modelTiePointsArray.Length == 6 && modelPixelScaleArray.Length == 3)))
             {
                 if (modelTiePointsArray.Length % 6 != 0)
                     throw new InvalidDataException("Model tiepoints are in invalid format.");
