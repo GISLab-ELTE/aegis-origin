@@ -25,6 +25,9 @@ namespace ELTE.AEGIS.Geometry
     {
         #region Private fields
 
+        /// <summary>
+        /// The geometry factory. This field is read-only.
+        /// </summary>
         private readonly IGeometryFactory _geometryFactory;
 
         #endregion
@@ -346,19 +349,6 @@ namespace ELTE.AEGIS.Geometry
             }
 
             return graph;
-        }
-
-        #endregion
-
-        #region Protected Factory methods
-
-        /// <summary>
-        /// Gets the product type of the factory.
-        /// </summary>
-        /// <returns>The product type of the factory.</returns>
-        protected override Type GetProductType()
-        {
-            return typeof(IGeometryGraph);
         }
 
         #endregion

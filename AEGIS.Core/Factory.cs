@@ -19,6 +19,7 @@ using ELTE.AEGIS.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace ELTE.AEGIS
@@ -32,328 +33,51 @@ namespace ELTE.AEGIS
     /// </remarks>
     public abstract class Factory : IFactory
     {
-        #region Private types
+        #region Private constant fields
 
         /// <summary>
-        /// Represents the implementation of factory management operations.
+        /// Exception message in case the factory behavior is null. This field is constant.
         /// </summary>
-        /// <remarks>
-        /// This type realizes the services which <see cref="Factory" /> provides.
-        /// </remarks>
-        private class FactoryImplementation : IDisposable
-        {
-            #region Singleton pattern
+        private const String MessageFactoryBehaviorIsNull = "The factory behavior is null.";
 
-            private static readonly Lazy<FactoryImplementation> _instance;
+        /// <summary>
+        /// Exception message in case the factory contract is null. This field is constant.
+        /// </summary>
+        private const String MessageFactoryContractIsNull = "The factory contract is null.";
 
-            /// <summary>
-            /// Gets the instance of the factory management implementation.
-            /// </summary>
-            /// <value>The instance of the factory management implementation.</value>
-            public static FactoryImplementation Instance { get { return _instance.Value; } }
+        /// <summary>
+        /// Exception message in case the factory contract is alread ensured. This field is constant.
+        /// </summary>
+        private const String MessageFactoryIsEnsured = "The factory contract is already ensured.";
 
-            #endregion
+        /// <summary>
+        /// Exception message in case the factory behavior does not implement the contract. This field is constant.
+        /// </summary>
+        private const String MessageFactoryNotImplementContract = "The factory behavior does not implement the contract.";
 
-            #region Private fields
-
-            /// <summary>
-            /// The IoC container.
-            /// </summary>
-            private readonly Container _container;
-
-            /// <summary>
-            /// The version of the factory.
-            /// </summary>
-            private Int32 _version;
-
-            /// <summary>
-            /// A value indicating whether this instance is disposed.
-            /// </summary>
-            private Boolean _disposed;
-
-            #endregion
-
-            #region Constructors and destructor
-
-            /// <summary>
-            /// Initializes the <see cref="FactoryImplementation" /> class.
-            /// </summary>
-            static FactoryImplementation()
-            {
-                _instance = new Lazy<FactoryImplementation>(() => new FactoryImplementation());
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="FactoryImplementation" /> class.
-            /// </summary>
-            private FactoryImplementation()
-            {
-                MetadataFactory metadataFactory = new MetadataFactory();
-                GeometryFactory geometryFactory = new GeometryFactory(PrecisionModel.Default, null, metadataFactory);
-
-                _container = new Container();
-
-                _container.Register<IMetadataFactory, MetadataFactory>();
-                _container.Register<IGeometryFactory, GeometryFactory>();
-
-                _container.RegisterInstance<IMetadataFactory>(metadataFactory);
-                _container.RegisterInstance<IGeometryFactory>(geometryFactory);
-
-                _version = 0;
-            }
-
-            /// <summary>
-            /// Finalizes an instance of the <see cref="FactoryImplementation" /> class.
-            /// </summary>
-            ~FactoryImplementation()
-            {
-                Dispose(false);
-            }
-
-            #endregion
-
-            #region Public methods
-
-            /// <summary>
-            /// Returns the default instance for a specified factory.
-            /// </summary>
-            /// <param name="factoryType">The type of the factory.</param>
-            /// <returns>The default registered instance for the factory or the default type value if the factory is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
-            public Object DefaultInstance(Type factoryType)
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                try
-                {
-                    Object defaultInstance;
-                    Int32 version, nextVersion;
-
-                    do
-                    {
-                        version = _version;
-                        nextVersion = version;
-
-                        if (!_container.IsRegisteredInstance(factoryType))
-                        {
-                            // if the instance is not registered
-                            if (!_container.IsRegistered(factoryType))
-                            {
-                                // if the contract is not registered
-                                if (factoryType.IsInterface || factoryType.IsAbstract)
-                                {
-                                    // if the contract cannot be resolved
-                                    defaultInstance = factoryType.IsValueType ? Activator.CreateInstance(factoryType) : null;
-                                    continue;
-                                }
-
-                                // if the contract is not registered, and can be registered, it should be
-                                _container.Register(factoryType, factoryType);
-
-                                // also, all interfaces that are not registered, should be
-                                foreach(Type interfaceType in factoryType.GetInterfaces())
-                                {
-                                    if (!_container.IsRegistered(interfaceType))
-                                        _container.Register(interfaceType, factoryType);
-                                }
-
-                                Interlocked.Increment(ref _version);
-                                nextVersion++;
-                            }
-
-                            _container.RegisterInstance(factoryType, _container.Resolve(factoryType));
-                            // the instance is registered
-                        }
-
-                        defaultInstance = _container.ResolveInstance(factoryType);
-
-                    } while (nextVersion != Interlocked.CompareExchange(ref _version, _version, nextVersion));
-
-                    // the registered instance is resolved
-                    return defaultInstance;
-                }
-                catch
-                {
-                    // either the type of the instance cannot be registered
-                    return factoryType.IsValueType ? Activator.CreateInstance(factoryType) : null;
-                }
-            }
-
-            /// <summary>
-            /// Returns the instance of the factory with the specified parameters.
-            /// </summary>
-            /// <param name="factoryType">The type of the factory.</param>
-            /// <param name="parameters">The parameters.</param>
-            /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
-            public Object GetInstance(Type factoryType, params Object[] parameters)
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                try
-                {
-                    Object defaultInstance;
-                    Int32 version, nextVersion;
-
-                    do
-                    {
-                        version = _version;
-                        nextVersion = version;
-
-                        if (!_container.IsRegistered(factoryType))
-                        {
-                            if (factoryType.IsInterface || factoryType.IsAbstract)
-                            {
-                                // if the contract cannot be resolved
-                                defaultInstance = factoryType.IsValueType ? Activator.CreateInstance(factoryType) : null;
-                                continue;
-                            }
-
-                            _container.Register(factoryType, factoryType);
-                            // if the contract is not registered, and can be registered, it should be
-
-                            Interlocked.Increment(ref _version);
-                            nextVersion++;
-                        }
-
-                        defaultInstance = _container.Resolve(factoryType, parameters);
-
-                    } while (nextVersion != Interlocked.CompareExchange(ref _version, _version, nextVersion));
-
-                    return defaultInstance;
-                }
-                catch
-                {
-                    // either the type of the instance cannot be registered
-                    return factoryType.IsValueType ? Activator.CreateInstance(factoryType) : null;
-                }
-            }
-
-            /// <summary>
-            /// Determines whether the specified factory has a default instance.
-            /// </summary>
-            /// <param name="factoryType">The type of the factory.</param>
-            /// <returns><c>true</c> if the factory has a registered default instance; otherwise, <c>false</c>.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
-            public Boolean HasDefaultInstance(Type factoryType)
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                Boolean isRegistered;
-                Int32 version;
-
-                do
-                {
-                    version = _version;
-                    isRegistered = _container.IsRegistered(factoryType);
-
-                } while (version != Interlocked.CompareExchange(ref _version, version, version));
-
-                return isRegistered;
-            }
-
-            /// <summary>
-            /// Registers the specified factory type.
-            /// </summary>
-            /// <param name="factoryType">The type of the factory.</param>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
-            public void Register(Type factoryType)
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                Int32 version;
-
-                foreach (Type contractType in factoryType.GetInterfaces())
-                {
-                    if (!contractType.GetInterfaces().Contains(typeof(IFactory)))
-                        continue;
-                    do
-                    {
-                        version = _version;
-                        _container.Register(contractType, factoryType, true);
-
-                    } while (version != Interlocked.CompareExchange(ref _version, version, version));
-                }
-            }
-
-            /// <summary>
-            /// Registers the specified factory instance.
-            /// </summary>
-            /// <param name="factoryInstance">The factory instance.</param>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
-            public void RegisterInstance(IFactory factoryInstance)
-            {
-                if (_disposed)
-                    throw new ObjectDisposedException(GetType().FullName);
-
-                Int32 version;
-
-                foreach (Type contractType in factoryInstance.GetType().GetInterfaces())
-                {
-                    if (!contractType.GetInterfaces().Contains(typeof(IFactory)))
-                        continue;
-                    do
-                    {
-                        version = _version;
-                        _container.RegisterInstance(contractType, factoryInstance, true);
-
-                    } while (version != Interlocked.CompareExchange(ref _version, version, version));
-                }
-            }
-
-            #endregion
-
-            #region IDisposable methods
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                if (_disposed)
-                    return;
-
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            #endregion
-
-            #region Protected methods
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            /// <param name="disposing">A value indicating whether disposing is performed on the object.</param>
-            protected void Dispose(Boolean disposing)
-            {
-                _disposed = true;
-
-                if (disposing)
-                {
-                    // free managed resources
-                    if (_container != null)
-                    {
-                        _container.Dispose();
-                    }
-                }
-            }
-
-            #endregion
-        }
+        /// <summary>
+        /// Exception message in case the product type is null. This field is constant.
+        /// </summary>
+        private const String MessageProductTypeIsNull = "The product type is null.";
 
         #endregion
 
         #region Private fields
 
         /// <summary>
-        /// The dictionary of factories.
+        /// The dictionary of factories based on factory contract.
         /// </summary>
-        private Dictionary<Type, IFactory> _factories;
+        private Dictionary<Type, IFactory> _contractDictionary;
+        
+        /// <summary>
+        /// The dictionary of factories based on product type.
+        /// </summary>
+        private Dictionary<Type, IFactory> _productDictionary;
+
+        /// <summary>
+        /// The list of factories.
+        /// </summary>
+        private List<IFactory> _factories;
 
         #endregion
 
@@ -364,43 +88,29 @@ namespace ELTE.AEGIS
         /// </summary>
         protected Factory()
         {
-            _factories = new Dictionary<Type, IFactory>();
+            _contractDictionary = new Dictionary<Type, IFactory>();
+            _productDictionary = new Dictionary<Type,IFactory>();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Factory"/> class.
         /// </summary>
-        /// <param name="internalFactories">The internal factories.</param>
-        protected Factory(params IFactory[] internalFactories)
+        /// <param name="factories">The underlying factories based on factory contract.</param>
+        protected Factory(params IFactory[]  factories)
         {
-            _factories = new Dictionary<Type, IFactory>();
+            _contractDictionary = new Dictionary<Type, IFactory>();
+            _productDictionary = new Dictionary<Type, IFactory>();
 
-            foreach (IFactory factory in internalFactories)
-            {
-                if (factory == null)
-                    continue;
-
-                _factories.Add(factory.ProductType, factory);
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Factory"/> class.
-        /// </summary>
-        /// <param name="internalFactories">The internal factories.</param>
-        /// <exception cref="System.ArgumentNullException">The collection of internal factories is null.</exception>
-        protected Factory(IEnumerable<IFactory> internalFactories)
-        {
-            _factories = new Dictionary<Type, IFactory>();
-
-            if (internalFactories != null)
-            {
-                foreach (IFactory factory in internalFactories)
+            foreach (IFactory factory in factories)
+            { 
+                foreach(Type factoryContract in factory.GetType().GetInterfaces().Where(inter => inter.GetInterfaces().Contains(typeof(IFactory))))
                 {
-                    if (factory == null)
-                        continue;
+                    _contractDictionary.Add(factoryContract, factory);
 
-                    _factories.Add(factory.ProductType, factory);
+                    FactoryContractAttribute attribute = factoryContract.GetCustomAttribute(typeof(FactoryContractAttribute), false) as FactoryContractAttribute;
+
+                    if (attribute != null)
+                        _productDictionary.Add(attribute.Product, factory);
                 }
             }
         }
@@ -410,222 +120,177 @@ namespace ELTE.AEGIS
         #region IFactory properties
 
         /// <summary>
-        /// Return the product type of the factory.
+        /// Gets the directly underlying factories.
         /// </summary>
-        /// <value>The type of the product.</value>
-        public Type ProductType { get { return GetProductType(); } }
-
-        /// <summary>
-        /// Gets the internal factories.
-        /// </summary>
-        /// <value>The list of internal factories.</value>
-        public IList<IFactory> Factories { get { return _factories.Values.ToList(); } }
+        /// <value>The read-only list of direcly underlying factories.</value>
+        public IList<IFactory> Factories { get { return _factories ?? (_factories = _contractDictionary.Values.ToList()); } }
 
         #endregion
 
         #region IFactory methods
 
         /// <summary>
-        /// Returns the specified internal factory.
+        /// Determines whether an underlying factory behavior exists for the specified contract.
         /// </summary>
-        /// <typeparam name="T">The type of the factory.</typeparam>
-        /// <returns>The internal factory instance for the specified type if any; otherwise, <c>null</c>.</returns>
-        public T GetFactory<T>() where T : IFactory
+        /// <typeparam name="FactoryContract">The factory contract.</typeparam>
+        /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
+        public Boolean ContainsFactory<FactoryContract>()
         {
-            return (T)_factories.Values.FirstOrDefault(value => value.GetType().IsSubclassOf(typeof(T)) || value.GetType().GetInterfaces().Contains(typeof(T)));
+            return ContainsFactory(typeof(FactoryContract));
         }
 
         /// <summary>
-        /// Returns the specified internal factory.
+        /// Determines whether an underlying factory behavior exists for the specified contract.
         /// </summary>
-        /// <param name="factoryType">The type of the factory.</param>
-        /// <returns>The internal factory instance for the specified type if any; otherwise, <c>null</c>.</returns>
-        public IFactory GetFactory(Type factoryType)
+        /// <param name="factoryContract">The factory contract.</param>
+        /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
+        public Boolean ContainsFactory(Type factoryContract)
         {
-            if (factoryType == null)
-                throw new ArgumentNullException("The factory type is null.");
+            if (factoryContract == null)
+                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
 
-            return _factories.Values.FirstOrDefault(value => value.GetType().IsSubclassOf(factoryType) || value.GetType().GetInterfaces().Contains(factoryType));
+            return (_contractDictionary.ContainsKey(factoryContract)) || _contractDictionary.Values.Any(factory => factory.ContainsFactory(factoryContract));
         }
 
         /// <summary>
-        /// Returns the factory of the specified product.
+        /// Determines whether an underlying factory behavior exists for the specified product.
         /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns>
-        /// The internal factory for the specified product if any; otherwise, <c>null</c>.
-        /// </returns>
-        public IFactory GetFactoryFor<T>()
+        /// <typeparam name="ProductType">The product type.</typeparam>
+        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
+        public Boolean ContainsFactoryFor<ProductType>()
         {
-            if (!_factories.ContainsKey(typeof(T)))
-                return null;
-
-            return _factories[typeof(T)];
+            return ContainsFactoryFor(typeof(ProductType));
         }
 
         /// <summary>
-        /// Returns the factory of the specified product.
+        /// Determines whether an underlying factory behavior exists for the specified product.
         /// </summary>
         /// <param name="productType">The product type.</param>
-        /// <returns>The internal factory for the specified product if any; otherwise, <c>null</c>.</returns>
-        public IFactory GetFactoryFor(Type productType)
-        {
-            if (productType == null)
-                throw new ArgumentNullException("The product type is null.");
-
-            if (!_factories.ContainsKey(productType))
-                return null;
-
-            return _factories[productType];
-        }
-
-        /// <summary>
-        /// Defines the factory of the specified product.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <param name="factory">The factory.</param>
-        public void SetFactoryFor<T>(IFactory factory)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("The factory is null.");
-
-            _factories[typeof(T)] = factory;
-        }
-
-        /// <summary>
-        /// Determines whether the factory contains an internal factory for the specified product type.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns><c>true</c> if the factory contains an internal factory for the specified product; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public Boolean ContainsFactoryFor<T>()
-        {
-            return _factories.ContainsKey(typeof(T));
-        }
-
-        /// <summary>
-        /// Determines whether the factory contains an internal factory for the specified product type.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns><c>true</c> if the factory contains an internal factory for the specified product; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
         public Boolean ContainsFactoryFor(Type productType)
         {
             if (productType == null)
-                throw new ArgumentNullException("The product type is null.");
+                throw new ArgumentNullException("productType", MessageProductTypeIsNull);
 
-            return _factories.ContainsKey(productType);
+            return (_productDictionary.ContainsKey(productType)) || _productDictionary.Values.Any(factory => factory.ContainsFactoryFor(productType));
         }
 
-        #endregion
-
-        #region Public static methods
-
         /// <summary>
-        /// Returns the default instance for a specified factory.
+        /// Ensures the specified underlying factory.
         /// </summary>
-        /// <typeparam name="FactoryType">The type of the factory.</typeparam>
-        /// <returns>The default registered instance for the factory or the default type value if the factory is unresolvable.</returns>
-        public static FactoryType DefaultInstance<FactoryType>()
+        /// <typeparam name="FactoryContract">The factory contract.</typeparam>
+        /// <param name="factory">The factory behavior.</param>
+        /// <exception cref="System.ArgumentNullException">The factory realization is null.</exception>
+        public void EnsureFactory<FactoryContract>(FactoryContract factory) where FactoryContract : IFactory
         {
-            return (FactoryType)FactoryImplementation.Instance.DefaultInstance(typeof(FactoryType));
+            EnsureFactory(typeof(FactoryContract), factory);
         }
 
         /// <summary>
-        /// Returns the default instance for a specified factory.
+        /// Ensures the specified underlying factory.
         /// </summary>
-        /// <param name="factoryType">The type of the factory.</typeparam>
-        /// <returns>The default registered instance for the factory or the default type value if the factory is unresolvable.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory type is null.</exception>
-        public static Object DefaultInstance(Type factoryType)
+        /// <param name="factoryContract">The factory contract.</typeparam>
+        /// <param name="factory">The factory behavior.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The factory contract is null.
+        /// or
+        /// The factory behavior is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The factory behavior does not implement the contract.</exception>
+        /// <exception cref="System.InvalidOperationException">The factory contract is already ensured.</exception>
+        public void EnsureFactory(Type factoryContract, IFactory factory)
         {
-            if (factoryType == null)
-                throw new ArgumentNullException("factoryType", "The factory type is null.");
-
-            return FactoryImplementation.Instance.DefaultInstance(factoryType);
-        }
-
-        /// <summary>
-        /// Returns the instance of the factory with the specified parameters.
-        /// </summary>
-        /// <typeparam name="FactoryType">The type of the factory.</typeparam>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
-        public static FactoryType GetInstance<FactoryType>(params Object[] parameters) where FactoryType : IFactory
-        {
-            return (FactoryType)FactoryImplementation.Instance.GetInstance(typeof(FactoryType), parameters);
-        }
-
-        /// <summary>
-        /// Returns the instance of the factory with the specified parameters.
-        /// </summary>
-        /// <param name="FactoryType">The type of the factory.</typeparam>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory type is null.</exception>
-        public static Object GetInstance(Type factoryType, params Object[] parameters)
-        {
-            if (factoryType == null)
-                throw new ArgumentNullException("factoryType", "The factory type is null.");
-
-            return FactoryImplementation.Instance.GetInstance(factoryType, parameters);
-        }
-
-        /// <summary>
-        /// Returns the instance of the factory with the specified parameters.
-        /// </summary>
-        /// <param name="prototype">The prototype factory.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>The factory instance with the specified parameters or the default type value if the factory is unresolvable.</returns>
-        /// <exception cref="System.ArgumentNullException">The prototype is null.</exception>
-        public static Object GetInstance(Object prototype, params Object[] parameters)
-        {
-            if (prototype == null)
-                throw new ArgumentNullException("prototype", "The prototype is null.");
-
-            return FactoryImplementation.Instance.GetInstance(prototype.GetType(), parameters);
-        }
-
-        /// <summary>
-        /// Determines whether the specified factory has a default instance.
-        /// </summary>
-        /// <typeparam name="FactoryType">The type of the factory.</typeparam>
-        /// <returns><c>true</c> if the factory has a registered default instance; otherwise, <c>false</c>.</returns>
-        public static Boolean HasDefaultInstance<FactoryType>()
-        { 
-            return FactoryImplementation.Instance.HasDefaultInstance(typeof(FactoryType));
-        }
-
-        /// <summary>
-        /// Registers the specified factory type..
-        /// </summary>
-        /// <typeparam name="FactoryType">The type of the factory.</typeparam>
-        public static void Register<FactoryType>() where FactoryType : IFactory
-        {
-            FactoryImplementation.Instance.Register(typeof(FactoryType));
-        }
-
-        /// <summary>
-        /// Registers the specified factory instance.
-        /// </summary>
-        /// <param name="factory">The factory instance.</param>
-        /// <exception cref="System.ArgumentNullException">The factory instance is null.</exception>
-        public static void RegisterInstance(IFactory factory)
-        {
+            if (factoryContract == null)
+                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
             if (factory == null)
-                throw new ArgumentNullException("factory", "The factory instance is null.");
+                throw new ArgumentNullException("factory", MessageFactoryBehaviorIsNull);
+            if (!factory.GetType().GetInterfaces().Contains(factoryContract))
+                throw new ArgumentException("factory", MessageFactoryNotImplementContract);
 
-            FactoryImplementation.Instance.RegisterInstance(factory);
+            if (_contractDictionary.ContainsKey(factoryContract))
+                throw new InvalidOperationException(MessageFactoryIsEnsured);
+
+            _contractDictionary.Add(factoryContract, factory);
+
+
+            FactoryContractAttribute attribute = factoryContract.GetCustomAttribute(typeof(FactoryContractAttribute), false) as FactoryContractAttribute;
+
+            if (attribute != null)
+                _productDictionary.Add(attribute.Product, factory);
         }
 
-        #endregion
-
-        #region Protected methods
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified contract.
+        /// </summary>
+        /// <typeparam name="FactoryContract">The factory contract.</typeparam>
+        /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
+        public FactoryContract GetFactory<FactoryContract>() where FactoryContract : IFactory
+        {
+            return (FactoryContract)GetFactory(typeof(FactoryContract));
+        }
 
         /// <summary>
-        /// Gets the product type of the factory.
+        /// Returns the underlying factory behavior of the specified contract.
         /// </summary>
-        /// <returns>The product type of the factory.</returns>
-        protected abstract Type GetProductType();
+        /// <param name="FactoryContract">The factory contract.</typeparam>
+        /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
+        public IFactory GetFactory(Type factoryContract)
+        {
+            if (factoryContract == null)
+                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
+
+            if (_contractDictionary.ContainsKey(factoryContract))
+                return _contractDictionary[factoryContract];
+
+            // recursively process all undelying factories
+            foreach (IFactory factory in _contractDictionary.Values)
+            {
+                if (factory.ContainsFactory(factoryContract))
+                    return factory.GetFactory(factoryContract);
+            }
+
+            // no factory found
+            return null;
+        }
+
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified product.
+        /// </summary>
+        /// <typeparam name="ProductType">The product type.</typeparam>
+        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
+        public IFactory GetFactoryFor<ProductType>()
+        {
+            return GetFactoryFor(typeof(ProductType));
+        }
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified product.
+        /// </summary>
+        /// <param name="productType">The product type.</param>
+        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
+        public IFactory GetFactoryFor(Type productType)
+        {
+            if (productType == null)
+                throw new ArgumentNullException("productType", MessageProductTypeIsNull);
+
+            if (_productDictionary.ContainsKey(productType))
+                return _productDictionary[productType];
+
+            // recursively process all undelying factories
+            foreach (IFactory factory in _contractDictionary.Values)
+            {
+                if (factory.ContainsFactoryFor(productType))
+                    return factory.GetFactoryFor(productType);
+            }
+
+            // no factory found
+            return null;
+        }
 
         #endregion
     }

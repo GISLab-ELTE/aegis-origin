@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -329,21 +329,6 @@ namespace ELTE.AEGIS.Raster
         public IRaster CreateMask(IRaster raster, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
         {
             return new MaskedRaster(this, raster, rowIndex, columnIndex, numberOfRows, numberOfColumns);
-        }
-
-        #endregion
-
-        #region Protected Factory methods
-
-        /// <summary>
-        /// Gets the product type of the factory.
-        /// </summary>
-        /// <returns>
-        /// The product type of the factory.
-        /// </returns>
-        protected override Type GetProductType()
-        {
-            return typeof(IRaster);
         }
 
         #endregion

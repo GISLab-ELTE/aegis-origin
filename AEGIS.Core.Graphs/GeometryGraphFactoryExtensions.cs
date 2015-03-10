@@ -310,23 +310,16 @@ namespace ELTE.AEGIS
         #region Private static methods
 
         /// <summary>
-        /// Ensures an internal geometry graph factory the specified geometry factory.
+        /// Ensures an underlying geometry graph factory for the specified geometry factory.
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
+        /// <returns>The factory with the appropriate geoemtry graph factory.</returns>
         private static void EnsureFactory(IGeometryFactory factory)
         {
-            // query whether the geometry graph factory is registerd for the geometry factory
-            if (!factory.ContainsFactoryFor<IGeometryGraph>() || !(factory.GetFactoryFor<IGeometryGraph>() is IGeometryGraphFactory))
-            {
-                if (Factory.HasDefaultInstance<IGeometryGraphFactory>()) // if it has been registered previously
-                {
-                    factory.SetFactoryFor<IGeometryGraph>(Factory.GetInstance<IGeometryGraphFactory>(factory));
-                }
-                else // if no default implementation is registered
-                {
-                    factory.SetFactoryFor<IGeometryGraph>(new GeometryGraphFactory(factory));
-                }
-            }
+            if (factory.ContainsFactory<IGeometryGraphFactory>())
+                return;
+
+            factory.EnsureFactory<IGeometryGraphFactory>(new GeometryGraphFactory(factory));
         }
 
         /// <summary>

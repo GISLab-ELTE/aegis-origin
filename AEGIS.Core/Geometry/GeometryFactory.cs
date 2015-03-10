@@ -989,18 +989,5 @@ namespace ELTE.AEGIS.Geometry
         }
 
         #endregion
-
-        #region Protected Factory methods
-
-        /// <summary>
-        /// Gets the product type of the factory.
-        /// </summary>
-        /// <returns>The product type of the factory.</returns>
-        protected override Type GetProductType()
-        {
-            return typeof(IGeometry);
-        }
-
-        #endregion
     }
 }

@@ -3265,34 +3265,16 @@ namespace ELTE.AEGIS
         #region Private static methods
 
         /// <summary>
-        /// Ensures an internal spectral geometry factory the specified geometry factory.
+        /// Ensures an underlying geometry graph factory the specified geometry factory.
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
+        /// <
         private static void EnsureFactory(IGeometryFactory factory)
         {
-            // query whether the spectral geometry factory is registerd for the geometry factory
-            if (!factory.ContainsFactoryFor<ISpectralGeometry>() || !(factory.GetFactoryFor<ISpectralGeometry>() is ISpectralGeometryFactory))
-            {
-                if (Factory.HasDefaultInstance<ISpectralGeometryFactory>()) // if it has been registered previously
-                {
-                    factory.SetFactoryFor<ISpectralGeometry>(Factory.GetInstance<ISpectralGeometryFactory>(factory));
-                }
-                else // if no default implementation is registered
-                {
-                    // requires a raster factory
-                    IRasterFactory rasterFactory;
-                    if (Factory.HasDefaultInstance<IRasterFactory>())
-                    {
-                        rasterFactory = Factory.DefaultInstance<IRasterFactory>();
-                    }
-                    else
-                    {
-                        rasterFactory = new RasterFactory();
-                    }
+            if (factory.ContainsFactory<ISpectralGeometryFactory>())
+                return;
 
-                    factory.SetFactoryFor<ISpectralGeometry>(new SpectralGeometryFactory(factory, rasterFactory));
-                }
-            }
+            factory.EnsureFactory<ISpectralGeometryFactory>(new SpectralGeometryFactory(factory, new RasterFactory()));
         }
 
         #endregion

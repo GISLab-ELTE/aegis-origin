@@ -1,9 +1,9 @@
 ﻿/// <copyright file="IFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -24,64 +24,96 @@ namespace ELTE.AEGIS
     public interface IFactory
     {
         /// <summary>
-        /// Return the product type of the factory.
+        /// Gets the directly underlying factories.
         /// </summary>
-        /// <value>The type of the product.</value>
-        Type ProductType { get; }
-
-        /// <summary>
-        /// Gets the internal factories.
-        /// </summary>
-        /// <value>The list of internal factories.</value>
+        /// <value>The read-only list of direcly underlying factories.</value>
         IList<IFactory> Factories { get; }
 
         /// <summary>
-        /// Returns the specified internal factory.
+        /// Determines whether an underlying factory behavior exists for the specified contract.
         /// </summary>
-        /// <typeparam name="T">TThe type of the factory.</typeparam>
-        /// <returns>The internal factory instance for the specified type if any; otherwise, <c>null</c>.</returns>
-        T GetFactory<T>() where T : IFactory; 
+        /// <typeparam name="FactoryContract">The factory contract.</typeparam>
+        /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
+        Boolean ContainsFactory<FactoryContract>();
 
         /// <summary>
-        /// Returns the specified internal factory.
+        /// Determines whether an underlying factory behavior exists for the specified contract.
         /// </summary>
-        /// <param name="factoryType">The type of the factory.</param>
-        /// <returns>The internal factory instance for the specified type if any; otherwise, <c>null</c>.</returns>
-        IFactory GetFactory(Type factoryType);
+        /// <param name="factoryContract">The factory contract.</param>
+        /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
+        Boolean ContainsFactory(Type factoryContract);
 
         /// <summary>
-        /// Returns the factory of the specified product.
+        /// Determines whether an underlying factory behavior exists for the specified product.
         /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns>The internal factory for the specified product if any; otherwise, <c>null</c>.</returns>
-        IFactory GetFactoryFor<T>();
+        /// <typeparam name="ProductType">The product type.</typeparam>
+        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
+        Boolean ContainsFactoryFor<ProductType>();
 
         /// <summary>
-        /// Returns the factory of the specified product.
+        /// Determines whether an underlying factory behavior exists for the specified product.
         /// </summary>
         /// <param name="productType">The product type.</param>
-        /// <returns>The internal factory for the specified product if any; otherwise, <c>null</c>.</returns>
-        IFactory GetFactoryFor(Type productType);
-
-        /// <summary>
-        /// Defines the factory of the specified product.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <param name="factory">The factory.</param>
-        void SetFactoryFor<T>(IFactory factory);
-
-        /// <summary>
-        /// Determines whether the factory contains an internal factory for the specified product type.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns><c>true</c> if the factory contains an internal factory for the specified product; otherwise, <c>false</c>.</returns>
-        Boolean ContainsFactoryFor<T>();
-
-        /// <summary>
-        /// Determines whether the factory contains an internal factory for the specified product type.
-        /// </summary>
-        /// <typeparam name="T">The product type.</typeparam>
-        /// <returns><c>true</c> if the factory contains an internal factory for the specified product; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
         Boolean ContainsFactoryFor(Type productType);
+
+        /// <summary>
+        /// Ensures the specified underlying factory.
+        /// </summary>
+        /// <param name="factoryContract">The factory contract.</typeparam>
+        /// <param name="factory">The factory behavior.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The factory contract is null.
+        /// or
+        /// The factory behavior is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The factory behavior does not implement the contract.</exception>
+        /// <exception cref="System.InvalidOperationException">The factory contract is already ensured.</exception>
+        void EnsureFactory<FactoryContract>(FactoryContract factory) where FactoryContract : IFactory;
+
+        /// <summary>
+        /// Ensures the specified underlying factory.
+        /// </summary>
+        /// <param name="factoryContract">The factory contract.</typeparam>
+        /// <param name="factory">The factory behavior.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The factory contract is null.
+        /// or
+        /// The factory behavior is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The factory behavior does not implement the contract.</exception>
+        void EnsureFactory(Type factoryContract, IFactory factory);
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified contract.
+        /// </summary>
+        /// <typeparam name="FactoryContract">The factory contract.</typeparam>
+        /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
+        FactoryContract GetFactory<FactoryContract>() where FactoryContract : IFactory;
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified contract.
+        /// </summary>
+        /// <param name="FactoryContract">The factory contract.</typeparam>
+        /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
+        IFactory GetFactory(Type factoryContract);
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified product.
+        /// </summary>
+        /// <typeparam name="ProductType">The product type.</typeparam>
+        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
+        IFactory GetFactoryFor<ProductType>();
+
+        /// <summary>
+        /// Returns the underlying factory behavior of the specified product.
+        /// </summary>
+        /// <param name="productType">The product type.</param>
+        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
+        IFactory GetFactoryFor(Type productType);
     }
 }

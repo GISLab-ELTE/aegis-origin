@@ -60,8 +60,8 @@ namespace ELTE.AEGIS.Geometry
             if (rasterFactory == null)
                 throw new ArgumentNullException("rasterFactory", "The raster factory is null.");
 
-            _geometryFactory = geometryFactory ?? new GeometryFactory();
-            _rasterFactory = rasterFactory ?? new RasterFactory();
+            _geometryFactory = geometryFactory;
+            _rasterFactory = rasterFactory;
         }
 
         #endregion
@@ -2726,19 +2726,6 @@ namespace ELTE.AEGIS.Geometry
         public ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
             return new SpectralPolygon(this, shell, holes, raster, presentation, imaging, metadata);
-        }
-
-        #endregion
-
-        #region Protected Factory methods
-
-        /// <summary>
-        /// Gets the product type of the factory.
-        /// </summary>
-        /// <returns>The product type of the factory.</returns>
-        protected override Type GetProductType()
-        {
-            return typeof(ISpectralGeometry);
         }
 
         #endregion
