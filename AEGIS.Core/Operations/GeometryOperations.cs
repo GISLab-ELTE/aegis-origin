@@ -13,9 +13,10 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Operations.Geometry;
 using System;
 
-namespace ELTE.AEGIS.Operations.Geometry
+namespace ELTE.AEGIS.Operations
 {
     /// <summary>
     /// Represents a type peforming spatial operations on <see cref="IGeometry"/> instances.
@@ -411,16 +412,28 @@ namespace ELTE.AEGIS.Operations.Geometry
         #region Private static methods
 
         /// <summary>
+        /// Ensures an underlying geometry operator factory for the specified geometry factory.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        /// <returns>The factory with the appropriate geometry operations factory.</returns>
+        private static void EnsureFactory(IGeometryFactory factory)
+        {
+            if (factory.ContainsFactory<IGeometryOperatorFactory>())
+                return;
+
+            factory.EnsureFactory<IGeometryOperatorFactory>(new GeometryOperatorFactory(factory));
+        }
+
+        /// <summary>
         /// Returns the buffer operator for the specified geometry.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns>The buffer operator of the specified geometry, if any; otherwise, the default buffer operator.</returns>
         private static IGeometryBufferOperator GetBufferOperator(IGeometry geometry)
         {
-            IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
+            EnsureFactory(geometry.Factory);
 
-            // TODO: create buffer operator
-            return null;
+            return geometry.Factory.GetFactory<IGeometryOperatorFactory>().Buffer;
         }
 
         /// <summary>
@@ -430,12 +443,9 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <returns>The convex hull operator of the specified geometry, if any; otherwise, the default convex hull operator.</returns>
         private static IGeometryConvexHullOperator GetConvexHullOperator(IGeometry geometry)
         {
-            IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
+            EnsureFactory(geometry.Factory);
 
-            if (factory == null)
-                return new GrahamScanConvexHullOperator();
-
-            return factory.ConvexHull;
+            return geometry.Factory.GetFactory<IGeometryOperatorFactory>().ConvexHull;
         }
 
         /// <summary>
@@ -444,11 +454,10 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <param name="geometry">The geometry.</param>
         /// <returns>The measure operator of the specified geometry, if any; otherwise, the default measure operator.</returns>
         private static IGeometryMeasureOperator GetMeasureOperator(IGeometry geometry)
-        { 
-            IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
+        {
+            EnsureFactory(geometry.Factory);
 
-            // TODO: create measure operator
-            return null;
+            return geometry.Factory.GetFactory<IGeometryOperatorFactory>().Measure;
         }
 
         /// <summary>
@@ -458,12 +467,9 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <returns>The overlay operator of the specified geometry, if any; otherwise, the default overlay operator.</returns>
         private static IGeometryOverlayOperator GetOverlayOperator(IGeometry geometry)
         {
-            IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
+            EnsureFactory(geometry.Factory);
 
-            if (factory == null)
-                return new HalfedgeGeometryOverlayOperator();
-
-            return factory.Overlay;
+            return geometry.Factory.GetFactory<IGeometryOperatorFactory>().Overlay;
         }
 
         /// <summary>
@@ -473,12 +479,9 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <returns>The relate operator of the specified geometry, if any; otherwise, the default relate operator.</returns>
         private static IGeometryRelateOperator GetRelateOperator(IGeometry geometry)
         {
-            IGeometryOperatorFactory factory = geometry.Factory.GetFactory<IGeometryOperatorFactory>();
+            EnsureFactory(geometry.Factory);
 
-            if (factory == null)
-                return new HalfedgeGeometryRelateOperator();
-
-            return factory.Relate;
+            return geometry.Factory.GetFactory<IGeometryOperatorFactory>().Relate;
         }
 
         #endregion

@@ -23,6 +23,36 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public sealed class GrahamScanConvexHullOperator : IGeometryConvexHullOperator
     {
+        #region Private fields
+
+        /// <summary>
+        /// The geometry factory.
+        /// </summary>
+        private readonly IGeometryFactory _geometryFactory;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrahamScanConvexHullOperator" /> class.
+        /// </summary>
+        public GrahamScanConvexHullOperator()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GrahamScanConvexHullOperator" /> class.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        public GrahamScanConvexHullOperator(IGeometryFactory factory)
+        {
+            _geometryFactory = factory;
+        }
+
+        #endregion
+
         #region IGeometryConvexHullOperator methods
 
         /// <summary>
@@ -37,12 +67,14 @@ namespace ELTE.AEGIS.Operations.Geometry
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
 
+            IGeometryFactory factory = _geometryFactory ?? geometry.Factory;
+
             if (geometry is IPoint)
-                return geometry.Clone() as IGeometry;
+                return factory.CreatePoint((geometry as IPoint).Coordinate);
             if (geometry is ICurve)
-                return geometry.Factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as ILineString).Coordinates));
+                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as ILineString).Coordinates));
             if (geometry is IPolygon)
-                return geometry.Factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as IPolygon).Shell.Coordinates));
+                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as IPolygon).Shell.Coordinates));
 
             throw new ArgumentException("The operation is not supported with the specified geometry type.");
         }

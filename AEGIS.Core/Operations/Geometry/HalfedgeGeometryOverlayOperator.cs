@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Topology;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Geometry
@@ -24,6 +25,36 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public class HalfedgeGeometryOverlayOperator : IGeometryOverlayOperator
     {
+        #region Private fields
+
+        /// <summary>
+        /// The geometry factory.
+        /// </summary>
+        private readonly IGeometryFactory _geometryFactory;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGeometryOverlayOperator" /> class.
+        /// </summary>
+        public HalfedgeGeometryOverlayOperator()
+            : this(null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGeometryOverlayOperator" /> class.
+        /// </summary>
+        /// <param name="factory">The geometry factory.</param>
+        public HalfedgeGeometryOverlayOperator(IGeometryFactory factory)
+        {
+            _geometryFactory = factory;
+        }
+
+        #endregion
+
         #region IGeometryOverlayOperator methods
 
         /// <summary>
@@ -47,8 +78,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-                return geometry.Factory.CreateGeometryCollection(graph.Faces.Where(face => !face.IsHole && face.Tag == Tag.A).Select(face => face.ToGeometry(geometry.Factory)));
+                return CreateResult(geometry, otherGeometry, face => !face.IsHole && face.Tag == Tag.A);
             }
             catch (ArgumentException) 
             {
@@ -81,8 +111,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-                return geometry.Factory.CreateGeometryCollection(graph.Faces.Where(face => !face.IsHole && face.Tag == Tag.Both).Select(face => face.ToGeometry(geometry.Factory)));
+                return CreateResult(geometry, otherGeometry, face => !face.IsHole && face.Tag == Tag.Both);
             }
             catch (ArgumentException)
             {
@@ -111,8 +140,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-                return geometry.Factory.CreateGeometryCollection(graph.Faces.Where(face => !face.IsHole && (face.Tag == Tag.A || face.Tag == Tag.B)).Select(face => face.ToGeometry(geometry.Factory)));
+                return CreateResult(geometry, otherGeometry, face => !face.IsHole && (face.Tag == Tag.A || face.Tag == Tag.B));
             }
             catch (ArgumentException)
             {
@@ -142,8 +170,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-                return graph.ToGeometry(geometry.Factory);
+                return CreateResult(geometry, otherGeometry, face => true);
             }
             catch (ArgumentException)
             {
@@ -165,13 +192,15 @@ namespace ELTE.AEGIS.Operations.Geometry
         #region Private methods
 
         /// <summary>
-        /// Merges the specified geometries.
+        /// Creates the result of the overlay operation.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <param name="otherGeometry">The other geometry.</param>
-        /// <returns>The halfedge graph contatining the geometries.</returns>
-        private static HalfedgeGraph Merge(IGeometry geometry, IGeometry otherGeometry)
+        /// <param name="predicate">The overlay predicate.</param>
+        /// <returns>The result of the overlay.</returns>
+        private IGeometry CreateResult(IGeometry geometry, IGeometry otherGeometry, Func<IFace, Boolean> predicate)
         {
+            // merge the geometries into a single graph
             HalfedgeGraph graph = new HalfedgeGraph();
             graph.MergeGeometry(geometry);
 
@@ -180,7 +209,16 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             graph.MergeGraph(otherGraph);
 
-            return graph;
+            // query the results
+            IGeometryFactory factory = _geometryFactory ?? geometry.Factory;
+            List<IPolygon> result = graph.Faces.Where(predicate).Select(face => face.ToGeometry(factory)).ToList();
+
+            if (result.Count == 0)
+                return null;
+            if (result.Count == 1)
+                return result[0];
+
+            return factory.CreateGeometryCollection(result);
         }
 
         #endregion

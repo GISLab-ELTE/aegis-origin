@@ -142,7 +142,7 @@
     <Compile Include="Operations\Geometry\BentleyFaustPreparataConvexHullOperator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Operations\Geometry\GeometryOperations.cs">
+    <Compile Include="Operations\GeometryOperations.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Operations\Geometry\GeometryOperatorFactory.cs">

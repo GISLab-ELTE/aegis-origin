@@ -24,6 +24,15 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public class HalfedgeGeometryRelateOperator : IGeometryRelateOperator
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGeometryRelateOperator" /> class.
+        /// </summary>
+        public HalfedgeGeometryRelateOperator() { }
+
+        #endregion
+
         #region IGeometryRelateOperator methods
 
         /// <summary>

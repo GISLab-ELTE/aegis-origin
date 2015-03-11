@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using System;
+using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Geometry
 {
@@ -22,6 +23,28 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public class GeometryOperatorFactory : Factory, IGeometryOperatorFactory
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeometryOperatorFactory" /> class.
+        /// </summary>
+        /// <param name="geometryFactory">The geometry factory.</param>
+        public GeometryOperatorFactory(IGeometryFactory geometryFactory)
+            : base(geometryFactory)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeometryOperatorFactory" /> class.
+        /// </summary>
+        /// <param name="factories">The underlying factories based on factory contract.</param>
+        protected GeometryOperatorFactory(params IFactory[] factories)
+            : base(factories)
+        {
+        }
+
+        #endregion
+
         #region IGeometryOperationFactory methods
 
         /// <summary>
@@ -40,7 +63,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <value>The Graham scan convex hull operator.</value>
         public IGeometryConvexHullOperator ConvexHull
         {
-            get { return new GrahamScanConvexHullOperator(); }
+            get { return new GrahamScanConvexHullOperator(GetFactory<IGeometryFactory>()); }
         }
 
         /// <summary>
@@ -59,7 +82,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <value>The halfedge topology model based overlay operator.</value>
         public IGeometryOverlayOperator Overlay
         {
-            get { return new HalfedgeGeometryOverlayOperator(); }
+            get { return new HalfedgeGeometryOverlayOperator(GetFactory<IGeometryFactory>()); }
         }
 
         /// <summary>
