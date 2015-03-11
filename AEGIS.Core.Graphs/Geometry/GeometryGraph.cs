@@ -759,7 +759,7 @@ namespace ELTE.AEGIS.Geometry
             set
             {
                 if (_metadata == null)
-                    _metadata = _factory.GetFactory<IGeometryFactory>().CreateMetadata();
+                    _metadata = Factory.GetFactory<IMetadataFactory>().CreateCollection();
                 _metadata[key] = value;
             }
         }
@@ -819,7 +819,7 @@ namespace ELTE.AEGIS.Geometry
         public GeometryGraph(IGeometryGraphFactory factory, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
         {
             _factory = factory ?? new GeometryGraphFactory(new GeometryFactory());
-            _metadata = _factory.GetFactory<IGeometryFactory>().CreateMetadata(metadata);
+            _metadata = _factory.GetFactory<IMetadataFactory>().CreateCollection(metadata);
 
             _envelope = null;
             _boundary = null;
@@ -1424,7 +1424,7 @@ namespace ELTE.AEGIS.Geometry
                 foreach (IGraphEdge edge in item.Value)
                 {
                     IGraphVertex to = sourceToTargetVertexMapper[edge.Target];
-                    target.AddEdge(from, to, source.Factory.CreateMetadata(edge.Metadata));
+                    target.AddEdge(from, to, edge.Metadata);
                 }
             }
         }

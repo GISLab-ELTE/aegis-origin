@@ -313,7 +313,7 @@ namespace ELTE.AEGIS
         /// Ensures an underlying geometry graph factory for the specified geometry factory.
         /// </summary>
         /// <param name="factory">The geometry factory.</param>
-        /// <returns>The factory with the appropriate geoemtry graph factory.</returns>
+        /// <returns>The factory with the appropriate geometry graph factory.</returns>
         private static void EnsureFactory(IGeometryFactory factory)
         {
             if (factory.ContainsFactory<IGeometryGraphFactory>())
@@ -416,36 +416,36 @@ namespace ELTE.AEGIS
         {
             if (graph == null || coordinates == null || coordinates.Count <= 0) return;
 
-            IGraphVertex source = graph.AddVertex(coordinates[0], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+            IGraphVertex source = graph.AddVertex(coordinates[0], preserveMetadata ? metadata : null);
             IGraphVertex first = source;
             IGraphVertex target;
 
             for (Int32 i = 1; i < coordinates.Count - 1; ++i)
             {
-                target = graph.AddVertex(coordinates[i], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
-                graph.AddEdge(source, target, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                target = graph.AddVertex(coordinates[i], preserveMetadata ? metadata : null);
+                graph.AddEdge(source, target, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(target, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(target, source, preserveMetadata ? metadata : null);
                 }
                 source = target;
             }
 
             if (isCircular)
             {
-                graph.AddEdge(source, first, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                graph.AddEdge(source, first, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(first, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(first, source, preserveMetadata ? metadata : null);
                 }
             }
             else
             {
-                target = graph.AddVertex(coordinates[coordinates.Count - 1], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
-                graph.AddEdge(source, target, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                target = graph.AddVertex(coordinates[coordinates.Count - 1], preserveMetadata ? metadata : null);
+                graph.AddEdge(source, target, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(target, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(target, source, preserveMetadata ? metadata : null);
                 }
             }
         }

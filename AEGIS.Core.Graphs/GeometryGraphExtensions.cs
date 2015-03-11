@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GeometryGraphConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -192,36 +192,36 @@ namespace ELTE.AEGIS
         {
             if (graph == null || coordinates == null || coordinates.Count <= 0) return;
 
-            IGraphVertex source = graph.AddVertex(coordinates[0], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+            IGraphVertex source = graph.AddVertex(coordinates[0], preserveMetadata ? metadata : null);
             IGraphVertex first = source;
             IGraphVertex target;
 
             for (Int32 i = 1; i < coordinates.Count - 1; ++i)
             {
-                target = graph.AddVertex(coordinates[i], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
-                graph.AddEdge(source, target, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                target = graph.AddVertex(coordinates[i], preserveMetadata ? metadata : null);
+                graph.AddEdge(source, target, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(target, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(target, source, preserveMetadata ? metadata : null);
                 }
                 source = target;
             }
 
             if (isCircular)
             {
-                graph.AddEdge(source, first, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                graph.AddEdge(source, first, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(first, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(first, source, preserveMetadata ? metadata : null);
                 }
             }
             else
             {
-                target = graph.AddVertex(coordinates[coordinates.Count - 1], preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
-                graph.AddEdge(source, target, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                target = graph.AddVertex(coordinates[coordinates.Count - 1], preserveMetadata ? metadata : null);
+                graph.AddEdge(source, target, preserveMetadata ? metadata : null);
                 if (isBidirectional)
                 {
-                    graph.AddEdge(target, source, preserveMetadata ? graph.Factory.CreateMetadata(metadata) : null);
+                    graph.AddEdge(target, source, preserveMetadata ? metadata : null);
                 }
             }
         }
