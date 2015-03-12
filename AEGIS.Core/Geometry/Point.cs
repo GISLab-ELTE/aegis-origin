@@ -150,10 +150,11 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="x">The X coordinate.</param>
         /// <param name="y">The Y coordinate.</param>
         /// <param name="z">The Z coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public Point(Double x, Double y, Double z, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public Point(Double x, Double y, Double z, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             _coordinate = new Coordinate(PrecisionModel.MakePrecise(x), PrecisionModel.MakePrecise(y), PrecisionModel.MakePrecise(z));
         }
@@ -166,6 +167,8 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="z">The Z coordinate.</param>
         /// <param name="factory">The factory of the point.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public Point(Double x, Double y, Double z, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {

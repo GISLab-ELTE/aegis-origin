@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryList.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -300,10 +300,11 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryList{T}" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryList(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public GeometryList(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             _geometries = new T[_defaultCapacity];
             _size = 0;
@@ -314,11 +315,12 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="GeometryList{T}" /> class.
         /// </summary>
         /// <param name="capacity">The number of elements that the list can initially store.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">The capacity is less than 0.</exception>
-        public GeometryList(Int32 capacity, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public GeometryList(Int32 capacity, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             if (capacity < 0)
                 throw new ArgumentOutOfRangeException("capacity", "The capacity is less than 0.");
@@ -332,12 +334,12 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="GeometryList{T}" /> class.
         /// </summary>
         /// <param name="source">The source of geometries.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">Source is null.</exception>
-        /// <exception cref="System.ArgumentException">Reference system of source geometries does not match.</exception>
-        public GeometryList(IEnumerable<T> source, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public GeometryList(IEnumerable<T> source, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "Source is null.");
@@ -362,11 +364,16 @@ namespace ELTE.AEGIS.Geometry
                         if (en.Current == null)
                             continue;
 
-                        // check reference system
-                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem))
-                            throw new ArgumentException("The reference system of the source geometries does not match.", "source");
-
-                        _geometries[_size] = en.Current;
+                        // check precision model and reference system
+                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
+                            en.Current.PrecisionModel.Equals(PrecisionModel))
+                        {
+                            _geometries[_size] = en.Current;
+                        }
+                        else
+                        {
+                            _geometries[_size] = (T)Factory.CreateGeometry(en.Current);
+                        }
                         _size++;
                     }
                 }
@@ -378,6 +385,8 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="factory">The factory of the list.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public GeometryList(IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
@@ -392,6 +401,8 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="capacity">The number of elements that the list can initially store.</param>
         /// <param name="factory">The factory of the list.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The capacity is less than 0.</exception>
         public GeometryList(Int32 capacity, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
@@ -410,13 +421,17 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="source">The source of geometries.</param>
         /// <param name="factory">The factory of the list.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">Source is null.</exception>
-        /// <exception cref="System.ArgumentException">Reference system of source geometries does not match.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The factory is null.
+        /// or
+        /// The source is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public GeometryList(IEnumerable<T> source, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
             if (source == null)
-                throw new ArgumentNullException("source", "Source is null.");
+                throw new ArgumentNullException("source", "The source is null.");
 
             // copy geometries
             ICollection<T> collection = source as ICollection<T>;
@@ -438,11 +453,16 @@ namespace ELTE.AEGIS.Geometry
                         if (en.Current == null)
                             continue;
 
-                        // check reference system
-                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem))
-                            throw new ArgumentException("The reference system of the source geometries does not match.", "source");
-
-                        _geometries[_size] = en.Current;
+                        // check precision model and reference system
+                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
+                            en.Current.PrecisionModel.Equals(PrecisionModel))
+                        {
+                            _geometries[_size] = en.Current;
+                        }
+                        else
+                        {
+                            _geometries[_size] = (T)Factory.CreateGeometry(en.Current);
+                        }
                         _size++;
                     }
                 }
@@ -628,7 +648,7 @@ namespace ELTE.AEGIS.Geometry
         /// </returns>
         public override Object Clone()
         {
-            GeometryList<T> list = new GeometryList<T>(_size, ReferenceSystem, Metadata);
+            GeometryList<T> list = new GeometryList<T>(_size, Factory, Metadata);
 
             list._size = _size;
             for (Int32 i = 0; i < _size; i++)

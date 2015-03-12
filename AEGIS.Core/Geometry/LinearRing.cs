@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LinearRing.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -52,12 +52,13 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="LinearRing" /> class.
         /// </summary>
         /// <param name="source">The source coordinates.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <exception cref="System.ArgumentException">The source is empty.</exception>
-        public LinearRing(IEnumerable<Coordinate> source, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(source, referenceSystem, metadata)
+        public LinearRing(IEnumerable<Coordinate> source, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(source, precisionModel, referenceSystem, metadata)
         {
             if (_coordinates.Count < 1)
                 throw new ArgumentException("The source is empty.", "coordinates");
@@ -72,8 +73,16 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="source">The source coordinates.</param>
         /// <param name="factory">The factory of the linear ring.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentException">The source is empty.</exception>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source is null.
+        /// or
+        /// The factory is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The source is empty.
+        /// or
+        /// The specified factory is invalid.
+        /// </exception>
         public LinearRing(IEnumerable<Coordinate> source, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(source, factory, metadata)
         {

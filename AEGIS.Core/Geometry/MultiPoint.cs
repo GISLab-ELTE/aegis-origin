@@ -1,5 +1,5 @@
 ﻿/// <copyright file="MultiPoint.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -58,10 +58,11 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiPoint" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public MultiPoint(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public MultiPoint(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
         }
 
@@ -69,12 +70,12 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="MultiPoint" /> class.
         /// </summary>
         /// <param name="source">The source of points.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">Source is null.</exception>
-        /// <exception cref="System.ArgumentException">Reference system of source geometries does not match.</exception>
-        public MultiPoint(IEnumerable<IPoint> source, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(source, referenceSystem, metadata)
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public MultiPoint(IEnumerable<IPoint> source, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(source, precisionModel, referenceSystem, metadata)
         {
         }
 
@@ -83,6 +84,8 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="factory">The factory of the multi point.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public MultiPoint(IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
@@ -94,8 +97,12 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="source">The source of points.</param>
         /// <param name="factory">The factory of the multi point.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">Source is null.</exception>
-        /// <exception cref="System.ArgumentException">Reference system of source geometries does not match.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The factory is null.
+        /// or
+        /// The source is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public MultiPoint(IEnumerable<IPoint> source, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(source, factory, metadata)
         {

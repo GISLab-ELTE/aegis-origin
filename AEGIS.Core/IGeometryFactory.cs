@@ -638,28 +638,17 @@ namespace ELTE.AEGIS
         IMultiPolygon CreateMultiPolygon(IMultiPolygon other);
 
         #endregion
-        
-        #region Factory methods for metadata
+
+        #region Factory methods for geometries
 
         /// <summary>
-        /// Creates a metadata collection.
+        /// Creates a geometry matching another geometry.
         /// </summary>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        IMetadataCollection CreateMetadata();
-
-        /// <summary>
-        /// Creates a metadata collection.
-        /// </summary>
-        /// <param name="source">The source collection.</param>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        IMetadataCollection CreateMetadata(IMetadataCollection source);
-
-        /// <summary>
-        /// Creates a metadata collection.
-        /// </summary>
-        /// <param name="source">The source collection.</param>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        IMetadataCollection CreateMetadata(IDictionary<String, Object> source);
+        /// <param name="other">The other geometry.</param>
+        /// <returns>The produced geometry matching <see cref="other" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The other geometry is null.</exception>
+        /// <exception cref="System.ArgumentException">The type of the other geometry is not supported.</exception>
+        IGeometry CreateGeometry(IGeometry other);
 
         #endregion
     }

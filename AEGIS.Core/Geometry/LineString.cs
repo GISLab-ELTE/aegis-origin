@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LineString.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -187,9 +187,10 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="LineString" /> class.
         /// </summary>
         /// <param name="referenceSystem">The reference system.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="metadata">The metadata.</param>
-        public LineString(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : this(null, referenceSystem, metadata)
+        public LineString(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : this(null, precisionModel, referenceSystem, metadata)
         {
         }
 
@@ -198,10 +199,11 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="source">The source coordinates.</param>
         /// <param name="referenceSystem">The reference system.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public LineString(IEnumerable<Coordinate> source, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public LineString(IEnumerable<Coordinate> source, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             if (source == null)
                 _coordinates = new List<Coordinate>();
@@ -227,7 +229,12 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="source">The source coordinates.</param>
         /// <param name="factory">The factory of the line string.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source is null.
+        /// or
+        /// The factory is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public LineString(IEnumerable<Coordinate> source, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {

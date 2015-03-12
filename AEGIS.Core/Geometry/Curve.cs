@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Curve.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -72,20 +72,21 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="Curve" /> class.
         /// </summary>
-        /// <param name="source">The source coordinates.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        protected Curve(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        protected Curve(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Curve" /> class.
         /// </summary>
-        /// <param name="source">The source coordinates.</param>
         /// <param name="factory">The factory of the curve.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         protected Curve(IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {

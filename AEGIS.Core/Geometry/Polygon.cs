@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Polygon.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -166,23 +166,16 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The reference system of the shell does not match the reference system of the polygon.
-        /// or
-        /// The reference system of a hole does not match the reference system of the polygon.
-        /// </exception>
-        public Polygon(ILinearRing shell, IEnumerable<ILinearRing> holes, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        public Polygon(ILinearRing shell, IEnumerable<ILinearRing> holes, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
-            if (ReferenceSystem != null && shell.ReferenceSystem != null && shell.ReferenceSystem.Equals(ReferenceSystem))
-                throw new ArgumentException("The reference system of the shell does not match the reference system of the polygon.", "shell");
 
             // initalize shell
             try
@@ -204,9 +197,6 @@ namespace ELTE.AEGIS.Geometry
                     if (hole == null)
                         continue;
 
-                    if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
-                        throw new ArgumentException("The reference system of a hole does not match the reference system of the polygon.", "holes");
-
                     try
                     {
                         _holes.Add(Factory.CreateLinearRing(hole)); // create new hole instance
@@ -224,12 +214,13 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="shell">The coordinates of the shell.</param>
         /// <param name="holes">The coordinates of the holes.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
-        public Polygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata)
+        public Polygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -273,21 +264,21 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="holes">The coordinates of the holes.</param>
         /// <param name="factory">The factory of the polygon.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The factory is null.
+        /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The shell is empty.
         /// or
-        /// The reference system of the shell does not match the reference system of the polygon.
-        /// or
-        /// The reference system of a hole does not match the reference system of the polygon.
+        /// The specified factory is invalid.
         /// </exception>
         public Polygon(ILinearRing shell, IEnumerable<ILinearRing> holes, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
-            if (ReferenceSystem != null && shell.ReferenceSystem != null && shell.ReferenceSystem.Equals(ReferenceSystem))
-                throw new ArgumentException("The reference system of the shell does not match the reference system of the polygon.", "shell");
 
             // initalize shell
             try
@@ -309,9 +300,6 @@ namespace ELTE.AEGIS.Geometry
                     if (hole == null)
                         continue;
 
-                    if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
-                        throw new ArgumentException("The reference system of a hole does not match the reference system of the polygon.", "holes");
-
                     try
                     {
                         _holes.Add(Factory.CreateLinearRing(hole)); // create new hole instance
@@ -331,8 +319,16 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="holes">The coordinates of the holes.</param>
         /// <param name="factory">The factory of the polygon.</param>
         /// <param name="metadata">The metadata.</param>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentException">The shell is empty.</exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// The factory is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell is empty.
+        /// or
+        /// The specified factory is invalid.
+        /// </exception>
         public Polygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(factory, metadata)
         {

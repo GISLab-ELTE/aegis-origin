@@ -28,12 +28,6 @@ namespace ELTE.AEGIS.Geometry
     /// </remarks>
     public class GeometryFactory : Factory, IGeometryFactory
     {
-        #region Private fields
-
-        private readonly IMetadataFactory _metadataFactory;
-
-        #endregion
-
         #region IGeometryFactory properties
 
         /// <summary>
@@ -56,7 +50,7 @@ namespace ELTE.AEGIS.Geometry
         /// Initializes a new instance of the <see cref="GeometryFactory" /> class.
         /// </summary>
         public GeometryFactory()
-            : this(PrecisionModel.Default, null)
+            : this(PrecisionModel.Default, null, null)
         {
         }
 
@@ -65,7 +59,7 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="referenceSystem">The reference system.</param>
         public GeometryFactory(IReferenceSystem referenceSystem)
-            : this(PrecisionModel.Default, referenceSystem)
+            : this(PrecisionModel.Default, referenceSystem, null)
         {
         }
 
@@ -75,10 +69,8 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem)
+            : this(precisionModel, referenceSystem, null)
         {
-            PrecisionModel = precisionModel ?? PrecisionModel.Default;
-            ReferenceSystem = referenceSystem;
-            _metadataFactory = new MetadataFactory();
         }
 
         /// <summary>
@@ -88,11 +80,10 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadataFactory">The metadata factory.</param>
         public GeometryFactory(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IMetadataFactory metadataFactory)
-            : base(metadataFactory)
+            : base(metadataFactory ?? new MetadataFactory())
         {
             PrecisionModel = precisionModel ?? PrecisionModel.Default;
             ReferenceSystem = referenceSystem;
-            _metadataFactory = metadataFactory ?? new MetadataFactory();
         }
 
         #endregion
@@ -957,35 +948,42 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region Factory methods for metadata
+        #region Factory methods for geometries
 
         /// <summary>
-        /// Creates a metadata collection.
+        /// Creates a geometry matching another geometry.
         /// </summary>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        public IMetadataCollection CreateMetadata()
+        /// <param name="other">The other geometry.</param>
+        /// <returns>The produced geometry matching <see cref="other" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The other geometry is null.</exception>
+        /// <exception cref="System.ArgumentException">The type of the other geometry is not supported.</exception>
+        public IGeometry CreateGeometry(IGeometry other)
         {
-            return _metadataFactory.CreateCollection();
-        }
+            if (other == null)
+                throw new ArgumentNullException("other", "The other geometry is null.");
 
-        /// <summary>
-        /// Creates a metadata collection.
-        /// </summary>
-        /// <param name="source">The source collection.</param>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        public IMetadataCollection CreateMetadata(IMetadataCollection source)
-        {
-            return _metadataFactory.CreateCollection(source);
-        }
+            if (other is IPoint)
+                return CreatePoint(other as IPoint);
+            if (other is ILine)
+                return CreateLine(other as ILine);
+            if (other is ILinearRing)
+                return CreateLinearRing(other as ILinearRing);
+            if (other is ILineString)
+                return CreateLineString(other as ILineString);
+            if (other is IPolygon)
+                return CreatePolygon(other as IPolygon);
+            if (other is ITriangle)
+                return CreateTriangle(other as ITriangle);
+            if (other is IMultiPoint)
+                return CreateMultiPoint(other as IMultiPoint);
+            if (other is IMultiLineString)
+                return CreateMultiLineString(other as IMultiLineString);
+            if (other is IMultiPolygon)
+                return CreateMultiPolygon(other as IMultiPolygon);
+            if (other is IGeometryCollection<IGeometry>)
+                return CreateGeometryCollection(other as IGeometryCollection<IGeometry>);
 
-        /// <summary>
-        /// Creates a metadata collection.
-        /// </summary>
-        /// <param name="source">The source collection.</param>
-        /// <returns>The metadata collection produced by the factory.</returns>
-        public IMetadataCollection CreateMetadata(IDictionary<String, Object> source)
-        {
-            return _metadataFactory.CreateCollection(source);
+            throw new ArgumentException("other", "The type of the other geometry is not supported.");
         }
 
         #endregion

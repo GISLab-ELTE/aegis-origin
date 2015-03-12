@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Line.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -51,10 +51,11 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="startCoordinate">The starting coordinate.</param>
         /// <param name="endCoordinate">The ending coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public Line(Coordinate startCoordinate, Coordinate endCoordinate, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(new List<Coordinate> { startCoordinate, endCoordinate }, referenceSystem, metadata)
+        public Line(Coordinate startCoordinate, Coordinate endCoordinate, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(new List<Coordinate> { startCoordinate, endCoordinate }, precisionModel, referenceSystem, metadata)
         {
         }
 
@@ -65,6 +66,8 @@ namespace ELTE.AEGIS.Geometry
         /// <param name="endCoordinate">The ending coordinate.</param>
         /// <param name="factory">The factory of the line.</param>
         /// <param name="metadata">The metadata.</param>
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
         public Line(Coordinate startCoordinate, Coordinate endCoordinate, IGeometryFactory factory, IDictionary<String, Object> metadata)
             : base(new List<Coordinate> { startCoordinate, endCoordinate }, factory, metadata)
         {
