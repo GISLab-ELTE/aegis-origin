@@ -23,15 +23,6 @@ namespace ELTE.AEGIS.Geometry
     /// </summary>
     public class GeometryGraphFactory : Factory, IGeometryGraphFactory
     {
-        #region Private fields
-
-        /// <summary>
-        /// The geometry factory. This field is read-only.
-        /// </summary>
-        private readonly IGeometryFactory _geometryFactory;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -43,8 +34,6 @@ namespace ELTE.AEGIS.Geometry
         {
             if (geometryFactory == null)
                 throw new ArgumentNullException("geometryFactory", "The geometry factory is null.");
-
-            _geometryFactory = geometryFactory;
         }
 
         #endregion
@@ -57,7 +46,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty graph.</returns>
         public IGeometryGraph CreateGraph()
         {
-            return new GeometryGraph(this, null);
+            return new GeometryGraph(GetFactory<IGeometryFactory>(), null);
         }
 
         /// <summary>
@@ -69,7 +58,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty graph using the specified comparers.</returns>
         public IGeometryGraph CreateGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
         {
-            return new GeometryGraph(this, null, vertexEqualityComparer, edgeEqualityComparer);
+            return new GeometryGraph(vertexEqualityComparer, edgeEqualityComparer, GetFactory<IGeometryFactory>(), null);
         }
 
         /// <summary>
@@ -81,7 +70,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty graph with the specified metadata using the specified comparers.</returns>
         public IGeometryGraph CreateGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
         {
-            return new GeometryGraph(this, metadata, vertexEqualityComparer, edgeEqualityComparer);
+            return new GeometryGraph(vertexEqualityComparer, edgeEqualityComparer, GetFactory<IGeometryFactory>(), metadata);
         }
 
         /// <summary>
@@ -91,7 +80,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty graph with the specified metadata.</returns>
         public IGeometryGraph CreateGraph(IDictionary<String, Object> metadata)
         {
-            return new GeometryGraph(this, metadata);
+            return new GeometryGraph(GetFactory<IGeometryFactory>(), metadata);
         }
 
         /// <summary>
@@ -126,7 +115,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A graph containing the specified coordinates as vertices and the metadata using the specified comparers.</returns>
         public IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
         {
-            IGeometryGraph graph = new GeometryGraph(this, metadata, vertexEqualityComparer, edgeEqualityComparer);
+            IGeometryGraph graph = new GeometryGraph(vertexEqualityComparer, edgeEqualityComparer, GetFactory<IGeometryFactory>(), metadata);
 
             if (coordinates != null)
             {
@@ -181,7 +170,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A graph containing the specified coordinates as vertices and edges and the metadata using the specified comparers.</returns>
         public IGeometryGraph CreateGraph(IEnumerable<IEnumerable<Coordinate>> coordinates, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IDictionary<String, Object> metadata)
         {
-            IGeometryGraph graph = new GeometryGraph(this, metadata, vertexEqualityComparer, edgeEqualityComparer);
+            IGeometryGraph graph = new GeometryGraph(vertexEqualityComparer, edgeEqualityComparer, GetFactory<IGeometryFactory>(), metadata);
             if (coordinates != null)
             {
                 foreach (IEnumerable<Coordinate> coordinateCollection in coordinates)
@@ -228,7 +217,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A graph that matches <param name="other" />.</returns>
         public IGeometryGraph CreateGraph(IGeometryGraph other)
         {
-            IGeometryGraph graph = new GeometryGraph(this, other.Metadata, other.VertexComparer, other.EdgeComparer);
+            IGeometryGraph graph = new GeometryGraph(other.VertexComparer, other.EdgeComparer, GetFactory<IGeometryFactory>(), other.Metadata);
 
             other.ToGraph(graph); // using the extension method
 
@@ -244,7 +233,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A graph that matches <param name="other" /> using the specified comparers.</returns>
         public IGeometryGraph CreateGraph(IGeometryGraph other, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
         {
-            IGeometryGraph graph = new GeometryGraph(this, other.Metadata, vertexEqualityComparer, edgeEqualityComparer);
+            IGeometryGraph graph = new GeometryGraph(vertexEqualityComparer, edgeEqualityComparer, GetFactory<IGeometryFactory>(), other.Metadata);
 
             other.ToGraph(graph); // using the extension method
 
@@ -261,7 +250,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty network.</returns>
         public IGeometryGraph CreateNetwork()
         {
-            return new GeometryNetwork(this, null);
+            return new GeometryNetwork(GetFactory<IGeometryFactory>(), null);
         }
 
         /// <summary>
@@ -271,7 +260,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>An empty network with the specified metadata.</returns>
         public IGeometryGraph CreateNetwork(IDictionary<String, Object> metadata)
         {
-            return new GeometryNetwork(this, metadata);
+            return new GeometryNetwork(GetFactory<IGeometryFactory>(), metadata);
         }
 
         /// <summary>
@@ -292,7 +281,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A network containing the specified coordinates as vertices and the specified metadata.</returns>
         public IGeometryGraph CreateNetwork(IEnumerable<Coordinate> coordinates, IDictionary<String, Object> metadata)
         {
-            IGeometryGraph graph = new GeometryNetwork(this, metadata);
+            IGeometryGraph graph = new GeometryNetwork(GetFactory<IGeometryFactory>(), metadata);
 
             if (coordinates != null)
             {
@@ -321,7 +310,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>A network containing the specified coordinates as vertices and edges and the specified metadata.</returns>
         public IGeometryGraph CreateNetwork(IEnumerable<IEnumerable<Coordinate>> coordinates, IDictionary<String, Object> metadata)
         {
-            IGeometryGraph graph = new GeometryNetwork(this, metadata);
+            IGeometryGraph graph = new GeometryNetwork(GetFactory<IGeometryFactory>(), metadata);
             if (coordinates != null)
             {
                 foreach (IEnumerable<Coordinate> coordinateCollection in coordinates)

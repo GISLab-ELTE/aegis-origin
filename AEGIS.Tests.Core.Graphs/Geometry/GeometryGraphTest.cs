@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GeometryGraphTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -21,27 +21,38 @@ using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Geometry
 {
+    /// <summary>
+    /// Test fixture for the <see cref="GeometryGraph" /> class.
+    /// </summary>
     [TestFixture]
     public class GeometryGraphTest
     {
+        /// <summary>
+        /// Test fixture for the <see cref="GeometryGraph.BreathFirstEnumerator" /> class.
+        /// </summary>
         [TestFixture]
         public class BreathFirstEnumeratorTest
-        { 
-            [TestCase]
+        {
+            #region Test methods
+
+            /// <summary>
+            /// Tests the <see cref="MoveNext" /> method of the breath-first enumerator.
+            /// </summary>
+            [Test]
             public void GeometryGraphBreathFirstEnumeratorMoveNextTest()
             {
-                // test case 1: empty graph
+                // empty graph
 
-                GeometryGraph graph = new GeometryGraph((IReferenceSystem)null, null);
+                GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 IEnumerator<IGraphVertex> enumerator = graph.GetEnumerator(EnumerationStrategy.BreathFirst);
 
                 Assert.IsNull(enumerator.Current);
                 Assert.IsFalse(enumerator.MoveNext());
                 Assert.IsNull(enumerator.Current);
 
-                // test case 2: weekly connected graph
+                // weekly connected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 IGraphVertex v1 = graph.AddVertex(new Coordinate(10, 10));
                 IGraphVertex v2 = graph.AddVertex(new Coordinate(0, 0));
                 graph.AddEdge(v1, v2);
@@ -57,9 +68,9 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 3: strongly connected graph
+                // strongly connected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 v1 = graph.AddVertex(new Coordinate(10, 10));
                 v2 = graph.AddVertex(new Coordinate(0, 0));
                 graph.AddEdge(v1, v2);
@@ -76,9 +87,9 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 4: disconnected graph
+                // disconnected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 v1 = graph.AddVertex(new Coordinate(10, 10));
                 v2 = graph.AddVertex(new Coordinate(0, 0));
                 IGraphVertex v3 = graph.AddVertex(new Coordinate(5, 5));
@@ -98,19 +109,22 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 5: modified collection
+                // modified collection
 
                 graph.AddVertex(new Coordinate(20, 20));
 
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
             }
 
-            [TestCase]
+            /// <summary>
+            /// Tests the <see cref="Reset" /> method of the depth-first enumerator.
+            /// </summary>
+            [Test]
             public void GeometryGraphBreathFirstEnumeratorResetTest()
             {
-                // test case 1: simple reset
+                // simple reset
 
-                GeometryGraph graph = new GeometryGraph((IReferenceSystem)null, null);
+                GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, null, null);
 
                 IGraphVertex v1 = graph.AddVertex(new Coordinate(10, 10));
                 IGraphVertex v2 = graph.AddVertex(new Coordinate(0, 0));
@@ -142,32 +156,42 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 2: modified collection
+                // modified collection
 
                 graph.AddVertex(new Coordinate(20, 20));
 
                 Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
             }
+
+            #endregion
         }
 
+        /// <summary>
+        /// Test fixture for the <see cref="GeometryGraph.DepthFirstEnumerator" /> class.
+        /// </summary>
         [TestFixture]
         public class DepthFirstEnumeratorTest
         {
-            [TestCase]
+            #region Test methods
+
+            /// <summary>
+            /// Tests the <see cref="MoveNext" /> method of the depth-first enumerator.
+            /// </summary>
+            [Test]
             public void GeometryGraphDepthFirstEnumeratorMoveNextTest()
             {
-                // test case 1: empty graph
+                // empty graph
 
-                GeometryGraph graph = new GeometryGraph((IReferenceSystem)null, null);
+                GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 IEnumerator<IGraphVertex> enumerator = graph.GetEnumerator(EnumerationStrategy.DepthFirst);
 
                 Assert.IsNull(enumerator.Current);
                 Assert.IsFalse(enumerator.MoveNext());
                 Assert.IsNull(enumerator.Current);
 
-                // test case 2: weekly connected graph
+                // weekly connected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 IGraphVertex v1 = graph.AddVertex(new Coordinate(10, 10));
                 IGraphVertex v2 = graph.AddVertex(new Coordinate(0, 0));
                 graph.AddEdge(v1, v2);
@@ -183,9 +207,9 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 3: strongly connected graph
+                // strongly connected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 v1 = graph.AddVertex(new Coordinate(10, 10));
                 v2 = graph.AddVertex(new Coordinate(0, 0));
                 graph.AddEdge(v1, v2);
@@ -202,9 +226,9 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 4: disconnected graph
+                // disconnected graph
 
-                graph = new GeometryGraph((IReferenceSystem)null, null);
+                graph = new GeometryGraph(PrecisionModel.Default, null, null);
                 v1 = graph.AddVertex(new Coordinate(10, 10));
                 v2 = graph.AddVertex(new Coordinate(0, 0));
                 IGraphVertex v3 = graph.AddVertex(new Coordinate(5, 5));
@@ -224,19 +248,22 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 5: modified collection
+                // modified collection
 
                 graph.AddVertex(new Coordinate(20, 20));
 
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
             }
 
-            [TestCase]
+            /// <summary>
+            /// Tests the <see cref="Reset" /> method of the depth-first enumerator.
+            /// </summary>
+            [Test]
             public void GeometryGraphDepthFirstEnumeratorResetTest()
             {
-                // test case 1: simple reset
+                // simple reset
 
-                GeometryGraph graph = new GeometryGraph((IReferenceSystem)null, null);
+                GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, null, null);
 
                 IGraphVertex v1 = graph.AddVertex(new Coordinate(10, 10));
                 IGraphVertex v2 = graph.AddVertex(new Coordinate(0, 0));
@@ -268,12 +295,14 @@ namespace ELTE.AEGIS.Tests.Geometry
                 Assert.IsTrue(list.All(vertex => graph.Vertices.Contains(vertex)));
 
 
-                // test case 2: modified collection
+                // modified collection
 
                 graph.AddVertex(new Coordinate(20, 20));
 
                 Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
             }
+
+            #endregion
         }       
     }
 }

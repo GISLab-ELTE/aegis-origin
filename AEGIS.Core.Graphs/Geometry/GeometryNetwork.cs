@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GeometryNetwork.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Geometry
 {
     /// <summary>
-    /// Represents a graph form of geometry, where every vertex has unique coordinates.
+    /// Represents a graph form of geometry in spatial coordinate space, where every vertex has unique coordinates.
     /// </summary>
     public class GeometryNetwork : GeometryGraph
     {
@@ -95,20 +95,23 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryNetwork" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryNetwork(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : base(referenceSystem, metadata, new VertexCoordinateEqualityComparer(), new EdgeCoordinateEqualityComparer())
+        public GeometryNetwork(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(new VertexCoordinateEqualityComparer(), new EdgeCoordinateEqualityComparer(), precisionModel, referenceSystem, metadata)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryNetwork" /> class.
         /// </summary>
-        /// <param name="factory">The geometry graph factory.</param>
+        /// <param name="factory">The geometry factory.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryNetwork(IGeometryGraphFactory factory, IDictionary<String, Object> metadata)
-            : base(factory, metadata, new VertexCoordinateEqualityComparer(), new EdgeCoordinateEqualityComparer())
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
+        public GeometryNetwork(IGeometryFactory factory, IDictionary<String, Object> metadata)
+            : base(new VertexCoordinateEqualityComparer(), new EdgeCoordinateEqualityComparer(), factory, metadata)
         {
         }
 
@@ -122,7 +125,7 @@ namespace ELTE.AEGIS.Geometry
         /// <returns>The deep copy of the <see cref="GeometryNetwork" /> instance.</returns>
         public override Object Clone()
         {
-            GeometryNetwork result = new GeometryNetwork(ReferenceSystem, Metadata);
+            GeometryNetwork result = new GeometryNetwork(Factory, Metadata);
             CloneToGraph(this, result);
             return result;
         }

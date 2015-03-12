@@ -21,9 +21,9 @@ using System.Linq;
 namespace ELTE.AEGIS.Geometry
 {
     /// <summary>
-    /// Represents a graph form of geometry.
+    /// Represents a graph form of geometry in spatial coordinate space.
     /// </summary>
-    public class GeometryGraph : IGeometryGraph
+    public class GeometryGraph : Geometry, IGeometryGraph
     {
         #region Public types
 
@@ -463,31 +463,7 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region Private fields
-
-        /// <summary>
-        /// The envelope of the gtraph.
-        /// </summary>
-        private Envelope _envelope;
-
-        /// <summary>
-        /// The boundary of the graph.
-        /// </summary>
-        private IGeometry _boundary;
-
-        /// <summary>
-        /// The metadata.
-        /// </summary>
-        private IMetadataCollection _metadata;
-
-        #endregion
-
         #region Protected fields
-
-        /// <summary>
-        /// The geometry graph factory.
-        /// </summary>
-        protected readonly IGeometryGraphFactory _factory;
 
         /// <summary>
         /// The list of vertices.
@@ -529,27 +505,15 @@ namespace ELTE.AEGIS.Geometry
         #region IGeometry properties
 
         /// <summary>
-        /// Gets the factory of the geometry.
-        /// </summary>
-        /// <value>The factory implementation the geometry was constructed by.</value>
-        public IGeometryFactory Factory { get { return _factory.GetFactory<IGeometryFactory>(); } }
-
-        /// <summary>
-        /// Gets the precision model of the geometry.
-        /// </summary>
-        /// <value>The precision model of the geometry.</value>
-        public PrecisionModel PrecisionModel { get { return _factory.GetFactory<IGeometryFactory>().PrecisionModel; } }
-
-        /// <summary>
         /// Gets the general name of the geometry.
         /// </summary>
         /// <value>The general name of the specific geometry.</value>
-        public String Name { get { return "Geometry graph"; } }
+        public override String Name { get { return "Geometry graph"; } }
 
         /// <summary>
         /// Gets the inherent dimension of the geometry.
         /// </summary>
-        public Int32 Dimension
+        public override Int32 Dimension
         {
             get
             {
@@ -565,45 +529,9 @@ namespace ELTE.AEGIS.Geometry
         }
 
         /// <summary>
-        /// Gets the coordinate dimension of the geometry.
-        /// </summary>
-        /// <value>The coordinate dimension of the geometry. The coordinate dimension is equal to the dimension of the reference system, if provided.</value>
-        public Int32 CoordinateDimension { get { return (ReferenceSystem != null) ? ReferenceSystem.Dimension : SpatialDimension; } }
-
-        /// <summary>
-        /// Gets the spatial dimension of the geometry.
-        /// </summary>
-        /// <value>The spatial dimension of the geometry. The spatial dimension is always less than or equal to the coordinate dimension.</value>
-        public Int32 SpatialDimension { get { return (Envelope.Minimum.Z != 0 || Envelope.Maximum.Z != 0) ? 3 : 2; } }
-
-        /// <summary>
-        /// Gets the model of the geometry.
-        /// </summary>
-        /// <value>The model of the geometry.</value>
-        public GeometryModel GeometryModel { get { return (CoordinateDimension == 3) ? GeometryModel.Spatial3D : GeometryModel.Spatial2D; } }
-
-        /// <summary>
-        /// Gets the reference system of the geometry.
-        /// </summary>
-        /// <value>The reference system of the geometry.</value>
-        public IReferenceSystem ReferenceSystem { get { return _factory.GetFactory<IGeometryFactory>().ReferenceSystem; } }
-
-        /// <summary>
-        /// Gets the minimum bounding envelope of the geometry.
-        /// </summary>
-        /// <value>The minimum bounding box of the geometry.</value>
-        public Envelope Envelope { get { return _envelope ?? (_envelope = ComputeEnvelope()); } }
-
-        /// <summary>
-        /// Gets the bounding <see cref="IGeometry" />.
-        /// </summary>
-        /// <value>The boundary of the geometry.</value>
-        public IGeometry Boundary { get { return _boundary ?? (_boundary = ComputeBoundary()); } }
-
-        /// <summary>
         /// Gets the centroid of the geometry.
         /// </summary>
-        public Coordinate Centroid
+        public override Coordinate Centroid
         {
             get
             {
@@ -634,7 +562,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets a value indicating whether the geometry is empty.
         /// </summary>
         /// <value><c>true</c> if the geometry is considered to be empty; otherwise, <c>false</c>.</value>
-        public Boolean IsEmpty
+        public override Boolean IsEmpty
         {
             get
             {
@@ -645,7 +573,7 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Gets a value indicating whether the geometry is simple.
         /// </summary>
-        public Boolean IsSimple
+        public override Boolean IsSimple
         {
             get
             {
@@ -670,7 +598,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets a value indicating whether the geometry is simple.
         /// </summary>
         /// <value><c>true</c> if the geometry is considered to be simple; otherwise, <c>false</c>.</value>
-        public Boolean IsValid
+        public override Boolean IsValid
         {
             get
             {
@@ -734,56 +662,16 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region IMetadataProvider properties
-
-        /// <summary>
-        /// Gets the metadata collection.
-        /// </summary>
-        /// <value>The metadata collection.</value>
-        public IMetadataCollection Metadata { get { return _metadata; } }
-
-        /// <summary>
-        /// Gets or sets the metadata value for a specified key.
-        /// </summary>
-        /// <param name="key">The key of the metadata.</param>
-        /// <returns>The metadata value with the <paramref name="key" /> if it exists; otherwise, <c>null</c>.</returns>
-        public Object this[String key]
-        {
-            get
-            {
-                Object value = null;
-                if (_metadata != null)
-                    _metadata.TryGetValue(key, out value);
-                return value;
-            }
-            set
-            {
-                if (_metadata == null)
-                    _metadata = Factory.GetFactory<IMetadataFactory>().CreateCollection();
-                _metadata[key] = value;
-            }
-        }
-
-        #endregion
-
-        #region IGeometry events
-
-        /// <summary>
-        /// Occurs when the geometry is changed.
-        /// </summary>
-        public event EventHandler GeometryChanged;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryGraph" /> class.
         /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryGraph(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
-            : this(referenceSystem, metadata, null, null)
+        public GeometryGraph(PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : this(null, null, precisionModel, referenceSystem, metadata)
         {
         }
 
@@ -792,20 +680,31 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="vertexEqualityComparer">The vertex equality comparer.</param>
         /// <param name="edgeEqualityComparer">The edge equality comparer.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <param name="referenceSystem">The reference system.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryGraph(IReferenceSystem referenceSystem, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
-            : this(new GeometryGraphFactory(new GeometryFactory(referenceSystem)), metadata, vertexEqualityComparer, edgeEqualityComparer)
+        public GeometryGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, PrecisionModel precisionModel, IReferenceSystem referenceSystem, IDictionary<String, Object> metadata)
+            : base(precisionModel, referenceSystem, metadata)
         {
+            _vertexEqualityComparer = vertexEqualityComparer ?? new VertexEqualityComparer();
+            _edgeEqualityComparer = edgeEqualityComparer ?? new EdgeEqualityComparer();
+
+            _version = 0;
+            _vertexList = new List<IGraphVertex>();
+            _edgeList = null;
+            _adjacencySource = new Dictionary<IGraphVertex, HashSet<IGraphEdge>>(_vertexEqualityComparer);
+            _adjacencyTarget = new Dictionary<IGraphVertex, HashSet<IGraphEdge>>(_vertexEqualityComparer);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryGraph" /> class.
         /// </summary>
-        /// <param name="referenceSystem">The reference system.</param>
+        /// <param name="factory">The geometry factory.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryGraph(IGeometryGraphFactory factory, IDictionary<String, Object> metadata)
-            : this(factory, metadata, null, null)
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
+        public GeometryGraph(IGeometryFactory factory, IDictionary<String, Object> metadata)
+            : this(null, null, factory, metadata)
         {
         }
 
@@ -814,15 +713,15 @@ namespace ELTE.AEGIS.Geometry
         /// </summary>
         /// <param name="vertexEqualityComparer">The vertex equality comparer.</param>
         /// <param name="edgeEqualityComparer">The edge equality comparer.</param>
-        /// <param name="referenceSystem">The reference system.</param>
+        /// <param name="factory">The geometry factory.</param>
         /// <param name="metadata">The metadata.</param>
-        public GeometryGraph(IGeometryGraphFactory factory, IDictionary<String, Object> metadata, IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer)
+        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
+        /// <exception cref="System.ArgumentException">The specified factory is invalid.</exception>
+        public GeometryGraph(IEqualityComparer<IGraphVertex> vertexEqualityComparer, IEqualityComparer<IGraphEdge> edgeEqualityComparer, IGeometryFactory factory, IDictionary<String, Object> metadata)
+            : base(factory, metadata)
         {
-            _factory = factory ?? new GeometryGraphFactory(new GeometryFactory());
-            _metadata = _factory.GetFactory<IMetadataFactory>().CreateCollection(metadata);
-
-            _envelope = null;
-            _boundary = null;
+            if (!factory.ContainsFactory<IGeometryGraphFactory>() || !(factory.GetFactory<IGeometryGraphFactory>() is GeometryGraphFactory))
+                throw new ArgumentException("The specified factory is invalid.", "factory");
 
             _vertexEqualityComparer = vertexEqualityComparer ?? new VertexEqualityComparer();
             _edgeEqualityComparer = edgeEqualityComparer ?? new EdgeEqualityComparer();
@@ -836,7 +735,7 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
 
-        #region Public methods
+        #region IGeometryGraph methods
 
         /// <summary>
         /// Returns the outgoing edges of a vertex.
@@ -1348,9 +1247,9 @@ namespace ELTE.AEGIS.Geometry
         /// Creates a clone of the <see cref="GeometryGraph" /> instance.
         /// </summary>
         /// <returns>The deep copy of the <see cref="GeometryGraph" /> instance.</returns>
-        public virtual Object Clone()
+        public override Object Clone()
         {
-            GeometryGraph result = new GeometryGraph(_factory, _metadata, _vertexEqualityComparer, _edgeEqualityComparer);
+            GeometryGraph result = new GeometryGraph(_vertexEqualityComparer, _edgeEqualityComparer, Factory, Metadata);
             CloneToGraph(this, result);
             return result;
         }
@@ -1424,7 +1323,7 @@ namespace ELTE.AEGIS.Geometry
                 foreach (IGraphEdge edge in item.Value)
                 {
                     IGraphVertex to = sourceToTargetVertexMapper[edge.Target];
-                    target.AddEdge(from, to, edge.Metadata);
+                    target.AddEdge(from, to, source.Factory.GetFactory<IMetadataFactory>().CreateCollection(edge.Metadata));
                 }
             }
         }
@@ -1432,25 +1331,19 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Called when the geometry is changed.
         /// </summary>
-        protected virtual void OnGeometryChanged()
+        protected override void OnGeometryChanged()
         {
-            EventHandler geometryChanged = GeometryChanged;
-
-            _envelope = null;
-            _boundary = null;
-
             _edgeList = null;
             _version++;
 
-            if (geometryChanged != null)
-                geometryChanged(this, EventArgs.Empty);
+            base.OnGeometryChanged();
         }
 
         /// <summary>
         /// Computes the minimal bounding envelope of the geometry.
         /// </summary>
         /// <returns>The minimum bounding box of the geometry.</returns>
-        protected Envelope ComputeEnvelope()
+        protected override Envelope ComputeEnvelope()
         {
             return Envelope.FromCoordinates(_vertexList.Select(vertex => vertex.Coordinate));
         }
@@ -1459,7 +1352,7 @@ namespace ELTE.AEGIS.Geometry
         /// Computes the boundary of the geometry.
         /// </summary>
         /// <returns>The closure of the combinatorial boundary of the geometry.</returns>
-        protected IGeometry ComputeBoundary()
+        protected override IGeometry ComputeBoundary()
         {
             // TODO: compute proper bundary for graph
             return null;

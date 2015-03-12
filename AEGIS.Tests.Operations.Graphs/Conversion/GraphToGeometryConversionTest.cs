@@ -68,7 +68,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             for (Int32 i = 0; i < 100; i++)
                 coordinates.Add(new Coordinate(i, i));
 
-            GeometryGraph graph = new GeometryGraph(_referenceSystemMock.Object, null);
+            GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, _referenceSystemMock.Object, null);
             coordinates.ForEach(coordinate => graph.AddVertex(coordinate));
 
 
@@ -93,7 +93,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
 
             // with metadata
 
-            graph = new GeometryGraph(_referenceSystemMock.Object, null);
+            graph = new GeometryGraph(PrecisionModel.Default, _referenceSystemMock.Object, null);
             coordinates.ForEach(coordinate =>
                 {
                     IMetadataCollection metadata = new MetadataCollection();
@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             for (Int32 i = 0; i < 100; i++)
                 coordinates.Add(new Coordinate(i, i));
 
-            GeometryGraph graph = new GeometryGraph(_referenceSystemMock.Object, null);
+            GeometryGraph graph = new GeometryGraph(PrecisionModel.Default, _referenceSystemMock.Object, null);
 
             for (Int32 i = 0; i < coordinates.Count; i++)
             {
@@ -236,7 +236,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             coordinates[2] = new Coordinate(20, 20);
             coordinates[3] = new Coordinate(10, 20);
 
-            GeometryNetwork graph = new GeometryNetwork(_referenceSystemMock.Object, null);
+            GeometryNetwork graph = new GeometryNetwork(PrecisionModel.Default, _referenceSystemMock.Object, null);
 
             graph.AddVertex(coordinates[0]);
 
@@ -334,7 +334,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             coordinates[5] = new Coordinate(10, 30);
             coordinates[6] = new Coordinate(0, 20);
 
-            graph = new GeometryNetwork(_referenceSystemMock.Object, null);
+            graph = new GeometryNetwork(PrecisionModel.Default, _referenceSystemMock.Object, null);
 
             graph.AddVertex(coordinates[0]);
 
