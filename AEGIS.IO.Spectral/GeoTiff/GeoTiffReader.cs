@@ -205,19 +205,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The spectral imaging scene data of the geometry.</returns>
         protected override RasterImaging ComputeRasterImaging()
         {
-            // the imaging data may be contained in a metafile
-            if (Path != null)
-            {
-                try
-                {
-                    using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
-                    {
-                        return reader.ReadImaging();
-                    }
-                }
-                catch { }
-            }
-
             // the imaging data may be contained within the tags
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(57410) &&
                 _imageFileDirectories[_currentImageIndex].ContainsKey(57411) &&
@@ -233,11 +220,29 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     return null;
 
                 DateTime imagingTime = DateTime.Parse(_imageFileDirectories[_currentImageIndex][57411][0].ToString(), CultureInfo.InvariantCulture.DateTimeFormat);
-                GeoCoordinate location = new GeoCoordinate(Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][0]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][1]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][2]));
+                GeoCoordinate deviceLocation = new GeoCoordinate(Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][0]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][1]), Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57412][2]));
+
                 Double incidenceAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][0]);
                 Double viewingAngle = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][1]);
                 Double sunAzimuth = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][2]);
                 Double sunElevation = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][57413][3]);
+
+                GeoCoordinate[] imageLocation;
+                if (_imageFileDirectories[_currentImageIndex].ContainsKey(57420) && _imageFileDirectories[_currentImageIndex][57420].Length == 12)
+                {
+                    Double[] imageLocationValues = _imageFileDirectories[_currentImageIndex][57412].Select(value => Convert.ToDouble(value)).ToArray();
+                    imageLocation = new GeoCoordinate[] 
+                    {
+                        new GeoCoordinate(imageLocationValues[0], imageLocationValues[1], imageLocationValues[2]),
+                        new GeoCoordinate(imageLocationValues[3], imageLocationValues[4], imageLocationValues[5]),
+                        new GeoCoordinate(imageLocationValues[6], imageLocationValues[7], imageLocationValues[8]),
+                        new GeoCoordinate(imageLocationValues[9], imageLocationValues[10], imageLocationValues[11])
+                    };
+                }
+                else
+                {
+                    imageLocation = Enumerable.Repeat(GeoCoordinate.Undefined, 4).ToArray();
+                }
 
                 List<RasterImagingBand> bands = new List<RasterImagingBand>();
 
@@ -256,8 +261,21 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 if (device != null)
                 {
-                    return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bands);
+                    return new RasterImaging(device, imagingTime, deviceLocation, imageLocation, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bands);
                 }
+            }
+
+            // the imaging data may be contained in a metafile
+            if (Path != null)
+            {
+                try
+                {
+                    using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                    {
+                        return reader.ReadImaging();
+                    }
+                }
+                catch { }
             }
 
             return null;
@@ -392,23 +410,27 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             ComputeGeoKeys();
 
-            // read from GeoTIFF geokeys
-            if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
+            try
             {
-                switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
+                // read from GeoTIFF geokeys
+                if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
                 {
-                    case ReferenceSystemType.Projected:
-                        return ComputeProjectedCoordinateReferenceSystem();
-                    case ReferenceSystemType.Geographic:
-                        return ComputeGeographicCoordinateReferenceSystem();
-                    case ReferenceSystemType.Geocentric:
-                        // currenty not used
-                        return null;
-                    case ReferenceSystemType.UserDefined:
-                        // currenty not used
-                        return null;
+                    switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
+                    {
+                        case ReferenceSystemType.Projected:
+                            return ComputeProjectedCoordinateReferenceSystem();
+                        case ReferenceSystemType.Geographic:
+                            return ComputeGeographicCoordinateReferenceSystem();
+                        case ReferenceSystemType.Geocentric:
+                            // currenty not used
+                            return null;
+                        case ReferenceSystemType.UserDefined:
+                            // currenty not used
+                            return null;
+                    }
                 }
             }
+            catch { }
 
             // read from metafile
             try

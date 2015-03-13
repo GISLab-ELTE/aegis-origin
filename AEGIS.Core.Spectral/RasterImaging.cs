@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterImaging.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -58,10 +58,16 @@ namespace ELTE.AEGIS
         public DateTime Time { get; private set; }
 
         /// <summary>
-        /// Gets the location of imaging.
+        /// Gets the location of the imaging device.
         /// </summary>
-        /// <value>The geographic coordinate of imaging.</value>
-        public GeoCoordinate Location { get; private set; }
+        /// <value>The geographic coordinate of the imaging device.</value>
+        public GeoCoordinate DeviceLocation { get; private set; }
+
+        /// <summary>
+        /// Gets the geographic coordinates of the image.
+        /// </summary>
+        /// <value>The geographic coordinates of the image in clockwise order.</value>
+        public GeoCoordinate[] ImageLocation { get; private set; }
 
         /// <summary>
         /// Gets the incidence angle.
@@ -132,17 +138,24 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="imagingTime">The imaging time.</param>
-        /// <param name="location">The location.</param>
+        /// <param name="deviceLocation">The location of the imaging device.</param>
+        /// <param name="imageLocation">The geographic coordinates of the image.</param>
         /// <param name="incidenceAngle">The incidence angle.</param>
         /// <param name="viewingAngle">The viewing angle.</param>
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params RasterImagingBand[] bandData)
+        /// <exception cref="System.ArgumentException">The number of coordinates in the image location is not equal to 4.</exception>
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IList<GeoCoordinate> imageLocation, 
+                             Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params RasterImagingBand[] bandData)
         {
+            if (imageLocation != null && imageLocation.Count != 4)
+                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", "imageLocation");
+
             Device = device;
             Time = imagingTime;
-            Location = location;
+            DeviceLocation = deviceLocation;
+            ImageLocation = imageLocation.ToArray();
             IncidenceAngle = incidenceAngle;
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
@@ -155,17 +168,24 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="imagingTime">The imaging time.</param>
-        /// <param name="location">The location.</param>
+        /// <param name="deviceLocation">The location of the imaging device.</param>
+        /// <exception cref="System.ArgumentException">The number of coordinates in the image location is not equal to 4.</exception>
         /// <param name="incidenceAngle">The incidence angle.</param>
         /// <param name="viewingAngle">The viewing angle.</param>
         /// <param name="sunAzimuth">The sun azimuth.</param>
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
-        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate location, Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<RasterImagingBand> bandData)
+        /// <exception cref="System.ArgumentException">The number of coordinates in the image location is not equal to 4.</exception>
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IList<GeoCoordinate> imageLocation, 
+                             Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<RasterImagingBand> bandData)
         {
+            if (imageLocation != null && imageLocation.Count != 4)
+                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", "imageLocation");
+
             Device = device;
             Time = imagingTime;
-            Location = location;
+            DeviceLocation = deviceLocation;
+            ImageLocation = imageLocation.ToArray();
             IncidenceAngle = incidenceAngle;
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;

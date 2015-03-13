@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ImagingDeviceBand.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -49,12 +49,6 @@ namespace ELTE.AEGIS
         public Length AzimuthResolution { get; private set; }
 
         /// <summary>
-        /// Gets the swath width.
-        /// </summary>
-        /// <value>The distance covered by a scan.</value>
-        public Length Swath { get; private set; }
-
-        /// <summary>
         /// Gets the radiometric resolution.
         /// </summary>
         /// <value>The radiometric resolution.</value>
@@ -82,26 +76,21 @@ namespace ELTE.AEGIS
         /// <param name="number">The number.</param>
         /// <param name="description">The description.</param>
         /// <param name="spatialResolution">The spatial resolution.</param>
-        /// <param name="swath">The swath width.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="spectralDomain">The spectral domain of the band.</param>
         /// <param name="spectralRange">The spectral range of the band.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The spatial resolution is equal to or less than 0.
         /// or
-        /// The swath width is less than the spatial resolution.
-        /// or
         /// The radiometric resolution is less than 1.
         /// or
         /// The radiometric resolution is grater than 64.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral range is null.</exception>
-        public ImagingDeviceBand(Int32 number, String description, Length spatialResoltion, Length swath, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
+        public ImagingDeviceBand(Int32 number, String description, Length spatialResoltion, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (spatialResoltion <= Length.Zero)
                 throw new ArgumentOutOfRangeException("spatialResoltion", "The spatial resolution is equal to or less than 0.");
-            if (swath < spatialResoltion)
-                throw new ArgumentOutOfRangeException("swath", "The swath width is less than the spatial resolution.");
             if (radiometricResolution < 1)
                 throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is less than 1.");
             if (radiometricResolution > 64)
@@ -113,7 +102,6 @@ namespace ELTE.AEGIS
             Description = description;
             RangeResolution = spatialResoltion;
             AzimuthResolution = spatialResoltion;
-            Swath = swath;
             RadiometricResolution = radiometricResolution;
             SpectralDomain = spectralDomain;
             SpectralRange = spectralRange;
@@ -126,7 +114,6 @@ namespace ELTE.AEGIS
         /// <param name="description">The description.</param>
         /// <param name="rangeResultion">The range resoltion.</param>
         /// <param name="azimuthResolution">The azimuth resolution.</param>
-        /// <param name="swath">The swath width.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="spectralDomain">The spectral domain of the band.</param>
         /// <param name="spectralRange">The spectral range of the band.</param>
@@ -135,21 +122,18 @@ namespace ELTE.AEGIS
         /// or
         /// The azimuth resolution is equal to or less than 0.
         /// or
-        /// The swath width is less than the spatial resolution.
-        /// or
         /// The radiometric resolution is less than 1.
         /// or
         /// The radiometric resolution is grater than 64.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">The spectral range is null.</exception>
-        public ImagingDeviceBand(Int32 number, String description, Length rangeResultion, Length azimuthResolution, Length swath, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
+        public ImagingDeviceBand(Int32 number, String description, Length rangeResultion, Length azimuthResolution, Int32 radiometricResolution, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (rangeResultion <= Length.Zero)
                 throw new ArgumentOutOfRangeException("rangeResultion", "The range resolution is equal to or less than 0.");
             if (azimuthResolution <= Length.Zero)
                 throw new ArgumentOutOfRangeException("azimuthResolution", "The azimuth resolution is equal to or less than 0.");
-            if (swath < rangeResultion)
-                throw new ArgumentOutOfRangeException("swath", "The swath width is less than the range resolution.");
+
             if (radiometricResolution < 1)
                 throw new ArgumentOutOfRangeException("radiometricResolution", "The radiometric resolution is less than 1.");
             if (radiometricResolution > 64)
@@ -161,7 +145,6 @@ namespace ELTE.AEGIS
             Description = description;
             RangeResolution = rangeResultion;
             AzimuthResolution = azimuthResolution;
-            Swath = swath;
             RadiometricResolution = radiometricResolution;
             SpectralDomain = spectralDomain;
             SpectralRange = spectralRange;

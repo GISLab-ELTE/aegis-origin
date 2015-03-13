@@ -171,19 +171,30 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             // time
             DateTime imagingTime = DateTime.Parse(sceneSourceElement.Element("IMAGING_DATE").Value + " " + sceneSourceElement.Element("IMAGING_TIME").Value, CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeUniversal);
 
-            // view and location
+            // view
             Double incidenceAngle = Double.Parse(sceneSourceElement.Element("INCIDENCE_ANGLE").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
             Double viewingAngle = Double.Parse(sceneSourceElement.Element("VIEWING_ANGLE").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
             Double sunAzimuth = Double.Parse(sceneSourceElement.Element("SUN_AZIMUTH").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
             Double sunElevation = Double.Parse(sceneSourceElement.Element("SUN_ELEVATION").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
 
+            // device location
             XElement ephemeris = _document.Element("Dimap_Document").Element("Data_Strip").Element("Ephemeris");
 
             Double altitude = Double.Parse(ephemeris.Element("SATELLITE_ALTITUDE").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
             Double latitude = Double.Parse(ephemeris.Element("NADIR_LAT").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
             Double longitude = Double.Parse(ephemeris.Element("NADIR_LON").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
 
-            GeoCoordinate location = new GeoCoordinate(Angle.FromDegree(latitude), Angle.FromDegree(longitude), Length.FromMetre(altitude));
+            GeoCoordinate deviceLocation = new GeoCoordinate(Angle.FromDegree(latitude), Angle.FromDegree(longitude), Length.FromMetre(altitude));
+
+            // image location
+            List<GeoCoordinate> imageLocation = new List<GeoCoordinate>(4);
+
+            foreach (XElement vertexElement in _document.Element("Dimap_Document").Element("Dataset_Frame").Elements("Vertex"))
+            {
+                GeoCoordinate coordinate = new GeoCoordinate(Double.Parse(vertexElement.Element("FRAME_LAT").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
+                                                             Double.Parse(vertexElement.Element("FRAME_LON").Value, NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat));
+                imageLocation.Add(coordinate);
+            }
 
             // band parameters
             List<RasterImagingBand> bandData = new List<RasterImagingBand>();
@@ -213,7 +224,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                     bandData.Add(new RasterImagingBand(bandElement.Element("BAND_DESCRIPTION").Value, physicalGain, physicalBias, solarIrradiance, SpectralDomain.Undefined, null));
             }
 
-            return new RasterImaging(device, imagingTime, location, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+            return new RasterImaging(device, imagingTime, deviceLocation, imageLocation, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
         }
 
         /// <summary>

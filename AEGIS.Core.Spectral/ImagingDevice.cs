@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ImagingDevice.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -48,10 +48,10 @@ namespace ELTE.AEGIS
         public Int32 MissionNumber { get; private set; }
 
         /// <summary>
-        /// Gets the recording instrument.
+        /// Gets the recording sensor.
         /// </summary>
-        /// <value>The recording instrument.</value>
-        public String Instrument { get; private set; }
+        /// <value>The recording sensor.</value>
+        public String Sensor { get; private set; }
 
         /// <summary>
         /// The orbit description.
@@ -70,6 +70,12 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <value>The time taken between imaging of the same geographic location.</value>
         public TimeSpan TemporalResolution { get; private set; }
+
+        /// <summary>
+        /// Gets the swath width.
+        /// </summary>
+        /// <value>The distance covered by a scan.</value>
+        public Length Swath { get; private set; }
 
         /// <summary>
         /// Gets the band information.
@@ -99,27 +105,28 @@ namespace ELTE.AEGIS
         /// <param name="identifier">The identifier.</param>
         /// <param name="mission">The mission.</param>
         /// <param name="missionNumber">The mission number.</param>
-        /// <param name="instrument">The instrument.</param>
+        /// <param name="sensor">The sensor.</param>
         /// <param name="orbit">The orbit description.</param>
         /// <param name="altitude">The altitude.</param>
         /// <param name="temporalResolution">The temporal resolution.</param>
+        /// <param name="swath">The swath width.</param>
         /// <param name="bands">The bands.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
         /// The mission is null.
         /// or
-        /// The instrument is null.
+        /// The sensor is null.
         /// or
         /// No bands are specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The mission is empty, or consists of only shitespace characters.
         /// or
-        /// The instrument is empty, or consists of only shitespace characters.
+        /// The sensor is empty, or consists of only shitespace characters.
         /// </exception>
-        public ImagingDevice(String identifier, String mission, String instrument, String orbit, Length altitude, TimeSpan temporalResolution, params ImagingDeviceBand[] bands)
-            : this(identifier, mission, 0, instrument, null, null, orbit, altitude, temporalResolution, bands)
+        public ImagingDevice(String identifier, String mission, String sensor, String orbit, Length altitude, TimeSpan temporalResolution, Length swath, params ImagingDeviceBand[] bands)
+            : this(identifier, mission, 0, sensor, null, null, orbit, altitude, temporalResolution, swath, bands)
         {
         }
 
@@ -129,49 +136,51 @@ namespace ELTE.AEGIS
         /// <param name="identifier">The identifier.</param>
         /// <param name="mission">The mission.</param>
         /// <param name="missionNumber">The mission number.</param>
-        /// <param name="instrument">The instrument.</param>
+        /// <param name="sensor">The sensor.</param>
         /// <param name="remarks">The remarks.</param>
         /// <param name="aliases">The aliases.</param>
         /// <param name="orbit">The orbit description.</param>
         /// <param name="altitude">The altitude.</param>
         /// <param name="temporalResolution">The temporal resolution.</param>
+        /// <param name="swath">The swath width.</param>
         /// <param name="bands">The bands.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The identifier is null.
         /// or
         /// The mission is null.
         /// or
-        /// The instrument is null.
+        /// The sensor is null.
         /// or
         /// No bands are specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The mission is empty, or consists of only shitespace characters.
         /// or
-        /// The instrument is empty, or consists of only shitespace characters.
+        /// The sensor is empty, or consists of only shitespace characters.
         /// </exception>
-        public ImagingDevice(String identifier, String mission, Int32 missionNumber, String instrument, String remarks, String[] aliases, String orbit, Length altitude, TimeSpan temporalResolution, params ImagingDeviceBand[] bands)
+        public ImagingDevice(String identifier, String mission, Int32 missionNumber, String sensor, String remarks, String[] aliases, String orbit, Length altitude, TimeSpan temporalResolution, Length swath, params ImagingDeviceBand[] bands)
             : base(identifier, null, remarks, aliases)
         {
             if (mission == null)
                 throw new ArgumentNullException("mission", "The mission is null.");
-            if (instrument == null)
-                throw new ArgumentNullException("instrument", "The instrument is null.");
+            if (sensor == null)
+                throw new ArgumentNullException("sensor", "The sensor is null.");
             if (bands == null)
                 throw new ArgumentNullException("bands", "No bands are specified.");
 
             if (String.IsNullOrWhiteSpace(mission))
                 throw new ArgumentException("The mission is empty, or consists of only shitespace characters.", "mission");
-            if (String.IsNullOrWhiteSpace(instrument))
-                throw new ArgumentException("The instrument is empty, or consists of only shitespace characters.", "instrument");
+            if (String.IsNullOrWhiteSpace(sensor))
+                throw new ArgumentException("The sensor is empty, or consists of only shitespace characters.", "sensor");
 
-            Name = mission + missionNumber + " " + instrument;
+            Name = mission + missionNumber + " " + sensor;
             Mission = mission;
             MissionNumber = missionNumber;
-            Instrument = instrument;
+            Sensor = sensor;
             Orbit = orbit;
             Altitude = altitude;
             TemporalResolution = temporalResolution;
+            Swath = swath;
             _bands = bands;
         }
 

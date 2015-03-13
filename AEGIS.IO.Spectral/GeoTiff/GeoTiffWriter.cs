@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -141,11 +141,20 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 imageFileDirectory.Add(57410, new Object[] { geometry.Imaging.Device.Name });
                 imageFileDirectory.Add(57411, new Object[] { geometry.Imaging.Time.ToString(CultureInfo.InvariantCulture.DateTimeFormat) });
-                imageFileDirectory.Add(57412, new Object[] { geometry.Imaging.Location.Latitude.BaseValue, geometry.Imaging.Location.Longitude.BaseValue, geometry.Imaging.Location.Height.BaseValue });
+                imageFileDirectory.Add(57412, new Object[] { geometry.Imaging.DeviceLocation.Latitude.BaseValue, geometry.Imaging.DeviceLocation.Longitude.BaseValue, geometry.Imaging.DeviceLocation.Height.BaseValue });
                 imageFileDirectory.Add(57413, new Object[] { geometry.Imaging.IncidenceAngle, geometry.Imaging.ViewingAngle, geometry.Imaging.SunAzimuth, geometry.Imaging.SunElevation });
                 imageFileDirectory.Add(57417, geometry.Imaging.Bands.Select(band => band.PhysicalGain).Cast<Object>().ToArray());
                 imageFileDirectory.Add(57418, geometry.Imaging.Bands.Select(band => band.PhysicalBias).Cast<Object>().ToArray());
                 imageFileDirectory.Add(57419, geometry.Imaging.Bands.Select(band => band.SolarIrradiance).Cast<Object>().ToArray());
+
+                Object[] imageLocation = new Object[12];
+                for (Int32 coordinateIndex = 0; coordinateIndex < geometry.Imaging.ImageLocation.Length; coordinateIndex++)
+                {
+                    imageLocation[3 * coordinateIndex] = geometry.Imaging.ImageLocation[coordinateIndex].Latitude.BaseValue;
+                    imageLocation[3 * coordinateIndex + 1] = geometry.Imaging.ImageLocation[coordinateIndex].Longitude.BaseValue;
+                    imageLocation[3 * coordinateIndex + 2] = geometry.Imaging.ImageLocation[coordinateIndex].Height.BaseValue;
+                }
+                imageFileDirectory.Add(57420, imageLocation);
             }
 
             return imageFileDirectory;
