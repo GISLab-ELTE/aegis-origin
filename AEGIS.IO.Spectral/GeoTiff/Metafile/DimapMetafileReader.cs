@@ -63,7 +63,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffMetafileReader" /> class.
+        /// Initializes a new instance of the <see cref="DimapMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="option">The path option.</param>
@@ -92,7 +92,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffMetafileReader" /> class.
+        /// Initializes a new instance of the <see cref="DimapMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="option">The path option.</param>

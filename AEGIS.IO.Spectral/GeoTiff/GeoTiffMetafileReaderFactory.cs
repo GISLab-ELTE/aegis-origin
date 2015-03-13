@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffMetafileReaderFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -175,6 +175,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case "SPOT":
                     return new DimapMetafileReader(path, option);
+                case "Landsat":
+                    return new LandsatMetafileReader(path, option);
                 default:
                     throw new NotSupportedException("The specified device is not supported.");
             }
@@ -198,6 +200,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case "SPOT":
                     return new DimapMetafileReader(stream);
+                case "Landsat":
+                    return new LandsatMetafileReader(stream);
                 default:
                     throw new NotSupportedException("The specified device is not supported.");
             }
@@ -324,6 +328,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
             try
             {
                 return new DimapMetafileReader(path, option);
+            }
+            catch { }
+
+            try
+            {
+                return new LandsatMetafileReader(path, option);
             }
             catch { }
 

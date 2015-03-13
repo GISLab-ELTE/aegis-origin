@@ -44,6 +44,7 @@
     <Compile Include="GeoTiff\GeoTiffMetafileReaderFactory.cs" />
     <Compile Include="GeoTiff\GeoTiffWriter.cs" />
     <Compile Include="GeoTiff\Metafile\DimapMetafileReader.cs" />
+    <Compile Include="GeoTiff\Metafile\LandsatMetafileReader.cs" />
     <Compile Include="GeoTiff\Metafile\XElementExtensions.cs" />
     <Compile Include="SpectralGeometryStreamFormats.cs" />
     <Compile Include="SpectralGeometryStreamParameters.cs" />
