@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpotTopOfAtmosphereReflectanceComputation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -30,11 +30,30 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     {
         #region Private fields
 
+        /// <summary>
+        /// The index of the green band.
+        /// </summary>
         private readonly Int32 _indexOfGreenBand;
+
+        /// <summary>
+        /// The index of the red band.
+        /// </summary>
         private readonly Int32 _indexOfRedBand;
+
+        /// <summary>
+        /// The index of the near infrared band.
+        /// </summary>
         private readonly Int32 _indexOfNearInfraredBand;
+
+        /// <summary>
+        /// The index of the short-wave infrared band.
+        /// </summary>
         private readonly Int32 _indexOfShortWavelengthInfraredBand;
-        private Double[] _esunPhysicalGainRatio;
+
+        /// <summary>
+        /// The ToA reflectance gain.
+        /// </summary>
+        private Double[] _toarefGain;
 
         #endregion
 
@@ -56,6 +75,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// The type of a parameter does not match the type specified by the method.
         /// or
         /// The value of a parameter is not within the expected range.
+        /// or
+        /// The source does not contain required data.
+        /// or
+        /// The source contains invalid data.
         /// </exception>
         public SpotTopOfAtmosphereReflectanceComputation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
@@ -84,8 +107,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// or
         /// The source does not contain required data.
         /// or
-        /// The number of bands in the source is less than required.
-        /// or
         /// The source contains invalid data.
         /// </exception>
         public SpotTopOfAtmosphereReflectanceComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
@@ -95,93 +116,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                 throw new ArgumentException("The source does not contain required data.", "source");
             if (Source.Imaging.Device.Mission != "SPOT")
                 throw new ArgumentException("The source does not contain required data.", "source");
-            if (Source.Raster.NumberOfBands < 4)
-                throw new ArgumentException("The number of bands in the source is less than required.", "source");
 
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfGreenBand)) // the parameters are provided
+            try
             {
-                _indexOfGreenBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfGreenBand));
-
-                if (_indexOfGreenBand < 0 || _indexOfGreenBand >= Source.Raster.NumberOfBands)
-                    throw new ArgumentException("The value of a parameter is not within the expected range.", "parameters");
+                _indexOfGreenBand = ResolveParameter(SpectralOperationParameters.IndexOfGreenBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.Green));
+                _indexOfRedBand = ResolveParameter(SpectralOperationParameters.IndexOfRedBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.Red));
+                _indexOfNearInfraredBand = ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.NearInfrared));
+                _indexOfShortWavelengthInfraredBand = ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared));
             }
-            else // the imaging metadata is provided
+            catch
             {
-                RasterImagingBand imagingBand = Source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.Green);
-                if (imagingBand != null)
-                {
-                    _indexOfGreenBand = Source.Imaging.Bands.IndexOf(imagingBand);
-
-                    if (_indexOfGreenBand < 0 || _indexOfGreenBand >= Source.Raster.NumberOfBands)
-                        throw new ArgumentException("The source contains invalid data.", "source");
-                }
-                else // nothing is provided, default values are used
-                    _indexOfGreenBand = 0;
+                throw new ArgumentException("The source does not contain required data.", "source");
             }
 
-           
-
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfRedBand))
+            if (_indexOfGreenBand < 0 || _indexOfGreenBand >= Source.Raster.NumberOfBands ||
+                _indexOfRedBand < 0 || _indexOfRedBand >= Source.Raster.NumberOfBands ||
+                _indexOfNearInfraredBand < 0 || _indexOfNearInfraredBand >= Source.Raster.NumberOfBands ||
+                _indexOfShortWavelengthInfraredBand < 0 || _indexOfShortWavelengthInfraredBand >= Source.Raster.NumberOfBands)
             {
-                _indexOfRedBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfRedBand));
-
-                if (_indexOfRedBand < 0 || _indexOfRedBand >= Source.Raster.NumberOfBands)
-                    throw new ArgumentException("The value of a parameter is not within the expected range.", "parameters");
-            }
-            else
-            {
-                RasterImagingBand imagingBand = Source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.Red);
-                if (imagingBand != null)
-                {
-                    _indexOfRedBand = Source.Imaging.Bands.IndexOf(imagingBand);
-
-                    if (_indexOfRedBand < 0 || _indexOfRedBand >= Source.Raster.NumberOfBands)
-                        throw new ArgumentException("The source contains invalid data.", "source");
-                }
-                else
-                    _indexOfRedBand = 1;
-            }
-           
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfNearInfraredBand))
-            {
-                _indexOfNearInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand));
-
-                if (_indexOfNearInfraredBand < 0 || _indexOfNearInfraredBand >= Source.Raster.NumberOfBands)
-                    throw new ArgumentException("The value of a parameter is not within the expected range.", "parameters");
-            }
-            else
-            {
-                RasterImagingBand imagingBand = Source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.NearInfrared);
-                if (imagingBand != null)
-                {
-                    _indexOfNearInfraredBand = Source.Imaging.Bands.IndexOf(imagingBand);
-
-                    if (_indexOfNearInfraredBand < 0 || _indexOfNearInfraredBand >= Source.Raster.NumberOfBands)
-                        throw new ArgumentException("The source contains invalid data.", "source");
-                }
-                else
-                    _indexOfNearInfraredBand = 2;
-            }
-            
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand))
-            {
-                _indexOfShortWavelengthInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-
-                if (_indexOfShortWavelengthInfraredBand < 0 || _indexOfShortWavelengthInfraredBand >= Source.Raster.NumberOfBands)
-                    throw new ArgumentException("The value of a parameter is not within the expected range.", "parameters");
-            }
-            else if (Source.Imaging != null)
-            {
-                RasterImagingBand imagingBand = Source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.ShortWavelengthInfrared);
-                if (imagingBand != null)
-                {
-                    _indexOfShortWavelengthInfraredBand = Source.Imaging.Bands.IndexOf(imagingBand);
-
-                    if (_indexOfShortWavelengthInfraredBand < 0 || _indexOfShortWavelengthInfraredBand >= Source.Raster.NumberOfBands)
-                        throw new ArgumentException("The source contains invalid data.", "source");
-                }
-                else
-                    _indexOfNearInfraredBand = 3;
+                throw new ArgumentException("The source contains invalid data.", "source");
             }
         }
 
@@ -204,15 +157,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                                                             Source.Presentation,
                                                             Source.Imaging);
 
-            Double sunElevation = 90 - Source.Imaging.SunElevation, eSun;
+            Double sunZenith = 90 - Source.Imaging.SunElevation, doySolarIrradianceSunZenithRatio;
             Int32 dayOfYear = Source.Imaging.Time.DayOfYear;
 
-            _esunPhysicalGainRatio = new Double[4];
+            _toarefGain = new Double[4];
 
             for (Int32 bandIndex = 0; bandIndex < 4; bandIndex++)
             {
-                eSun = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Math.PI / 180))) / (Source.Imaging.Bands[bandIndex].SolarIrradiance * Math.Cos(sunElevation * Constants.PI / 180)));
-                _esunPhysicalGainRatio[bandIndex] = eSun * 100 / Source.Imaging.Bands[bandIndex].PhysicalGain;
+                doySolarIrradianceSunZenithRatio = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Math.PI / 180))) / (Source.Imaging.Bands[bandIndex].SolarIrradiance * Math.Cos(sunZenith * Constants.PI / 180)));
+                _toarefGain[bandIndex] = doySolarIrradianceSunZenithRatio / Source.Imaging.Bands[bandIndex].PhysicalGain;
             }
         }
 
@@ -232,13 +185,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             switch (bandIndex)
             {
                 case 0:
-                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) * _esunPhysicalGainRatio[_indexOfGreenBand];
+                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) * _toarefGain[_indexOfGreenBand] * 100;
                 case 1:
-                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand) * _esunPhysicalGainRatio[_indexOfRedBand];
+                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand) * _toarefGain[_indexOfRedBand] * 100;
                 case 2:
-                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfGreenBand) * _esunPhysicalGainRatio[_indexOfNearInfraredBand];
+                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfGreenBand) * _toarefGain[_indexOfNearInfraredBand] * 100;
                 case 3:
-                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand) * _esunPhysicalGainRatio[_indexOfShortWavelengthInfraredBand];
+                    return Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand) * _toarefGain[_indexOfShortWavelengthInfraredBand] * 100;
             }
 
             return 0;
@@ -254,10 +207,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         {
             return new Double[]
             {
-                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) * _esunPhysicalGainRatio[_indexOfGreenBand],
-                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand) * _esunPhysicalGainRatio[_indexOfRedBand],
-                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfGreenBand) * _esunPhysicalGainRatio[_indexOfNearInfraredBand],
-                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand) * _esunPhysicalGainRatio[_indexOfShortWavelengthInfraredBand]
+                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand) * _toarefGain[_indexOfGreenBand] * 100,
+                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand) * _toarefGain[_indexOfRedBand] * 100,
+                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfGreenBand) * _toarefGain[_indexOfNearInfraredBand] * 100,
+                Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand) * _toarefGain[_indexOfShortWavelengthInfraredBand] * 100
             };
         }
 
