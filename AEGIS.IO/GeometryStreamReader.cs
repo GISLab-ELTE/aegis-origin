@@ -505,7 +505,7 @@ namespace ELTE.AEGIS.IO
             if (_factory == null)
             {
                 if (_factoryType == null)
-                    _factory = FactoryRegistry.GetFactory<IGeometryFactory>();
+                    _factory = FactoryRegistry.GetFactory<IGeometryFactory>(referenceSystem);
                 else
                     _factory = (IGeometryFactory)FactoryRegistry.GetFactory(_factoryType, referenceSystem);
 
