@@ -51,7 +51,7 @@ namespace ELTE.AEGIS
         /// The color map.
         /// </summary>
         /// <value>The read-only color map used in pseuso-color and density slicing modes.</value>
-        public IDictionary<Int32, UInt32[]> ColorMap { get { return _colorMap.AsReadOnly(); } }
+        public IDictionary<Int32, UInt32[]> ColorMap { get { return _colorMap == null ? null : _colorMap.IsReadOnly ? _colorMap : _colorMap.AsReadOnly(); } }
         
         /// <summary>
         /// The color space.

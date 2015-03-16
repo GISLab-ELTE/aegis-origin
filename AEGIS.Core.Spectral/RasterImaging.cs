@@ -32,14 +32,14 @@ namespace ELTE.AEGIS
         private RasterImagingBand[] _bands;
 
         /// <summary>
-        /// The array of spectral domains for each band.
+        /// The list of spectral domains for each band.
         /// </summary>
-        private SpectralDomain[] _spectralDomains;
+        private IList<SpectralDomain> _spectralDomains;
         
         /// <summary>
-        /// The array of spectral ranges for each band.
+        /// The list of spectral ranges for each band.
         /// </summary>
-        private SpectralRange[] _spectralRanges;
+        private IList<SpectralRange> _spectralRanges;
 
         #endregion
 
@@ -108,9 +108,9 @@ namespace ELTE.AEGIS
             get
             {
                 if (_spectralDomains == null)
-                    _spectralDomains = _bands.Select(bandData => bandData.SpectralDomain).ToArray();
+                    _spectralDomains = _bands.Select(bandData => bandData.SpectralDomain).ToArray().AsReadOnly();
 
-                return _spectralDomains.AsReadOnly();
+                return _spectralDomains;
             }
         }
 
@@ -123,9 +123,9 @@ namespace ELTE.AEGIS
             get 
             {
                 if (_spectralRanges == null)
-                    _spectralRanges = _bands.Select(bandData => bandData.SpectralRange).ToArray();
+                    _spectralRanges = _bands.Select(bandData => bandData.SpectralRange).ToArray().AsReadOnly();
 
-                return _spectralRanges.AsReadOnly();
+                return _spectralRanges;
             } 
         }
 

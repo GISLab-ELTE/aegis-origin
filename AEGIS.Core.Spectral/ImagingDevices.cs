@@ -153,17 +153,17 @@ namespace ELTE.AEGIS
             get
             {
                 if (_Landsat7ETMPLUS == null)
-                    _Landsat7ETMPLUS = new ImagingDevice("", "Landsat", 7, "ETM+ (Enhanced Thematic Mapper Plus (ETM+))",
-                                                   "Landsat-7 is the seventh satellite in the Landsat series of U.S. Geological Survey (USGS) and NASA, placed into orbit by DELTA II. launcher.", null, null,
-                                                   Length.FromKilometre(705), TimeSpan.FromDays(16), Length.FromKilometre(185),
-                                                   new ImagingDeviceBand(0, "Multispectral blue band (BAND 1)", Length.FromMetre(30), 8, SpectralDomain.Blue, new SpectralRange(0.45e-6, 0.515e-6)),
-                                                   new ImagingDeviceBand(1, "Multispectral green band (BAND 2)", Length.FromMetre(30), 8, SpectralDomain.Green, new SpectralRange(0.525e-6, 0.605e-6)),
-                                                   new ImagingDeviceBand(2, "Multispectral red band (BAND 3)", Length.FromMetre(30), 8, SpectralDomain.Red, new SpectralRange(0.63e-6, 0.69e-6)),
-                                                   new ImagingDeviceBand(3, "Multispectral NIR band (BAND 4)", Length.FromMetre(30), 8, SpectralDomain.NearInfrared, new SpectralRange(0.75e-6, 0.90e-6)),
-                                                   new ImagingDeviceBand(4, "Multispectral SWIR band (BAND 5)", Length.FromMetre(30), 8, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(1.55e-6, 1.75e-6)),
-                                                   new ImagingDeviceBand(5, "Thermal IR band (BAND 6)", Length.FromMetre(60), 8, SpectralDomain.LongWavelengthInfrared, new SpectralRange(10.4e-6, 12.5e-6)),
-                                                   new ImagingDeviceBand(6, "Multispectral SWIR band (BAND 7)", Length.FromMetre(30), 8, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(2.09e-6, 2.35e-6)),
-                                                   new ImagingDeviceBand(7, "Pancromatic band (BAND 8)", Length.FromMetre(15), 8, SpectralDomain.Visible, new SpectralRange(0.52e-6, 0.9e-6)));
+                    _Landsat7ETMPLUS = new ImagingDevice("AEGIS::135017", "Landsat", 7, "ETM+ (Enhanced Thematic Mapper Plus (ETM+))",
+                                                         "Landsat-7 is the seventh satellite in the Landsat series of U.S. Geological Survey (USGS) and NASA, placed into orbit by DELTA II. launcher.", null, null,
+                                                         Length.FromKilometre(705), TimeSpan.FromDays(16), Length.FromKilometre(185),
+                                                         new ImagingDeviceBand(0, "Multispectral blue band (BAND 1)", Length.FromMetre(30), 8, SpectralDomain.Blue, new SpectralRange(0.45e-6, 0.515e-6)),
+                                                         new ImagingDeviceBand(1, "Multispectral green band (BAND 2)", Length.FromMetre(30), 8, SpectralDomain.Green, new SpectralRange(0.525e-6, 0.605e-6)),
+                                                         new ImagingDeviceBand(2, "Multispectral red band (BAND 3)", Length.FromMetre(30), 8, SpectralDomain.Red, new SpectralRange(0.63e-6, 0.69e-6)),
+                                                         new ImagingDeviceBand(3, "Multispectral NIR band (BAND 4)", Length.FromMetre(30), 8, SpectralDomain.NearInfrared, new SpectralRange(0.75e-6, 0.90e-6)),
+                                                         new ImagingDeviceBand(4, "Multispectral SWIR band (BAND 5)", Length.FromMetre(30), 8, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(1.55e-6, 1.75e-6)),
+                                                         new ImagingDeviceBand(5, "Thermal IR band (BAND 6)", Length.FromMetre(60), 8, SpectralDomain.LongWavelengthInfrared, new SpectralRange(10.4e-6, 12.5e-6)),
+                                                         new ImagingDeviceBand(6, "Multispectral SWIR band (BAND 7)", Length.FromMetre(30), 8, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(2.09e-6, 2.35e-6)),
+                                                         new ImagingDeviceBand(7, "Pancromatic band (BAND 8)", Length.FromMetre(15), 8, SpectralDomain.Visible, new SpectralRange(0.52e-6, 0.9e-6)));
                 return _Landsat7ETMPLUS;
             }
         }
@@ -176,20 +176,20 @@ namespace ELTE.AEGIS
             get
             {
                 if (_Landsat8OLITIRS == null)
-                    _Landsat8OLITIRS = new ImagingDevice("", "Landsat", 8, "OLI/TIRS (Operational Land Imager (OLI), Thermal Infrared Sensor (TIRS))",
-                                                   "Landsat-8 is the eighth satellite in the Landsat series of U.S. Geological Survey (USGS) and NASA, placed into orbit by Atlas V-401 launcher.", null, null,
-                                                   Length.FromKilometre(705), TimeSpan.FromDays(16), Length.FromKilometre(185),
-                                                   new ImagingDeviceBand(0, "Multispectral violet-deep blue band, coastal aerosol (BAND 1)", Length.FromMetre(30), 16, SpectralDomain.Blue, new SpectralRange(0.43e-6, 0.45e-6)),
-                                                   new ImagingDeviceBand(1, "Multispectral blue band (BAND 2)", Length.FromMetre(30), 16, SpectralDomain.Blue, new SpectralRange(0.45e-6, 0.51e-6)),
-                                                   new ImagingDeviceBand(2, "Multispectral green band (BAND 3)", Length.FromMetre(30), 16, SpectralDomain.Green, new SpectralRange(0.53e-6, 0.59e-6)),
-                                                   new ImagingDeviceBand(3, "Multispectral red band (BAND 4)", Length.FromMetre(30), 16, SpectralDomain.Red, new SpectralRange(0.64e-6, 0.67e-6)),
-                                                   new ImagingDeviceBand(4, "Multispectral NIR band (BAND 5)", Length.FromMetre(30), 16, SpectralDomain.NearInfrared, new SpectralRange(0.85e-6, 0.88e-6)),
-                                                   new ImagingDeviceBand(5, "Multispectral SWIR band (BAND 6)", Length.FromMetre(30), 16, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(1.57e-6, 1.65e-6)),
-                                                   new ImagingDeviceBand(6, "Multispectral SWIR band (BAND 7)", Length.FromMetre(30), 16, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(2.11e-6, 2.29e-6)),
-                                                   new ImagingDeviceBand(7, "Pancromatic band (BAND 8)", Length.FromMetre(15), 16, SpectralDomain.Visible, new SpectralRange(0.50e-6, 0.68e-6)),
-                                                   new ImagingDeviceBand(8, "Multispectral band, cirrus clouds (BAND 9)", Length.FromMetre(30), 16, SpectralDomain.NearInfrared, new SpectralRange(1.36e-6, 1.38e-6)),
-                                                   new ImagingDeviceBand(9, "Thermal IR band (BAND 10)", Length.FromMetre(30), 16, SpectralDomain.LongWavelengthInfrared, new SpectralRange(10.60e-6, 11.19e-6)),
-                                                   new ImagingDeviceBand(10, "Thermal IR band (BAND 11)", Length.FromMetre(30), 16, SpectralDomain.LongWavelengthInfrared, new SpectralRange(11.50e-6, 12.51e-6)));
+                    _Landsat8OLITIRS = new ImagingDevice("AEGIS::135018", "Landsat", 8, "OLI/TIRS (Operational Land Imager (OLI), Thermal Infrared Sensor (TIRS))",
+                                                         "Landsat-8 is the eighth satellite in the Landsat series of U.S. Geological Survey (USGS) and NASA, placed into orbit by Atlas V-401 launcher.", new String[] { "Landsat8 OLI_TIRS" }, null,
+                                                         Length.FromKilometre(705), TimeSpan.FromDays(16), Length.FromKilometre(185),
+                                                         new ImagingDeviceBand(0, "Multispectral violet-deep blue band, coastal aerosol (BAND 1)", Length.FromMetre(30), 16, SpectralDomain.Blue, new SpectralRange(0.43e-6, 0.45e-6)),
+                                                         new ImagingDeviceBand(1, "Multispectral blue band (BAND 2)", Length.FromMetre(30), 16, SpectralDomain.Blue, new SpectralRange(0.45e-6, 0.51e-6)),
+                                                         new ImagingDeviceBand(2, "Multispectral green band (BAND 3)", Length.FromMetre(30), 16, SpectralDomain.Green, new SpectralRange(0.53e-6, 0.59e-6)),
+                                                         new ImagingDeviceBand(3, "Multispectral red band (BAND 4)", Length.FromMetre(30), 16, SpectralDomain.Red, new SpectralRange(0.64e-6, 0.67e-6)),
+                                                         new ImagingDeviceBand(4, "Multispectral NIR band (BAND 5)", Length.FromMetre(30), 16, SpectralDomain.NearInfrared, new SpectralRange(0.85e-6, 0.88e-6)),
+                                                         new ImagingDeviceBand(5, "Multispectral SWIR band (BAND 6)", Length.FromMetre(30), 16, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(1.57e-6, 1.65e-6)),
+                                                         new ImagingDeviceBand(6, "Multispectral SWIR band (BAND 7)", Length.FromMetre(30), 16, SpectralDomain.ShortWavelengthInfrared, new SpectralRange(2.11e-6, 2.29e-6)),
+                                                         new ImagingDeviceBand(7, "Pancromatic band (BAND 8)", Length.FromMetre(15), 16, SpectralDomain.Visible, new SpectralRange(0.50e-6, 0.68e-6)),
+                                                         new ImagingDeviceBand(8, "Multispectral band, cirrus clouds (BAND 9)", Length.FromMetre(30), 16, SpectralDomain.NearInfrared, new SpectralRange(1.36e-6, 1.38e-6)),
+                                                         new ImagingDeviceBand(9, "Thermal IR band (BAND 10)", Length.FromMetre(30), 16, SpectralDomain.LongWavelengthInfrared, new SpectralRange(10.60e-6, 11.19e-6)),
+                                                         new ImagingDeviceBand(10, "Thermal IR band (BAND 11)", Length.FromMetre(30), 16, SpectralDomain.LongWavelengthInfrared, new SpectralRange(11.50e-6, 12.51e-6)));
                 return _Landsat8OLITIRS;
             }
         }
