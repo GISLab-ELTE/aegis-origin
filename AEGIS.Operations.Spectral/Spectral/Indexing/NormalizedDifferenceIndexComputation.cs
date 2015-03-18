@@ -1,5 +1,5 @@
 ﻿/// <copyright file="NormalizedDifferenceIndexComputation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,13 +24,27 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized difference indices (NDxI) of raster geometries.
     /// </summary>
+    /// <remarks>
+    /// The operation computes normalized difference indices vegetation (NDVI), soil (NDSI) and water (NDWI) in the specified order.
+    /// </remarks>
     [OperationMethodImplementation("AEGIS::213511", "Normalized difference index (NDxI) computation")]
     public class NormalizedDifferenceIndexComputation : SpectralTransformation
     {
         #region Private fields
 
+        /// <summary>
+        /// The index of the red band.
+        /// </summary>
         private readonly Int32 _indexOfRedBand;
+
+        /// <summary>
+        /// The index of the near infrared band.
+        /// </summary>
         private readonly Int32 _indexOfNearInfraredBand;
+
+        /// <summary>
+        /// The index of theshort-wavelength infrared band.
+        /// </summary>
         private readonly Int32 _indexOfShortWavelengthInfraredBand;
 
         #endregion
@@ -53,6 +67,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// The type of a parameter does not match the type specified by the method.
         /// or
         /// The value of a parameter is not within the expected range.
+        /// or
+        /// The source does not contain required data.
+        /// or
+        /// The source contains invalid data.
         /// </exception>
         public NormalizedDifferenceIndexComputation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
@@ -78,53 +96,30 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// The value of a parameter is not within the expected range.
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// or
+        /// The source does not contain required data.
+        /// or
+        /// The source contains invalid data.
         /// </exception>
         public NormalizedDifferenceIndexComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.NormalizedDifferenceIndexComputation, parameters)
         {
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfRedBand))
+            try
             {
-                _indexOfRedBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfRedBand));
+                _indexOfRedBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfRedBand, _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.Red)));
+                _indexOfNearInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand, _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.NearInfrared)));
+                _indexOfShortWavelengthInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand, _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared)));
             }
-            else if (_source.Imaging != null)
+            catch
             {
-                RasterImagingBand imagingBand = _source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.Red);
-                if (imagingBand != null)
-                    _indexOfRedBand = _source.Imaging.Bands.IndexOf(imagingBand);
-            }
-            else
-            {
-                _indexOfRedBand = 0;
+                throw new ArgumentException("The source does not contain required data.", "source");
             }
 
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfNearInfraredBand))
+            if (_indexOfRedBand < 0 || _indexOfRedBand >= Source.Raster.NumberOfBands ||
+                _indexOfNearInfraredBand < 0 || _indexOfNearInfraredBand >= Source.Raster.NumberOfBands ||
+                _indexOfShortWavelengthInfraredBand < 0 || _indexOfShortWavelengthInfraredBand >= Source.Raster.NumberOfBands)
             {
-                _indexOfNearInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand));
-            }
-            else if (_source.Imaging != null)
-            {
-                RasterImagingBand imagingBand = _source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.NearInfrared);
-                if (imagingBand != null)
-                    _indexOfNearInfraredBand = _source.Imaging.Bands.IndexOf(imagingBand);
-            }
-            else
-            {
-                _indexOfNearInfraredBand = 1;
-            }
-
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand))
-            {
-                _indexOfShortWavelengthInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
-            }
-            else if (_source.Imaging != null)
-            {
-                RasterImagingBand imagingBand = _source.Imaging.Bands.FirstOrDefault(band => band.SpectralDomain == SpectralDomain.ShortWavelengthInfrared);
-                if (imagingBand != null)
-                    _indexOfShortWavelengthInfraredBand = _source.Imaging.Bands.IndexOf(imagingBand);
-            }
-            else
-            {
-                _indexOfNearInfraredBand = 2;
+                throw new ArgumentException("The source contains invalid data.", "source");
             }
         }
 
@@ -137,15 +132,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// </summary>
         protected override void PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Floating,
-                                                                                 3,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 32,
-                                                                                 _source.Raster.Mapper),
-                                                             RasterPresentation.CreateFalseColorPresentation(0, 1, 2),
-                                                             null);
+            _result = Source.Factory.CreateSpectralGeometry(Source,
+                                                            PrepareRasterResult(RasterFormat.Floating,
+                                                                                3,
+                                                                                Source.Raster.NumberOfRows,
+                                                                                Source.Raster.NumberOfColumns,
+                                                                                32,
+                                                                                Source.Raster.Mapper),
+                                                            RasterPresentation.CreateFalseColorPresentation(0, 1, 2),
+                                                            Source.Imaging);
         }
 
         #endregion
@@ -163,67 +158,50 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             Double swir, nir, red;
 
-            switch (_source.Raster.Format)
+            switch (Source.Raster.Format)
             {
                 case RasterFormat.Floating:
                     switch (bandIndex)
                     {
-                        case 0: // soil
-                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                        case 0: // vegetation
+                            nir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                            red = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
 
-                            if (swir == 0 && nir == 0)
-                                return 0;
+                            return (nir + red == 0) ? 0 : (nir - red) / (nir + red);
 
-                            return (swir - nir) / (swir + nir);
+                        case 1: // soil
+                            swir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                            nir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
 
-                        case 1: // vegetation
-                            nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
-
-                            if (red == 0 && nir == 0)
-                                return 0;
-
-                            return (nir - red) / (nir + red);
+                            return (swir + nir == 0) ? 0 : (swir - nir) / (swir + nir);
 
                         case 2: // water
-                            swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                            red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
+                            swir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                            red = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
 
-                            if (swir == 0 && red == 0)
-                                return 0;
-
-                            return (swir - red) / (swir + red);
+                            return (swir + red == 0) ? 0 : (swir - red) / (swir + red);
                     }
                     break;
                 case RasterFormat.Integer:
                     switch (bandIndex)
                     {
-                        case 0: // soil
-                            swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                            nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            if (swir == 0 && nir == 0)
-                                return 0;
+                        case 0: // vegetation
+                            nir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                            red = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
+                            
+                            return (nir + red == 0) ? 0 : (nir - red) / (nir + red);
 
-                            return (swir - nir) / (swir + nir);
-
-                        case 1: // vegetation
-                            nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                            red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
-
-                            if (nir == 0 && red == 0)
-                                return 0;
-
-                            return (nir - red) / (nir + red);
+                        case 1: // soil
+                            swir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                            nir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                            
+                            return (swir + nir == 0) ? 0 : (swir - nir) / (swir + nir);
 
                         case 2: // water
-                            swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                            red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
+                            swir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                            red = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
 
-                            if (swir == 0 && red == 0)
-                                return 0;
-
-                            return (swir - red) / (swir + red);
+                            return (swir + red == 0) ? 0 : (swir - red) / (swir + red);
                     }
                     break;
             }
@@ -241,22 +219,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             Double swir, nir, red;
 
-            switch (_source.Raster.Format)
+            switch (Source.Raster.Format)
             {
                 case RasterFormat.Integer:
-                    swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                    nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                    red = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
-                    break;
-
+                    swir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                    nir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                    red = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfRedBand);
+                    break; 
+                
                 default:
-                    swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
-                    nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
-                    red = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
+                    swir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                    nir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                    red = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfRedBand);
                     break;
-                    
             }
-            return new Double[] { (swir - nir) / (swir + nir), (nir - red) / (nir + red), (swir - red) / (swir + red) };
+
+            return new Double[] { (nir + red == 0) ? 0 : (nir - red) / (nir + red), 
+                                  (swir + nir == 0) ? 0 : (swir - nir) / (swir + nir),
+                                  (swir + red == 0) ? 0 : (swir - red) / (swir + red) };
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="NormalizedDifferenceSoilIndexComputation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -27,8 +27,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     {
         #region Private fields
 
+        /// <summary>
+        /// The index of the near infrared band.
+        /// </summary>
         private readonly Int32 _indexOfNearInfraredBand;
-        private readonly Int32 _indexOfShortWaveInfraredBand;
+
+        /// <summary>
+        /// The index of theshort-wavelength infrared band.
+        /// </summary>
+        private readonly Int32 _indexOfShortWavelengthInfraredBand;
 
         #endregion
 
@@ -50,6 +57,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// The type of a parameter does not match the type specified by the method.
         /// or
         /// The value of a parameter is not within the expected range.
+        /// or
+        /// The source does not contain required data.
+        /// or
+        /// The source contains invalid data.
         /// </exception>
         public NormalizedDifferenceSoilIndexComputation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
@@ -75,31 +86,29 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// The value of a parameter is not within the expected range.
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// or
+        /// The source does not contain required data.
+        /// or
+        /// The source contains invalid data.
         /// </exception>
         public NormalizedDifferenceSoilIndexComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.NormalizedDifferenceSoilIndexComputation, parameters)
         {
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfNearInfraredBand))
+            try
             {
-                _indexOfNearInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand));
+                _indexOfNearInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand, _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.NearInfrared)));
+                _indexOfShortWavelengthInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand, _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared)));
             }
-            else if (_source.Imaging != null && _source.Imaging.SpectralDomains.Contains(SpectralDomain.NearInfrared))
+            catch
             {
-                _indexOfNearInfraredBand = _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.NearInfrared);
+                throw new ArgumentException("The source does not contain required data.", "source");
             }
-            else
-                _indexOfNearInfraredBand = 1;
 
-            if (IsProvidedParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand))
+            if (_indexOfNearInfraredBand < 0 || _indexOfNearInfraredBand >= Source.Raster.NumberOfBands ||
+                _indexOfShortWavelengthInfraredBand < 0 || _indexOfShortWavelengthInfraredBand >= Source.Raster.NumberOfBands)
             {
-                _indexOfShortWaveInfraredBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand));
+                throw new ArgumentException("The source contains invalid data.", "source");
             }
-            else if (_source.Imaging != null && _source.Imaging.SpectralDomains.Contains(SpectralDomain.ShortWavelengthInfrared))
-            {
-                _indexOfShortWaveInfraredBand = _source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared);
-            }
-            else
-                _indexOfShortWaveInfraredBand = 2;
         }
 
         #endregion
@@ -117,20 +126,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             Double swir, nir;
 
-            switch (_source.Raster.Format)
+            switch (Source.Raster.Format)
             {
                 case RasterFormat.Integer:
-                    swir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                    nir = _source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                    swir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                    nir = Source.Raster.GetValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                     break;
 
                 default:
-                    swir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWaveInfraredBand);
-                    nir = _source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
+                    swir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfShortWavelengthInfraredBand);
+                    nir = Source.Raster.GetFloatValue(rowIndex, columnIndex, _indexOfNearInfraredBand);
                     break;
             }
 
-            return (swir - nir) / (swir + nir);
+            return (swir + nir == 0) ? 0 : (swir - nir) / (swir + nir);
         }
 
         /// <summary>
@@ -153,13 +162,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// </summary>
         protected override void PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Floating,
-                                                                                 1,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 new Int32[] { 64 },
-                                                                                 _source.Raster.Mapper));
+            _result = Source.Factory.CreateSpectralGeometry(Source,
+                                                            PrepareRasterResult(RasterFormat.Floating,
+                                                                                1,
+                                                                                Source.Raster.NumberOfRows,
+                                                                                Source.Raster.NumberOfColumns,
+                                                                                new Int32[] { 32 },
+                                                                                Source.Raster.Mapper),
+                                                            RasterPresentation.CreateGrayscalePresentation(),
+                                                            Source.Imaging);
         }
 
         #endregion
