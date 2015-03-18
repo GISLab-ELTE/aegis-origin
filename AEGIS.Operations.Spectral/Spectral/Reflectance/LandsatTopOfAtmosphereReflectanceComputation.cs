@@ -31,11 +31,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         #region Private fields
 
         /// <summary>
-        /// The array of band mappings.
-        /// </summary>
-        private readonly Int32[] _bandMapping;
-
-        /// <summary>
         /// The ToA reflectance gain.
         /// </summary>
         private Double[] _toarefGain;
@@ -101,23 +96,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                 throw new ArgumentException("The source does not contain required data.", "source");
             if (Source.Imaging.Device.Mission != "Landsat")
                 throw new ArgumentException("The source does not contain required data.", "source");
-
-            _bandMapping = new Int32[4];
-
-            try
-            {
-                _bandMapping[0] = ResolveParameter(SpectralOperationParameters.IndexOfGreenBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.Green));
-                _bandMapping[1] = ResolveParameter(SpectralOperationParameters.IndexOfRedBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.Red));
-                _bandMapping[2] = ResolveParameter(SpectralOperationParameters.IndexOfNearInfraredBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.NearInfrared));
-                _bandMapping[3] = ResolveParameter(SpectralOperationParameters.IndexOfShortWavelengthInfraredBand, Source.Imaging.SpectralDomains.IndexOf(SpectralDomain.ShortWavelengthInfrared));
-            }
-            catch
-            {
-                throw new ArgumentException("The source does not contain required data.", "source");
-            }
-
-            if (_bandMapping.Any(index => index < 0 || index >= Source.Raster.NumberOfBands))
-                throw new ArgumentException("The source contains invalid data.", "source");
         }
 
         #endregion
@@ -131,7 +109,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         {
             _result = Source.Factory.CreateSpectralGeometry(Source,
                                                             PrepareRasterResult(RasterFormat.Floating,
-                                                                                4,
+                                                                                Source.Raster.NumberOfBands,
                                                                                 Source.Raster.NumberOfRows,
                                                                                 Source.Raster.NumberOfColumns,
                                                                                 32,
@@ -178,12 +156,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             switch (Source.Imaging.Device.MissionNumber)
             {
                 case 7:
-                    return (((Convert.ToDouble(Source.Raster.GetValue(rowIndex, columnIndex, _bandMapping[bandIndex])) - 1) * 
-                             Source.Imaging.Bands[_bandMapping[bandIndex]].PhysicalGain) + 
-                            Source.Imaging.Bands[_bandMapping[bandIndex]].PhysicalBias) * _toarefGain[_bandMapping[bandIndex]] * 100;
+                    return (((Convert.ToDouble(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex)) - 1) * Source.Imaging.Bands[bandIndex].PhysicalGain) + Source.Imaging.Bands[bandIndex].PhysicalBias) * _toarefGain[bandIndex] * 100;
                 case 8:
-                    Double value = (Convert.ToDouble(Source.Raster.GetValue(rowIndex, columnIndex, _bandMapping[bandIndex])) * 0.00002 - 0.1) *
-                                   _toarefGain[_bandMapping[bandIndex]] * 100;
+                    Double value = (Convert.ToDouble(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex)) * 0.00002 - 0.1) * _toarefGain[bandIndex] * 100;
 
                     return value > 0 ? value : 0;
             }

@@ -95,7 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
-        private static SpectralOperationMethod _topOfAthmospehereReflectanceComputation;
+        private static SpectralOperationMethod _topOfAtmospehereReflectanceComputation;
 
         #endregion
 
@@ -262,17 +262,15 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <summary>
         /// Top of atmosphere reflectance computation.
         /// </summary>
-        public static SpectralOperationMethod TopOfAthmospehereReflectanceComputation
+        public static SpectralOperationMethod TopOfAtmospehereReflectanceComputation
         {
             get
             {
-                return _topOfAthmospehereReflectanceComputation ?? (_topOfAthmospehereReflectanceComputation =
+                return _topOfAtmospehereReflectanceComputation ?? (_topOfAtmospehereReflectanceComputation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213461", "Top of atmosphere reflectance computation",
-                                                                         ".", null, "1.0.0",
-                                                                         true, SpectralOperationDomain.Local,
-                                                                         SpectralOperationParameters.SpectralOffset,
-                                                                         SpectralOperationParameters.SpectralFactor,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         "Top-of-atmosphere reflectance (or TOA reflectance) is the reflectance measured by a space-based sensor flying higher than the earth's atmosphere.", 
+                                                                         new String[] { "ToA reflectance computation", "ToAref computation" }, "1.0.0",
+                                                                         true, SpectralOperationDomain.Local));
             }
         }
 

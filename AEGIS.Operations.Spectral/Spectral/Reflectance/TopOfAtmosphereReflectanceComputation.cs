@@ -71,7 +71,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
         protected TopOfAtmosphereReflectanceComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
-            : base(source, result, SpectralOperationMethods.TopOfAthmospehereReflectanceComputation, parameters)
+            : base(source, result, SpectralOperationMethods.TopOfAtmospehereReflectanceComputation, parameters)
         {
         }
 
