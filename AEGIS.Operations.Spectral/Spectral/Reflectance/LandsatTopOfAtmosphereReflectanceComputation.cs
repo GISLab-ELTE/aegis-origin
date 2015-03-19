@@ -122,13 +122,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
             switch (Source.Imaging.Device.MissionNumber)
             {
                 case 7:
-                    Double sunZenith = 90 - Source.Imaging.SunElevation, doySolarIrradianceSunZenithRatio;
+                    Double sunZenith = 90 - Source.Imaging.SunElevation;
                     Int32 dayOfYear = Source.Imaging.Time.DayOfYear;
 
                     for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
                     {
-                        doySolarIrradianceSunZenithRatio = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Math.PI / 180))) / (Source.Imaging.Bands[bandIndex].SolarIrradiance * Math.Cos(sunZenith * Constants.PI / 180)));
-                        _toarefGain[bandIndex] = doySolarIrradianceSunZenithRatio;
+                        if (Double.IsNaN(Source.Imaging.Bands[bandIndex].SolarIrradiance))
+                        {
+                            _toarefGain[bandIndex] = 0;
+                        }
+                        else
+                        {
+                            _toarefGain[bandIndex] = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Math.PI / 180))) / (Source.Imaging.Bands[bandIndex].SolarIrradiance * Math.Cos(sunZenith * Constants.PI / 180)));
+                        }
                     }
                     break;
                 case 8:
