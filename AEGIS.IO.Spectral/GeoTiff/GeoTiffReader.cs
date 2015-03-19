@@ -230,7 +230,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 GeoCoordinate[] imageLocation;
                 if (_imageFileDirectories[_currentImageIndex].ContainsKey(57420) && _imageFileDirectories[_currentImageIndex][57420].Length == 12)
                 {
-                    Double[] imageLocationValues = _imageFileDirectories[_currentImageIndex][57412].Select(value => Convert.ToDouble(value)).ToArray();
+                    Double[] imageLocationValues = _imageFileDirectories[_currentImageIndex][57420].Select(value => Convert.ToDouble(value)).ToArray();
                     imageLocation = new GeoCoordinate[] 
                     {
                         new GeoCoordinate(imageLocationValues[0], imageLocationValues[1], imageLocationValues[2]),
