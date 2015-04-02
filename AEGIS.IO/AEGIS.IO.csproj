@@ -67,6 +67,7 @@
     <Compile Include="Storage\Operation\FileSystemOperationException.cs" />
     <Compile Include="Storage\Operation\FileSystemOperationResult.cs" />
     <Compile Include="Storage\Operation\FileSystemOperationResultCode.cs" />
+    <Compile Include="Utilities\ProxyStream.cs" />
     <Compile Include="WellKnown\Compatility\GeometryCompatibility.cs" />
     <Compile Include="WellKnown\WellKnownBinaryConverter.cs" />
     <Compile Include="WellKnown\WellKnownTextConverter.cs" />
