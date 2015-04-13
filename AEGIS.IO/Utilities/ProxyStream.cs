@@ -75,7 +75,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <summary>
         /// The index of the storage unit where Flush occured.
         /// </summary>
-        private Int32 _flushIndex;
+        private Int64 _flushIndex;
 
         /// <summary>
         /// The size of the bit flag arrays.
@@ -90,12 +90,12 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <summary>
         /// The bit flag arrays.
         /// </summary>
-        private Dictionary<Int32, Byte[]> _bitFlagArrays;
+        private Dictionary<Int64, Byte[]> _bitFlagArrays;
 
         /// <summary>
         /// The data containing arrays.
         /// </summary>
-        private Dictionary<Int32, Byte[]> _byteArrays;
+        private Dictionary<Int64, Byte[]> _byteArrays;
 
         #endregion
 
@@ -134,9 +134,9 @@ namespace ELTE.AEGIS.IO.Utilities
             else if (!_underlyingStream.CanWrite && _underlyingStream.CanRead)
                 _accessType = StreamAccessType.Readable;
 
-            _byteArrays = new Dictionary<Int32, Byte[]>();
+            _byteArrays = new Dictionary<Int64, Byte[]>();
 
-            _bitFlagArrays = new Dictionary<Int32, Byte[]>();
+            _bitFlagArrays = new Dictionary<Int64, Byte[]>();
         }
 
         #endregion
@@ -299,12 +299,12 @@ namespace ELTE.AEGIS.IO.Utilities
             if (_singleUse)
                 CheckIfSet(bytesToRead);
 
-            HashSet<Int32> indexesToCheck = new HashSet<Int32>();
+            HashSet<Int64> indexesToCheck = new HashSet<Int64>();
 
             for (Int32 bufferIndex = 0; bufferIndex < bytesToRead; bufferIndex++)
             {
-                Int32 index = (Int32)_currentPosition / StorageSize;
-                buffer[bufferIndex + offset] = _byteArrays[index][(Int32)_currentPosition % StorageSize];
+                Int64 index = _currentPosition / StorageSize;
+                buffer[bufferIndex + offset] = _byteArrays[index][_currentPosition % StorageSize];
 
                 indexesToCheck.Add(index);
 
@@ -361,12 +361,12 @@ namespace ELTE.AEGIS.IO.Utilities
 
             for (Int32 bufferIndex = 0; bufferIndex < count; bufferIndex++)
             {
-                Int32 index = (Int32)_currentPosition / StorageSize;
+                Int64 index = _currentPosition / StorageSize;
 
                 if (!_byteArrays.ContainsKey(index))
                     _byteArrays.Add(index, new Byte[StorageSize]);
 
-                _byteArrays[index][(Int32)_currentPosition % StorageSize] = buffer[bufferIndex + offset];
+                _byteArrays[index][_currentPosition % StorageSize] = buffer[bufferIndex + offset];
 
                 SetBitFlag(index);
 
@@ -440,13 +440,13 @@ namespace ELTE.AEGIS.IO.Utilities
                     throw new IOException("Error occured during stream reading.", ex);
                 }
 
-                for (Int32 byteNumber = 0; byteNumber < numberOfBytes; byteNumber++)
+                for (Int64 byteNumber = 0; byteNumber < numberOfBytes; byteNumber++)
                 {
-                    Int32 index = (Int32)_maximumPosition / StorageSize;
+                    Int64 index = _maximumPosition / StorageSize;
                     if (!_byteArrays.ContainsKey(index))
                         _byteArrays.Add(index, new Byte[StorageSize]);
 
-                    Array.Copy(bytesToCopy, byteNumber, _byteArrays[index], (Int32)_maximumPosition % StorageSize, 1);
+                    Array.Copy(bytesToCopy, byteNumber, _byteArrays[index], (Int32)(_maximumPosition % StorageSize), 1);
                     _maximumPosition++;
                 }
             }
@@ -456,13 +456,13 @@ namespace ELTE.AEGIS.IO.Utilities
         /// Sets the bit flag for the read data.
         /// </summary>
         /// <param name="index">The index of the data.</param>
-        private void SetBitFlag(Int32 index)
+        private void SetBitFlag(Int64 index)
         {
             if (!_bitFlagArrays.ContainsKey(index))
                 _bitFlagArrays.Add(index, new Byte[_bitFlagSize]);
 
             Byte actualByte = _bitFlagArrays[index][(_currentPosition % StorageSize) / 8];
-            _bitFlagArrays[index][(_currentPosition % StorageSize) / 8] = (byte)(actualByte | (1 << (7 - (Int32)_currentPosition % 8)));
+            _bitFlagArrays[index][(_currentPosition % StorageSize) / 8] = (Byte)(actualByte | (1 << (7 - (Int32)(_currentPosition % 8))));
         }
 
         /// <summary>
@@ -475,12 +475,12 @@ namespace ELTE.AEGIS.IO.Utilities
             Int64 actualPositionInStream = _currentPosition;
             for (Int32 i = 0; i < count; i++)
             {
-                Int32 index = (Int32)actualPositionInStream / StorageSize;
+                Int64 index = actualPositionInStream / StorageSize;
                 if ((_accessType == StreamAccessType.Readable && ((_bitFlagArrays.ContainsKey(index) &&
-                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)actualPositionInStream % 8))) != 0) ||
+                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)(actualPositionInStream % 8)))) != 0) ||
                             !_byteArrays.ContainsKey(index))) ||
                     (_accessType == StreamAccessType.Writable && (_singleUse && (_bitFlagArrays.ContainsKey(index) &&
-                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)actualPositionInStream % 8))) != 0) ||
+                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)(actualPositionInStream % 8)))) != 0) ||
                              _flushIndex > index || _flushPosition > actualPositionInStream)))
                 {
                     throw new InvalidOperationException("Since caching is used, reading or writing elements multiple times is forbidden.");
@@ -501,19 +501,19 @@ namespace ELTE.AEGIS.IO.Utilities
             else
                 position = _currentPosition;
 
-            Int32 numberOfUnitsToWrite = Convert.ToInt32(Math.Ceiling((Double)position / (Double)StorageSize));
-            for (Int32 index = _flushIndex + 1; index < numberOfUnitsToWrite; index++)
+            Int32 numberOfUnitsToWrite = Convert.ToInt32(Math.Ceiling((Double)position / StorageSize));
+            for (Int64 index = _flushIndex + 1; index < numberOfUnitsToWrite; index++)
             {
                 try
                 {
-                    Int32 count = (index + 1) * StorageSize < position ? StorageSize : (Int32)position - index * StorageSize;
+                    Int32 count = (Int32)((index + 1) * StorageSize < position ? StorageSize : position - index * StorageSize);
                     Int32 offset = 0;
 
                     // if a Flush occured previously, the bytes at the beginning of the last byte array have to be skipped
                     if (index == _flushPosition / StorageSize)
                     {
-                        count -= (Int32)_flushPosition % StorageSize;
-                        offset = (Int32)_flushPosition % StorageSize;
+                        count -= (Int32)(_flushPosition % StorageSize);
+                        offset = (Int32)(_flushPosition % StorageSize);
                     }
 
                     if (count < 0)
@@ -538,7 +538,7 @@ namespace ELTE.AEGIS.IO.Utilities
                     throw new IOException("Error occured during writing into the stream.", ex);
                 }
             }
-            _flushIndex = (Int32)position / StorageSize - 1;
+            _flushIndex = position / StorageSize - 1;
             _flushPosition = position;
         }
 
@@ -546,11 +546,11 @@ namespace ELTE.AEGIS.IO.Utilities
         /// Removes the unnecessary data from the cache if needed.
         /// </summary>
         /// <param name="keysToCheck">The keys to check.</param>
-        private void RemoveCachedData(HashSet<Int32> keysToCheck)
+        private void RemoveCachedData(HashSet<Int64> keysToCheck)
         {
             if (_accessType == StreamAccessType.Readable)
             {
-                foreach (Int32 key in keysToCheck)
+                foreach (Int64 key in keysToCheck)
                 {
                     if (Array.TrueForAll(_bitFlagArrays[key], value => value == 255))
                     {
@@ -561,7 +561,7 @@ namespace ELTE.AEGIS.IO.Utilities
             }
             else if (_accessType == StreamAccessType.Writable)
             {
-                List<Int32> keysToRemove = new List<Int32>();
+                List<Int64> keysToRemove = new List<Int64>();
                 keysToRemove = SelectKeysToRemove();
                 WriteCachedDataIntoUnderlyingStream(keysToRemove);
             }
@@ -571,13 +571,13 @@ namespace ELTE.AEGIS.IO.Utilities
         /// Selects the keys that have to be removed from the data container.
         /// </summary>
         /// <returns>The list of keys.</returns>
-        private List<Int32> SelectKeysToRemove()
+        private List<Int64> SelectKeysToRemove()
         {
-            List<Int32> keysToRemove = new List<Int32>();
-            List<Int32> sortedKeys = _byteArrays.Keys.ToList();
+            List<Int64> keysToRemove = new List<Int64>();
+            List<Int64> sortedKeys = _byteArrays.Keys.ToList();
             sortedKeys.Sort();
 
-            foreach (Int32 index in sortedKeys)
+            foreach (Int64 index in sortedKeys)
             {
                 if (_flushPosition % StorageSize != 0 && index == _flushIndex + 1)
                 {
@@ -610,12 +610,12 @@ namespace ELTE.AEGIS.IO.Utilities
         /// Writes the cached data into underlying stream.
         /// </summary>
         /// <param name="keysToRemove">The keys to remove.</param>
-        private void WriteCachedDataIntoUnderlyingStream(List<Int32> keysToRemove)
+        private void WriteCachedDataIntoUnderlyingStream(List<Int64> keysToRemove)
         {
-            foreach (Int32 index in keysToRemove)
+            foreach (Int64 index in keysToRemove)
             {
                 if (index == _flushIndex + 1)
-                    _underlyingStream.Write(_byteArrays[index], (Int32)_flushPosition % StorageSize, StorageSize - (Int32)_flushPosition % StorageSize);
+                    _underlyingStream.Write(_byteArrays[index], (Int32)(_flushPosition % StorageSize), StorageSize - (Int32)(_flushPosition % StorageSize));
                 else
                     _underlyingStream.Write(_byteArrays[index], 0, StorageSize);
 
@@ -623,7 +623,7 @@ namespace ELTE.AEGIS.IO.Utilities
                 _bitFlagArrays.Remove(index);
             }
 
-            if (keysToRemove.Count() != 0)
+            if (keysToRemove.Count != 0)
                 _flushIndex = keysToRemove.Max();
         }
 
@@ -647,7 +647,6 @@ namespace ELTE.AEGIS.IO.Utilities
         }
 
         #endregion
-
     }
 }
 
