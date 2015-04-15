@@ -78,6 +78,21 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Double precision floating point number (64 bits).
         /// </summary>
-        Double = 12
+        Double = 12,
+
+        /// <summary>
+        /// BigTIFF long integer (64 bits).
+        /// </summary>
+        Long8 = 16,
+
+        /// <summary>
+        /// BigTIFF signed long integer (64 bits).
+        /// </summary>
+        SLong8 = 17,
+
+        /// <summary>
+        /// BigTIFF long offset (64 bits).
+        /// </summary>
+        LongOffset = 18
     }
 }

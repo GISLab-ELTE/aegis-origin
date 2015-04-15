@@ -66,11 +66,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         private ByteOrder _byteOrder;
 
-        /// <summary>
-        /// The offset of the image file directory within the file.
-        /// </summary>
-        private UInt32 _imageFileDirectoryOffset;
-
         #endregion
 
         #region Constructors
@@ -295,7 +290,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
         #endregion
 
-        #region GeometryStreamReader protected methods
+        #region Protected GeometryStreamReader methods
 
         /// <summary>
         /// Returns a value indicating whether the end of the stream is reached.
@@ -317,8 +312,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (_imageFileDirectories[_currentImageIndex][258].Min() != _imageFileDirectories[_currentImageIndex][258].Max())
                 throw new NotSupportedException("Stream format is not supported.");
 
-            // check whether the content is readable
-            TiffCompression compression = (TiffCompression)Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][259][0]);
+            // check whether the content is compressed
+            TiffCompression compression;
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(259))
+                compression = (TiffCompression)Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][259][0]);
+            else
+                compression = TiffCompression.None;
 
             if (compression != TiffCompression.None)
                 throw new NotSupportedException("Compression is not supported.");
@@ -334,7 +333,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             // read additional raster data
             Int32[] radiometricResolutions = ComputeRadiometricResolutionData();
-            RasterMapper mapper = ComputeRasterToModelSpaceMapping();
+            RasterMapper mapper = ComputeRasterMapper();
 
             // compute the raster dimensions
             Int32 imageLength = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][257][0]);
@@ -406,29 +405,136 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 _byteOrder = (byteOrder == 0x4949) ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
 
                 // check the TIFF identifier
-                if (EndianBitConverter.ToUInt16(bytes, 2, _byteOrder) != 42)
-                {
-                    throw new InvalidDataException("Stream header content is invalid.");
-                }
-
+                Int32 identifier = EndianBitConverter.ToUInt16(bytes, 2, _byteOrder);
+                
                 _imageFileDirectories = new List<TiffImageFileDirectory>();
                 _imageFileDirectories.Add(new TiffImageFileDirectory());
-
-                try
-                {
-                    ReadImageFileDirectory(EndianBitConverter.ToUInt32(bytes, 4, _byteOrder));
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidDataException("Stream header content is invalid.", ex);
-                }
-
-                _baseStream.Seek(4, SeekOrigin.Begin);
                 _currentImageIndex = 0;
+
+                switch (identifier)
+                {
+                    case 42: // regular TIFF
+                        try
+                        {
+                            ReadImageFileDirectory(EndianBitConverter.ToUInt32(bytes, 4, _byteOrder));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new InvalidDataException("Stream header content is invalid.", ex);
+                        }
+                        break;
+                    case 43: // BigTIFF
+                        try
+                        {
+                            _baseStream.Read(bytes, 0, bytes.Length);
+                            ReadBigImageFileDirectory(EndianBitConverter.ToUInt64(bytes, 0, _byteOrder));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new InvalidDataException("Stream header content is invalid.", ex);
+                        }
+                        break;
+                    default:
+                        throw new InvalidDataException("Stream header content is invalid.");
+                }
             }
             catch (Exception ex)
             {
                 throw new IOException(MessageContentReadError, ex);
+            }
+        }
+
+        /// <summary>
+        /// Reads an image file directory (in BigTIFF format).
+        /// </summary>
+        /// <param name="offset">The zero-based starting offset of the IFD table.</param>
+        private void ReadBigImageFileDirectory(UInt64 offset)
+        {
+            if (offset == 0)
+                return;
+
+            _baseStream.Seek((Int64)offset, SeekOrigin.Begin);
+
+            Byte[] bytes = new Byte[8];
+
+            _baseStream.Read(bytes, 0, 8);
+
+            Int32 numberOfEntries = (Int32)(EndianBitConverter.ToUInt64(bytes, 0, _byteOrder));
+
+            bytes = new Byte[numberOfEntries * 20 + 8];
+            _baseStream.Read(bytes, 0, bytes.Length);
+            Int64 streamPosition = _baseStream.Position;
+
+            TiffTagType entryType;
+            UInt16 entryTag, dataSize;
+            Int64 dataCount;
+            Object[] dataArray = null;
+            String dataString = null;
+
+            for (Int32 entryIndex = 0; entryIndex < numberOfEntries; entryIndex++)
+            {
+                entryTag = EndianBitConverter.ToUInt16(bytes, entryIndex * 20, _byteOrder);
+                entryType = (TiffTagType)EndianBitConverter.ToUInt16(bytes, entryIndex * 20 + 2, _byteOrder);
+                dataSize = GetTagSize(entryType);
+
+                dataCount = (Int64)(EndianBitConverter.ToUInt64(bytes, entryIndex * 20 + 4, _byteOrder));
+                if (entryType != TiffTagType.ASCII)
+                    dataArray = new Object[dataCount];
+                else
+                    dataString = String.Empty;
+
+                if (dataSize * dataCount > 8)
+                {
+                    Byte[] dataBytes = new Byte[dataCount * dataSize];
+
+                    // if the value does not fit into the field move to the position of the value
+                    _baseStream.Seek(EndianBitConverter.ToUInt32(bytes, entryIndex * 20 + 12, _byteOrder), SeekOrigin.Begin);
+                    _baseStream.Read(dataBytes, 0, dataBytes.Length); // read the value
+
+                    for (Int32 dataIndex = 0; dataIndex < dataCount; dataIndex++)
+                    {
+                        if (entryType == TiffTagType.ASCII)
+                        {
+                            dataString += Convert.ToChar(dataBytes[dataIndex]);
+                        }
+                        else
+                        {
+                            dataArray[dataIndex] = GetTagValue(entryType, dataBytes, dataIndex * dataSize, _byteOrder);
+                        }
+                    }
+                }
+                else
+                {
+                    // is the value fits into the field
+                    for (Int32 dataIndex = 0; dataIndex < dataCount; dataIndex++)
+                    {
+                        if (entryType == TiffTagType.ASCII)
+                        {
+                            dataString += Convert.ToChar(bytes[12 + dataIndex]);
+                        }
+                        else
+                        {
+                            dataArray[dataIndex] = GetTagValue(entryType, bytes, entryIndex * 20 + 12 + dataIndex * dataSize, _byteOrder);
+                        }
+                    }
+                }
+
+                // add the entry to the IFD table
+                if (entryType == TiffTagType.ASCII)
+                {
+                    _imageFileDirectories[_imageFileDirectories.Count - 1].Add(entryTag, new Object[] { dataString });
+                }
+                else
+                {
+                    _imageFileDirectories[_imageFileDirectories.Count - 1].Add(entryTag, dataArray);
+                }
+            }
+
+            offset = EndianBitConverter.ToUInt64(bytes, numberOfEntries * 20, _byteOrder);
+            if (offset != 0) // another IFD table exists
+            {
+                _imageFileDirectories.Add(new TiffImageFileDirectory());
+                ReadBigImageFileDirectory(offset); // read the next IFD table    
             }
         }
 
@@ -440,7 +546,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             if (offset == 0)
                 return;
-            _imageFileDirectoryOffset = offset;
+
             _baseStream.Seek(offset, SeekOrigin.Begin);
 
             Byte[] bytes = new Byte[2];
@@ -541,8 +647,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 rowsPerStrip = raster.NumberOfRows;
 
             Int32 numberOfStrips = (Int32)Math.Ceiling((Single)raster.NumberOfRows / rowsPerStrip);
-            UInt32[] stripOffsets = _imageFileDirectories[_currentImageIndex][273].Cast<UInt32>().ToArray();
-            UInt32[] stripByteCounts = _imageFileDirectories[_currentImageIndex][279].Cast<UInt32>().ToArray();
+            UInt64[] stripOffsets = _imageFileDirectories[_currentImageIndex][273].Select(value => Convert.ToUInt64(value)).ToArray();
+            UInt64[] stripByteCounts = _imageFileDirectories[_currentImageIndex][279].Select(value => Convert.ToUInt64(value)).ToArray();
             
             // fit the maximum number of readable bytes to the radiometric resolution
             UInt32 numberOfReadableBytes = NumberOfReadableBytes;
@@ -554,7 +660,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             Int32 columnIndex = 0;
             for (Int32 stripIndex = 0; stripIndex < numberOfStrips; stripIndex++)
             {
-                _baseStream.Seek(stripOffsets[stripIndex], SeekOrigin.Begin);
+                _baseStream.Seek((Int64)stripOffsets[stripIndex], SeekOrigin.Begin);
 
                 // perform decompression of stream if compressed
                 Stream contentStream = null;
@@ -567,7 +673,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 // should not load more bytes into the memory than suggested
                 Byte[] stripBytes = new Byte[stripByteCounts[stripIndex] < numberOfReadableBytes ? stripByteCounts[stripIndex] : numberOfReadableBytes];
-                Int32 numberOfBytesLeft = (Int32)stripByteCounts[stripIndex];
+                UInt64 numberOfBytesLeft = stripByteCounts[stripIndex];
                 Int32 byteIndex = 0, bitIndex = 0;
 
                 contentStream.Read(stripBytes, 0, stripBytes.Length);
@@ -602,7 +708,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                     if (byteIndex == stripBytes.Length)
                     {
-                        numberOfBytesLeft -= stripBytes.Length;
+                        numberOfBytesLeft = (UInt64)((Int64)numberOfBytesLeft - stripBytes.Length);
                         byteIndex = 0;
 
                         // the final array of bytes should not be the number of bytes left
@@ -624,8 +730,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.NotSupportedException">Compression is not supported.</exception>
         private void ReadRasterContentFromTiles(IRaster raster, TiffCompression compression, TiffSampleFormat format)
         {
-            UInt32[] tileOffsets = _imageFileDirectories[_currentImageIndex][324].Cast<UInt32>().ToArray();
-            UInt32[] tileByteCounts = _imageFileDirectories[_currentImageIndex][325].Cast<UInt32>().ToArray();
+            UInt64[] tileOffsets = _imageFileDirectories[_currentImageIndex][324].Select(value => Convert.ToUInt64(value)).ToArray();
+            UInt64[] tileByteCounts = _imageFileDirectories[_currentImageIndex][325].Select(value => Convert.ToUInt64(value)).ToArray();
             Int32 tileWidth = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][322][0]);
             Int32 tileLength = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][323][0]);
 
@@ -639,7 +745,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             for (Int32 i = 0; i < tilesDown; i++)
                 for (Int32 j = 0; j < tilesAcross; j++)
                 {
-                    _baseStream.Seek(tileOffsets[i * tilesAcross + j], SeekOrigin.Begin);
+                    _baseStream.Seek((Int64)tileOffsets[i * tilesAcross + j], SeekOrigin.Begin);
 
                     // perform decompression of stream if compressed
                     Stream contentStream = null;
@@ -930,13 +1036,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 metadata.Add("Copyright", _imageFileDirectories[_currentImageIndex][33432][0]);
 
             return metadata;
-        }     
-   
+        }
+
         /// <summary>
-        /// Computes the mapping from model space to raster space.
+        /// Computes the raster mapper.
         /// </summary>
-        /// <returns>The mapping from model space to raster space.</returns>
-        protected virtual RasterMapper ComputeRasterToModelSpaceMapping()
+        /// <returns>The raster mapper.</returns>
+        protected virtual RasterMapper ComputeRasterMapper()
         {
             return null;
         }
@@ -980,6 +1086,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return TiffTagType.Float;
             if (value is Double)
                 return TiffTagType.Double;
+            if (value is Int64)
+                return TiffTagType.SLong8;
+            if (value is UInt64)
+                return TiffTagType.Long8;
 
             return TiffTagType.Undefined;
         }
@@ -1008,6 +1118,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case TiffTagType.Double:
                 case TiffTagType.Rational:
                 case TiffTagType.SRational:
+                case TiffTagType.Long8:
+                case TiffTagType.SLong8:
+                case TiffTagType.LongOffset:
                     return 8;
                 default:
                     return 0;
@@ -1050,6 +1163,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     return EndianBitConverter.ToSingle(array, startIndex, byteOrder);
                 case TiffTagType.Double:
                     return EndianBitConverter.ToDouble(array, startIndex, byteOrder);
+                case TiffTagType.Long8:
+                case TiffTagType.LongOffset:
+                    return EndianBitConverter.ToUInt64(array, startIndex, byteOrder);
+                case TiffTagType.SLong8:
+                    return EndianBitConverter.ToInt64(array, startIndex, byteOrder);
                 default:
                     return null;
             }

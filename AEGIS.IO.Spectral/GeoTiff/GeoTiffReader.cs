@@ -197,6 +197,21 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
         #endregion
 
+        #region Protected GeometryStreamReader methods
+
+        /// <summary>
+        /// Apply the read operation for a geometry.
+        /// </summary>
+        /// <returns>The geometry read from the stream.</returns>
+        protected override IGeometry ApplyReadGeometry()
+        {
+            ComputeGeoKeys();
+
+            return base.ApplyReadGeometry();
+        }
+
+        #endregion
+
         #region Protected TiffReader methods
 
         /// <summary>
@@ -303,17 +318,47 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
+        /// Computes the raster mapper.
+        /// </summary>
+        /// <returns>The raster mapper.</returns>
+        protected override RasterMapper ComputeRasterMapper()
+        {
+            RasterMapper mapper = null;
+
+            // try to read from file content
+            try
+            {
+                mapper = ComputeRasterToModelSpaceMapping();
+            }
+            catch { }
+
+            if (mapper != null)
+                return mapper;
+
+            // try to read from metafile
+            try
+            {
+                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                {
+                    mapper = reader.ReadMapping();
+                }
+            }
+            catch { }
+
+            if (mapper != null)
+                return mapper;
+
+            // use default mapping
+            return RasterMapper.FromTransformation(RasterMapMode.ValueIsArea, Coordinate.Empty, new CoordinateVector(1, 1, 0));
+        }
+            
+        /// <summary>
         /// Reads the mapping from model space to raster space.
         /// </summary>
         /// <returns>The mapping from model space to raster space.</returns>
-        /// <exception cref="System.IO.InvalidDataException">
-        /// Model tiepoints are in invalid format.
-        /// or
-        /// Model transformation parameters are in invalid format.
-        /// </exception>
-        protected override RasterMapper ComputeRasterToModelSpaceMapping()
+        protected RasterMapper ComputeRasterToModelSpaceMapping()
         {
-            if (_currentGeoKeys == null)
+            if (!_currentGeoKeys.ContainsKey(1025))
                 return null;
 
             RasterMapMode mode = Convert.ToInt16(_currentGeoKeys[1025]) == 1 ? RasterMapMode.ValueIsArea : RasterMapMode.ValueIsCoordinate;
@@ -344,9 +389,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // compute with model tie points
             if (modelTiePointsArray != null && (modelTiePointsArray.Length > 6 || (modelTiePointsArray.Length == 6 && modelPixelScaleArray.Length == 3)))
             {
-                if (modelTiePointsArray.Length % 6 != 0)
-                    throw new InvalidDataException("Model tiepoints are in invalid format.");
-
                 if (modelTiePointsArray.Length > 6) // transformation is specified by tiepoints
                 {
                     RasterCoordinate[] coordinates = new RasterCoordinate[modelTiePointsArray.Length / 6];
@@ -377,9 +419,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // compute with transformation values
             if (modelTransformationArray != null)
             {
-                if (modelTransformationArray.Length != 16)
-                    throw new InvalidDataException("Model transformation parameters are in invalid format.");
-
                 Matrix transformation = new Matrix(4, 4);
                 for (Int32 i = 0; i < 4; i++)
                     for (Int32 j = 0; j < 4; j++)
@@ -389,17 +428,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return RasterMapper.FromTransformation(mode, transformation);
             }
 
-            // read from metafile
-            try
-            {
-                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
-                {
-                    return reader.ReadMapping();
-                }
-            }
-            catch { }
-
-            throw new InvalidDataException("Model space data is unavailable.");
+            // nothing is available
+            return null;
         }
 
         /// <summary>
@@ -408,31 +438,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The reference system of the raster image.</returns>
         protected override IReferenceSystem ComputeReferenceSystem()
         {
-            ComputeGeoKeys();
-
-            try
+            if (_currentGeoKeys.ContainsKey(1024))
             {
-                // read from GeoTIFF geokeys
-                if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
+                // reference system information is in the file
+                try
                 {
-                    switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
+                    // read from GeoTIFF geokeys
+                    if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
                     {
-                        case ReferenceSystemType.Projected:
-                            return ComputeProjectedCoordinateReferenceSystem();
-                        case ReferenceSystemType.Geographic:
-                            return ComputeGeographicCoordinateReferenceSystem();
-                        case ReferenceSystemType.Geocentric:
-                            // currenty not used
-                            return null;
-                        case ReferenceSystemType.UserDefined:
-                            // currenty not used
-                            return null;
+                        switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
+                        {
+                            case ReferenceSystemType.Projected:
+                                return ComputeProjectedCoordinateReferenceSystem();
+                            case ReferenceSystemType.Geographic:
+                                return ComputeGeographicCoordinateReferenceSystem();
+                            case ReferenceSystemType.Geocentric:
+                                // currenty not used
+                                return null;
+                            case ReferenceSystemType.UserDefined:
+                                // currenty not used
+                                return null;
+                        }
                     }
                 }
+                catch { }
             }
-            catch { }
 
-            // read from metafile
+            // try to read from metafile
             try
             {
                 using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
@@ -455,16 +487,16 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Geo key data is in an invalid format.</exception>
         private void ComputeGeoKeys()
         {
+            _currentGeoKeys = new Dictionary<Int16, Object>();
+
+            // there are no geo keys in the file
+            if (!_imageFileDirectories[_currentImageIndex].ContainsKey(34735))
+            {
+                return;
+            }
+
             try
             {
-                if (!_imageFileDirectories[_currentImageIndex].ContainsKey(34735))
-                {
-                    _currentGeoKeys = null;
-                    return;
-                }
-
-                _currentGeoKeys = new Dictionary<Int16, Object>();
-
                 _geoTiffFormatVersion = _imageFileDirectories[_currentImageIndex][34735][0] + "." + _imageFileDirectories[_currentImageIndex][34735][1] + "." + _imageFileDirectories[_currentImageIndex][34735][2];
                 Int32 offset, count;
 

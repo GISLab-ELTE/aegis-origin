@@ -42,21 +42,57 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The maximum number of bytes to be written into the file in a single operation. This field is constant.
         /// </summary>
         private const Int32 NumberOfWritableBytes = 1 << 20;
+        
+        /// <summary>
+        /// The threshold value (in bytes) after which BigTIFF format is applied. This field is constant.
+        /// </summary>
+        private const Int64 BigTiffThreshold = 10;//(Int64)(UInt32.MaxValue * 0.9);
 
         #endregion
 
         #region Private fields
 
+        /// <summary>
+        /// Indicates whether the file header was already written.
+        /// </summary>
         private Boolean _fileHeaderWritten;
-        private Int32 _currentImageFileDirectoryStartPosition;
-        private Int32 _currentImageFileDirectoryEndPosition;
+
+        /// <summary>
+        /// The starting position of the current image file directory.
+        /// </summary>
+        private Int64 _currentImageFileDirectoryStartPosition;
+
+        /// <summary>
+        /// The ending position of the current image file directory.
+        /// </summary>
+        private Int64 _currentImageFileDirectoryEndPosition;
+
+        /// <summary>
+        /// The starting position of the current image.
+        /// </summary>
+        private Int64 _currentImageStartPosition;
+
+        /// <summary>
+        /// Indicates whether the contnet should be written in BigTIFF format.
+        /// </summary>
+        private Boolean _isBigTiffFormat;
+
+        /// <summary>
+        /// The size of an entry in the image file directory.
+        /// </summary>
+        private Int32 _imageFileDirectoryEntrySize;
+
+        /// <summary>
+        /// The size of a field in the image file directory.
+        /// </summary>
+        private Int32 _imageFileDirectoryFieldSize;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter"/> class.
+        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter" /> class.
         /// </summary>
         /// <param name="path">The file path to be written.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -70,8 +106,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
             : base(path, SpectralGeometryStreamFormats.Tiff, null)
         {
         }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter"/> class.
+        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter" /> class.
         /// </summary>
         /// <param name="path">The file path to be written.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -85,8 +122,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
             : base(path, SpectralGeometryStreamFormats.Tiff, null)
         {
         }
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter"/> class.
+        /// Initializes a new instance of the <see cref="GeoTiff.TiffWriter" /> class.
         /// </summary>
         /// <param name="stream">The stream to be written.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
@@ -106,21 +144,69 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.ArgumentException">Stream does not support the specified geometry.;geometry</exception>
         protected override void ApplyWriteGeometry(IGeometry geometry)
         {            
-            if ((geometry as ISpectralGeometry).Raster == null)
+            IRaster raster = (geometry as ISpectralGeometry).Raster;
+
+            if (raster == null)
                 return;
 
-            WriteHeader();
+            // TODO: compute the format more exactly
+            if (!_isBigTiffFormat)
+                _isBigTiffFormat = (Int64)raster.RadiometricResolutions.Sum() / 8 * raster.NumberOfBands * raster.NumberOfColumns * raster.NumberOfRows > BigTiffThreshold;
 
-            UInt32 startPosition = 0, endPosition = 0;
+            _imageFileDirectoryEntrySize = _isBigTiffFormat ? 20 : 12;
+            _imageFileDirectoryFieldSize = _isBigTiffFormat ? 8 : 4;
+
+            WriteHeader();
 
             TiffCompression compression = TiffCompression.None; // TODO: support other compressions
             TiffSampleFormat sampleFormat = (geometry as ISpectralGeometry).Raster.Format == RasterFormat.Floating ? TiffSampleFormat.Floating : TiffSampleFormat.UnsignedInteger;
 
-            // perform writing based on representation
-            WriteRasterContentToStrip((geometry as ISpectralGeometry).Raster, compression, sampleFormat, out startPosition, out endPosition);
+            TiffImageFileDirectory imageFileDirectory = ComputeImageFileDirectory(geometry as ISpectralGeometry, compression, sampleFormat);
 
-            TiffImageFileDirectory imageFileDirectory = ComputeImageFileDirectory(geometry as ISpectralGeometry, compression, sampleFormat, startPosition, endPosition);
-            WriteImageFileDirectory(imageFileDirectory);
+            // compute and update raster content position
+            Int64 imageFileDirectorySize = ComputeImageFileDirectorySize(imageFileDirectory);
+            Int64 rasterContentStartPosition = _baseStream.Position + imageFileDirectorySize;
+            Int64 rasterContentSize = ComputeRasterContentSize(raster);
+
+            if (_isBigTiffFormat) // update strip offset and length
+            {
+                imageFileDirectory[273][0] = (UInt64)rasterContentStartPosition;
+                imageFileDirectory[279][0] = (UInt64)rasterContentSize;
+            }
+            else
+            {
+                imageFileDirectory[273][0] = (UInt32)rasterContentStartPosition;
+                imageFileDirectory[279][0] = (UInt32)rasterContentSize;
+            }
+
+            // write image file directory
+            if (_isBigTiffFormat)
+                WriteBigImageFileDirectory(imageFileDirectory);
+            else
+                WriteImageFileDirectory(imageFileDirectory);
+
+            // perform writing based on representation
+            WriteRasterContentToStrip((geometry as ISpectralGeometry).Raster, compression, sampleFormat);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">A value indicating whether disposing is performed on the object.</param>
+        protected override void Dispose(Boolean disposing)
+        {
+            // write the 0 address of next image file directory
+            _baseStream.Seek(_currentImageFileDirectoryEndPosition, SeekOrigin.Begin);
+            if (_isBigTiffFormat)
+            {
+                _baseStream.Write(EndianBitConverter.GetBytes((UInt64)0), 0, 8);
+            }
+            else
+            {
+                _baseStream.Write(EndianBitConverter.GetBytes((UInt32)0), 0, 4);
+            }
+
+            base.Dispose(disposing);
         }
 
         #endregion
@@ -136,7 +222,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="startPosition">The starting position of the raster content within the stream.</param>
         /// <param name="endPosition">The ending position of the raster content within the stream.</param>
         /// <returns>The computed image file directory.</returns>
-        protected virtual TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format, UInt32 startPosition, UInt32 endPosition)
+        protected virtual TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format)
         {
             TiffImageFileDirectory imageFileDirectory = new TiffImageFileDirectory();
 
@@ -152,9 +238,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(282, new Object[] { (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.ColumnSize : (Rational)1 }); // x resolution
             imageFileDirectory.Add(283, new Object[] { (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.RowSize : (Rational)1 }); // y resolution
             imageFileDirectory.Add(278, new Object[] { (UInt32)geometry.Raster.NumberOfRows }); // rows per strip
-            imageFileDirectory.Add(273, new Object[] { startPosition }); // strip offsets
-            imageFileDirectory.Add(279, new Object[] { (UInt32)(endPosition - startPosition) }); // strip byte counts
-            imageFileDirectory.Add(258, geometry.Raster.RadiometricResolutions.Select(resolution => (UInt16)resolution).Cast<Object>().ToArray() ); // bits per sample
+            imageFileDirectory.Add(273, new Object[] { (UInt32)0 }); // strip offsets (will be updated)
+            imageFileDirectory.Add(279, new Object[] { (UInt32)0 }); // strip byte counts (will be updated)
+            imageFileDirectory.Add(258, geometry.Raster.RadiometricResolutions.Select(resolution => (UInt16)resolution).Cast<Object>().ToArray()); // bits per sample
             imageFileDirectory.Add(277, new Object[] { (UInt32)geometry.Raster.NumberOfBands }); // samples per pixel
             imageFileDirectory.Add(339, new Object[] { (UInt16)format }); // sample format
 
@@ -162,7 +248,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (photometricInterpretation == TiffPhotometricInterpretation.PaletteColor)
             {
                 Object[] colorMap = new Object[3 * Calculator.Pow(2, geometry.Raster.RadiometricResolutions[0])];
-                
+
                 for (Int32 valueIndex = 0; valueIndex < colorMap.Length / 3; valueIndex++)
                 {
                     if (!geometry.Presentation.ColorMap.ContainsKey(valueIndex))
@@ -180,25 +266,22 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(305, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
             imageFileDirectory.Add(306, new Object[] { DateTime.UtcNow.ToString(CultureInfo.InvariantCulture.DateTimeFormat) }); // date time
 
-            if (geometry.Metadata != null)
-            {
-                if (geometry.Metadata.ContainsKey("DocumentName"))
-                    imageFileDirectory.Add(269, new Object[] { geometry.Metadata["DocumentName"] });
-                if (geometry.Metadata.ContainsKey("ImageDescription"))
-                    imageFileDirectory.Add(270, new Object[] { geometry.Metadata["ImageDescription"] });
-                if (geometry.Metadata.ContainsKey("Make"))
-                    imageFileDirectory.Add(271, new Object[] { geometry.Metadata["Make"] });
-                if (geometry.Metadata.ContainsKey("Model"))
-                    imageFileDirectory.Add(272, new Object[] { geometry.Metadata["Model"] });
-                if (geometry.Metadata.ContainsKey("PageName"))
-                    imageFileDirectory.Add(285, new Object[] { geometry.Metadata["PageName"] });
-                if (geometry.Metadata.ContainsKey("Artist"))
-                    imageFileDirectory.Add(307, new Object[] { geometry.Metadata["Artist"] });
-                if (geometry.Metadata.ContainsKey("HostComputer"))
-                    imageFileDirectory.Add(308, new Object[] { geometry.Metadata["HostComputer"] });
-                if (geometry.Metadata.ContainsKey("Copyright"))
-                    imageFileDirectory.Add(33432, new Object[] { geometry.Metadata["Copyright"] });
-            }
+            if (geometry.Metadata.ContainsKey("DocumentName"))
+                imageFileDirectory.Add(269, new Object[] { geometry.Metadata["DocumentName"] });
+            if (geometry.Metadata.ContainsKey("ImageDescription"))
+                imageFileDirectory.Add(270, new Object[] { geometry.Metadata["ImageDescription"] });
+            if (geometry.Metadata.ContainsKey("Make"))
+                imageFileDirectory.Add(271, new Object[] { geometry.Metadata["Make"] });
+            if (geometry.Metadata.ContainsKey("Model"))
+                imageFileDirectory.Add(272, new Object[] { geometry.Metadata["Model"] });
+            if (geometry.Metadata.ContainsKey("PageName"))
+                imageFileDirectory.Add(285, new Object[] { geometry.Metadata["PageName"] });
+            if (geometry.Metadata.ContainsKey("Artist"))
+                imageFileDirectory.Add(307, new Object[] { geometry.Metadata["Artist"] });
+            if (geometry.Metadata.ContainsKey("HostComputer"))
+                imageFileDirectory.Add(308, new Object[] { geometry.Metadata["HostComputer"] });
+            if (geometry.Metadata.ContainsKey("Copyright"))
+                imageFileDirectory.Add(33432, new Object[] { geometry.Metadata["Copyright"] });
 
             return imageFileDirectory;
         }
@@ -215,7 +298,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (_fileHeaderWritten)
                 return;
 
-            Byte[] bytes = new Byte[4];
+            Byte[] bytes = _isBigTiffFormat ? new Byte[8] : new Byte[4];
 
             _baseStream.Seek(0, SeekOrigin.Begin);
             switch (EndianBitConverter.DefaultByteOrder) // the default endianness should be used for the encoding
@@ -228,42 +311,54 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     break;
             }
 
-            EndianBitConverter.CopyBytes((UInt16)42, bytes, 2); // TIFF identifier
-            _baseStream.Write(bytes, 0, bytes.Length);
-            _baseStream.Seek(8, SeekOrigin.Begin);
+            if (_isBigTiffFormat)
+            {
+                EndianBitConverter.CopyBytes((UInt16)43, bytes, 2); // BigTIFF identifier
+                EndianBitConverter.CopyBytes((UInt16)8, bytes, 4); // BigTIFF field size
+                EndianBitConverter.CopyBytes((UInt16)0, bytes, 6);
+                _baseStream.Write(bytes, 0, bytes.Length);
+                _baseStream.Seek(16, SeekOrigin.Begin);
 
-            _currentImageFileDirectoryEndPosition = 4;
+                _currentImageFileDirectoryEndPosition = 8;
+            }
+            else
+            {
+                EndianBitConverter.CopyBytes((UInt16)42, bytes, 2); // TIFF identifier
+                _baseStream.Write(bytes, 0, bytes.Length);
+                _baseStream.Seek(8, SeekOrigin.Begin);
 
+                _currentImageFileDirectoryEndPosition = 4;
+            }
             _fileHeaderWritten = true;
         }
 
         /// <summary>
-        /// Writes an image file directory to the stream.
+        /// Writes an image file directory to the stream (in BigTIFF format).
         /// </summary>
         /// <param name="imageFileDirectory">The image file directory.</param>
-        private void WriteImageFileDirectory(TiffImageFileDirectory imageFileDirectory)
+        private void WriteBigImageFileDirectory(TiffImageFileDirectory imageFileDirectory)
         {
-            _currentImageFileDirectoryStartPosition = (Int32)_baseStream.Position;
+            _currentImageFileDirectoryStartPosition = _baseStream.Position;
 
-            // write the position of the image file descriptor
+            // write starting position
             _baseStream.Seek(_currentImageFileDirectoryEndPosition, SeekOrigin.Begin);
-            _baseStream.Write(EndianBitConverter.GetBytes(_currentImageFileDirectoryStartPosition), 0, 4);
+            _baseStream.Write(EndianBitConverter.GetBytes((UInt64)_currentImageFileDirectoryStartPosition), 0, _imageFileDirectoryFieldSize);
 
-            // size of IFD
-            Int32 imageFileDirectorySize = 2 + 12 * imageFileDirectory.Count + 4;
-            _currentImageFileDirectoryEndPosition = _currentImageFileDirectoryStartPosition + 2 + 12 * imageFileDirectory.Count;
+            // compute size of directory (without additional fields)
+            Int64 imageFileDirectorySize = 8 + _imageFileDirectoryEntrySize * imageFileDirectory.Count;
+            _currentImageFileDirectoryEndPosition = _currentImageFileDirectoryStartPosition + imageFileDirectorySize;
 
             // position after the IFD to write exceeding values
-            _baseStream.Seek(_currentImageFileDirectoryStartPosition + imageFileDirectorySize, SeekOrigin.Begin);
+            _baseStream.Seek(_currentImageFileDirectoryEndPosition + _imageFileDirectoryFieldSize, SeekOrigin.Begin);
 
             // the IFD should be written in one operation
             Byte[] bytes = new Byte[imageFileDirectorySize];
-            EndianBitConverter.CopyBytes((UInt16)imageFileDirectory.Count, bytes, 0); // number of entries
-            Int32 byteIndex = 2;
+            EndianBitConverter.CopyBytes((UInt64)imageFileDirectory.Count, bytes, 0); // number of entries
+            Int32 byteIndex = 8;
 
             TiffTagType entryType;
             UInt16 dataSize;
-            UInt32 dataCount;
+            Int64 dataCount;
 
             foreach (UInt16 entryTag in imageFileDirectory.Keys)
             {
@@ -275,19 +370,105 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     dataCount = 0;
                     for (Int32 i = 0; i < imageFileDirectory[entryTag].Length; i++)
                     {
-                        dataCount += (UInt32)(imageFileDirectory[entryTag][i] as String).Length;
+                        dataCount += (imageFileDirectory[entryTag][i] as String).Length;
                     }
                 }
                 else
                 {
-                    dataCount = (UInt32)imageFileDirectory[entryTag].Length;
+                    dataCount = imageFileDirectory[entryTag].Length;
                 }
 
                 EndianBitConverter.CopyBytes(entryTag, bytes, byteIndex);
                 EndianBitConverter.CopyBytes((UInt16)entryType, bytes, byteIndex + 2);
-                EndianBitConverter.CopyBytes(dataCount, bytes, byteIndex + 4);
+                EndianBitConverter.CopyBytes((UInt64)dataCount, bytes, byteIndex + 4);
 
-                // values exceeding 4 bytes must be written to another position
+                // values exceeding he field size (8) must be written to another position
+                Byte[] dataBytes;
+                Int32 dataStartIndex;
+                if (dataCount * dataSize <= 8)
+                {
+                    dataBytes = bytes;
+                    dataStartIndex = byteIndex + 12;
+                }
+                else
+                {
+                    dataBytes = new Byte[dataCount * dataSize + (dataCount * dataSize) % 2];
+                    dataStartIndex = 0;
+                }
+
+                for (Int32 valueIndex = 0; valueIndex < imageFileDirectory[entryTag].Length; valueIndex++)
+                {
+                    dataStartIndex = SetTagValue(entryType, imageFileDirectory[entryTag][valueIndex], dataBytes, dataStartIndex);
+                }
+
+                if (dataCount * dataSize > 8)
+                {
+                    Int64 valuePosition = _baseStream.Position;
+                    _baseStream.Write(dataBytes, 0, dataBytes.Length);
+
+                    EndianBitConverter.CopyBytes((UInt64)valuePosition, bytes, byteIndex + 12);
+                }
+                byteIndex += _imageFileDirectoryEntrySize;
+            }
+
+            _currentImageStartPosition = _baseStream.Position;
+
+            // write the IFD
+            _baseStream.Seek(_currentImageFileDirectoryStartPosition, SeekOrigin.Begin);
+            _baseStream.Write(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// Writes an image file directory to the stream.
+        /// </summary>
+        /// <param name="imageFileDirectory">The image file directory.</param>
+        private void WriteImageFileDirectory(TiffImageFileDirectory imageFileDirectory)
+        {
+            _currentImageFileDirectoryStartPosition = _baseStream.Position;
+
+            // write starting position
+            _baseStream.Seek(_currentImageFileDirectoryEndPosition, SeekOrigin.Begin);
+            _baseStream.Write(EndianBitConverter.GetBytes((UInt32)_currentImageFileDirectoryStartPosition), 0, _imageFileDirectoryFieldSize);
+
+            // compute size of directory (without additional fields)
+            Int64 imageFileDirectorySize = 2 + _imageFileDirectoryEntrySize * imageFileDirectory.Count;
+            _currentImageFileDirectoryEndPosition = _currentImageFileDirectoryStartPosition + imageFileDirectorySize;
+
+            // position after the IFD to write exceeding values
+            _baseStream.Seek(_currentImageFileDirectoryEndPosition + _imageFileDirectoryFieldSize, SeekOrigin.Begin);
+
+            // the IFD should be written in one operation
+            Byte[] bytes = new Byte[imageFileDirectorySize];
+            EndianBitConverter.CopyBytes((UInt16)imageFileDirectory.Count, bytes, 0); // number of entries
+            Int32 byteIndex = 2;
+
+            TiffTagType entryType;
+            UInt16 dataSize;
+            Int64 dataCount;
+
+            foreach (UInt16 entryTag in imageFileDirectory.Keys)
+            {
+                entryType = GetTagType(imageFileDirectory[entryTag][0]);
+                dataSize = GetTagSize(entryType);
+
+                if (entryType == TiffTagType.ASCII)
+                {
+                    dataCount = 0;
+                    for (Int32 i = 0; i < imageFileDirectory[entryTag].Length; i++)
+                    {
+                        dataCount += (imageFileDirectory[entryTag][i] as String).Length;
+                    }
+                }
+                else
+                {
+                    dataCount = imageFileDirectory[entryTag].Length;
+                }
+
+                EndianBitConverter.CopyBytes(entryTag, bytes, byteIndex);
+                EndianBitConverter.CopyBytes((UInt16)entryType, bytes, byteIndex + 2);
+                EndianBitConverter.CopyBytes((UInt32)dataCount, bytes, byteIndex + 4);
+
+                // values exceeding he field size (4) must be written to another position
                 Byte[] dataBytes;
                 Int32 dataStartIndex;
                 if (dataCount * dataSize <= 4)
@@ -308,22 +489,77 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 if (dataCount * dataSize > 4)
                 {
-                    UInt32 valuePosition = (UInt32)_baseStream.Position;
+                    Int64 valuePosition = _baseStream.Position;
                     _baseStream.Write(dataBytes, 0, dataBytes.Length);
 
-                    EndianBitConverter.CopyBytes(valuePosition, bytes, byteIndex + 8);
+                    EndianBitConverter.CopyBytes((UInt32)valuePosition, bytes, byteIndex + 8);
                 }
-                byteIndex += 12;
+
+                byteIndex += _imageFileDirectoryEntrySize;
             }
 
-            UInt32 finalPosition = (UInt32)_baseStream.Position;
+            _currentImageStartPosition = _baseStream.Position;
 
             // write the IFD
             _baseStream.Seek(_currentImageFileDirectoryStartPosition, SeekOrigin.Begin);
             _baseStream.Write(bytes, 0, bytes.Length);
+        }
 
-            // position after all values
-            _baseStream.Seek(finalPosition, SeekOrigin.Begin);
+        /// <summary>
+        /// Computes the size of the image file directory.
+        /// </summary>
+        /// <param name="imageFileDirectory">The image file directory.</param>
+        /// <returns>The size of the image file directory (in bytes).</returns>
+        private Int64 ComputeImageFileDirectorySize(TiffImageFileDirectory imageFileDirectory)
+        {
+            Int64 size = (_isBigTiffFormat ? 8 : 2) // number of entries
+                       + _imageFileDirectoryEntrySize * imageFileDirectory.Count  // entries
+                       + _imageFileDirectoryFieldSize; // position of next directory
+
+            TiffTagType entryType;
+            UInt16 dataSize;
+            Int32 dataCount;
+
+            foreach (UInt16 entryTag in imageFileDirectory.Keys)
+            {
+                entryType = GetTagType(imageFileDirectory[entryTag][0]);
+                dataSize = GetTagSize(entryType);
+
+                if (entryType == TiffTagType.ASCII)
+                {
+                    dataCount = 0;
+                    for (Int32 i = 0; i < imageFileDirectory[entryTag].Length; i++)
+                    {
+                        dataCount += (imageFileDirectory[entryTag][i] as String).Length;
+                    }
+                }
+                else
+                {
+                    dataCount = imageFileDirectory[entryTag].Length;
+                }
+
+                if (dataCount * dataSize > _imageFileDirectoryFieldSize)
+                {
+                    size += dataCount * dataSize + (dataCount * dataSize) % 2;
+                }
+            }
+
+            return size;
+        }
+
+        /// <summary>
+        /// Computes the size of the raster content.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <returns>The size of the raster content (in bytes).</returns>
+        private Int64 ComputeRasterContentSize(IRaster raster)
+        {
+            Int64 rasterContentSize = (Int64)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns;
+
+            if (rasterContentSize % 2 != 0) // correct the number of bytes
+                rasterContentSize++;
+
+            return rasterContentSize;
         }
 
         /// <summary>
@@ -378,15 +614,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="raster">The raster.</param>
         /// <param name="compression">The compression.</param>
         /// <param name="format">The sample format.</param>
-        /// <param name="startPosition">The starting position of the strip.</param>
-        /// <param name="endPosition">The ending position of the strip.</param>
-        private void WriteRasterContentToStrip(IRaster raster, TiffCompression compression, TiffSampleFormat format, out UInt32 startPosition, out UInt32 endPosition)
+        private void WriteRasterContentToStrip(IRaster raster, TiffCompression compression, TiffSampleFormat format)
         {
-            // mark the starting position of the strip
-            startPosition = (UInt32)_baseStream.Position;
+            _baseStream.Seek(_currentImageStartPosition, SeekOrigin.Begin);
 
-            Int32 numberOfBytes = (Int32)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns;
-            Int32 numberOfBytesLeft = numberOfBytes;
+            // mark the starting position of the strip
+            UInt32 numberOfBytes = (UInt32)(Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns);
+            UInt32 numberOfBytesLeft = numberOfBytes;
 
             if (numberOfBytes % 2 != 0) // correct the number of bytes
                 numberOfBytes++;
@@ -417,9 +651,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                         {
                             // write the buffer to the file
                             _baseStream.Write(bytes, 0, byteIndex);
+
                             byteIndex = 0;
 
-                            numberOfBytesLeft -= byteIndex;
+                            numberOfBytesLeft -= (UInt32)byteIndex;
                             // the final array of bytes should not be the number of bytes left
                             if (numberOfBytes > NumberOfWritableBytes && numberOfBytesLeft > 0 && numberOfBytesLeft < NumberOfWritableBytes)
                                 bytes = new Byte[numberOfBytesLeft % 2 == 0 ? numberOfBytesLeft : numberOfBytesLeft + 1];
@@ -432,9 +667,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 _baseStream.Write(bytes, 0, byteIndex);
             }
-
-            // mark the ending position of the strip
-            endPosition = (UInt32)_baseStream.Position;
         }
 
         /// <summary>
@@ -539,6 +771,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return TiffTagType.Float;
             if (value is Double)
                 return TiffTagType.Double;
+            if (value is UInt64)
+                return TiffTagType.Long8;
+            if (value is Int64)
+                return TiffTagType.SLong8;
 
             return TiffTagType.Undefined;
         }
@@ -566,11 +802,15 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case TiffTagType.Double:
                 case TiffTagType.Rational:
                 case TiffTagType.SRational:
+                case TiffTagType.Long8:
+                case TiffTagType.SLong8:
+                case TiffTagType.LongOffset:
                     return 8;
                 default:
                     return 0;
             }
         }
+
         /// <summary>
         /// Sets the value of a TIFF tag.
         /// </summary>
@@ -618,6 +858,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     break;
                 case TiffTagType.Double:
                     EndianBitConverter.CopyBytes(Convert.ToDouble(value), array, startIndex);
+                    break;
+                case TiffTagType.Long8:
+                case TiffTagType.LongOffset:
+                    EndianBitConverter.CopyBytes(Convert.ToUInt64(value), array, startIndex);
+                    break;
+                case TiffTagType.SLong8:
+                    EndianBitConverter.CopyBytes(Convert.ToInt64(value), array, startIndex);
                     break;
             }
             return startIndex + dataSize;

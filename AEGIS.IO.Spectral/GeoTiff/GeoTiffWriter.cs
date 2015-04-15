@@ -1,4 +1,4 @@
-﻿/// <copyright file="GeoTiffReader.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="GeoTiffWriter.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -94,9 +94,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="startPosition">The starting position of the raster content within the stream.</param>
         /// <param name="endPosition">The ending position of the raster content within the stream.</param>
         /// <returns>The computed image file directory.</returns>
-        protected override TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format, UInt32 startPosition, UInt32 endPosition)
+        protected override TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format)
         {
-            TiffImageFileDirectory imageFileDirectory = base.ComputeImageFileDirectory(geometry, compression, format, startPosition, endPosition);
+            TiffImageFileDirectory imageFileDirectory = base.ComputeImageFileDirectory(geometry, compression, format);
 
             CoordinateReferenceSystem referenceSystem = geometry.ReferenceSystem as CoordinateReferenceSystem;
 
