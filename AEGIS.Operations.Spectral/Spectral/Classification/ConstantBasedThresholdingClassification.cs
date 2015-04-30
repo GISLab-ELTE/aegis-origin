@@ -74,10 +74,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public ConstantBasedThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.ConstantBasedThresholdClassification, parameters)
         {
-            if (_sourceBandIndex >= 0)
+            if (_sourceBandIndices != null)
             {
-                _lowerThresholdValues[_sourceBandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
-                _upperThresholdValues[_sourceBandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
+                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                {
+                    _lowerThresholdValues[k] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                    _upperThresholdValues[k] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
+                }
             }
             else
             {

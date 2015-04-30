@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral
 {
@@ -25,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral
     {
         #region Protected fields
 
-        protected Int32 _sourceBandIndex;
+        protected Int32[] _sourceBandIndices;
 
         #endregion
 
@@ -58,15 +59,17 @@ namespace ELTE.AEGIS.Operations.Spectral
         protected PerBandSpectralTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            if (parameters != null && parameters.ContainsKey(SpectralOperationParameters.BandIndex))
+            if (IsProvidedParameter(SpectralOperationParameters.BandIndex))
             {
-                _sourceBandIndex = Convert.ToInt32(parameters[SpectralOperationParameters.BandIndex]);
+                _sourceBandIndices = new Int32[] { Convert.ToInt32(ResolveParameter(SpectralOperationParameters.BandIndex)) };
 
-                if (_sourceBandIndex >= source.Raster.NumberOfBands)
-                    throw new ArgumentOutOfRangeException("The specified band index parameter or greater or equal to the spectral resoultion of the source.", "parameters");
             }
-            else
-                _sourceBandIndex = Int32.MinValue;
+            else if (IsProvidedParameter(SpectralOperationParameters.BandIndices))
+                _sourceBandIndices = ResolveParameter<Int32[]>(SpectralOperationParameters.BandIndices);
+
+
+            if (_sourceBandIndices != null && (_sourceBandIndices.Min() < 0 || _sourceBandIndices.Max() >= source.Raster.NumberOfBands))
+                throw new ArgumentOutOfRangeException("The specified band index parameter is greater or equal to the spectral resoultion of the source.", "parameters");
         }
 
         #endregion
@@ -78,15 +81,22 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void PrepareResult()
         {
-            if (_sourceBandIndex >= 0)
+            if (_sourceBandIndices != null)
             {
+                Int32[] radiometricResolutions = new Int32[_sourceBandIndices.Length];
+
+                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                    radiometricResolutions[k] = _source.Raster.RadiometricResolutions[_sourceBandIndices[k]];
+
                 _result = _source.Factory.CreateSpectralGeometry(_source, 
                                                                  PrepareRasterResult(_source.Raster.Format,
                                                                                      1,
                                                                                      _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     new Int32[] { _source.Raster.RadiometricResolutions[_sourceBandIndex] },
-                                                                                     _source.Raster.Mapper));
+                                                                                     _source.Raster.NumberOfColumns, 
+                                                                                     radiometricResolutions,
+                                                                                     _source.Raster.Mapper),
+                                                                 _source.Presentation, 
+                                                                 _source.Imaging);
             }
             else
             {
@@ -99,19 +109,21 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override sealed void ComputeResult()
         {
-            if (_sourceBandIndex >= 0)
+            if (_sourceBandIndices != null)
             {
                 if (_result.Raster.Format == RasterFormat.Floating)
                 {
-                    for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
-                        for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
-                            _result.Raster.SetFloatValue(i, j, 0, ComputeFloat(i, j, _sourceBandIndex));
+                    for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                        for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                            for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
+                                _result.Raster.SetFloatValue(i, j, 0, ComputeFloat(i, j, _sourceBandIndices[k]));
                 }
                 else
                 {
-                    for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
-                        for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
-                            _result.Raster.SetValue(i, j, 0, Compute(i, j, _sourceBandIndex));
+                    for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                        for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
+                            for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
+                                _result.Raster.SetValue(i, j, 0, Compute(i, j, _sourceBandIndices[k]));
                 }
             }
             else

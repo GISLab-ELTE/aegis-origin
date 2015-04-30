@@ -89,6 +89,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         #region Private static fields
 
+        private static OperationParameter _bandIndices;
         private static OperationParameter _bandIndex;
         private static OperationParameter _gammaValue;
         private static OperationParameter _histogramMatchFunction;
@@ -121,6 +122,21 @@ namespace ELTE.AEGIS.Operations.Spectral
         #endregion
 
         #region Public static properties
+
+        /// <summary>
+        /// Band indices.
+        /// </summary>
+        public static OperationParameter BandIndices
+        {
+            get
+            {
+                return _bandIndices ?? (_bandIndices =
+                    OperationParameter.CreateOptionalParameter<Int32[]>("AEGIS::223002", "Band indices",
+                                                                        "The array of zero-based index of the band the operation should be executed on.", null,
+                                                                        (Int32[])null)
+                    );
+            }
+        }
 
         /// <summary>
         /// Band index.

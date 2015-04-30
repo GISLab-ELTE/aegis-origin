@@ -75,21 +75,27 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SaturatingContrastEnhancement(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SaturatingContrastEnhancement, parameters)
         {
-            if (_sourceBandIndex >= 0)
+            if (_sourceBandIndices != null)
             {
-                Int32 minIntensity = Int32.MaxValue, maxIntensity = 0;
-                for (Int32 intensity = 0; intensity < _source.Raster.HistogramValues[_sourceBandIndex].Count; intensity++)
-                {
-                    if (_source.Raster.HistogramValues[_sourceBandIndex][intensity] > 0)
-                    {
-                        if (minIntensity > intensity)
-                            minIntensity = intensity;
-                        maxIntensity = intensity;
-                    } 
-                }
+                _offset = new Int32[] { _sourceBandIndices.Length };
+                _factor = new Double[] { _sourceBandIndices.Length };
 
-                _offset = new Int32[] { -minIntensity };
-                _factor = new Double[] { RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[_sourceBandIndex]) / (maxIntensity - minIntensity) };
+                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                {
+                    Int32 minIntensity = Int32.MaxValue, maxIntensity = 0;
+                    for (Int32 intensity = 0; intensity < _source.Raster.HistogramValues[_sourceBandIndices[k]].Count; intensity++)
+                    {
+                        if (_source.Raster.HistogramValues[_sourceBandIndices[k]][intensity] > 0)
+                        {
+                            if (minIntensity > intensity)
+                                minIntensity = intensity;
+                            maxIntensity = intensity;
+                        }
+                    }
+
+                    _offset[k] = -minIntensity;
+                    _factor[k] = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[_sourceBandIndices[k]]) / (maxIntensity - minIntensity);
+                }
             }
             else
             {
@@ -144,5 +150,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         }
 
         #endregion
+
+        protected override void PrepareResult()
+        {
+            _result = Source.Factory.CreateSpectralGeometry(Source,
+                                                            PrepareRasterResult(RasterFormat.Integer,
+                                                                                Source.Raster.NumberOfBands,
+                                                                                Source.Raster.NumberOfRows,
+                                                                                Source.Raster.NumberOfColumns,
+                                                                                16,
+                                                                                Source.Raster.Mapper),
+                                                            Source.Presentation,
+                                                            Source.Imaging);
+        }
     }
 }

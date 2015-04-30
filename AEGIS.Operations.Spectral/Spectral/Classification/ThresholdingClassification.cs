@@ -100,14 +100,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected override sealed void PrepareResult()
         {
             // the result will have integer representation in all cases
-            if (_sourceBandIndex >= 0)
+            if (_sourceBandIndices != null)
             {
                 _result = _source.Factory.CreateSpectralGeometry(_source,
                                                                  PrepareRasterResult(RasterFormat.Integer, 
                                                                                      1,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
-                                                                                     new Int32[] { 8 },
+                                                                                     Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
                                                                                      _source.Raster.Mapper), 
                                                                  RasterPresentation.CreateGrayscalePresentation(),
                                                                  _source.Imaging);
