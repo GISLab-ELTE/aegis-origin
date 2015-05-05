@@ -69,7 +69,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
 
             if (_sourceBandIndices != null && (_sourceBandIndices.Min() < 0 || _sourceBandIndices.Max() >= source.Raster.NumberOfBands))
-                throw new ArgumentOutOfRangeException("The specified band index parameter is greater or equal to the spectral resoultion of the source.", "parameters");
+                throw new ArgumentOutOfRangeException("The specified band index parameter is greater or equal to the number of bands in the source.", "parameters");
         }
 
         #endregion
@@ -90,10 +90,10 @@ namespace ELTE.AEGIS.Operations.Spectral
 
                 _result = _source.Factory.CreateSpectralGeometry(_source, 
                                                                  PrepareRasterResult(_source.Raster.Format,
-                                                                                     1,
+                                                                                     _sourceBandIndices.Length,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns, 
-                                                                                     radiometricResolutions,
+                                                                                     _sourceBandIndices.Select(index => _source.Raster.RadiometricResolutions[index]).ToArray(),
                                                                                      _source.Raster.Mapper),
                                                                  _source.Presentation, 
                                                                  _source.Imaging);
