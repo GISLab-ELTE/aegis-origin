@@ -112,7 +112,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213133", "Contrast limited adapting histogram equalization",
                                                                          "Contrast limited adapting histogram equalization (CLAHE) differs from ordinary adaptive histogram equalization in its contrast limiting.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -128,6 +129,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Gamma encoding of images is required to compensate for properties of human vision, hence to maximize the use of the bits or bandwidth relative to how humans perceive light and color.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.GammaValue));
             }
         }
@@ -143,7 +145,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213131", "Histogram equalization",
                                                                          "Histogram equalization is a method in image processing of contrast adjustment using the image's histogram.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -159,6 +162,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Histogram matching is the adjustment of raster histogram to the histogram of another raster.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.HistogramMatchValues));
             }
         }
@@ -175,6 +179,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Histogram specification transforms the band histograms to match the shapes of specific function, rather than simply equalizing them.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.HistogramMatchFunction));
             }
         }
@@ -191,6 +196,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Gamma encoding of images is required to compensate for properties of human vision, hence to maximize the use of the bits or bandwidth relative to how humans perceive light and color. This method is an inversion of the original transformation.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.GammaValue));
             }
         }
@@ -206,7 +212,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213130", "Saturating contrast enhancement",
                                                                          "Saturating contrast enhancement is a linear transformation method, where the raster histogram is pulled to fill the entire spectrum.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -221,7 +228,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213104", "Spectral inversion",
                                                                          "Inverts all spectral values to the opposite.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -255,7 +263,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          true, SpectralOperationDomain.Local,
                                                                          SpectralOperationParameters.SpectralOffset,
                                                                          SpectralOperationParameters.SpectralFactor,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
