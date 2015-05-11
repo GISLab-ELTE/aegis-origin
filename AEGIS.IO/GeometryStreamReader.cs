@@ -263,9 +263,33 @@ namespace ELTE.AEGIS.IO
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
         protected GeometryStreamReader(Stream stream, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
+            : this(format, parameters)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream", MessageStreamIsNull);
+            
+            // store parameters
+            _baseStream = stream;
+            _disposeBaseStream = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeometryFileReader" /> class.
+        /// </summary>
+        /// <param name="format">The format of the stream reader.</param>
+        /// <param name="parameters">The parameters of the reader.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The format is null.
+        /// or
+        /// The format requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// </exception>
+        protected GeometryStreamReader(GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
+        {
             if (format == null)
                 throw new ArgumentNullException("format", MessageFormatIsNull);
             if (parameters == null && format.Parameters != null && format.Parameters.Length > 0)
@@ -298,8 +322,7 @@ namespace ELTE.AEGIS.IO
             // store parameters
             Format = format;
             _parameters = parameters;
-            _baseStream = stream;
-            _disposeBaseStream = false;
+            _disposeBaseStream = true;
             _disposed = false;
 
             // resolve factory or factory type
