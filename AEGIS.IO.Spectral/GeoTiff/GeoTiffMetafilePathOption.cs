@@ -33,6 +33,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Indicates that the specified path is the path of the GeoTIFF.
         /// </summary>
-        IsGeoTiffFilePath
+        IsGeoTiffFilePath,
+
+        /// <summary>
+        /// Indicates that the specified path is a search pattern.
+        /// </summary>
+        IsSearchPattern
     }
 }

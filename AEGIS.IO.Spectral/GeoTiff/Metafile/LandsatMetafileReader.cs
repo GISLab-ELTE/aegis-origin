@@ -31,6 +31,11 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         #region Private fields
 
         /// <summary>
+        /// The reader.
+        /// </summary>
+        private StreamReader _reader;
+
+        /// <summary>
         /// The dictionary containing the metadata.
         /// </summary>
         private Dictionary<String, String> _metadata;
@@ -64,7 +69,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Initializes a new instance of the <see cref="LandsatMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -82,17 +86,18 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// or
         /// The caller does not have the required permission for the path.
         /// </exception>
-        /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public LandsatMetafileReader(String path, GeoTiffMetafilePathOption option)
-            : base(path, option)
+        public LandsatMetafileReader(String path)
+            : base(path)
         {
+            _reader = new StreamReader(_stream);
+            if (!_reader.ReadLine().Contains("L1_METADATA_FILE"))
+                throw new InvalidDataException();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LandsatMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -110,10 +115,12 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// or
         /// The caller does not have the required permission for the path.
         /// </exception>
-        /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public LandsatMetafileReader(Uri path, GeoTiffMetafilePathOption option)
-            : base(path, option)
+        public LandsatMetafileReader(Uri path)
+            : base(path)
         {
+            _reader = new StreamReader(_stream);
+            if (!_reader.ReadLine().Contains("L1_METADATA_FILE"))
+                throw new InvalidDataException();
         }
 
         /// <summary>
@@ -124,6 +131,9 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         public LandsatMetafileReader(Stream stream)
             : base(stream)
         {
+            _reader = new StreamReader(_stream);
+            if (!_reader.ReadLine().Contains("L1_METADATA_FILE"))
+                throw new InvalidDataException();
         }
 
         #endregion
@@ -232,6 +242,9 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         {
             ReadContent();
 
+            if (_metadata.ContainsKey("MAP_PROJECTION"))
+                return ProjectedCoordinateReferenceSystems.FromName(_metadata["MAP_PROJECTION"]).FirstOrDefault();
+
             return Geographic2DCoordinateReferenceSystems.FromName(_metadata["DATUM"]).FirstOrDefault();
         }
 
@@ -249,10 +262,8 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 
             _metadata = new Dictionary<String, String>();
 
-            StreamReader reader = new StreamReader(_stream);
-
             String line;
-            while ((line = reader.ReadLine()) != null && line != "END")
+            while ((line = _reader.ReadLine()) != null && line != "END")
             {
                 String[] splitLine = line.Trim().Split(new String[] { " = " }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -261,6 +272,8 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
 
                 _metadata[splitLine[0]] = splitLine[1].Trim('"');
             }
+
+            _reader.Close();
         }
 
         #endregion

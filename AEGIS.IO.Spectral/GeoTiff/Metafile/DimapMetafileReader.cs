@@ -66,7 +66,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Initializes a new instance of the <see cref="DimapMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -85,17 +84,19 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// The caller does not have the required permission for the path.
         /// </exception>
         /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public DimapMetafileReader(String path, GeoTiffMetafilePathOption option)
-            : base(path, option)
+        public DimapMetafileReader(String path)
+            : base(path)
         {
-            _document = null;
+            _document = XDocument.Load(_stream);
+
+            if (_document.Element("Dimap_Document") == null)
+                throw new InvalidDataException();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DimapMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -113,11 +114,13 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// or
         /// The caller does not have the required permission for the path.
         /// </exception>
-        /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        public DimapMetafileReader(Uri path, GeoTiffMetafilePathOption option)
-            : base(path, option)
+        public DimapMetafileReader(Uri path)
+            : base(path)
         {
-            _document = null;
+            _document = XDocument.Load(_stream);
+
+            if (_document.Element("Dimap_Document") == null)
+                throw new InvalidDataException();
         }
 
         /// <summary>
@@ -128,7 +131,10 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         public DimapMetafileReader(Stream stream)
             : base(stream)
         {
-            _document = null;
+            _document = XDocument.Load(_stream);
+
+            if (_document.Element("Dimap_Document") == null)
+                throw new InvalidDataException();
         }
 
         #endregion
@@ -141,9 +147,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <returns>The device data.</returns>
         protected override ImagingDevice ReadDeviceFromStream()
         {
-            if (_document == null)
-                _document = XDocument.Load(_stream);
-
             XElement sceneSourceElement = _document.Element("Dimap_Document").Element("Dataset_Sources").Element("Source_Information").Element("Scene_Source");
 
             // device information
@@ -160,9 +163,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <returns>The imaging data.</returns>
         protected override RasterImaging ReadImagingFromStream()
         {
-            if (_document == null)
-                _document = XDocument.Load(_stream);
-
             // read the device data.
             ImagingDevice device = ReadDeviceData();
 
@@ -233,9 +233,6 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// <returns>The raster mapping.</returns>
         protected override RasterMapper ReadMappingFromStream()
         {
-            if (_document == null)
-                _document = XDocument.Load(_stream);
-
             List<RasterCoordinate> coordinates = new List<RasterCoordinate>(4);
 
             foreach (XElement vertexElement in _document.Element("Dimap_Document").Element("Dataset_Frame").Elements("Vertex"))
@@ -258,10 +255,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// </summary>
         /// <returns>The reference system.</returns>
         protected override IReferenceSystem ReadReferenceSystemFromStream()
-        {            
-            if (_document == null)
-                _document = XDocument.Load(_stream);
-
+        {
             IReferenceSystem referenceSystem = null;
             XElement referenceSystemElement = _document.Element("Dimap_Document").Element("Coordinate_Reference_System");
 

@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         protected readonly Stream _stream;
 
         /// <summary>
-        /// A value indicating whethe the reader is disposed.
+        /// A value indicating whether the reader is disposed.
         /// </summary>
         private Boolean _disposed;
 
@@ -59,7 +59,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Initializes a new instance of the <see cref="GeoTiffMetafileReader" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -77,70 +76,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The caller does not have the required permission for the path.
         /// </exception>
-        /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        protected GeoTiffMetafileReader(String path, GeoTiffMetafilePathOption option)
+        protected GeoTiffMetafileReader(String path)
         {
-            FileSystem fileSystem = FileSystem.GetFileSystemForPath(path);
+            if (path == null)
+                throw new ArgumentNullException("path", "The path is null.");
 
-            switch (option)
-            {
-                case GeoTiffMetafilePathOption.IsMetafilePath:
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-
-                    throw new FileNotFoundException("The metafile does not exist.");
-
-                case GeoTiffMetafilePathOption.IsGeoTiffFilePath:
-                    // change the extension
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + fileSystem.GetFileNameWithoutExtension(path) + "." + DefaultExtension.ToLower();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + fileSystem.GetFileNameWithoutExtension(path) + "." + DefaultExtension.ToUpper();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-
-                    // change the file name
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + DefaultFileName.ToLower();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + DefaultFileName.ToUpper();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-                    
-                    throw new FileNotFoundException("The metafile does not exist.");
-
-                case GeoTiffMetafilePathOption.IsDirectoryPath:
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + DefaultFileName.ToLower();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-                    path = fileSystem.GetDirectory(path) + fileSystem.DirectorySeparator + DefaultFileName.ToUpper();
-                    if (fileSystem.Exists(path))
-                    {
-                        _stream = fileSystem.OpenFile(path, FileMode.Open);
-                        break;
-                    }
-                    
-                    throw new FileNotFoundException("The metafile does not exist.");
-            }
+            _stream = new MemoryStream(File.ReadAllBytes(path));
 
             _disposed = false;
         }
@@ -148,8 +89,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoTiffMetafileReader" /> class.
         /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="option">The path option.</param>
+        /// <param name="path">The path.</param>ó
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -168,8 +108,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The caller does not have the required permission for the path.
         /// </exception>
         /// <exception cref="System.IO.FileNotFoundException">The metafile does not exist.</exception>
-        protected GeoTiffMetafileReader(Uri path, GeoTiffMetafilePathOption option)
-            : this(path.AbsolutePath, option)
+        protected GeoTiffMetafileReader(Uri path)
+            : this(path.IsAbsoluteUri ? path.AbsolutePath : path.OriginalString)
         {         
         }
 
