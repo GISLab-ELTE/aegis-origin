@@ -3260,6 +3260,39 @@ namespace ELTE.AEGIS
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, raster, presentation, imaging, metadata);
         }
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<ISpectralPolygon> others)
+        {
+            if (factory == null)
+                throw new ArgumentNullException("factory", "The factory is null.");
+
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(others);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <param name="imaging">The raster imaging data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<ISpectralPolygon> others, RasterImaging imaging)
+        {
+            if (factory == null)
+                throw new ArgumentNullException("factory", "The factory is null.");
+
+            EnsureFactory(factory);
+
+            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(others, imaging);
+        }
+
         #endregion
 
         #region Private static methods

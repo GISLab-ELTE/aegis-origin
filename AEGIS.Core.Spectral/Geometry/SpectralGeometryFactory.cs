@@ -2728,6 +2728,39 @@ namespace ELTE.AEGIS.Geometry
             return new SpectralPolygon(this, shell, holes, raster, presentation, imaging, metadata);
         }
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<ISpectralPolygon> others)
+        {
+            if (others == null || !others.Any())
+                throw new ArgumentNullException("others", "No polygons are specified.");
+
+            ISpectralPolygon first = others.First();
+
+            return new SpectralPolygon(this, first.Shell, first.Holes, _rasterFactory.CreateRaster(others.Select(polygon => polygon.Raster).ToArray()), first.Presentation, first.Imaging, first.Metadata);
+        }
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <param name="imaging">The raster imaging data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        public ISpectralPolygon CreateSpectralPolygon(IEnumerable<ISpectralPolygon> others, RasterImaging imaging)
+        {
+            if (others == null || !others.Any())
+                throw new ArgumentNullException("others", "No polygons are specified.");
+
+            ISpectralPolygon first = others.First();
+
+            return new SpectralPolygon(this, first.Shell, first.Holes, _rasterFactory.CreateRaster(others.Select(polygon => polygon.Raster).ToArray()), first.Presentation, imaging, first.Metadata);
+        }
+
         #endregion
     }
 }

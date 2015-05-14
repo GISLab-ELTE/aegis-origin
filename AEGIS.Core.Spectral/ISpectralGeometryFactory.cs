@@ -2364,6 +2364,23 @@ namespace ELTE.AEGIS
         /// <exception cref="System.ArgumentException">The shell is empty.</exception>
         ISpectralPolygon CreateSpectralPolygon(IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, IRaster raster, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata);
 
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<ISpectralPolygon> others);
+
+        /// <summary>
+        /// Creates a spectral polygon.
+        /// </summary>
+        /// <param name="others">The other spectral polygons.</param>
+        /// <param name="imaging">The raster imaging data.</param>
+        /// <returns>The produced spectral polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">No polygons are specified.</exception>
+        ISpectralPolygon CreateSpectralPolygon(IEnumerable<ISpectralPolygon> others, RasterImaging imaging);
+
         #endregion
     }
 }

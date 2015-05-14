@@ -160,6 +160,14 @@ namespace ELTE.AEGIS
         /// <exception cref="System.ArgumentNullException">The other raster is null.</exception>
         IRaster CreateRaster(IRaster other);
 
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="others">The other raster images.</param>
+        /// <returns>The produced raster image.</returns>
+        /// <exception cref="System.ArgumentNullException">No rasters are specified.</exception>
+        IRaster CreateRaster(params IRaster[] others);
+
         #endregion
 
         #region Factory methods for raster services

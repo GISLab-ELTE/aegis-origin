@@ -280,6 +280,17 @@ namespace ELTE.AEGIS.Raster
             return raster;
         }
 
+        /// <summary>
+        /// Creates a raster image.
+        /// </summary>
+        /// <param name="others">The other raster images.</param>
+        /// <returns>The produced raster image.</returns>
+        /// <exception cref="System.ArgumentNullException">No rasters are specified.</exception>
+        public IRaster CreateRaster(params IRaster[] others)
+        {
+            return new MultiRaster(others);
+        }
+
         #endregion
 
         #region Factory methods for raster services
