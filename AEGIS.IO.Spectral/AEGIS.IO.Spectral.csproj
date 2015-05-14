@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeoTiff\GeoTiffGroupReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GeoTiff\GeotiffMetafileFormats.cs" />
     <Compile Include="GeoTiff\GeoTiffMetafilePathOption.cs" />
     <Compile Include="GeoTiff\GeoTiffMetafileReader.cs" />

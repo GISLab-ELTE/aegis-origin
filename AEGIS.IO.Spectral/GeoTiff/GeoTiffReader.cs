@@ -67,6 +67,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Private fields
 
         /// <summary>
+        /// The GeoTIFF metafile reader.
+        /// </summary>
+        private GeoTiffMetafileReader _metafileReader;
+
+        /// <summary>
         /// The GeoTIFF version.
         /// </summary>
         private String _geoTiffFormatVersion;
@@ -90,13 +95,65 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occurred during stream opening.
+        /// Exception occured during stream opening.
         /// or
-        /// Exception occurred during stream reading.
+        /// Exception occured during stream reading.
         /// </exception>
         public GeoTiffReader(String path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
         {
+            try
+            {
+                _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occured during stream opening.
+        /// or
+        /// Exception occured during stream reading.
+        /// </exception>
+        public GeoTiffReader(String path, GeoTiffMetafileReader metafileReader)
+            : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
+        {
+            _metafileReader = metafileReader;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occured during stream opening.
+        /// or
+        /// Exception occured during stream reading.
+        /// </exception>
+        public GeoTiffReader(String path, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
+        {
+            _metafileReader = metafileReader;
         }
 
         /// <summary>
@@ -114,13 +171,18 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occurred during stream opening.
+        /// Exception occured during stream opening.
         /// or
-        /// Exception occurred during stream reading.
+        /// Exception occured during stream reading.
         /// </exception>
         public GeoTiffReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
+            try
+            {
+                _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
+            }
+            catch { }
         }
 
         /// <summary>
@@ -134,13 +196,66 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occurred during stream opening.
+        /// Exception occured during stream opening.
         /// or
-        /// Exception occurred during stream reading.
+        /// Exception occured during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
         {
+            try
+            {
+                _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occured during stream opening.
+        /// or
+        /// Exception occured during stream reading.
+        /// </exception>
+        public GeoTiffReader(Uri path, GeoTiffMetafileReader metafileReader)
+            : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
+        {
+            _metafileReader = metafileReader;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occured during stream opening.
+        /// or
+        /// Exception occured during stream reading.
+        /// </exception>
+        public GeoTiffReader(Uri path, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
+        {
+            _metafileReader = metafileReader;
         }
 
         /// <summary>
@@ -158,21 +273,26 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occurred during stream opening.
+        /// Exception occured during stream opening.
         /// or
-        /// Exception occurred during stream reading.
+        /// Exception occured during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
+            try
+            {
+                _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
+            }
+            catch { }
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
         /// </summary>
-        /// <param name="path">The file path to be read.</param>
+        /// <param name="stream">The source stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
         public GeoTiffReader(Stream stream)
             : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
         {
@@ -181,7 +301,21 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
         /// </summary>
-        /// <param name="path">The file path to be read.</param>
+        /// <param name="stream">The source stream.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        public GeoTiffReader(Stream stream, GeoTiffMetafileReader metafileReader)
+            : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
+        {
+            _metafileReader = metafileReader;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="stream">The source stream.</param>
+        /// <param name="metafileReader">The metafile reader.</param>
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.ArgumentException">
@@ -189,7 +323,25 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        public GeoTiffReader(Stream stream, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
+        {
+            _metafileReader = metafileReader;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
+        /// </summary>
+        /// <param name="stream">The source stream.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
         public GeoTiffReader(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
         {
@@ -281,14 +433,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // the imaging data may be contained in a metafile
-            if (Path != null)
+            if (_metafileReader != null)
             {
                 try
                 {
-                    using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
-                    {
-                        return reader.ReadImaging();
-                    }
+                    return _metafileReader.ReadImaging();
                 }
                 catch { }
             }
@@ -336,14 +485,15 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return mapper;
 
             // try to read from metafile
-            try
+            if (_metafileReader != null)
             {
-                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                try
                 {
-                    mapper = reader.ReadMapping();
+                    mapper = _metafileReader.ReadMapping();
                 }
+                catch { }
             }
-            catch { }
+            
 
             if (mapper != null)
                 return mapper;
@@ -465,14 +615,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // try to read from metafile
-            try
+            if (_metafileReader != null)
             {
-                using (GeoTiffMetafileReader reader = GeoTiffMetafileReaderFactory.CreateReader(Path, GeoTiffMetafilePathOption.IsGeoTiffFilePath))
+                try
                 {
-                    return reader.ReadReferenceSystem();
+                    return _metafileReader.ReadReferenceSystem();
                 }
+                catch { }
             }
-            catch { }
 
             return null;
         }
