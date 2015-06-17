@@ -53,9 +53,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     else if (x is IntersectionEvent && y is IntersectionEvent)
                         result = ((IntersectionEvent)x).CompareTo((IntersectionEvent)y);
                     else if (x is EndPointEvent && y is IntersectionEvent)
-                        result = 1;
+                        result = ((EndPointEvent)x).Type == EventType.Left ? -1 : 1;
                     else if (y is EndPointEvent && x is IntersectionEvent)
-                        result = -1;
+                        result = ((EndPointEvent)y).Type == EventType.Left ? 1 : -1;
                 }
                 return result;
             }

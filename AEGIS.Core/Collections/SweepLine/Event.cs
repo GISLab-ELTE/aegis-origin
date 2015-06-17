@@ -29,21 +29,21 @@ namespace ELTE.AEGIS.Collections.SweepLine
     /// </summary>
     public class Event : IComparable<Event>
     {
-        #region Public properties
-
-        /// <summary>
-        /// Gets or sets the polygon vertex associated with the event.
-        /// </summary>
-        public Coordinate Vertex { get; set; }
-
-        #endregion
-
         #region Protected fields
 
         /// <summary>
         /// Stores an inner <see cref="CoordinateComparer" /> instance.
         /// </summary>
         protected readonly IComparer<Coordinate> _coordinateComparer = new CoordinateComparer();
+
+        #endregion
+
+        #region Public properties
+
+        /// <summary>
+        /// Gets or sets the polygon vertex associated with the event.
+        /// </summary>
+        public Coordinate Vertex { get; set; }
 
         #endregion
 
