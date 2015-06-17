@@ -305,6 +305,44 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
             Assert.IsEmpty(intersections);
 
 
+            // single polygon, multiple intersections
+
+            intersections = BentleyOttmannAlgorithm.Intersection(new List<Coordinate>
+                {
+                    new Coordinate(-1, 1), 
+                    new Coordinate(1, -1), 
+                    new Coordinate(11, -1), 
+                    new Coordinate(13, 1), 
+                    new Coordinate(13, 6), 
+                    new Coordinate(11, 8), 
+                    new Coordinate(8, 8), 
+                    new Coordinate(6, 6), 
+                    new Coordinate(7, 3), 
+                    new Coordinate(9, 1), 
+                    new Coordinate(11, 3), 
+                    new Coordinate(9, 5), 
+                    new Coordinate(3, 5), 
+                    new Coordinate(1, 3), 
+                    new Coordinate(3, 1), 
+                    new Coordinate(5, 3), 
+                    new Coordinate(6, 6), 
+                    new Coordinate(4, 8), 
+                    new Coordinate(1, 8), 
+                    new Coordinate(-1, 6), 
+                    new Coordinate(-1, 1)
+                });
+
+            Assert.AreEqual(new[]
+            {
+                new Coordinate(5.66667, 5),
+                new Coordinate(6, 6),
+                new Coordinate(6, 6),
+                new Coordinate(6, 6),
+                new Coordinate(6, 6),
+                new Coordinate(6.33333, 5)
+            }, intersections.Select(RoundCoordinate));
+
+
             // multiple polygons, no intersection
             
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
@@ -503,7 +541,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
             }, intersections);
 
 
-            // the previous scenario with additonal polygons
+            // the previous scenario with additional polygons
 
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
             {
@@ -563,7 +601,7 @@ namespace ELTE.AEGIS.Tests.Core.Algorithms
                 new Coordinate(8, 8),
                 new Coordinate(8, 8),
                 new Coordinate(9.5, 6),
-            }, intersections.Select(coordinate => RoundCoordinate(coordinate)));
+            }, intersections.Select(RoundCoordinate));
         }
 
         #endregion
