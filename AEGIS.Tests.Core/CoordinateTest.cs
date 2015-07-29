@@ -21,7 +21,7 @@ namespace ELTE.AEGIS.Tests
     [TestFixture]
     public class CoordinateTest
     {
-        [TestCase]
+        [Test]
         public void CoordinateAngleTest()
         {
             // test case 1: 90°

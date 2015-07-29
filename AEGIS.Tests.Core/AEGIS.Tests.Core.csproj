@@ -62,6 +62,7 @@
     <Compile Include="Collections\SearchTree\AvlTreeTest.cs" />
     <Compile Include="Collections\SearchTree\BinarySearchTreeTest.cs" />
     <Compile Include="Collections\SparseArrayTest.cs" />
+    <Compile Include="CoordinateRingTest.cs" />
     <Compile Include="CoordinateTest.cs" />
     <Compile Include="EnvelopeTest.cs" />
     <Compile Include="FactoryRegistryTest.cs" />

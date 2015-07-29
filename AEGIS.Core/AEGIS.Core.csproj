@@ -60,6 +60,7 @@
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SearchTree\BTree.cs" />
     <Compile Include="Collections\SparseArray.cs" />
+    <Compile Include="CoordinateRing.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="FactoryRegistry.cs" />
     <Compile Include="IBasicGeometry.cs" />
