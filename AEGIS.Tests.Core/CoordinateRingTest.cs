@@ -35,8 +35,9 @@ namespace ELTE.AEGIS.Tests
                 new Coordinate(25, 20),
                 new Coordinate(15, 20),
                 new Coordinate(10, 15),
-                new Coordinate(10, 10),
             };
+            List<Coordinate> originReversed = new List<Coordinate>(origin);
+            originReversed.Reverse();
 
             List<Coordinate>[] variants = new List<Coordinate>[origin.Count];
             for(Int32 i = 0; i < variants.Length; ++i)
@@ -47,6 +48,9 @@ namespace ELTE.AEGIS.Tests
             {
                 Assert.IsTrue(originRing.Equals(new CoordinateRing(variants[i])));
             }
+
+            CoordinateRing originRingReversed = new CoordinateRing(originReversed);
+            Assert.IsTrue(originRing.Equals(originRingReversed));
 
 
             // test case: duplication at minimum coordinate
@@ -59,6 +63,8 @@ namespace ELTE.AEGIS.Tests
                 new Coordinate(0,  15),
                 new Coordinate(0,  0),
             };
+            originReversed = new List<Coordinate>(origin);
+            originReversed.Reverse();
 
             variants = new List<Coordinate>[origin.Count];
             for (Int32 i = 0; i < variants.Length; ++i)
@@ -69,6 +75,9 @@ namespace ELTE.AEGIS.Tests
             {
                 Assert.IsTrue(originRing.Equals(new CoordinateRing(variants[i])));
             }
+
+            originRingReversed = new CoordinateRing(originReversed);
+            Assert.IsTrue(originRing.Equals(originRingReversed));
         }
     }
 }

@@ -102,8 +102,10 @@ namespace ELTE.AEGIS
         public CoordinateRing(IEnumerable<Coordinate> elements)
         {
             _elements = new List<Coordinate>(elements);
-            _shift = 0;
+            if (_elements.Count > 0 && _elements.First() == _elements.Last())
+                _elements.RemoveAt(Count - 1);
 
+            _shift = 0;
             if (_elements.Count > 1)
             {
                 var sortedElements = _elements
@@ -213,8 +215,21 @@ namespace ELTE.AEGIS
             if (Count != other.Count)
                 return false;
 
+            Boolean match = true;
             IEnumerator<Coordinate> enumerator = GetEnumerator();
             IEnumerator<Coordinate> otherEnumerator = other.GetEnumerator();
+            while (enumerator.MoveNext() && otherEnumerator.MoveNext())
+            {
+                if (!enumerator.Current.Equals(otherEnumerator.Current))
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+
+            enumerator = GetReverseEnumerator();
+            otherEnumerator = other.GetEnumerator();
             while (enumerator.MoveNext() && otherEnumerator.MoveNext())
             {
                 if (!enumerator.Current.Equals(otherEnumerator.Current))
@@ -238,6 +253,22 @@ namespace ELTE.AEGIS
             if(index >= Count)
                 throw new ArgumentOutOfRangeException("index", "The index exceeds the size of the collection.");
             return (_shift + index) % Count;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection in reversed order.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// </returns>
+        private IEnumerator<Coordinate> GetReverseEnumerator()
+        {
+            if (Count == 0)
+                yield break;
+
+            yield return _elements[Shift(0)];
+            for (Int32 index = Count - 1; index > 0; --index)
+                yield return _elements[Shift(index)];
         }
 
         #endregion
