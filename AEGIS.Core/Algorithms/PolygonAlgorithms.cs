@@ -450,6 +450,21 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the location of the specified coordinate with respect to a polygon.
         /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static RelativeLocation Location(IList<Coordinate> shell, Coordinate coordinate)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
+            return ComputeLocation(shell, null, coordinate);
+        }
+
+        /// <summary>
+        /// Computes the location of the specified coordinate with respect to a polygon.
+        /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
