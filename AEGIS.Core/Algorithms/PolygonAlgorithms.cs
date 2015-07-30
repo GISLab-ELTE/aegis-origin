@@ -222,7 +222,7 @@ namespace ELTE.AEGIS.Algorithms
                 return false;
 
             // check for orientation
-            if (Orientation(shell) != AEGIS.Orientation.Undefined)
+            if (Orientation(shell) == AEGIS.Orientation.Undefined)
                 return false;
 
             // check for edge intersections
