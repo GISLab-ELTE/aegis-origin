@@ -18,7 +18,7 @@ using ELTE.AEGIS.Algorithms;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace ELTE.AEGIS.Tests.Core.Algorithms.Spatial
+namespace ELTE.AEGIS.Tests.Algorithms
 {
     /// <summary>
     /// Test fixture for the <see cref="PolygonAlgorithms" /> class.

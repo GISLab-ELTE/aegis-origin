@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ELTE.AEGIS.Tests.Core.Algorithms
+namespace ELTE.AEGIS.Tests.Algorithms
 {
     /// <summary>
     /// Test fixture for the <see cref="BentleyOttmannAlgorithm" /> class.
