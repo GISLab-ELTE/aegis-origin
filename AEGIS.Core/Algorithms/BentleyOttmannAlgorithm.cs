@@ -61,6 +61,11 @@ namespace ELTE.AEGIS.Algorithms
         private readonly SweepLine _sweepLine;
 
         /// <summary>
+        /// The precision model.
+        /// </summary>
+        private readonly PrecisionModel _precisionModel;
+
+        /// <summary>
         /// A values indicating whether the result was already computed.
         /// </summary>
         private Boolean _hasResult;
@@ -123,15 +128,17 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyOttmannAlgorithm(IBasicLineString source)
+        public BentleyOttmannAlgorithm(IBasicLineString source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source.Coordinates;
+            _precisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source.Coordinates);
-            _sweepLine = new SweepLine(source.Coordinates);
+            _sweepLine = new SweepLine(source.Coordinates, _precisionModel);
             _hasResult = false;
         }
 
@@ -139,15 +146,17 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyOttmannAlgorithm(IList<Coordinate> source)
+        public BentleyOttmannAlgorithm(IList<Coordinate> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source;
+            _precisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source);
+            _sweepLine = new SweepLine(source, _precisionModel);
             _hasResult = false;
         }
 
@@ -155,8 +164,9 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The collection of line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyOttmannAlgorithm(IEnumerable<IBasicLineString> source)
+        public BentleyOttmannAlgorithm(IEnumerable<IBasicLineString> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -165,8 +175,9 @@ namespace ELTE.AEGIS.Algorithms
             foreach (IBasicLineString linestring in source)
                 (_source as List<Coordinate>).AddRange(linestring.Coordinates);
 
+            _precisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
-            _sweepLine = new SweepLine(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
+            _sweepLine = new SweepLine(source.Select(lineString => lineString == null ? null : lineString.Coordinates), _precisionModel);
             _hasResult = false;
         }
 
@@ -174,8 +185,9 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="BentleyOttmannAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyOttmannAlgorithm(IEnumerable<IList<Coordinate>> source)
+        public BentleyOttmannAlgorithm(IEnumerable<IList<Coordinate>> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -184,8 +196,9 @@ namespace ELTE.AEGIS.Algorithms
             foreach (IList<Coordinate> linestring in source)
                 (_source as List<Coordinate>).AddRange(linestring);
 
+            _precisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source);
+            _sweepLine = new SweepLine(source, _precisionModel);
             _hasResult = false;
         }
 
@@ -219,7 +232,9 @@ namespace ELTE.AEGIS.Algorithms
                             if (segment.Above != null)
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                            segment.Above.LeftCoordinate, segment.Above.RightCoordinate);
+                                                                            segment.Above.LeftCoordinate, segment.Above.RightCoordinate)
+                                                              .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                              .ToList();
 
                                 if (intersections.Count > 0)
                                 {
@@ -235,7 +250,9 @@ namespace ELTE.AEGIS.Algorithms
                             if (segment.Below != null)
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                            segment.Below.LeftCoordinate, segment.Below.RightCoordinate);
+                                                                            segment.Below.LeftCoordinate, segment.Below.RightCoordinate)
+                                                              .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                              .ToList();
 
                                 if (intersections.Count > 0)
                                 {
@@ -260,7 +277,9 @@ namespace ELTE.AEGIS.Algorithms
                                     intersections = LineAlgorithms.Intersection(segment.Above.LeftCoordinate,
                                                                                 segment.Above.RightCoordinate,
                                                                                 segment.Below.LeftCoordinate,
-                                                                                segment.Below.RightCoordinate);
+                                                                                segment.Below.RightCoordinate)
+                                                                  .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                                  .ToList();
 
                                     if (intersections.Count > 0)
                                     {
@@ -313,7 +332,9 @@ namespace ELTE.AEGIS.Algorithms
                                                       Math.Max(segment.Edge, segmentAbove.Edge)));
 
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                        segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate);
+                                                                        segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate)
+                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                          .ToList();
 
                             if (intersections.Count > 1 && !intersections[1].Equals(intersections[0]))
                             {
@@ -332,7 +353,9 @@ namespace ELTE.AEGIS.Algorithms
                         {
                             intersections = LineAlgorithms.Intersection(segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate,
                                                                         segmentAbove.Above.LeftCoordinate,
-                                                                        segmentAbove.Above.RightCoordinate);
+                                                                        segmentAbove.Above.RightCoordinate)
+                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                          .ToList();
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
@@ -350,7 +373,9 @@ namespace ELTE.AEGIS.Algorithms
                         if (segment.Below != null)
                         {
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                        segment.Below.LeftCoordinate, segment.Below.RightCoordinate);
+                                                                        segment.Below.LeftCoordinate, segment.Below.RightCoordinate)
+                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                          .ToList();
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
@@ -380,44 +405,48 @@ namespace ELTE.AEGIS.Algorithms
         /// Computes the intersection coordinates of a line string.
         /// </summary>
         /// <param name="source">The line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns>The list of intersection coordinates.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> Intersection(IBasicLineString source)
+        public static IList<Coordinate> Intersection(IBasicLineString source, PrecisionModel precisionModel = null)
         {
-            return new BentleyOttmannAlgorithm(source).Intersections;
+            return new BentleyOttmannAlgorithm(source, precisionModel).Intersections;
         }
 
         /// <summary>
         /// Computes the intersection coordinates of a line string.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns>The list of intersection coordinates.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> Intersection(IList<Coordinate> source)
+        public static IList<Coordinate> Intersection(IList<Coordinate> source, PrecisionModel precisionModel = null)
         {
-            return new BentleyOttmannAlgorithm(source).Intersections;
+            return new BentleyOttmannAlgorithm(source, precisionModel).Intersections;
         }
 
         /// <summary>
         /// Computes the intersection coordinates of multiple line strings.
         /// </summary>
         /// <param name="source">The collection of line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns>The list of intersection coordinates.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> Intersection(IEnumerable<IBasicLineString> source)
+        public static IList<Coordinate> Intersection(IEnumerable<IBasicLineString> source, PrecisionModel precisionModel = null)
         {
-            return new BentleyOttmannAlgorithm(source).Intersections;
+            return new BentleyOttmannAlgorithm(source, precisionModel).Intersections;
         }
 
         /// <summary>
         /// Computes the intersection coordinates of multiple line strings.
         /// </summary>
         /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <param name="precisionModel"></param>
         /// <returns>The list of intersection coordinates.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> Intersection(IEnumerable<IList<Coordinate>> source)
+        public static IList<Coordinate> Intersection(IEnumerable<IList<Coordinate>> source, PrecisionModel precisionModel = null)
         {
-            return new BentleyOttmannAlgorithm(source).Intersections;
+            return new BentleyOttmannAlgorithm(source, precisionModel).Intersections;
         }
 
         #endregion

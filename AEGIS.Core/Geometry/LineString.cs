@@ -66,7 +66,7 @@ namespace ELTE.AEGIS.Geometry
         {
             get
             {
-                return !ShamosHoeyAlgorithm.Intersects(_coordinates);
+                return !ShamosHoeyAlgorithm.Intersects(_coordinates, PrecisionModel);
             }
         }
 

@@ -74,14 +74,15 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public ShamosHoeyAlgorithm(IBasicLineString source)
+        public ShamosHoeyAlgorithm(IBasicLineString source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _eventQueue = new PresortedEventQueue(source.Coordinates);
-            _sweepLine = new SweepLine(source.Coordinates);
+            _sweepLine = new SweepLine(source.Coordinates, precisionModel);
             _hasResult = false;
         }
 
@@ -89,14 +90,15 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public ShamosHoeyAlgorithm(IList<Coordinate> source)
+        public ShamosHoeyAlgorithm(IList<Coordinate> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _eventQueue = new PresortedEventQueue(source);
-            _sweepLine = new SweepLine(source);
+            _sweepLine = new SweepLine(source, precisionModel);
             _hasResult = false;
         }
 
@@ -104,14 +106,15 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public ShamosHoeyAlgorithm(IEnumerable<IBasicLineString> source)
+        public ShamosHoeyAlgorithm(IEnumerable<IBasicLineString> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _eventQueue = new PresortedEventQueue(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
-            _sweepLine = new SweepLine(source.Select(hole => hole.Coordinates));
+            _sweepLine = new SweepLine(source.Select(hole => hole.Coordinates), precisionModel);
             _hasResult = false;
         }
 
@@ -119,14 +122,15 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="ShamosHoeyAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public ShamosHoeyAlgorithm(IEnumerable<IList<Coordinate>> source)
+        public ShamosHoeyAlgorithm(IEnumerable<IList<Coordinate>> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
-            
+
             _eventQueue = new PresortedEventQueue(source);
-            _sweepLine = new SweepLine(source);
+            _sweepLine = new SweepLine(source, precisionModel);
             _hasResult = false;
         }
 
@@ -201,44 +205,48 @@ namespace ELTE.AEGIS.Algorithms
         /// Determines whether a line string specified by coordinates intersects with itself.
         /// </summary>
         /// <param name="source">The line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static Boolean Intersects(IBasicLineString source)
+        public static Boolean Intersects(IBasicLineString source, PrecisionModel precisionModel = null)
         {
-            return new ShamosHoeyAlgorithm(source).Result;
+            return new ShamosHoeyAlgorithm(source, precisionModel).Result;
         }
 
         /// <summary>
         /// Determines whether a line string specified by coordinates intersects with itself.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static Boolean Intersects(IList<Coordinate> source)
+        public static Boolean Intersects(IList<Coordinate> source, PrecisionModel precisionModel = null)
         {
-            return new ShamosHoeyAlgorithm(source).Result;
+            return new ShamosHoeyAlgorithm(source, precisionModel).Result;
         }
 
         /// <summary>
         /// Determines whether line strings specified by coordinates intersect.
         /// </summary>
         /// <param name="source">The line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static Boolean Intersects(IEnumerable<IBasicLineString> source)
+        public static Boolean Intersects(IEnumerable<IBasicLineString> source, PrecisionModel precisionModel = null)
         {
-            return new ShamosHoeyAlgorithm(source).Result;
+            return new ShamosHoeyAlgorithm(source, precisionModel).Result;
         }
 
         /// <summary>
         /// Determines whether line strings specified by coordinates intersect.
         /// </summary>
         /// <param name="source">The collection of coordinates representing multiple line strings.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <returns><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static Boolean Intersects(IEnumerable<IList<Coordinate>> source)
+        public static Boolean Intersects(IEnumerable<IList<Coordinate>> source, PrecisionModel precisionModel = null)
         {
-            return new ShamosHoeyAlgorithm(source).Result;
+            return new ShamosHoeyAlgorithm(source, precisionModel).Result;
         }
 
         #endregion

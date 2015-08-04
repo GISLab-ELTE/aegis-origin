@@ -58,6 +58,11 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Private fields
 
             /// <summary>
+            /// Stores the precision model.
+            /// </summary>
+            private readonly PrecisionModel _precisionModel;
+
+            /// <summary>
             /// Stores the horizontal (X coordinate) position of the sweep line.
             /// </summary>
             private Double _sweepLinePosition;
@@ -75,10 +80,12 @@ namespace ELTE.AEGIS.Collections.SweepLine
             #region Construtors
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="SweepLineSegmentComparer" /> class.
+            /// Initializes a new instance of the <see cref="SweepLineSegmentComparer"/> class.
             /// </summary>
-            public SweepLineSegmentComparer()
+            /// <param name="precisionModel">The precision model.</param>
+            public SweepLineSegmentComparer(PrecisionModel precisionModel)
             {
+                _precisionModel = precisionModel;
                 _sweepLinePosition = Double.MinValue;
                 _intersections = new HashSet<Tuple<SweepLineSegment, SweepLineSegment>>();
             }
@@ -162,8 +169,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <returns>The type of intersection that exists between the two sweep line segments, considering the position of the sweepline.</returns>
             public SweepLineIntersection GetIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                IList<Coordinate> intersections = LineAlgorithms.Intersection(
-                    x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate);
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate)
+                                                                .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                                .ToList();
 
                 if (intersections.Count == 0)
                     return SweepLineIntersection.NotExists;
@@ -189,8 +197,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <param name="y">Second sweep line segment.</param>
             public void PassIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                IList<Coordinate> intersections = LineAlgorithms.Intersection(
-                    x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate);
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate)
+                                                                .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                                .ToList();
 
                 if (intersections.Count == 0)
                     return;
@@ -236,7 +245,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <summary>
             /// Initializes a new instance of the <see cref="SweepLineTree" /> class.
             /// </summary>
-            public SweepLineTree() : base(new SweepLineSegmentComparer()) { _currentNode = null; }
+            /// <param name="precisionModel">The precision model.</param>
+            public SweepLineTree(PrecisionModel precisionModel) : base(new SweepLineSegmentComparer(precisionModel)) { _currentNode = null; }
 
             #endregion
 
@@ -366,6 +376,46 @@ namespace ELTE.AEGIS.Collections.SweepLine
             }
 
             #endregion
+
+            #region DEBUG methods
+
+            /// <summary>
+            /// Prints debug information about representation of the tree.
+            /// </summary>
+            [System.Diagnostics.Conditional("DEBUG")]
+            public void Debug()
+            {
+                if (_root != null)
+                {
+                    System.Diagnostics.Debug.Write("Root: ");
+                    Debug(_root, 0);
+                }
+            }
+
+            /// <summary>
+            /// Prints debug information about the specified subtree.
+            /// </summary>
+            /// <param name="current">The current node.</param>
+            /// <param name="depth">The current depth of the traversal.</param>
+            [System.Diagnostics.Conditional("DEBUG")]
+            private void Debug(Node current, Int32 depth)
+            {
+                System.Diagnostics.Debug.WriteLine("F:{0} T:{1} E:{2}", current.Key.LeftCoordinate, current.Key.RightCoordinate, current.Key.Edge);
+
+                if (current.LeftChild != null)
+                {
+                    System.Diagnostics.Debug.Write(new String(' ', (depth + 1) * 2) + "Below: ");
+                    Debug(current.LeftChild, depth + 1);
+                }
+
+                if (current.RightChild != null)
+                {
+                    System.Diagnostics.Debug.Write(new String(' ', (depth + 1) * 2) + "Above: ");
+                    Debug(current.RightChild, depth + 1);
+                }
+            }
+
+            #endregion
         }
 
         #endregion
@@ -412,14 +462,15 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Initializes a new instance of the <see cref="SweepLine" /> class.
         /// </summary>
         /// <param name="source">The source coordinates representing a line string.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public SweepLine(IList<Coordinate> source)
+        public SweepLine(IList<Coordinate> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source;
-            _tree = new SweepLineTree();
+            _tree = new SweepLineTree(precisionModel ?? PrecisionModel.Default);
             _coordinateComparer = new CoordinateComparer();
 
             if (source.Count >= 2 && source.First() == source.Last())
@@ -430,8 +481,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Initializes a new instance of the <see cref="SweepLine" /> class.
         /// </summary>
         /// <param name="source">The source coordinates.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public SweepLine(IEnumerable<IList<Coordinate>> source)
+        public SweepLine(IEnumerable<IList<Coordinate>> source, PrecisionModel precisionModel = null)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
@@ -452,8 +504,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     _endpoints.Add(_source.Count - 2);
             }
 
-            _tree = new SweepLineTree();
+            _tree = new SweepLineTree(precisionModel ?? PrecisionModel.Default);
             _coordinateComparer = new CoordinateComparer();
+            
         }
 
         #endregion
@@ -464,7 +517,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Adds a new endpoint event to the sweep line.
         /// </summary>
         /// <param name="e">The event.</param>
-        /// <returns>The sweep line segment created by addition of <paramref name="event" />.</returns>
+        /// <returns>The sweep line segment created by addition of <paramref name="e" />.</returns>
         /// <exception cref="System.ArgumentNullException">e;The event is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The edge of the event is less than 0.;e
@@ -678,6 +731,23 @@ namespace ELTE.AEGIS.Collections.SweepLine
             }
 
             return false;
+        }
+
+        #endregion
+
+        #region DEBUG methods
+
+        /// <summary>
+        /// Prints debug information about representation of this instance.
+        /// </summary>
+        [System.Diagnostics.Conditional("DEBUG")]
+        public void Debug()
+        {
+            System.Diagnostics.Debug.WriteLine("====================");
+            System.Diagnostics.Debug.WriteLine("SWEEPLINE DEBUG START");
+            _tree.Debug();
+            System.Diagnostics.Debug.WriteLine("SWEEPLINE DEBUG END");
+            System.Diagnostics.Debug.WriteLine("====================");
         }
 
         #endregion
