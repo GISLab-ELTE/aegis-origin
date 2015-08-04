@@ -32,6 +32,14 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// </summary>
         private sealed class EventComparer : IComparer<Event>
         {
+            #region Private fields
+            /// <summary>
+            /// Stores an inner <see cref="CoordinateComparer" /> instance.
+            /// </summary>
+            private readonly CoordinateComparer _coordinateComparer = new CoordinateComparer();
+
+            #endregion
+
             #region IComparer methods
 
             /// <summary>
@@ -45,17 +53,38 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <returns>A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>.</returns>
             public Int32 Compare(Event x, Event y)
             {
-                Int32 result = x.CompareTo(y);
-                if (result == 0)
+                Int32 result = _coordinateComparer.Compare(x.Vertex, y.Vertex);
+                if (result != 0) return result;
+
+                if (x is EndPointEvent && y is EndPointEvent)
                 {
-                    if (x is EndPointEvent && y is EndPointEvent)
-                        result = ((EndPointEvent)x).CompareTo((EndPointEvent)y);
-                    else if (x is IntersectionEvent && y is IntersectionEvent)
-                        result = ((IntersectionEvent)x).CompareTo((IntersectionEvent)y);
-                    else if (x is EndPointEvent && y is IntersectionEvent)
-                        result = ((EndPointEvent)x).Type == EventType.Left ? -1 : 1;
-                    else if (y is EndPointEvent && x is IntersectionEvent)
-                        result = ((EndPointEvent)y).Type == EventType.Left ? 1 : -1;
+                    EndPointEvent ex = (EndPointEvent) x;
+                    EndPointEvent ey= (EndPointEvent) y;
+
+                    result = ex.Type.CompareTo(ey.Type);
+                    if (result == 0)
+                        result = ex.Edge.CompareTo(ey.Edge);
+                }
+                else if (x is IntersectionEvent && y is IntersectionEvent)
+                {
+                    IntersectionEvent ix = (IntersectionEvent)x;
+                    IntersectionEvent iy = (IntersectionEvent)y;
+
+                    if (result == 0) result = _coordinateComparer.Compare(ix.Below.LeftCoordinate, iy.Below.LeftCoordinate);
+                    if (result == 0) result = _coordinateComparer.Compare(ix.Above.LeftCoordinate, iy.Above.LeftCoordinate);
+                    if (result == 0) result = _coordinateComparer.Compare(ix.Below.RightCoordinate, iy.Below.RightCoordinate);
+                    if (result == 0) result = _coordinateComparer.Compare(ix.Above.RightCoordinate, iy.Above.RightCoordinate);
+                    if (result == 0) result = ix.Below.Edge.CompareTo(iy.Below.Edge);
+                    if (result == 0) result = ix.Above.Edge.CompareTo(iy.Above.Edge);
+                    if (result == 0) result = ix.IsClose.CompareTo(iy.IsClose);
+                }
+                else if (x is EndPointEvent && y is IntersectionEvent)
+                {
+                    result = ((EndPointEvent) x).Type == EventType.Left ? -1 : 1;
+                }
+                else if (y is EndPointEvent && x is IntersectionEvent)
+                {
+                    result = ((EndPointEvent) y).Type == EventType.Left ? 1 : -1;
                 }
                 return result;
             }
@@ -240,7 +269,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         public void Add(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)
-                throw new ArgumentNullException("intersectionEvent", "The instersection event is null.");
+                throw new ArgumentNullException("intersectionEvent", "The intersection event is null.");
 
             _eventHeap.Insert(intersectionEvent);
         }

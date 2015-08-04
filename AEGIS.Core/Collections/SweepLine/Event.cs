@@ -15,7 +15,6 @@
 /// <author>Máté Cserép</author>
 
 using System;
-using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Collections.SweepLine
 {
@@ -27,17 +26,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
     /// <summary>
     /// Represents an event.
     /// </summary>
-    public class Event : IComparable<Event>
+    public class Event
     {
-        #region Protected fields
-
-        /// <summary>
-        /// Stores an inner <see cref="CoordinateComparer" /> instance.
-        /// </summary>
-        protected readonly IComparer<Coordinate> _coordinateComparer = new CoordinateComparer();
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
@@ -46,32 +36,12 @@ namespace ELTE.AEGIS.Collections.SweepLine
         public Coordinate Vertex { get; set; }
 
         #endregion
-
-        #region IComparable methods
-
-        /// <summary>
-        /// Compares the current <see cref="Event" /> with another <see cref="Event" />.
-        /// </summary>
-        /// <param name="other">An event to compare with this event.</param>
-        /// <returns>
-        /// A value that indicates the relative order of the events being compared.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">The other event is null.</exception>
-        public Int32 CompareTo(Event other)
-        {
-            if (ReferenceEquals(other, null))
-                throw new ArgumentNullException("other", "The other event is null.");
-
-            return _coordinateComparer.Compare(Vertex, other.Vertex);
-        }
-
-        #endregion
     }
 
     /// <summary>
     /// Represents an endpoint event.
     /// </summary>
-    public class EndPointEvent : Event, IComparable<EndPointEvent>
+    public class EndPointEvent : Event
     {
         #region Public fields
 
@@ -84,24 +54,6 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Gets or sets the event types.
         /// </summary>
         public EventType Type { get; set; }
-
-        #endregion
-
-        #region IComparable methods
-
-        /// <summary>
-        /// Compares the current <see cref="EndPointEvent" /> with another <see cref="EndPointEvent" />.
-        /// </summary>
-        /// <param name="other">An endpoint event to compare with this event.</param>
-        /// <returns>A value that indicates the relative order of the events being compared.</returns>
-        /// <exception cref="System.ArgumentNullException">The other event is null.</exception>
-        public Int32 CompareTo(EndPointEvent other)
-        {
-            Int32 result = base.CompareTo(other);
-            if (result == 0) result = Type.CompareTo(other.Type);
-            if (result == 0) result = Edge.CompareTo(other.Edge);
-            return result;
-        }
 
         #endregion
     }
@@ -127,29 +79,6 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Gets or sets whether the event is a close point for the intersection.
         /// </summary>
         public Boolean IsClose { get; set; }
-
-        #endregion
-
-        #region IComparable methods
-
-        /// <summary>
-        /// Compares the current <see cref="IntersectionEvent" /> with another <see cref="IntersectionEvent" />.
-        /// </summary>
-        /// <param name="other">An intersection event to compare with this event.</param>
-        /// <returns>A value that indicates the relative order of the events being compared.</returns>
-        /// <exception cref="System.ArgumentNullException">The other event is null.</exception>
-        public Int32 CompareTo(IntersectionEvent other)
-        {
-            Int32 result = base.CompareTo(other);
-            if (result == 0) result = _coordinateComparer.Compare(Below.LeftCoordinate, other.Below.LeftCoordinate);
-            if (result == 0) result = _coordinateComparer.Compare(Above.LeftCoordinate, other.Above.LeftCoordinate);
-            if (result == 0) result = _coordinateComparer.Compare(Below.RightCoordinate, other.Below.RightCoordinate);
-            if (result == 0) result = _coordinateComparer.Compare(Above.RightCoordinate, other.Above.RightCoordinate);
-            if (result == 0) result = Below.Edge.CompareTo(other.Below.Edge);
-            if (result == 0) result = Above.Edge.CompareTo(other.Above.Edge);
-            if (result == 0) result = IsClose.CompareTo(other.IsClose);
-            return result;
-        }
 
         #endregion
     }
