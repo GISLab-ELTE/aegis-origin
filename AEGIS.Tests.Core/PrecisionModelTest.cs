@@ -32,7 +32,8 @@ namespace ELTE.AEGIS.Tests
         private PrecisionModel _floatingModel;
         private PrecisionModel _floatingSingleModel;
         private PrecisionModel _fixedLargeModel;
-        private PrecisionModel _fixedSmallModel;
+        private PrecisionModel _fixedSmallModel1;
+        private PrecisionModel _fixedSmallModel2;
 
         #endregion
 
@@ -48,7 +49,8 @@ namespace ELTE.AEGIS.Tests
             _floatingModel = new PrecisionModel(PrecisionModelType.Floating);
             _floatingSingleModel = new PrecisionModel(PrecisionModelType.FloatingSingle);
             _fixedLargeModel = new PrecisionModel(1000);
-            _fixedSmallModel = new PrecisionModel(0.001);
+            _fixedSmallModel1 = new PrecisionModel(0.001);
+            _fixedSmallModel2 = new PrecisionModel(0.0001);
         }
 
         #endregion
@@ -91,9 +93,15 @@ namespace ELTE.AEGIS.Tests
 
             // fixed type with scale of 0.001
 
-            Assert.AreEqual(PrecisionModelType.Fixed, _fixedSmallModel.ModelType);
-            Assert.AreEqual(1, _fixedSmallModel.MaximumSignificantDigits);
-            Assert.AreEqual(0.001, _fixedSmallModel.Scale);
+            Assert.AreEqual(PrecisionModelType.Fixed, _fixedSmallModel1.ModelType);
+            Assert.AreEqual(1, _fixedSmallModel1.MaximumSignificantDigits);
+            Assert.AreEqual(0.001, _fixedSmallModel1.Scale);
+
+            // fixed type with scale of 0.0001
+
+            Assert.AreEqual(PrecisionModelType.Fixed, _fixedSmallModel2.ModelType);
+            Assert.AreEqual(1, _fixedSmallModel2.MaximumSignificantDigits);
+            Assert.AreEqual(0.0001, _fixedSmallModel2.Scale);
         }
 
         [Test]
@@ -110,7 +118,8 @@ namespace ELTE.AEGIS.Tests
                 Assert.AreEqual(values[i], _floatingModel.MakePrecise(values[i]));
                 Assert.AreEqual((Single)values[i], _floatingSingleModel.MakePrecise(values[i]));
                 Assert.AreEqual(Math.Round(values[i] / 1000) * 1000, _fixedLargeModel.MakePrecise(values[i]));
-                Assert.AreEqual(Math.Round(values[i], 3), _fixedSmallModel.MakePrecise(values[i]));
+                Assert.AreEqual(Math.Round(values[i], 3), _fixedSmallModel1.MakePrecise(values[i]));
+                Assert.AreEqual(Math.Round(values[i], 4), _fixedSmallModel2.MakePrecise(values[i]));
             }
         }
 
