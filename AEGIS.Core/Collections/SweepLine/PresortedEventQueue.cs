@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
                 _eventList.Add(firstEvent);
                 _eventList.Add(secondEvent);
             }
-            _eventList.Sort();
+            _eventList.Sort(new EventComparer());
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
                 }
                 index++;
             }
-            _eventList.Sort();
+            _eventList.Sort(new EventComparer());
         }
 
         #endregion

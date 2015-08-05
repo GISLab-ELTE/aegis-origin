@@ -60,6 +60,7 @@
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SearchTree\BTree.cs" />
     <Compile Include="Collections\SparseArray.cs" />
+    <Compile Include="Collections\SweepLine\EventComparer.cs" />
     <Compile Include="CoordinateRing.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="FactoryRegistry.cs" />
@@ -199,9 +200,7 @@
       <Name>AEGIS.Numerics</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Collections\Topology\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
