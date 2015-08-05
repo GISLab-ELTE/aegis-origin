@@ -883,8 +883,8 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         public void ComputeCompleteClips()
         {
-            Boolean isAinB = _polygonA.Shell.All(position => PolygonAlgorithms.InInterior(_polygonB.Shell.Coordinates, position));
-            Boolean isBinA = _polygonB.Shell.All(position => PolygonAlgorithms.InInterior(_polygonA.Shell.Coordinates, position));
+            Boolean isAinB = _polygonA.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonB.Shell.Coordinates, position));
+            Boolean isBinA = _polygonB.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonA.Shell.Coordinates, position));
 
             List<Coordinate> finalShellA = _listA.ToList();
             finalShellA.Add(finalShellA[0]);
@@ -895,19 +895,23 @@ namespace ELTE.AEGIS.Algorithms
             PolygonClip finalPolygonA = new PolygonClip(finalShellA);
             PolygonClip finalPolygonB = new PolygonClip(finalShellB);
 
-            if (isAinB)      // B contains A
+            if (isAinB && isBinA)  // A equals B
+            {
+                _internalPolygons.Add(finalPolygonA);
+            }
+            else if (isAinB)            // B contains A
             {
                 finalPolygonB.AddHole(finalPolygonA.Shell);
                 _internalPolygons.Add(finalPolygonA);
                 _externalPolygonsB.Add(finalPolygonB);
             }
-            else if (isBinA) // A contains B
+            else if (isBinA)       // A contains B
             {
                 finalPolygonA.AddHole(finalPolygonB.Shell);
                 _internalPolygons.Add(finalPolygonB);
                 _externalPolygonsA.Add(finalPolygonA);
             }
-            else             // A and B are distinct
+            else                   // A and B are distinct
             {
                 _externalPolygonsA.Add(finalPolygonA);
                 _externalPolygonsB.Add(finalPolygonB);
