@@ -52,7 +52,7 @@
     <Compile Include="Algorithms\PolygonCentroidAlgorithm.cs" />
     <Compile Include="Algorithms\RandomPolygonGenerator.cs" />
     <Compile Include="Algorithms\ShamosHoeyAlgorithm.cs" />
-    <Compile Include="Algorithms\WeilerAthertonAlgorithm.cs" />
+    <Compile Include="Algorithms\GreinerHormannAlgorithm.cs" />
     <Compile Include="Algorithms\WindingNumberAlgorithm.cs" />
     <Compile Include="Angle.cs" />
     <Compile Include="BasicLineString.cs" />

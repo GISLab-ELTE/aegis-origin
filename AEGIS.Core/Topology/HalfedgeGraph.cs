@@ -513,19 +513,19 @@ namespace ELTE.AEGIS.Topology
                                                                                                      vertex.Position).ToList() as
                                                                                 IList<Coordinate>).ToList()
                                                : null;
-                var algorithm = new WeilerAthertonAlgorithm(currentShellPositions, currentHolePositions,
-                                                            shellPositions, holePositions);
+                var algorithm = new GreinerHormannAlgorithm(currentShellPositions, /*currentHolePositions,*/
+                                                            shellPositions/*, holePositions*/);
 
                 // Internal clips.
-                clipsInternal = algorithm.InternalClips;
+                clipsInternal = algorithm.InternalPolygons;
 
                 // External clips of the already existing topology graph.
-                foreach (IBasicPolygon clip in algorithm.ExternalClipsA)
+                foreach (IBasicPolygon clip in algorithm.ExternalFirstPolygons)
                 {
                     var otherCollisionFaces =
                         collisionFaces.Where(
                                              face =>
-                                             WeilerAthertonAlgorithm.Intersection(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
+                                             GreinerHormannAlgorithm.Clip(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
                                       .ToArray();
                     if (otherCollisionFaces.Length == 0 ||
                         otherCollisionFaces.Length == 1 && otherCollisionFaces[0] == collisionFaces[0])
@@ -533,12 +533,12 @@ namespace ELTE.AEGIS.Topology
                 }
 
                 // External clips of the parameter face ...
-                foreach (IBasicPolygon clip in algorithm.ExternalClipsB)
+                foreach (IBasicPolygon clip in algorithm.ExternalSecondPolygons)
                 {
                     var otherCollisionFaces =
                         collisionFaces.Where(
                                              face =>
-                                             WeilerAthertonAlgorithm.Intersection(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
+                                             GreinerHormannAlgorithm.Clip(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
                                       .ToArray();
                     if (otherCollisionFaces.Length == 0 ||
                         otherCollisionFaces.Length == 1 && otherCollisionFaces[0] == collisionFaces[0])

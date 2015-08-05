@@ -24,6 +24,7 @@ namespace ELTE.AEGIS.Algorithms
     /// <summary>
     /// Represents the Shamos-Hoey Algorithm for determining intersection of line strings.
     /// </summary>
+    /// <seealso cref="BentleyOttmannAlgorithm"/>
     public class ShamosHoeyAlgorithm
     {
         #region Private fields
