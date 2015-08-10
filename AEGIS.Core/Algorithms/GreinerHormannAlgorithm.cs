@@ -435,10 +435,10 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="GreinerHormannAlgorithm" /> class.
         /// </summary>
-        /// <param name="firstShell">The shell of the first polygon.</param>
-        /// <param name="firstHoles">The holes in the first polygon.</param>
-        /// <param name="secondShell">The shell of the second polygon.</param>
-        /// <param name="secondHoles">The holes in the second polygon.</param>
+        /// <param name="firstShell">The shell of the first polygon (in counter-clockwise order).</param>
+        /// <param name="firstHoles">The holes in the first polygon (in clockwise order).</param>
+        /// <param name="secondShell">The shell of the second polygon (in counter-clockwise order).</param>
+        /// <param name="secondHoles">The holes in the second polygon (in clockwise order).</param>
         /// <param name="computeExternalClips">A value indicating whether to compute the external clips.</param>
         /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -478,8 +478,8 @@ namespace ELTE.AEGIS.Algorithms
             LinkIntersections();        // Link the intersections to the succeeding ones.
             AddHoleIntersections();     // Add the vertices of hole intersections to the polygon shells.
 
-            // Intersection points exist.
-            if (_intersections.Count > 0)
+            // Intersection point exist.
+            if (_intersections.Any(intersection => intersection.Mode == IntersectionMode.Entry))
             {
                 ComputeInternalClips();
 
@@ -496,11 +496,14 @@ namespace ELTE.AEGIS.Algorithms
                 ComputeCompleteClips();
             }
             
-            // Compute the intersection of the holes in the subject polygons. 
+            // Holes exist.
             if (_holesA.Count > 0 || _holesB.Count > 0)
             {
+                // Compute the intersection of the holes in the subject polygons.
+                // Holes of the internal clips are added to the polygons through the process.
                 ComputeHoles();
 
+                // Add external holes to the appropriate polygons
                 if (_computeExternalClips)
                 {
                     LocateExternalHolesA();
@@ -630,7 +633,7 @@ namespace ELTE.AEGIS.Algorithms
                              prevLocation == RelativeLocation.Exterior && nextLocation == RelativeLocation.Exterior)
                         _intersections[currentNode.Value].Mode = IntersectionMode.Boundary;
 
-                    // Interiror -> Interior,
+                    // Interior -> Interior,
                     // Exterior -> Exterior,
                     // Boundary -> Boundary
                     else
@@ -920,6 +923,9 @@ namespace ELTE.AEGIS.Algorithms
 
         private void ComputeHoles()
         {
+            if (Envelope.FromCoordinates(_polygonA.Shell).Disjoint(Envelope.FromCoordinates(_polygonB.Shell)))
+                return;
+
             List<PolygonClip> externalB = new List<PolygonClip>();
 
             // Intersect holes in the first polygon with the internal shells
@@ -1082,11 +1088,10 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the common parts of two subject polygons by clipping them.
         /// </summary>
-        /// <param name="firstShell">The shell of the first polygon.</param>
-        /// <param name="firstHoles">The holes in the first polygon.</param>
-        /// <param name="secondShell">The shell of the second polygon.</param>
-        /// <param name="secondHoles">The holes in the second polygon.</param>
-        /// <param name="computeExternalClips">A value indicating whether to compute the external clips.</param>
+        /// <param name="firstShell">The shell of the first polygon (in counter-clockwise order).</param>
+        /// <param name="firstHoles">The holes in the first polygon (in clockwise order).</param>
+        /// <param name="secondShell">The shell of the second polygon (in counter-clockwise order).</param>
+        /// <param name="secondHoles">The holes in the second polygon (in clockwise order).</param>
         /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The first polygon is null.
