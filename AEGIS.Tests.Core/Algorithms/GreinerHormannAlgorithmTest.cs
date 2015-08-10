@@ -1750,6 +1750,109 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 }
             }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Holes)))
                   .Using(CoordinateRingComparer.Instance));
+
+            // first polygon contains second polygon, which in reverse contains the hole of the first polygon
+            shellA = new List<Coordinate>
+            {
+                new Coordinate(0, 0),
+                new Coordinate(8, 0),
+                new Coordinate(8, 8),
+                new Coordinate(0, 8),
+                new Coordinate(0, 0)
+            };
+
+            holesA = new List<Coordinate>[]
+            {
+                new List<Coordinate>
+                {
+                    new Coordinate(4, 4),
+                    new Coordinate(5, 4),
+                    new Coordinate(5, 5),
+                    new Coordinate(4, 5),
+                    new Coordinate(4, 4)
+                },
+            };
+
+            shellB = new List<Coordinate>
+            {
+                new Coordinate(3, 3),
+                new Coordinate(3, 6),
+                new Coordinate(6, 6),
+                new Coordinate(6, 3),
+                new Coordinate(3, 3)
+            };
+
+            algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null);
+
+            Assert.That(AsRing(new[]
+            {
+                new[]
+                {
+                    new Coordinate(3, 3),
+                    new Coordinate(3, 6),
+                    new Coordinate(6, 6),
+                    new Coordinate(6, 3),
+                    new Coordinate(3, 3)
+                }
+            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
+                  .Using(CoordinateRingComparer.Instance));
+            Assert.That(AsRing(new[]
+            {
+                new[]
+                {
+                    new[]
+                    {
+                        new Coordinate(4, 4),
+                        new Coordinate(5, 4),
+                        new Coordinate(5, 5),
+                        new Coordinate(4, 5),
+                        new Coordinate(4, 4)
+                    }
+                }
+            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Holes)))
+                  .Using(CoordinateRingComparer.Instance));
+
+            Assert.That(AsRing(new[]
+            {
+                new[]
+                {
+                    new Coordinate(0, 0),
+                    new Coordinate(8, 0),
+                    new Coordinate(8, 8),
+                    new Coordinate(0, 8),
+                    new Coordinate(0, 0)
+                }
+            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
+                  .Using(CoordinateRingComparer.Instance));
+            Assert.That(AsRing(new[]
+            {
+                new[]
+                {
+                    new[]
+                    {
+                        new Coordinate(3, 3),
+                        new Coordinate(3, 6),
+                        new Coordinate(6, 6),
+                        new Coordinate(6, 3),
+                        new Coordinate(3, 3)
+                    }
+                }
+            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
+                  .Using(CoordinateRingComparer.Instance));
+
+            Assert.That(AsRing(new[]
+            {
+                new[]
+                {
+                    new Coordinate(4, 4),
+                    new Coordinate(5, 4),
+                    new Coordinate(5, 5),
+                    new Coordinate(4, 5),
+                    new Coordinate(4, 4)
+                }
+            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
+                  .Using(CoordinateRingComparer.Instance));
+            Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
         /// <summary>
