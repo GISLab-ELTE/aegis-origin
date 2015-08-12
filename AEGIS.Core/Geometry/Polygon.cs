@@ -395,7 +395,7 @@ namespace ELTE.AEGIS.Geometry
         {
             if (hole == null)
                 throw new ArgumentNullException("hole", "The hole is null.");
-            if (ReferenceSystem != null && hole.ReferenceSystem != null && hole.ReferenceSystem.Equals(ReferenceSystem))
+            if (ReferenceSystem != null && hole.ReferenceSystem != null && !hole.ReferenceSystem.Equals(ReferenceSystem))
                 throw new ArgumentException("The reference system of the hole does not match the reference system of the polygon.", "hole");
 
             _holes.Add(Factory.CreateLinearRing(hole.Coordinates));
