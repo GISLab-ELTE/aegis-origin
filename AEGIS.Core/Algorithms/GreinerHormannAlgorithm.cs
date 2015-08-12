@@ -1052,7 +1052,7 @@ namespace ELTE.AEGIS.Algorithms
                 }
 
                 if (!intersected)
-                    processedHoles.Add(_holesA[0]);
+                    processedHoles.Add(holes[0]);
                 holes.RemoveAt(0);
             }
             holes.AddRange(processedHoles);

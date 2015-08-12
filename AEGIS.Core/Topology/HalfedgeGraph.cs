@@ -422,6 +422,8 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 AddMultiPolygon(geometry as IMultiPolygon);
+            else
+                throw new ArgumentException("The specified geometry type is not supported.");
         }
 
         /// <summary>
@@ -501,8 +503,8 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 MergeMultiPolygon(geometry as IMultiPolygon);
-
-            throw new ArgumentException("The specified geometry type is not supported.");
+            else
+                throw new ArgumentException("The specified geometry type is not supported.");
         }
 
         /// <summary>
