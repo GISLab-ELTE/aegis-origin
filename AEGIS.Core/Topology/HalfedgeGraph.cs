@@ -365,29 +365,7 @@ namespace ELTE.AEGIS.Topology
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
         public ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null)
         {
-            // Shell validation
-            if (shell == null)
-                throw new ArgumentNullException("shell", "The shell is null.");
-            if (shell.Count < 4)
-                throw new ArgumentException("The shell does not contain at least 3 different coordinates.", "shell");
-            if (!shell[0].Equals(shell[shell.Count - 1]))
-                throw new ArgumentException("The first and the last coordinates of the shell are not equal.", "shell");
-
-            // Holes validation
-            if (holes != null)
-            {
-                foreach (IList<Coordinate> hole in holes)
-                {
-                    if (hole == null)
-                        throw new ArgumentNullException("holes", "A hole is null.");
-                    if (hole.Count < 4)
-                        throw new ArgumentException("A hole does not contain at least 3 different coordinates.", "holes");
-                    if (!hole[0].Equals(hole[hole.Count - 1]))
-                        throw new ArgumentException("The first and the last coordinates of a hole are not equal.", "holes");
-                }
-            }
-
-            return MergeFace(shell, holes, _faces.Where(face => face.Type.HasFlag(FaceType.Shell)).ToList());
+            return MergeFace(shell, holes, Tag.None);
         }
 
         /// <summary>
@@ -399,6 +377,9 @@ namespace ELTE.AEGIS.Topology
         {
             if (other == null)
                 throw new ArgumentNullException("other", "The other graph is null.");
+
+            foreach (var vertex in _vertices)
+                vertex.Tag = Tag.First;
 
             foreach (IFace oFace in other.Faces)
             {
@@ -414,7 +395,7 @@ namespace ELTE.AEGIS.Topology
                     positions.Reverse();
                 }
 
-                MergeFace(shellPositions, holesPositions);
+                MergeFace(shellPositions, holesPositions, Tag.Second);
             }
         }
 
@@ -1026,14 +1007,51 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
-        /// <param name="possibleCollisions">Possible collision faces for the paramter face.</param>
+        /// <param name="tag">The tag ti use for the new face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, IList<Face> possibleCollisions)
+        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Tag tag)
         {
+            // Shell validation
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell does not contain at least 3 different coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and the last coordinates of the shell are not equal.", "shell");
+
+            // Holes validation
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    if (hole == null)
+                        throw new ArgumentNullException("holes", "A hole is null.");
+                    if (hole.Count < 4)
+                        throw new ArgumentException("A hole does not contain at least 3 different coordinates.", "holes");
+                    if (!hole[0].Equals(hole[hole.Count - 1]))
+                        throw new ArgumentException("The first and the last coordinates of a hole are not equal.", "holes");
+                }
+            }
+
             // Retrieve the vertex positions for the possible collision faces.
-            IDictionary<Int32, IList<Coordinate>> collisionPositions = new Dictionary<Int32, IList<Coordinate>>(possibleCollisions.Count);
-            foreach (Face face in possibleCollisions)
+            IList<Face> shellFaces = _faces.Where(face => face.Type.HasFlag(FaceType.Shell)).ToList();
+            IDictionary<Int32, IList<Coordinate>> collisionPositions = new Dictionary<Int32, IList<Coordinate>>(shellFaces.Count);
+            foreach (Face face in shellFaces)
             {
                 IList<Coordinate> positions = face.Vertices.Select(vertex => vertex.Position).ToList();
                 positions.Add(positions.First());
@@ -1042,19 +1060,15 @@ namespace ELTE.AEGIS.Topology
 
             // Determine the real colliding faces.
             Envelope shellEnvelope = Envelope.FromCoordinates(shell);
-            IList<Face> collisionFaces =
-                possibleCollisions.Where(face => Envelope.FromCoordinates(collisionPositions[face.Index]).Intersects(shellEnvelope))
-                                  .Where(face => ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }) ||
-                                      shell.All(coordinate => PolygonAlgorithms.InInterior(collisionPositions[face.Index], coordinate)))
-                                  .OrderBy(face => face.Type)
-                                  .ToList();
+            IList<Face> collisionFaces = (from face in shellFaces
+                                          where Envelope.FromCoordinates(collisionPositions[face.Index]).Intersects(shellEnvelope)
+                                          where ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }) ||
+                                              shell.All(coordinate => PolygonAlgorithms.InInterior(collisionPositions[face.Index], coordinate))
+                                          orderby face.Type
+                                          select face).ToList();
 
-            // Result clip sets.
-            List<IBasicPolygon> clipsInternal = new List<IBasicPolygon>();    // internal, common clips
-            List<IBasicPolygon> clipsExternalOld = new List<IBasicPolygon>(); // external clips of the already existing topology graph
-            List<IBasicPolygon> clipsExternalNew = new List<IBasicPolygon>(); // external clips of the parameter face that are ready to be added to the the graph
-            List<IBasicPolygon> clipsRecursive = new List<IBasicPolygon>();   // external clips of the parameter face that are required to be re-processed
-
+            // Result faces.
+            List<IFace> result = new List<IFace>();
 
             // If there were any colliding faces, process the first one.
             Face collisionFace = collisionFaces.FirstOrDefault();
@@ -1073,16 +1087,11 @@ namespace ELTE.AEGIS.Topology
 
                 var algorithm = new GreinerHormannAlgorithm(collisionShellPositions, collisionHolesPositions, shell, holes);
 
-                // Internal clips.
-                clipsInternal.AddRange(algorithm.InternalPolygons);
+                // Determine the tag of the collided and the parameter face.
+                Tag oldTag = collisionFace.Tag;
+                Tag newTag = tag;
 
-                // External clips of the already existing topology graph.
-                clipsExternalOld.AddRange(algorithm.ExternalFirstPolygons);
-
-                // External clips of the parameter face that are required to be re-processed.
-                clipsRecursive.AddRange(algorithm.ExternalSecondPolygons);
-
-                // Remove the processed collided face from the graph, because the new clips will be added.
+                // Remove the collided face from the graph, because the new clips will be added.
                 switch (collisionFace.Type)
                 {
                     case FaceType.Shell:
@@ -1095,28 +1104,33 @@ namespace ELTE.AEGIS.Topology
                         collisionFace.Holes.Clear();
                         break;
                 }
+
+                // Internal clips (requiring re-process).
+                foreach (IBasicPolygon polygon in algorithm.InternalPolygons)
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), oldTag | newTag));
+
+                // External clips of the parameter face that are required to be re-processed.
+                foreach (IBasicPolygon polygon in algorithm.ExternalSecondPolygons)
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), newTag));
+
+                // External clips of the already existing topology graph.
+                foreach (Face face in algorithm.ExternalFirstPolygons.Select(polygon => (Face)AddFace(polygon)))
+                {
+                    foreach (Vertex vertex in face.Vertices)
+                        vertex.Tag |= oldTag;
+                    result.Add(face);
+                }
+
             }
-            else // If there were none colliding faces, the whole face can be added to the graph.
-                clipsExternalNew.Add(new BasicPolygon(shell, holes));
-
-            // Create return collection.
-            var newFaces = new List<IFace>(clipsInternal.Count + clipsExternalOld.Count + clipsExternalNew.Count);
-
-            // Add the external clips of the parameter face that are required to be re-processed to the return collection.
-            foreach (IBasicPolygon polygon in clipsRecursive)
+            else
             {
-                // Remove processed faces from the collision list.
-                collisionFaces = collisionFaces.Where(face => _faces.Contains(face)).ToList();
-
-                newFaces.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), collisionFaces));
+                // If there were none colliding faces, the whole face can be added to the graph.
+                Face face = (Face)AddFace(new BasicPolygon(shell, holes));
+                foreach (Vertex vertex in face.Vertices)
+                    vertex.Tag |= tag;
+                result.Add(face);
             }
-
-            // Add the new faces to the return collection.
-            newFaces.AddRange(clipsInternal.Select(AddFace));
-            newFaces.AddRange(clipsExternalOld.Select(AddFace));
-            newFaces.AddRange(clipsExternalNew.Select(AddFace));
-
-            return newFaces;
+            return result;
         }
 
         #endregion

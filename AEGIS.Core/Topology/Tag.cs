@@ -23,9 +23,9 @@ namespace ELTE.AEGIS.Topology
     [Flags]
     public enum Tag
     {
-        None = 0,
-        A = 1,
-        B = 2,
-        Both = 3
+        None   = 0,
+        First  = 1,
+        Second = 2,
+        Both   = 3
     }
 }

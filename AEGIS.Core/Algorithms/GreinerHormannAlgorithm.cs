@@ -943,7 +943,7 @@ namespace ELTE.AEGIS.Algorithms
                     for (Int32 i = 0; i < _holesA.Count; ++i)
                     {
                         // Internal parts cannot have holes inside them at this point
-                        GreinerHormannAlgorithm algorithm =
+                        var algorithm =
                             new GreinerHormannAlgorithm(_holesA[i].Coordinates, _internalPolygons[0].Shell,
                                 precisionModel: _precisionModel);
                         if (algorithm.InternalPolygons.Count > 0)
@@ -974,7 +974,7 @@ namespace ELTE.AEGIS.Algorithms
                     Boolean intersected = false;
                     for (Int32 i = 0; i < _holesB.Count; ++i)
                     {
-                        GreinerHormannAlgorithm algorithm =
+                        var algorithm =
                             new GreinerHormannAlgorithm(_internalPolygons[0].Shell, _internalPolygons[0].Holes, _holesB[i].Coordinates, null,
                                 precisionModel: _precisionModel);
                         if (algorithm.InternalPolygons.Count > 0)
@@ -1001,7 +1001,7 @@ namespace ELTE.AEGIS.Algorithms
                 Boolean intersected = false;
                 for (Int32 i = 0; i < _holesB.Count; ++i)
                 {
-                    GreinerHormannAlgorithm algorithm =
+                    var algorithm =
                         new GreinerHormannAlgorithm(externalB[0].ToPolygon(), new BasicPolygon(_holesB[i].Coordinates),
                             precisionModel: _precisionModel);
                     if (algorithm.InternalPolygons.Count > 0)
@@ -1039,7 +1039,7 @@ namespace ELTE.AEGIS.Algorithms
                 {
                     if (ShamosHoeyAlgorithm.Intersects(new[] { polygons[i].Shell, holes[0].Coordinates }))
                     {
-                        GreinerHormannAlgorithm clipping = new GreinerHormannAlgorithm(polygons[i].Shell, holes[0].Coordinates,
+                        var clipping = new GreinerHormannAlgorithm(polygons[i].Shell, holes[0].Coordinates,
                             precisionModel: _precisionModel);
                         clipping.Compute();
 

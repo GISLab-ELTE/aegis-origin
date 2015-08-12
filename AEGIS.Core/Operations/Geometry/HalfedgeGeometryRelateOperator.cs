@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
                 if (graph.Vertices.All(vertex => vertex.Tag == Tag.None || vertex.Tag == Tag.Both))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.A) && graph.Vertices.Any(vertex => vertex.Tag == Tag.B))
+                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First) && graph.Vertices.Any(vertex => vertex.Tag == Tag.Second))
                     return true;
 
                 return false;
@@ -124,11 +124,11 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.A) && face.Tag.HasFlag(Tag.B)))
+                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.First) && face.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.A) && edge.Tag.HasFlag(Tag.B)))
+                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.First) && edge.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.A) && vertex.Tag.HasFlag(Tag.B)))
+                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.First) && vertex.Tag.HasFlag(Tag.Second)))
                     return false;
                 return true;
             }
@@ -165,11 +165,11 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.A) || !face.Tag.HasFlag(Tag.B)))
+                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.First) || !face.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.A) || !edge.Tag.HasFlag(Tag.B)))
+                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.First) || !edge.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.A) || !vertex.Tag.HasFlag(Tag.B)))
+                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.First) || !vertex.Tag.HasFlag(Tag.Second)))
                     return false;
                 return true;
             }
@@ -236,7 +236,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
                 if (graph.Vertices.All(vertex => vertex.Tag == Tag.None || vertex.Tag == Tag.Both))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.A) && graph.Vertices.Any(vertex => vertex.Tag == Tag.B))
+                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First) && graph.Vertices.Any(vertex => vertex.Tag == Tag.Second))
                 {
                     // the dimension of the intersecting part must match the dimension of the geometries
                     if (graph.Faces.Any(face => face.Tag == Tag.Both))
@@ -280,11 +280,11 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.A) && face.Tag.HasFlag(Tag.B)))
+                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.First) && face.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.A) && edge.Tag.HasFlag(Tag.B)))
+                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.First) && edge.Tag.HasFlag(Tag.Second)))
                     return true;
-                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.A) && vertex.Tag.HasFlag(Tag.B)))
+                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.First) && vertex.Tag.HasFlag(Tag.Second)))
                     return true;
                 return false;
             }
@@ -321,13 +321,13 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.A) || face.Tag.HasFlag(Tag.B)))
+                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.First) || face.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.A) || edge.Tag.HasFlag(Tag.B)))
+                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.First) || edge.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.A) || vertex.Tag.HasFlag(Tag.B)))
+                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.First) || vertex.Tag.HasFlag(Tag.Second)))
                     return false;
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.B) && !face.Tag.HasFlag(Tag.A)))
+                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.Second) && !face.Tag.HasFlag(Tag.First)))
                     return true;
 
                 return false;
