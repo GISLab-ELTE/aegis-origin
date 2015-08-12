@@ -893,27 +893,15 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(8, 0),
                     new Coordinate(8, 4),
                     new Coordinate(7, 4),
+                    new Coordinate(7, 1),
+                    new Coordinate(5, 1),
                     new Coordinate(5, 4),
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
             }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
                   .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
-            {
-                new[]
-                {
-                    new[]
-                    {
-                        new Coordinate(5, 1),
-                        new Coordinate(5, 4),
-                        new Coordinate(7, 4),
-                        new Coordinate(7, 1),
-                        new Coordinate(5, 1)
-                    }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+            Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.That(AsRing(new[]
             {
@@ -1390,18 +1378,6 @@ namespace ELTE.AEGIS.Tests.Algorithms
             {
                 new[]
                 {
-                    new Coordinate(4, 8),
-                    new Coordinate(0, 8),
-                    new Coordinate(0, 0),
-                    new Coordinate(8, 0),
-                    new Coordinate(8, 4),
-                    new Coordinate(7, 4),
-                    new Coordinate(4, 4),
-                    new Coordinate(4, 7),
-                    new Coordinate(4, 8),
-                },
-                new[]
-                {
                     new Coordinate(8, 5),
                     new Coordinate(8, 8),
                     new Coordinate(5, 8),
@@ -1409,42 +1385,27 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7, 7),
                     new Coordinate(7, 5),
                     new Coordinate(8, 5)
+                },
+                new[]
+                {
+                    new Coordinate(4, 8),
+                    new Coordinate(0, 8),
+                    new Coordinate(0, 0),
+                    new Coordinate(8, 0),
+                    new Coordinate(8, 4),
+                    new Coordinate(7, 4),
+                    new Coordinate(7, 1),
+                    new Coordinate(1, 1),
+                    new Coordinate(1, 7),
+                    new Coordinate(4, 7),
+                    new Coordinate(4, 8),
                 }
             }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
                   .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
-            {
-                new[]
-                {
-                    new[]
-                    {
-                        new Coordinate(1, 1),
-                        new Coordinate(1, 7),
-                        new Coordinate(4, 7),
-                        new Coordinate(4, 4),
-                        new Coordinate(7, 4),
-                        new Coordinate(7, 1),
-                        new Coordinate(1, 1)
-                    }
-                },
-                new Coordinate[0][]
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+            Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.That(AsRing(new[]
             {
-                new[]
-                {
-                    new Coordinate(8, 4),
-                    new Coordinate(12, 4),
-                    new Coordinate(12, 12),
-                    new Coordinate(4, 12),
-                    new Coordinate(4, 8),
-                    new Coordinate(5, 8),
-                    new Coordinate(8, 8),
-                    new Coordinate(8, 5),
-                    new Coordinate(8, 4)
-                },
                 new[]
                 {
                     new Coordinate(4, 7),
@@ -1454,27 +1415,24 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(5, 5),
                     new Coordinate(5, 7),
                     new Coordinate(4, 7)
+                },
+                new[]
+                {
+                    new Coordinate(8, 4),
+                    new Coordinate(12, 4),
+                    new Coordinate(12, 12),
+                    new Coordinate(4, 12),
+                    new Coordinate(4, 8),
+                    new Coordinate(5, 8),
+                    new Coordinate(5, 11),
+                    new Coordinate(11, 11),
+                    new Coordinate(11, 5),
+                    new Coordinate(8, 5),
+                    new Coordinate(8, 4)
                 }
             }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
                   .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
-            {
-                new[]
-                {
-                    new[]
-                    {
-                        new Coordinate(11, 11),
-                        new Coordinate(11, 5),
-                        new Coordinate(8, 5),
-                        new Coordinate(8, 8),
-                        new Coordinate(5, 8),
-                        new Coordinate(5, 11),
-                        new Coordinate(11, 11)
-                    }
-                },
-                new Coordinate[0][]
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+            Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
             // hole is completly filled with the other subject polygon

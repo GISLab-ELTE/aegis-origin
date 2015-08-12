@@ -242,7 +242,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <remarks>
         /// The holes are reversed into counterclockwise orientation in this list.
         /// </remarks>
-        private IList<IBasicLineString> _holesA;
+        private List<IBasicLineString> _holesA;
 
         /// <summary>
         /// The array containing the holes of the second polygon.
@@ -250,7 +250,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <remarks>
         /// The holes are reversed into counterclockwise orientation in this list.
         /// </remarks>
-        private IList<IBasicLineString> _holesB;
+        private List<IBasicLineString> _holesB;
 
         /// <summary>
         /// The intersection collection.
@@ -503,11 +503,12 @@ namespace ELTE.AEGIS.Algorithms
                 // Holes of the internal clips are added to the polygons through the process.
                 ComputeHoles();
 
-                // Add external holes to the appropriate polygons
+                // Resolves hole degeneracies in the external clips.
+                // Adds external holes to the appropriate polygons.
                 if (_computeExternalClips)
                 {
-                    LocateExternalHolesA();
-                    LocateExternalHolesB();
+                    ComputeExternalHoles(_externalPolygonsA, _holesA);
+                    ComputeExternalHoles(_externalPolygonsB, _holesB);
                 }
             }
 
@@ -884,7 +885,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Completes complete clips (in case of no intersection).
         /// </summary>
-        public void ComputeCompleteClips()
+        private void ComputeCompleteClips()
         {
             Boolean isAinB = _polygonA.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonB.Shell.Coordinates, position));
             Boolean isBinA = _polygonB.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonA.Shell.Coordinates, position));
@@ -921,6 +922,10 @@ namespace ELTE.AEGIS.Algorithms
             }
         }
 
+        /// <summary>
+        /// Compute the intersection of the holes in the subject polygons.
+        /// </summary>
+        /// <remarks>Holes of the internal clips are added to the polygons through the process.</remarks>
         private void ComputeHoles()
         {
             if (Envelope.FromCoordinates(_polygonA.Shell).Disjoint(Envelope.FromCoordinates(_polygonB.Shell)))
@@ -944,11 +949,10 @@ namespace ELTE.AEGIS.Algorithms
                         if (algorithm.InternalPolygons.Count > 0)
                         {
                             intersected = true;
+
                             externalB.AddRange(algorithm._internalPolygons);
-                            foreach (PolygonClip externalHoleA in algorithm._externalPolygonsA)
-                                _holesA.Add(new BasicLineString(externalHoleA.Shell));
-                            foreach (PolygonClip internalClip in algorithm._externalPolygonsB)
-                                _internalPolygons.Add(internalClip);
+                            _holesA.AddRange(algorithm._externalPolygonsA.Select(polygon => new BasicLineString(polygon.Shell)));
+                            _internalPolygons.AddRange(algorithm._externalPolygonsB);
 
                             _holesA.RemoveAt(i);
                             break;
@@ -976,12 +980,10 @@ namespace ELTE.AEGIS.Algorithms
                         if (algorithm.InternalPolygons.Count > 0)
                         {
                             intersected = true;
-                            foreach (PolygonClip externalClipA in algorithm._internalPolygons)
-                                _externalPolygonsA.Add(externalClipA);
-                            foreach (PolygonClip internalClip in algorithm._externalPolygonsA)
-                                _internalPolygons.Add(internalClip);
-                            foreach (PolygonClip externalHoleB in algorithm._externalPolygonsB)
-                                _holesB.Add(new BasicLineString(externalHoleB.Shell));
+
+                            _externalPolygonsA.AddRange(algorithm._internalPolygons);
+                            _internalPolygons.AddRange(algorithm._externalPolygonsA);
+                            _holesB.AddRange(algorithm._externalPolygonsB.Select(polygon => new BasicLineString(polygon.Shell)));
 
                             _holesB.RemoveAt(i);
                             break;
@@ -1005,11 +1007,10 @@ namespace ELTE.AEGIS.Algorithms
                     if (algorithm.InternalPolygons.Count > 0)
                     {
                         intersected = true;
+
                         // Clips in algorithm._internalPolygons are intersection of the already existing holes in the internals, therefore they are already covered.
-                        foreach (PolygonClip internalClip in algorithm._externalPolygonsA)
-                            _externalPolygonsB.Add(internalClip);
-                        foreach (PolygonClip externalHoleB in algorithm._externalPolygonsB)
-                            _holesB.Add(new BasicLineString(externalHoleB.Shell));
+                        _externalPolygonsB.AddRange(algorithm._externalPolygonsA);
+                        _holesB.AddRange(algorithm._externalPolygonsB.Select(polygon => new BasicLineString(polygon.Shell)));
 
                         _holesB.RemoveAt(i);
                         break;
@@ -1022,27 +1023,44 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         /// <summary>
-        /// Locates the containing shell of external holes in the first polygon.
+        /// Resolves hole degeneracies in the external clips.
+        /// Adds external holes to the appropriate polygons.
         /// </summary>
-        private void LocateExternalHolesA()
+        /// <remarks>Holes touching boundary of their shells are degenerate.</remarks>
+        /// <param name="polygons">Polygons (without holes) to process.</param>
+        /// <param name="holes">Possibly degenerate holes to process and locate.</param>
+        private void ComputeExternalHoles(List<PolygonClip> polygons, List<IBasicLineString> holes)
         {
-            foreach (IBasicLineString hole in _holesA)
+            List<IBasicLineString> processedHoles = new List<IBasicLineString>();
+            while (holes.Count > 0)
             {
-                PolygonClip containerClip =
-                    _externalPolygonsA.First(clip => hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate)));
-                containerClip.AddHole(hole);
-            }
-        }
+                Boolean intersected = false;
+                for (Int32 i = 0; i < polygons.Count; ++i)
+                {
+                    if (ShamosHoeyAlgorithm.Intersects(new[] { polygons[i].Shell, holes[0].Coordinates }))
+                    {
+                        GreinerHormannAlgorithm clipping = new GreinerHormannAlgorithm(polygons[i].Shell, holes[0].Coordinates,
+                            precisionModel: _precisionModel);
+                        clipping.Compute();
 
-        /// <summary>
-        /// Locates the containing shell of external holes in the second polygon.
-        /// </summary>
-        private void LocateExternalHolesB()
-        {
-            foreach (IBasicLineString hole in _holesB)
+                        polygons.AddRange(clipping._externalPolygonsA);
+                        polygons.RemoveAt(i);
+
+                        intersected = true;
+                        break;
+                    }
+                }
+
+                if (!intersected)
+                    processedHoles.Add(_holesA[0]);
+                holes.RemoveAt(0);
+            }
+            holes.AddRange(processedHoles);
+
+            foreach (IBasicLineString hole in holes)
             {
                 PolygonClip containerClip =
-                    _externalPolygonsB.First(clip => hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate)));
+                    polygons.First(clip => hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate)));
                 containerClip.AddHole(hole);
             }
         }
