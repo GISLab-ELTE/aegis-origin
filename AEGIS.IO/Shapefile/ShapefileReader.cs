@@ -138,9 +138,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// The path is in an invalid format.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public ShapefileReader(String path) : base(path, GeometryStreamFormats.Shapefile, null)
         {
@@ -166,9 +166,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <param name="path">The file path to be read.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public ShapefileReader(Uri path)
             : base(path, GeometryStreamFormats.Shapefile, null)

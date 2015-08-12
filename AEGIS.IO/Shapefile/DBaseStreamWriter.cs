@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// The path is in an invalid format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public DBaseStreamWriter(String path) : this(path, Encoding.Default) { }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// The path is in an invalid format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public DBaseStreamWriter(String path, Encoding encoding)
         {
             if (path == null)
@@ -119,7 +119,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
 
             _encoding = encoding;
@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         /// <param name="record">The record to be written.</param>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream writing.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream writing.</exception>
         public void Write(IDictionary<String,Object> record) 
         {
             if (_disposed)
@@ -163,7 +163,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream writing.", ex);
+                throw new IOException("Exception occurred during stream writing.", ex);
             }
 
             _numberOfRecords++;

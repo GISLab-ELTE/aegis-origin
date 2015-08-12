@@ -74,14 +74,14 @@ namespace ELTE.AEGIS.IO
         protected const String MessageParameterConditionError = "The parameter value ({0}) does not satisfy the conditions of the parameter.";
 
         /// <summary>
-        /// Exception message in case error occured during stream opening. This field is constant.
+        /// Exception message in case error occurred during stream opening. This field is constant.
         /// </summary>
-        protected const String MessageContentOpenError = "Error occured during stream opening.";
+        protected const String MessageContentOpenError = "Error occurred during stream opening.";
 
         /// <summary>
-        /// Exception message in case error occured during stream reading. This field is constant.
+        /// Exception message in case error occurred during stream reading. This field is constant.
         /// </summary>
-        protected const String MessageContentReadError = "Error occured during stream reading.";
+        protected const String MessageContentReadError = "Error occurred during stream reading.";
 
         /// <summary>
         /// Exception message in case the stream content is in invalid. This field is constant.
@@ -213,7 +213,7 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         protected GeometryStreamReader(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolvePath(path), format, parameters)
         { }
@@ -236,7 +236,7 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         protected GeometryStreamReader(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolveStream(path), format, parameters)
         {
@@ -247,7 +247,7 @@ namespace ELTE.AEGIS.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryFileReader" /> class.
         /// </summary>
-        /// <param name="path">The stream to be read.</param>
+        /// <param name="stream">The stream to be read.</param>
         /// <param name="format">The format of the stream reader.</param>
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -326,7 +326,7 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <returns>The geometry read from the data stream.</returns>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.InvalidDataException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.InvalidDataException">Exception occurred during stream reading.</exception>
         public IGeometry Read()
         {
             if (_disposed)
@@ -348,7 +348,7 @@ namespace ELTE.AEGIS.IO
         /// <param name="count">The number of geometries to read.</param>
         /// <returns>A list containing the geometries read from the data stream.</returns>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public IList<IGeometry> Read(Int32 count)
         {
             if (_disposed)
@@ -374,7 +374,7 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <returns>A list containing the geometries read from the data stream.</returns>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public IList<IGeometry> ReadToEnd()
         {
             if (_disposed)
@@ -391,7 +391,7 @@ namespace ELTE.AEGIS.IO
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream reading.", ex);
+                throw new IOException("Exception occurred during stream reading.", ex);
             }
         }
 
@@ -553,7 +553,7 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>The stream.</returns>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         private static Stream ResolveStream(Uri path)
         {
             try

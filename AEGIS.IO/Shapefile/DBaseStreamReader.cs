@@ -68,7 +68,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// The path is in an invalid format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public DBaseStreamReader(String path) : this(path, Encoding.Default) { }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// The path is in an invalid format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public DBaseStreamReader(String path, Encoding encoding)
         {
             if (path == null)
@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
 
             _encoding = encoding;
@@ -133,7 +133,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         /// <returns>The dictionary of key/value pairs representing the record read from the stream.</returns>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         /// <exception cref="System.IO.InvalidDataException">Stream content is invalid.</exception>
         public IDictionary<String, Object> Read() 
         {
@@ -151,7 +151,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream reading.", ex);
+                throw new IOException("Exception occurred during stream reading.", ex);
             }
 
             return ParseRecord(recordBytes);

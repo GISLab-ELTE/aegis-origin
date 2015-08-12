@@ -139,9 +139,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream writing.
+        /// Exception occurred during stream writing.
         /// </exception>
         public ShapefileWriter(String path) : base(path, GeometryStreamFormats.Shapefile, null)
         {
@@ -178,9 +178,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream writing.
+        /// Exception occurred during stream writing.
         /// </exception>
         public ShapefileWriter(Uri path) : base(path, GeometryStreamFormats.Shapefile, null)
         {

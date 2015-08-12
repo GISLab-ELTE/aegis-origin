@@ -90,14 +90,14 @@ namespace ELTE.AEGIS.IO
         protected const String MessageParameterConditionError = "The parameter value ({0}) does not satisfy the conditions of the parameter.";
 
         /// <summary>
-        /// Exception message in case error occured during stream opening. This field is constant.
+        /// Exception message in case error occurred during stream opening. This field is constant.
         /// </summary>
-        protected const String MessageContentOpenError = "Error occured during stream opening.";
+        protected const String MessageContentOpenError = "Error occurred during stream opening.";
 
         /// <summary>
-        /// Exception message in case error occured during stream writing. This field is constant.
+        /// Exception message in case error occurred during stream writing. This field is constant.
         /// </summary>
-        protected const String MessageContentWriteError = "Error occured during stream writing.";
+        protected const String MessageContentWriteError = "Error occurred during stream writing.";
 
         #endregion
 
@@ -188,7 +188,7 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         protected GeometryStreamWriter(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolvePath(path), format, parameters)
         {
@@ -214,7 +214,7 @@ namespace ELTE.AEGIS.IO
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         protected GeometryStreamWriter(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : this(ResolveStream(path), format, parameters)
         {
@@ -225,7 +225,7 @@ namespace ELTE.AEGIS.IO
         /// <summary>
         /// Initializes a new instance of the <see cref="GeometryStreamWriter" /> class.
         /// </summary>
-        /// <param name="path">The file path to be written.</param>
+        /// <param name="stream">The file path to be written.</param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -299,7 +299,7 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentException">The geometry is not supported by the format.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream writing.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream writing.</exception>
         public void Write(IGeometry geometry)
         {
             if (_disposed)
@@ -326,14 +326,14 @@ namespace ELTE.AEGIS.IO
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.ArgumentException">One or more of the geometries is not supported by the format.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream writing.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream writing.</exception>
         public void Write(IEnumerable<IGeometry> geometries)
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (geometries == null)
-                throw new ArgumentNullException("geometry", MessageGeometryIsNull);
+                throw new ArgumentNullException("geometries", MessageGeometryIsNull);
 
             try
             {
@@ -462,7 +462,7 @@ namespace ELTE.AEGIS.IO
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>The stream.</returns>
-        /// <exception cref="System.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         private static Stream ResolveStream(Uri path)
         {
             try
