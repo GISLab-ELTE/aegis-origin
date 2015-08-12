@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ELTE.AEGIS.Topology
 {
@@ -50,8 +51,6 @@ namespace ELTE.AEGIS.Topology
         /// Stores the collection of faces in the graph.
         /// </summary>
         private List<Face> _faces = new List<Face>();
-
-        private Tag _currentTag;
 
         #endregion
 
@@ -86,34 +85,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         public IEnumerable<IFace> Faces
         {
-            get { return _faces.AsReadOnly(); }
-        }
-
-        #endregion
-
-        #region Public methods
-
-        /// <summary>
-        /// Merges another graph into the current instance.
-        /// </summary>
-        /// <param name="other">The other graph.</param>
-        /// <exception cref="System.ArgumentNullException">The other graph is null.</exception>
-        public void MergeGraph(IHalfedgeGraph other)
-        {
-            if (other == null)
-                throw new ArgumentNullException("other", "The other graph is null.");
-
-            Retag(Tag.A);
-            foreach (var oFace in other.Faces)
-            {
-                IList<Coordinate> shellPositions = oFace.Vertices.Select(vertex => vertex.Position).ToList();
-                IList<IList<Coordinate>> holePositions = oFace.Holes != null
-                                                                   ? oFace.Holes.Select(
-                                                                       face => face.Vertices.Select(vertex => vertex.Position).ToList() as IList<Coordinate>).ToList()
-                                                                   : null;
-
-                MergeFace(shellPositions, holePositions, true);
-            }
+            get { return _faces.Where(face => face.Type.HasFlag(FaceType.Shell)); }
         }
 
         #endregion
@@ -184,11 +156,9 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Adds an (isolated) vertex to the graph.
         /// </summary>
-        /// <remarks>
-        /// When a vertex already exists at the given position, it will be returned instead of creating a new one.
-        /// </remarks>
         /// <param name="position">The position of the vertex.</param>
-        /// <returns>The vertex created by this method.</returns>
+        /// <returns>The vertex creatd by this method.</returns>
+        /// <remarks>When a vertex already exists at the given position, it will be returned instead of creating a new one.</remarks>
         public IVertex AddVertex(Coordinate position)
         {
             return GetVertex(position);
@@ -197,12 +167,18 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
-        /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
-        /// </remarks>
-        /// <param name="shell">The position of the face's vertices in counter-clockwise order.</param>
-        /// <param name="holes">The position of the holes' vertices in counter-clockwise order.</param>
+        /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
         public IFace AddFace(IBasicPolygon polygon)
         {
             return AddFace(polygon.Shell, polygon.Holes);
@@ -211,61 +187,235 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
-        /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
-        /// </remarks>
-        /// <param name="shell">The position of the face's vertices in counter-clockwise order.</param>
-        /// <param name="holes">The position of the holes' vertices in counter-clockwise order.</param>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
         /// <returns>The face created by this method.</returns>
-        public IFace AddFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null)
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
+        /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
+        public IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
         {
-            Face shellFace = CreateFace(shell.Select(GetVertex).ToArray());
-            if (holes != null)
-                foreach (IList<Coordinate> hole in holes)
-                {
-                    Face holeFace = CreateFace(hole.Select(GetVertex).ToArray());
-                    holeFace.Parent = shellFace;
-                    shellFace.Holes.Add(holeFace);
-                }
-            return shellFace;
+            return AddFace(shell.Coordinates, holes == null ? null :holes.Select(hole => hole.Coordinates).ToList());
         }
 
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
-        /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
-        /// </remarks>
-        /// <param name="shell">The position of the face's vertices in counter-clockwise order.</param>
-        /// <param name="holes">The position of the holes' vertices in counter-clockwise order.</param>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
         /// <returns>The face created by this method.</returns>
-        public IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
+        /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
+        public IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes = null)
         {
-            Face shellFace = CreateFace(shell.Select(GetVertex).ToArray());
+            // Shell validation
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count > 1 && shell[0].Equals(shell[shell.Count - 1]))
+                shell = shell.Take(shell.Count - 1).ToList();
+            if (shell.Count < 3)
+                throw new ArgumentException("The shell does not contain at least 3 different coordinates.", "shell");
+
+            // Holes validation
             if (holes != null)
-                foreach (IBasicLineString hole in holes)
+            {
+                for (Int32 i = 0; i < holes.Count; ++i)
                 {
-                    Face holeFace = CreateFace(hole.Select(GetVertex).ToArray());
-                    holeFace.Parent = shellFace;
+                    if (holes[i] == null)
+                        throw new ArgumentNullException("holes", "A hole is null.");
+                    if (holes[i].Count > 1 && holes[i][0].Equals(holes[i][holes[i].Count - 1]))
+                        holes[i] = holes[i].Take(holes[i].Count - 1).ToList();
+                    if (holes[i].Count < 3)
+                        throw new ArgumentException("A hole does not contain at least 3 different coordinates.", "holes");
+                }
+            }
+
+            Face shellFace = GetFace(shell, FaceType.Shell);
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    Face holeFace = GetFace(hole.Reverse(), FaceType.Hole);
                     shellFace.Holes.Add(holeFace);
                 }
+            }
             return shellFace;
         }
 
         /// <summary>
         /// Removes a vertex from the graph.
         /// </summary>
-        /// <remarks>
-        /// The algorithm may be forced by the <see cref="forced"/> parameter to remove the adjacent faces of the vertex.
-        /// </remarks>
         /// <param name="position">The position of the vertex to remove.</param>
-        /// <param name="forced">Force the method to remove all adjacent faces when the vertex is not isolated.</param>
+        /// <param name="mode">The mode of the removal.</param>
         /// <returns><c>true</c> when the coordinate to remove exists in the graph; otherwise <c>false</c>.</returns>
-        public Boolean RemoveVertex(Coordinate position, Boolean forced = false)
+        /// <remarks>The algorithm may be forced by the <see cref="mode" /> parameter to remove the adjacent faces of the vertex.</remarks>
+        public Boolean RemoveVertex(Coordinate position, RemoveMode mode = RemoveMode.Normal)
         {
             if (!_vertices.Contains(position)) return false;
-            RemoveVertex(_vertices[position], forced);
+            RemoveVertex(_vertices[position], mode);
             return true;
+        }
+
+        /// <summary>
+        /// Removes a face from the graph.
+        /// </summary>
+        /// <param name="face">The face to remove.</param>
+        /// <param name="mode">The mode of the removal.</param>
+        /// <exception cref="System.ArgumentException">Face is inconvertible to actual representation.</exception>
+        /// <remarks>The forced removal mode makes no difference for this method in contrast to the normal mode.</remarks>
+        public void RemoveFace(IFace face, RemoveMode mode = RemoveMode.Clean)
+        {
+            try
+            {
+                RemoveFace(face as Face, mode);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new ArgumentException("Face is inconvertible to the actual representation.", "face", ex);
+            }
+        }
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        public ICollection<IFace> MergeFace(IBasicPolygon polygon)
+        {
+            return MergeFace(polygon.Shell, polygon.Holes);
+        }
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
+        public ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
+        {
+            return MergeFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates));
+        }
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
+        public ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null)
+        {
+            // Shell validation
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (shell.Count < 4)
+                throw new ArgumentException("The shell does not contain at least 3 different coordinates.", "shell");
+            if (!shell[0].Equals(shell[shell.Count - 1]))
+                throw new ArgumentException("The first and the last coordinates of the shell are not equal.", "shell");
+
+            // Holes validation
+            if (holes != null)
+            {
+                foreach (IList<Coordinate> hole in holes)
+                {
+                    if (hole == null)
+                        throw new ArgumentNullException("holes", "A hole is null.");
+                    if (hole.Count < 4)
+                        throw new ArgumentException("A hole does not contain at least 3 different coordinates.", "holes");
+                    if (!hole[0].Equals(hole[hole.Count - 1]))
+                        throw new ArgumentException("The first and the last coordinates of a hole are not equal.", "holes");
+                }
+            }
+
+            return MergeFace(shell, holes, _faces.Where(face => face.Type.HasFlag(FaceType.Shell)).ToList());
+        }
+
+        /// <summary>
+        /// Merges another graph into the current instance.
+        /// </summary>
+        /// <param name="other">The other graph.</param>
+        /// <exception cref="System.ArgumentNullException">The other graph is null.</exception>
+        public void MergeGraph(IHalfedgeGraph other)
+        {
+            if (other == null)
+                throw new ArgumentNullException("other", "The other graph is null.");
+
+            foreach (IFace oFace in other.Faces)
+            {
+                IList<Coordinate> shellPositions = oFace.Vertices.Select(vertex => vertex.Position).ToList();
+                shellPositions.Add(shellPositions.First());
+
+                IEnumerable<List<Coordinate>> holesPositions = oFace.Holes.Select(
+                    face => face.Vertices.Select(vertex => vertex.Position).ToList());
+
+                foreach (List<Coordinate> positions in holesPositions)
+                {
+                    positions.Add(positions.First());
+                    positions.Reverse();
+                }
+
+                MergeFace(shellPositions, holesPositions);
+            }
         }
 
         #endregion
@@ -313,7 +463,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The face created by this method.</returns>
         public IFace AddLinearRing(ILinearRing linearRing)
         {
-            return AddFace(linearRing.Take(linearRing.Count - 1).ToArray());
+            return AddFace(linearRing);
         }
 
         /// <summary>
@@ -323,8 +473,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The face created by this method.</returns>
         public IFace AddPolygon(IPolygon polygon)
         {
-            return AddFace(polygon.Shell.Take(polygon.Shell.Count - 1).ToArray(),
-                           polygon.Holes.Select(hole => hole.Take(hole.Count - 1).ToArray()));
+            return AddFace(polygon);
         }
 
         /// <summary>
@@ -358,7 +507,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="geometry">The geometry to merge.</param>
         /// <exception cref="System.ArgumentException">The specified geometry type is not supported.</exception>
-        /// <remarks>The supported types are <see cref="ILinearRing" />, <see cref="IPolygon" />, and <see cref="IMultiPolygon" />.</remarks>
+        /// <remarks>The supported types are <see cref="IPoint" />, <see cref="ILinearRing" />, <see cref="IPolygon" />, <see cref="IMultiPoint" />,  and <see cref="IMultiPolygon" />.</remarks>
         public void MergeGeometry(IGeometry geometry)
         {
             if (geometry is IPoint)
@@ -380,9 +529,9 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="linearRing">The linear ring to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        public IFace[] MergeLinearRing(ILinearRing linearRing)
+        public ICollection<IFace> MergeLinearRing(ILinearRing linearRing)
         {
-            return MergeFace(linearRing.Take(linearRing.Count - 1).ToArray());
+            return MergeFace(linearRing);
         }
 
         /// <summary>
@@ -390,10 +539,9 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="polygon">The polygon to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        public IFace[] MergePolygon(IPolygon polygon)
+        public ICollection<IFace> MergePolygon(IPolygon polygon)
         {
-            return MergeFace(polygon.Shell.Take(polygon.Shell.Count - 1).ToList(),
-                             polygon.Holes.Select(hole => hole.Take(hole.Count - 1).ToList() as IList<Coordinate>).ToList());
+            return MergeFace(polygon);
         }
 
         /// <summary>
@@ -401,12 +549,12 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="multiPolygon">The polygons to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        public IFace[] MergeMultiPolygon(IMultiPolygon multiPolygon)
+        public ICollection<IFace> MergeMultiPolygon(IMultiPolygon multiPolygon)
         {
             var faces = new List<IFace>(multiPolygon.Count);
             foreach (var polygon in multiPolygon)
                 faces.AddRange(MergePolygon(polygon));
-            return faces.ToArray();
+            return faces;
         }
 
         /// <summary>
@@ -419,13 +567,9 @@ namespace ELTE.AEGIS.Topology
             if (factory == null)
                 factory = FactoryRegistry.GetFactory<IGeometryFactory>();
 
-            List<IGeometry> resultCollection = new List<IGeometry>();
-
-            foreach (Face face in _faces)
-            {
-                if (!face.IsHole)
-                    resultCollection.Add(face.ToGeometry(factory));
-            }
+            List<IGeometry> resultCollection = _faces.Where(face => face.Type.HasFlag(FaceType.Shell))
+                                                     .Select(face => face.ToGeometry(factory) as IGeometry)
+                                                     .ToList();
 
             if (resultCollection.Count == 0)
                 return null;
@@ -464,109 +608,6 @@ namespace ELTE.AEGIS.Topology
         #region Private methods
 
         /// <summary>
-        /// Merges the specified coordinates into the graph.
-        /// </summary>
-        /// <param name="shellPositions">The coordinates of the shell.</param>
-        /// <param name="holePositions">The coordinates of the holes.</param>
-        /// <param name="tagging">A value indicating whether tagging should be performed.</param>
-        /// <returns>The array of faces creates by the method.</returns>
-        private IFace[] MergeFace(IBasicLineString shellPositions, IEnumerable<IBasicLineString> holePositions = null, Boolean tagging = false)
-        {
-            return MergeFace(shellPositions.Coordinates, holePositions == null ? null : holePositions.Select(hole => hole.Coordinates));
-        }
-
-        /// <summary>
-        /// Merges the specified coordinates into the graph.
-        /// </summary>
-        /// <param name="shellPositions">The coordinates of the shell.</param>
-        /// <param name="holePositions">The coordinates of the holes.</param>
-        /// <param name="tagging">A value indicating whether tagging should be performed.</param>
-        /// <returns>The array of faces creates by the method.</returns>
-        private IFace[] MergeFace(IList<Coordinate> shellPositions, IEnumerable<IList<Coordinate>> holePositions = null, Boolean tagging = false)
-        {
-            // Retrieve the vertex positions of the shell faces.
-            var shellFaces = _faces.Where(face => !face.IsHole).ToList();
-            var facePositions = new Dictionary<Int32, IList<Coordinate>>(shellFaces.Count);
-            foreach (var face in shellFaces)
-                facePositions.Add(face.Index, face.Vertices.Select(vertex => vertex.Position).ToList());
-
-            // Determine the possible faces that collide with the parameter face.
-            Face[] collisionFaces = _faces.Where(face => BentleyOttmannAlgorithm.Intersection(new[]
-            {
-                facePositions[face.Index],
-                shellPositions
-            }).Count > 0).ToArray();
-
-            IList<IBasicPolygon> clipsInternal = new List<IBasicPolygon>();  // internal, common clips
-            IList<IBasicPolygon> clipsExternalOld = new List<IBasicPolygon>(); // external clips of the already existing topology graph
-            IList<IBasicPolygon> clipsExternalNew = new List<IBasicPolygon>(); // external clips of the parameter face that are ready to be added to the the graph
-            IList<IBasicPolygon> clipsExternalRecursive = new List<IBasicPolygon>(); // external clips of the parameter face that are required to be re-processed
-
-            // If there were any colliding faces, process the first one.
-            if (collisionFaces.Length > 0)
-            {
-                // Calculate the the internal and external clips with the colliding the faces.
-                var currentShellPositions = facePositions[collisionFaces[0].Index];
-                var currentHolePositions = collisionFaces[0].Holes != null
-                                               ? collisionFaces[0].Holes.Select(face =>
-                                                                                face.Vertices.Select(vertex =>
-                                                                                                     vertex.Position).ToList() as
-                                                                                IList<Coordinate>).ToList()
-                                               : null;
-                var algorithm = new GreinerHormannAlgorithm(currentShellPositions, /*currentHolePositions,*/
-                                                            shellPositions/*, holePositions*/);
-
-                // Internal clips.
-                clipsInternal = algorithm.InternalPolygons;
-
-                // External clips of the already existing topology graph.
-                foreach (IBasicPolygon clip in algorithm.ExternalFirstPolygons)
-                {
-                    var otherCollisionFaces =
-                        collisionFaces.Where(
-                                             face =>
-                                             GreinerHormannAlgorithm.Clip(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
-                                      .ToArray();
-                    if (otherCollisionFaces.Length == 0 ||
-                        otherCollisionFaces.Length == 1 && otherCollisionFaces[0] == collisionFaces[0])
-                        clipsExternalOld.Add(clip);
-                }
-
-                // External clips of the parameter face ...
-                foreach (IBasicPolygon clip in algorithm.ExternalSecondPolygons)
-                {
-                    var otherCollisionFaces =
-                        collisionFaces.Where(
-                                             face =>
-                                             GreinerHormannAlgorithm.Clip(facePositions[face.Index], clip.Shell.Coordinates).Count > 0)
-                                      .ToArray();
-                    if (otherCollisionFaces.Length == 0 ||
-                        otherCollisionFaces.Length == 1 && otherCollisionFaces[0] == collisionFaces[0])
-                        clipsExternalNew.Add(clip); // ... that are ready to be added to the the graph.
-                    else
-                        clipsExternalRecursive.Add(clip); // ... that are required to be re-processed.
-                }
-
-                // Remove the processed collided face from the graph, because the new clips will be added.
-                RemoveFace(collisionFaces[0]);
-            }
-            else // If there were none colliding faces, the whole face can be added to the graph.
-                clipsExternalNew.Add(new BasicPolygon(shellPositions, holePositions));
-
-            var newFaces = new List<IFace>(clipsInternal.Count + clipsExternalOld.Count + clipsExternalNew.Count);
-            if (tagging) _currentTag = Tag.Both;
-            newFaces.AddRange(clipsInternal.Select(operands => AddFace(operands.Shell, operands.Holes)));
-            if (tagging) _currentTag = Tag.A;
-            newFaces.AddRange(clipsExternalOld.Select(operands => AddFace(operands.Shell, operands.Holes)));
-            if (tagging) _currentTag = Tag.B;
-            newFaces.AddRange(clipsExternalNew.Select(operands => AddFace(operands.Shell, operands.Holes)));
-            if (tagging) _currentTag = Tag.None;
-            foreach (var polygon in clipsExternalRecursive)
-                newFaces.AddRange(MergeFace(polygon.Shell, polygon.Holes, tagging));
-            return newFaces.ToArray();
-        }
-
-        /// <summary>
         /// Adds a halfedge to the halfedge list.
         /// </summary>
         /// <param name="halfedge">The halfedge to add.</param>
@@ -584,7 +625,6 @@ namespace ELTE.AEGIS.Topology
         {
             vertex.Index = _vertices.Count;
             vertex.Graph = this;
-            vertex.Tag = _currentTag;
             _vertices.Add(vertex);
         }
 
@@ -656,12 +696,11 @@ namespace ELTE.AEGIS.Topology
         /// Gets an existing vertex by position or creates a new vertex in the graph.
         /// </summary>
         /// <param name="position">The position of the vertex.</param>
-        /// <returns>The vertex and the given position.</returns>
+        /// <returns>The vertex at the given position.</returns>
         private Vertex GetVertex(Coordinate position)
         {
             try
             {
-                _vertices[position].Tag |= _currentTag;
                 return _vertices[position];
             }
             catch (KeyNotFoundException)
@@ -683,14 +722,46 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
+        /// Gets an existing matching face by its coordinates or creates a new face in the graph.
+        /// </summary>
+        /// <param name="positions">The positions of the vertices.</param>
+        /// <param name="addType">The face type (shell, hole or both) to add to the retrieved face.</param>
+        /// <returns>The face wit the given coordinates.</returns>
+        private Face GetFace(IEnumerable<Coordinate> positions, FaceType addType = 0)
+        {
+            Vertex[] vertices = positions.Select(GetVertex).ToArray();
+            Int32 n = vertices.Length;
+
+            for (Int32 i = 0; i < n; ++i)
+            {
+                // Calculate the index of the following vertex.
+                Int32 j = (i + 1) % n;
+
+                // Find existing halfedges for this face.
+                if (vertices[i].FindHalfedgeTo(vertices[j]) == null)
+                    return CreateFace(vertices, addType);
+            }
+
+            // All necessary halfedges exist, check for the face itself.
+            CoordinateRing ring = new CoordinateRing(positions);
+            Face face = _faces.Find(f => ring.Equals(new CoordinateRing(f.Vertices.Select(v => v.Position))));
+            if (face == null)
+                return CreateFace(vertices, addType);
+
+            face.Type |= addType;
+            return face;
+        }
+
+        /// <summary>
         /// Creates a new face in the graph.
         /// </summary>
         /// <param name="vertices">The vertices of the face in counter-clockwise order.</param>
+        /// <param name="addType">The face type (shell, hole or both) to assign to the new face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="ArgumentNullException">Thrown when a null vertex is given.</exception>
         /// <exception cref="ArgumentException">Thrown when fewer than three vertices are given or an inconvenient vertex is given.</exception>
         /// <exception cref="InvalidOperationException">Thrown when cannot form a valid face with the given vertices and the existing topology.</exception>
-        private Face CreateFace(params Vertex[] vertices)
+        private Face CreateFace(Vertex[] vertices, FaceType addType)
         {
             #region Initalization
 
@@ -733,7 +804,7 @@ namespace ELTE.AEGIS.Topology
             #region Create the face and the new edges
 
             // Create face.
-            Face face = new Face();
+            Face face = new Face {Type = addType};
             AppendToFaceList(face);
 
             // Create new edges.
@@ -864,21 +935,21 @@ namespace ELTE.AEGIS.Topology
         /// Removes a vertex from the graph.
         /// </summary>
         /// <param name="vertex">The vertex to remove from the graph.</param>
-        /// <param name="forced">Force the method to remove all adjacent faces when the vertex is not isolated.</param>
+        /// <param name="mode">The mode of the removal.</param>
         /// <exception cref="System.ArgumentException">The given vertex is not located in the current graph.</exception>
         /// <exception cref="System.InvalidOperationException">The selected vertex is not isolated, force is required to remove entire face.</exception>
-        /// <remarks>The algorithm may be forced by the <see cref="forced" /> parameter to remove the adjacent faces of the vertex.</remarks>
-        private void RemoveVertex(Vertex vertex, Boolean forced = false)
+        /// <remarks>The algorithm may be forced by the <see cref="mode" /> parameter to remove the adjacent faces of the vertex.</remarks>
+        private void RemoveVertex(Vertex vertex, RemoveMode mode)
         {
             if (vertex.Graph != this)
                 throw new ArgumentException("The given vertex is not located in the current graph.", "vertex");
 
             if (vertex.Halfedge == null)
                 RemoveFromVertexList(vertex);
-            else if (forced)
+            else if (mode == RemoveMode.Forced || mode == RemoveMode.Clean)
             {
-                foreach (Face face in vertex.Faces.ToList())
-                    RemoveFace(face, false);
+                foreach (var face in vertex.Faces.ToList())
+                    RemoveFace(face, mode);
                 RemoveFromVertexList(vertex);
             }
             else
@@ -889,56 +960,294 @@ namespace ELTE.AEGIS.Topology
         /// Removes a face from the graph.
         /// </summary>
         /// <param name="face">The face to remove.</param>
-        /// <param name="clean">The remove operation is clean when the remaining isolated vertices are removed from the graph.</param>
-        private void RemoveFace(Face face, Boolean clean = true)
+        /// <param name="mode">The mode of the removal.</param>
+        /// <remarks>The forced removal mode makes no difference for this method in contrast to the normal mode.</remarks>
+        /// <exception cref="System.ArgumentNullException">The face is null.</exception>
+        private void RemoveFace(Face face, RemoveMode mode = RemoveMode.Clean)
         {
-            IEnumerable<Vertex> removeVertices = face.Vertices.Where(f => f.Faces.Count() == 1).ToList();
+            if (face == null)
+                throw new ArgumentNullException("face", "The face is null.");
+            if (face.Graph != this)
+                throw new ArgumentException("The given face is not located in the current graph.", "face");
 
+            // Vertices to become isolated.
+            IEnumerable<Vertex> removeVertices = face.Vertices.Where(vertex => vertex.Faces.Count() == 1)
+                                                     .ToList(); // only to prevent deferring query execution
+
+            // Remove face.
             foreach (Halfedge halfedge in face.Halfedges.ToList())
             {
                 halfedge.Face = null;
                 if (halfedge.Opposite.Face == null)
                 {
-                    if (halfedge.Previous.Opposite.Face != null)
-                    {
-                        halfedge.Previous.Next = halfedge.Opposite.Next;
-                        halfedge.Opposite.Next.Previous = halfedge.Previous;
-                    }
-                    if (halfedge.Next.Opposite.Face != null)
-                    {
-                        halfedge.Next.Previous = halfedge.Opposite.Previous;
-                        halfedge.Opposite.Previous.Next = halfedge.Next;
-                    }
-
                     if (halfedge.FromVertex.Halfedge == halfedge)
                         halfedge.FromVertex.Halfedge = halfedge.FromVertex.Halfedges.FirstOrDefault(h => h.Face != face && h.Face != null);
+
                     if (halfedge.ToVertex.Halfedge == halfedge.Opposite)
                         halfedge.ToVertex.Halfedge = halfedge.ToVertex.Halfedges.FirstOrDefault(h => h.Face != face && h.Face != null);
+
+                    halfedge.Previous.Next = halfedge.Opposite.Next;
+                    halfedge.Opposite.Next.Previous = halfedge.Previous;
+
+                    halfedge.Next.Previous = halfedge.Opposite.Previous;
+                    halfedge.Opposite.Previous.Next = halfedge.Next;
 
                     RemoveFromEdgeList(halfedge.Edge);
                     RemoveFromHalfedgeList(halfedge);
                     RemoveFromHalfedgeList(halfedge.Opposite);
                 }
             }
-
+            // Remove isolated vertices when requested.
             foreach (Vertex vertex in removeVertices)
             {
                 vertex.Halfedge = null;
-                if (clean)
-                    RemoveVertex(vertex);
+                if (mode == RemoveMode.Clean)
+                    RemoveVertex(vertex, RemoveMode.Normal);
             }
             RemoveFromFaceList(face);
+
+            // Remove holes.
+            foreach (Face hole in face.Holes)
+            {
+                switch (hole.Type)
+                {
+                    case FaceType.Hole:
+                        RemoveFace(hole, mode);
+                        break;
+                    case FaceType.Both:
+                        hole.Type = FaceType.Shell;
+                        break;
+                }
+            }
         }
 
         /// <summary>
-        /// Replaces all tags in the graph with the specified tag.
+        /// Merges a face into the graph.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        private void Retag(Tag tag)
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="possibleCollisions">Possible collision faces for the paramter face.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
+        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, IList<Face> possibleCollisions)
         {
-            _currentTag = tag;
+            // Retrieve the vertex positions for the possible collision faces.
+            IDictionary<Int32, IList<Coordinate>> collisionPositions = new Dictionary<Int32, IList<Coordinate>>(possibleCollisions.Count);
+            foreach (Face face in possibleCollisions)
+            {
+                IList<Coordinate> positions = face.Vertices.Select(vertex => vertex.Position).ToList();
+                positions.Add(positions.First());
+                collisionPositions.Add(face.Index, positions);
+            }
+
+            // Determine the real colliding faces.
+            Envelope shellEnvelope = Envelope.FromCoordinates(shell);
+            IList<Face> collisionFaces =
+                possibleCollisions.Where(face => Envelope.FromCoordinates(collisionPositions[face.Index]).Intersects(shellEnvelope))
+                                  .Where(face => ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }) ||
+                                      shell.All(coordinate => PolygonAlgorithms.InInterior(collisionPositions[face.Index], coordinate)))
+                                  .OrderBy(face => face.Type)
+                                  .ToList();
+
+            // Result clip sets.
+            List<IBasicPolygon> clipsInternal = new List<IBasicPolygon>();    // internal, common clips
+            List<IBasicPolygon> clipsExternalOld = new List<IBasicPolygon>(); // external clips of the already existing topology graph
+            List<IBasicPolygon> clipsExternalNew = new List<IBasicPolygon>(); // external clips of the parameter face that are ready to be added to the the graph
+            List<IBasicPolygon> clipsRecursive = new List<IBasicPolygon>();   // external clips of the parameter face that are required to be re-processed
+
+
+            // If there were any colliding faces, process the first one.
+            Face collisionFace = collisionFaces.FirstOrDefault();
+            if (collisionFace != null)
+            {
+                // Calculate the the internal and external clips with the colliding the faces.
+                IList<Coordinate> collisionShellPositions = collisionPositions[collisionFace.Index];
+                IList<List<Coordinate>> collisionHolesPositions =
+                    collisionFace.Holes.Select(face => face.Vertices.Select(vertex => vertex.Position).ToList()).ToList();
+
+                foreach (List<Coordinate> positions in collisionHolesPositions)
+                {
+                    positions.Add(positions.First());
+                    positions.Reverse();
+                }
+
+                var algorithm = new GreinerHormannAlgorithm(collisionShellPositions, collisionHolesPositions, shell, holes);
+
+                // Internal clips.
+                clipsInternal.AddRange(algorithm.InternalPolygons);
+
+                // External clips of the already existing topology graph.
+                clipsExternalOld.AddRange(algorithm.ExternalFirstPolygons);
+
+                // External clips of the parameter face that are required to be re-processed.
+                clipsRecursive.AddRange(algorithm.ExternalSecondPolygons);
+
+                // Remove the processed collided face from the graph, because the new clips will be added.
+                switch (collisionFace.Type)
+                {
+                    case FaceType.Shell:
+                        RemoveFace(collisionFace);
+                        break;
+                    case FaceType.Both:
+                        collisionFace.Type = FaceType.Hole;
+                        foreach (Face hole in collisionFace.Holes)
+                            RemoveFace(hole);
+                        collisionFace.Holes.Clear();
+                        break;
+                }
+            }
+            else // If there were none colliding faces, the whole face can be added to the graph.
+                clipsExternalNew.Add(new BasicPolygon(shell, holes));
+
+            // Create return collection.
+            var newFaces = new List<IFace>(clipsInternal.Count + clipsExternalOld.Count + clipsExternalNew.Count);
+
+            // Add the external clips of the parameter face that are required to be re-processed to the return collection.
+            foreach (IBasicPolygon polygon in clipsRecursive)
+            {
+                // Remove processed faces from the collision list.
+                collisionFaces = collisionFaces.Where(face => _faces.Contains(face)).ToList();
+
+                newFaces.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), collisionFaces));
+            }
+
+            // Add the new faces to the return collection.
+            newFaces.AddRange(clipsInternal.Select(AddFace));
+            newFaces.AddRange(clipsExternalOld.Select(AddFace));
+            newFaces.AddRange(clipsExternalNew.Select(AddFace));
+
+            return newFaces;
+        }
+
+        #endregion
+
+        #region DEBUG methods
+
+        /// <summary>
+        /// Prints debug information about this instance.
+        /// </summary>
+        [System.Diagnostics.Conditional("DEBUG")]
+        public void Debug()
+        {
+            System.Diagnostics.Debug.WriteLine("====================");
+            System.Diagnostics.Debug.WriteLine("GRAPH DEBUG START");
+
+            System.Diagnostics.Debug.WriteLine("--------------------");
+            System.Diagnostics.Debug.WriteLine("Vertices count: {0}", _vertices.Count);
             foreach (var vertex in _vertices)
-                vertex.Tag = tag;
+            {
+                System.Diagnostics.Debug.WriteLine("Vertex #{0}: {1}, halfedge #{2}", vertex.Index, vertex.Position,
+                                                   vertex.Halfedge.Index);
+            }
+
+            System.Diagnostics.Debug.WriteLine("--------------------");
+            System.Diagnostics.Debug.WriteLine("Halfedges count: {0}", _halfedges.Count);
+            foreach (var halfedge in _halfedges)
+            {
+                System.Diagnostics.Debug.WriteLine("Halfedge #{0}: #{1}<-#{0}->#{2}, vertex #{3}->#{4}, face #{5}",
+                                                   halfedge.Index, halfedge.Previous.Index, halfedge.Next.Index,
+                                                   halfedge.FromVertex.Index, halfedge.ToVertex.Index,
+                                                   halfedge.Face != null ? halfedge.Face.Index.ToString() : "null");
+            }
+
+            System.Diagnostics.Debug.WriteLine("--------------------");
+            System.Diagnostics.Debug.WriteLine("Edges count: {0}", _edges.Count);
+            foreach (var edge in _edges)
+            {
+                System.Diagnostics.Debug.WriteLine("Edge #{0}: halfedges #{1}<->#{2}", edge.Index, edge.HalfedgeA.Index,
+                                                   edge.HalfedgeB.Index);
+            }
+
+            System.Diagnostics.Debug.WriteLine("--------------------");
+            System.Diagnostics.Debug.WriteLine("Faces count: {0}", _faces.Count);
+            foreach (var face in _faces)
+            {
+                System.Diagnostics.Debug.WriteLine("Face #{0}: halfedge #{1}", face.Index, face.Halfedge.Index);
+            }
+            System.Diagnostics.Debug.WriteLine("GRAPH DEBUG END");
+            System.Diagnostics.Debug.WriteLine("====================");
+        }
+
+        /// <summary>
+        /// Writes debug SVG file about this instance.
+        /// </summary>
+        /// <param name="filename">The output filename.</param>
+        [System.Diagnostics.Conditional("DEBUG")]
+        public void DebugSvg(String filename)
+        {
+            Double minX, minY, maxX, maxY;
+            if (_vertices.Count > 0)
+            {
+                minX = _vertices.Min(vertex => vertex.Position.X);
+                minY = _vertices.Min(vertex => vertex.Position.Y);
+
+                maxX = _vertices.Max(vertex => vertex.Position.X);
+                maxY = _vertices.Max(vertex => vertex.Position.Y);
+            }
+            else
+                minX = minY = maxX = maxY = 0d;
+
+            Double sizeX = maxX - minX;
+            Double sizeY = maxY - minY;
+
+            Double widthX = 800d;
+            Double widthY = 800d;
+
+            Double ratioX = widthX / sizeX;
+            Double ratioY = widthY / sizeY;
+
+            if (ratioX > ratioY)
+                widthX = widthX / ratioX * ratioY;
+            else if (ratioY > ratioX)
+                widthY = widthY / ratioY * ratioX;
+
+            var coordYTransform = new Func<Double, Double>(y => -y + 2 * minY + sizeY);
+
+            XNamespace ns = "http://www.w3.org/2000/svg";
+            XDocument doc = new XDocument(
+                new XElement(ns + "svg",
+                             new XAttribute("width", (Int32)widthX),
+                             new XAttribute("height", (Int32)widthY),
+                             new XAttribute("viewBox", String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                                                                     "{0} {1} {2} {3}", minX - 1, minY - 1, sizeX + 2, sizeY + 2)),
+                             _faces.Select(face => new XElement(ns + "polygon",
+                                                                new XAttribute("points", face.Vertices
+                                                                                             .Select(
+                                                                                                     vertex =>
+                                                                                                     String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                                                                                                                   "{0},{1}",
+                                                                                                                   vertex.Position.X,
+                                                                                                                   coordYTransform(vertex.Position.Y)))
+                                                                                             .Aggregate(
+                                                                                                        (a, b) =>
+                                                                                                        String.Format("{0} {1}", a, b))),
+                                                                new XAttribute("style", String.Format("fill: {0}", face.Type.HasFlag(FaceType.Hole) ? "green" : "purple")))),
+                             _vertices.Select(vertex => new XElement(ns + "circle",
+                                                                     new XAttribute("cx", vertex.Position.X),
+                                                                     new XAttribute("cy", coordYTransform(vertex.Position.Y)),
+                                                                     new XAttribute("r", 0.5),
+                                                                     new XAttribute("fill", vertex.OnBoundary ? "black" : "red"))),
+                             _edges.Select(edge => new XElement(ns + "line",
+                                                                new XAttribute("x1", edge.VertexA.Position.X),
+                                                                new XAttribute("y1", coordYTransform(edge.VertexA.Position.Y)),
+                                                                new XAttribute("x2", edge.VertexB.Position.X),
+                                                                new XAttribute("y2", coordYTransform(edge.VertexB.Position.Y)),
+                                                                new XAttribute("style",
+                                                                               String.Format("stroke: {0}; stroke-width: 0.5",
+                                                                                             edge.HalfedgeA.OnBoundary
+                                                                                                 ? "green"
+                                                                                                 : edge.HalfedgeB.OnBoundary
+                                                                                                       ? "yellow"
+                                                                                                       : "blue")))),
+                             _vertices.Select(vertex => new XElement(ns + "text", vertex.Index,
+                                                                     new XAttribute("x", vertex.Position.X - 0.125),
+                                                                     new XAttribute("y", coordYTransform(vertex.Position.Y) + 0.125),
+                                                                     new XAttribute("fill", vertex.OnBoundary ? "red" : "black"),
+                                                                     new XAttribute("style", "font-size: 0.5")))
+                    )
+                );
+            doc.AddFirst(new XDocumentType("svg", "-//W3//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd", null));
+            doc.Save(filename);
         }
 
         #endregion

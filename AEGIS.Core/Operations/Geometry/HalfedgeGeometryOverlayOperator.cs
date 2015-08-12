@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => !face.IsHole && face.Tag == Tag.A);
+                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.A);
             }
             catch (ArgumentException) 
             {
@@ -111,7 +111,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => !face.IsHole && face.Tag == Tag.Both);
+                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.Both);
             }
             catch (ArgumentException)
             {
@@ -140,7 +140,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => !face.IsHole && (face.Tag == Tag.A || face.Tag == Tag.B));
+                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.A || face.Tag == Tag.B);
             }
             catch (ArgumentException)
             {

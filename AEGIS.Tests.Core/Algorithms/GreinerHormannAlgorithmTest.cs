@@ -1435,7 +1435,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
-            // hole is completly filled with the other subject polygon
+            // hole is completely filled with the other subject polygon
             IPolygon polygonA = _factory.CreatePolygon(
                 new List<Coordinate>
                 {

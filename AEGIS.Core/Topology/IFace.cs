@@ -70,12 +70,6 @@ namespace ELTE.AEGIS.Topology
         IEnumerable<IFace> Holes { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the face is a hole.
-        /// </summary>
-        /// <value><c>true</c> if the face is a hole; otherwise <c>false</c>.</value>
-        Boolean IsHole { get; }
-
-        /// <summary>
         /// Searches for the halfedge pointing to the specified vertex, bounding face.
         /// </summary>
         /// <param name="vertex">The vertex the halfedge to find points to.</param>

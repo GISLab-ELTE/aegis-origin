@@ -14,7 +14,6 @@
 /// <author>Máté Cserép</author>
 
 using System;
-using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Topology
 {

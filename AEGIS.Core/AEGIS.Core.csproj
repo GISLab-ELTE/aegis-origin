@@ -170,6 +170,7 @@
     <Compile Include="PrecisionModel.cs" />
     <Compile Include="PrecisionModelType.cs" />
     <Compile Include="RelativeLocation.cs" />
+    <Compile Include="Topology\HalfedgeGraph.FaceType.cs" />
     <Compile Include="Topology\HalfedgeGraph.cs" />
     <Compile Include="Topology\HalfedgeGraph.Edge.cs" />
     <Compile Include="Topology\HalfedgeGraph.Face.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="Topology\IHalfedge.cs" />
     <Compile Include="Topology\IHalfedgeGraph.cs" />
     <Compile Include="Topology\IVertex.cs" />
+    <Compile Include="Topology\RemoveMode.cs" />
     <Compile Include="Topology\Tag.cs" />
     <Compile Include="UnitQuantityType.cs" />
     <Compile Include="ICurve.cs" />

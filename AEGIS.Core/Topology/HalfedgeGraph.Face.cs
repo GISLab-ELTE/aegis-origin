@@ -12,8 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Máté Cserép</author>
-
-using ELTE.AEGIS.Geometry;
+/// 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,12 +48,6 @@ namespace ELTE.AEGIS.Topology
             /// Gets or sets the collection of holes in the face.
             /// </summary>
             public IList<Face> Holes { get; set; }
-
-            /// <summary>
-            /// Gets or sets the parent face.
-            /// </summary>
-            /// <value>The parent face.</value>
-            public Face Parent { get; set; }
 
             /// <summary>
             /// Gets or sets the index of this edge in the internal face list of the graph.
@@ -102,6 +95,14 @@ namespace ELTE.AEGIS.Topology
                 get { return Halfedges.Select(h => h.Opposite.Face); }
             }
 
+            /// <summary>
+            /// Gets or sets the type of the face (shell, hole or both).
+            /// </summary>
+            /// <remarks>
+            /// A face can be a standalone face and a hole of another face at the same time.
+            /// </remarks>
+            public FaceType Type { get; set; }
+
             #endregion
 
             #region IFace properties
@@ -126,15 +127,6 @@ namespace ELTE.AEGIS.Topology
                 {
                     return Vertices.Aggregate(Tag.Both, (current, vertex) => current & vertex.Tag);
                 }
-            }
-
-            /// <summary>
-            /// Gets a value indicating whether the face is a hole.
-            /// </summary>
-            /// <value><c>true</c> if the face is a hole; otherwise <c>false</c>.</value>
-            public Boolean IsHole
-            {
-                get { return Parent != null; }
             }
 
             /// <summary>
@@ -205,6 +197,15 @@ namespace ELTE.AEGIS.Topology
             IEnumerable<IFace> IFace.Holes
             {
                 get { return Holes; }
+            }
+
+            #endregion
+
+            #region Constructor
+
+            public Face()
+            {
+                Holes = new List<Face>();
             }
 
             #endregion

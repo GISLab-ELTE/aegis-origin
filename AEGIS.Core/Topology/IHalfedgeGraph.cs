@@ -77,43 +77,169 @@ namespace ELTE.AEGIS.Topology
         /// Adds an (isolated) vertex to the graph.
         /// </summary>
         /// <remarks>
-        /// When a vertex already exists at the given position, itt will be returned instead of creating a new one.
+        /// When a vertex already exists at the given position, it will be returned instead of creating a new one.
         /// </remarks>
         /// <param name="position">The position of the vertex.</param>
-        /// <returns>The vertex creatd by this method-</returns>
+        /// <returns>The vertex creatd by this method.</returns>
         IVertex AddVertex(Coordinate position);
 
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
-        /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
-        /// </remarks>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
         IFace AddFace(IBasicPolygon polygon);
 
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
         /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
+        /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
         /// </remarks>
-        /// <param name="shell">The position of the face's vertices in counter-clockwise order.</param>
-        /// <param name="holes">The position of the holes' vertices in counter-clockwise order.</param>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
         /// <returns>The face created by this method.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
         IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes);
 
         /// <summary>
         /// Adds a face to the graph.
         /// </summary>
         /// <remarks>
-        /// Please note, that for this method the position of the holes' vertices must also be given in counter-clockwise order.
+        /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
         /// </remarks>
-        /// <param name="shell">The position of the face's vertices in counter-clockwise order.</param>
-        /// <param name="holes">The position of the holes' vertices in counter-clockwise order.</param>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
         /// <returns>The face created by this method.</returns>
-        IFace AddFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes);
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// </exception>
+        IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes);
+
+        /// <summary>
+        /// Removes a vertex from the graph.
+        /// </summary>
+        /// <remarks>
+        /// The algorithm may be forced by the <see cref="mode"/> parameter to remove the adjacent faces of the vertex.
+        /// </remarks>
+        /// <param name="position">The position of the vertex to remove.</param>
+        /// <param name="mode">The mode of the removal.</param>
+        /// <returns><c>true</c> when the coordinate to remove exists in the graph; otherwise <c>false</c>.</returns>
+        Boolean RemoveVertex(Coordinate position, RemoveMode mode = RemoveMode.Normal);
+
+        /// <summary>
+        /// Removes a face from the graph.
+        /// </summary>
+        /// <remarks>
+        /// The forced removal mode makes no difference for this method in contrast to the normal mode.
+        /// </remarks>
+        /// <param name="face">The face to remove.</param>
+        /// <param name="mode">The mode of the removal.</param>
+        void RemoveFace(IFace face, RemoveMode mode = RemoveMode.Clean);
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// /// <param name="polygon">The polygon.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        ICollection<IFace> MergeFace(IBasicPolygon polygon);
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// <remarks>
+        ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
+        /// </remarks>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null);
+
+        /// <summary>
+        /// Merges a face into the graph.
+        /// </summary>
+        /// <remarks>
+        ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
+        /// </remarks>
+        /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
+        /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <returns>The collection of faces created by the merge operation.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The shell is null.
+        /// or
+        /// A hole is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The shell does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of the shell are not equal.
+        /// or
+        /// A hole does not contain at least 3 different coordinates.
+        /// or
+        /// The first and the last coordinates of a hole are not equal.
+        /// </exception>
+        ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null);
+
+        /// <summary>
+        /// Merges another graph into the current instance.
+        /// </summary>
+        /// <param name="other">The other graph.</param>
+        /// <exception cref="System.ArgumentNullException">The other graph is null.</exception>
+        void MergeGraph(IHalfedgeGraph other);
 
         #endregion
 
@@ -180,21 +306,21 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="linearRing">The linear ring to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        IFace[] MergeLinearRing(ILinearRing linearRing);
+        ICollection<IFace> MergeLinearRing(ILinearRing linearRing);
 
         /// <summary>
         /// Merges a polygon into the graph.
         /// </summary>
         /// <param name="polygon">The polygon to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        IFace[] MergePolygon(IPolygon polygon);
+        ICollection<IFace> MergePolygon(IPolygon polygon);
 
         /// <summary>
         /// Merges multiple polygons into the graph.
         /// </summary>
         /// <param name="multiPolygon">The polygons to merge.</param>
         /// <returns>The new faces created by this method.</returns>
-        IFace[] MergeMultiPolygon(IMultiPolygon multiPolygon);
+        ICollection<IFace> MergeMultiPolygon(IMultiPolygon multiPolygon);
 
         /// <summary>
         /// Converts the graph to a collection of geometries.
