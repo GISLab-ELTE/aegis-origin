@@ -66,10 +66,10 @@ namespace ELTE.AEGIS.Tests.Topology
         #region Test methods
 
         /// <summary>
-        /// Tests the <see cref="AddPolygon" /> method.
+        /// Tests the addition of polygons to a graph.
         /// </summary>
         [Test]
-        public void HalfedgeGraphAddPolygonTest()
+        public void HalfedgeGraphAddTest()
         {
             // single polygon
 
@@ -227,10 +227,10 @@ namespace ELTE.AEGIS.Tests.Topology
         }
 
         /// <summary>
-        /// Tests the <see cref="RemoveVertex" /> method.
+        /// Tests the removal of vertices and faces from a graph.
         /// </summary>
         [Test]
-        public void HalfedgeGraphRemoveVertexTest()
+        public void HalfedgeGraphRemoveTest()
         {
             // removing point vertices
 
@@ -503,10 +503,10 @@ namespace ELTE.AEGIS.Tests.Topology
         }
 
         /// <summary>
-        /// Tests the <see cref="MergePolygon" /> method.
+        /// Tests the merging of polygons (without holes) into a graph.
         /// </summary>
         [Test]
-        public void HalfedgeGraphMergePolygonTest()
+        public void HalfedgeGraphMergeTest()
         {
             // merging two adjacent polygons
 
@@ -529,7 +529,7 @@ namespace ELTE.AEGIS.Tests.Topology
             Assert.AreEqual(7, _graph.Vertices.Count());
         
 
-            // merging two adjacent and one intersecting polygon
+            // adding two adjacent polygons and merging an intersecting one
 
             _graph.Clear();
             _graph.AddPolygon(_factory.CreatePolygon(
@@ -660,10 +660,41 @@ namespace ELTE.AEGIS.Tests.Topology
             Assert.AreEqual(26, _graph.Edges.Count());
             Assert.AreEqual(52, _graph.Halfedges.Count());
             Assert.AreEqual(19, _graph.Vertices.Count());
+
+
+            //TODO
+
+            _graph.Clear();
+            _graph.AddPolygon(_factory.CreatePolygon(
+                _factory.CreatePoint(0, 0),
+                _factory.CreatePoint(10, 0),
+                _factory.CreatePoint(10, 10),
+                _factory.CreatePoint(0, 10)));
+            _graph.AddPolygon(_factory.CreatePolygon(
+                _factory.CreatePoint(0, 10),
+                _factory.CreatePoint(10, 10),
+                _factory.CreatePoint(10, 20),
+                _factory.CreatePoint(0, 20)));
+            _graph.MergePolygon(_factory.CreatePolygon(
+                _factory.CreatePoint(5, 5),
+                _factory.CreatePoint(15, 5),
+                _factory.CreatePoint(15, 10),
+                _factory.CreatePoint(5, 10)));
+
+            _graph.VerifyTopology();
+            Assert.AreEqual(4, _graph.Faces.Count());
+            Assert.AreEqual(14, _graph.Edges.Count());
+            Assert.AreEqual(28, _graph.Halfedges.Count());
+            Assert.AreEqual(11, _graph.Vertices.Count());
+
+            Assert.AreEqual(1, _graph.Faces.Count(face => face.Vertices.Count() == 6 && face.Edges.Count() == 6));
+            Assert.AreEqual(1, _graph.Faces.Count(face => face.Vertices.Count() == 5 && face.Edges.Count() == 5));
+            Assert.AreEqual(2, _graph.Faces.Count(face => face.Vertices.Count() == 4 && face.Edges.Count() == 4));
+
         }
 
         /// <summary>
-        /// Tests the <see cref="MergeGraph" /> method.
+        /// Tests the merging of topology graphs.
         /// </summary>
         [Test]
         public void HalfedgeGraphMergeGraphTest()
@@ -719,10 +750,10 @@ namespace ELTE.AEGIS.Tests.Topology
         }
 
         /// <summary>
-        /// Tests the <see cref="MergeGraph" /> method with polygon holes.
+        /// Tests the merging of polygons (with holes) into a graph.
         /// </summary>
         [Test]
-        public void GraphMergePolygonHoleTest()
+        public void HalfedgeGraphMergeHoleTest()
         {
             // filling polygon hole with two other subject polygons
 
