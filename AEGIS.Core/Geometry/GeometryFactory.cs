@@ -970,10 +970,10 @@ namespace ELTE.AEGIS.Geometry
                 return CreateLinearRing(other as ILinearRing);
             if (other is ILineString)
                 return CreateLineString(other as ILineString);
-            if (other is IPolygon)
-                return CreatePolygon(other as IPolygon);
             if (other is ITriangle)
                 return CreateTriangle(other as ITriangle);
+            if (other is IPolygon)
+                return CreatePolygon(other as IPolygon);
             if (other is IMultiPoint)
                 return CreateMultiPoint(other as IMultiPoint);
             if (other is IMultiLineString)
