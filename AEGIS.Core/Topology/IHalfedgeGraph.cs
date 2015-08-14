@@ -80,11 +80,11 @@ namespace ELTE.AEGIS.Topology
         /// When a vertex already exists at the given position, it will be returned instead of creating a new one.
         /// </remarks>
         /// <param name="position">The position of the vertex.</param>
-        /// <returns>The vertex creatd by this method.</returns>
+        /// <returns>The vertex created by this method.</returns>
         IVertex AddVertex(Coordinate position);
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
@@ -101,7 +101,7 @@ namespace ELTE.AEGIS.Topology
         IFace AddFace(IBasicPolygon polygon);
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <remarks>
         /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.Topology
         IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes);
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <remarks>
         /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Topology
         void RemoveFace(IFace face, RemoveMode mode = RemoveMode.Clean);
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// /// <param name="polygon">The polygon.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
@@ -185,7 +185,7 @@ namespace ELTE.AEGIS.Topology
         ICollection<IFace> MergeFace(IBasicPolygon polygon);
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <remarks>
         ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -210,7 +210,7 @@ namespace ELTE.AEGIS.Topology
         ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null);
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <remarks>
         ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.

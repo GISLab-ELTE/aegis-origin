@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using ELTE.AEGIS.Topology;
 using System;
@@ -25,6 +26,8 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public class HalfedgeGeometryOverlayOperator : IGeometryOverlayOperator
     {
+        // Source: http://edndoc.esri.com/arcsde/9.0/general_topics/understand_spatial_relations.htm
+
         #region Private fields
 
         /// <summary>
@@ -39,16 +42,8 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <summary>
         /// Initializes a new instance of the <see cref="HalfedgeGeometryOverlayOperator" /> class.
         /// </summary>
-        public HalfedgeGeometryOverlayOperator()
-            : this(null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HalfedgeGeometryOverlayOperator" /> class.
-        /// </summary>
         /// <param name="factory">The geometry factory.</param>
-        public HalfedgeGeometryOverlayOperator(IGeometryFactory factory)
+        public HalfedgeGeometryOverlayOperator(IGeometryFactory factory = null)
         {
             _geometryFactory = factory;
         }
@@ -68,7 +63,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public IGeometry Difference(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -80,9 +75,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.First);
             }
-            catch (ArgumentException) 
+            catch (NotSupportedException) 
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -97,7 +92,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public IGeometry Intersection(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -113,9 +108,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.Both);
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -142,9 +137,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.First || face.Tag == Tag.Second);
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -159,7 +154,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public IGeometry Union(IGeometry geometry, IGeometry otherGeometry)
         {
 
@@ -172,9 +167,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 return CreateResult(geometry, otherGeometry, face => true);
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 

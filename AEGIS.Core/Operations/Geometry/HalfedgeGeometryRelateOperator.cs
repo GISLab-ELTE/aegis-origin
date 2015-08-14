@@ -12,6 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+/// <author>Máté Cserép</author>
 
 using ELTE.AEGIS.Topology;
 using System;
@@ -24,6 +25,8 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// </summary>
     public class HalfedgeGeometryRelateOperator : IGeometryRelateOperator
     {
+        // Source: http://edndoc.esri.com/arcsde/9.0/general_topics/understand_spatial_relations.htm
+        
         #region Constructors
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Contains(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -54,7 +57,7 @@ namespace ELTE.AEGIS.Operations.Geometry
             if (otherGeometry == null)
                 throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
 
-            return !Within(otherGeometry, geometry);
+            return Within(otherGeometry, geometry);
         }
 
         /// <summary>
@@ -68,13 +71,17 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Crosses(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
             if (otherGeometry == null)
                 throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
+            // the dimensions of the geometries must be different
+            if (geometry.Dimension == otherGeometry.Dimension)
+                return false;
 
             // check whether the envelopes are disjoint
             if (geometry.Envelope.Disjoint(otherGeometry.Envelope))
@@ -84,6 +91,10 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
+                if (graph.Faces.Any(face => face.Tag == Tag.Both))
+                    return false;
+                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                    return false;
                 if (graph.Vertices.All(vertex => vertex.Tag == Tag.None || vertex.Tag == Tag.Both))
                     return false;
                 if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First) && graph.Vertices.Any(vertex => vertex.Tag == Tag.Second))
@@ -91,9 +102,9 @@ namespace ELTE.AEGIS.Operations.Geometry
 
                 return false;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -108,7 +119,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Disjoint(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -117,24 +128,24 @@ namespace ELTE.AEGIS.Operations.Geometry
                 throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
 
             // check whether the envelopes are disjoint
-            if (!geometry.Envelope.Disjoint(otherGeometry.Envelope))
-                return false;
+            if (geometry.Envelope.Disjoint(otherGeometry.Envelope))
+                return true;
 
             try
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.First) && face.Tag.HasFlag(Tag.Second)))
+                if (graph.Faces.Any(face => face.Tag == Tag.Both))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.First) && edge.Tag.HasFlag(Tag.Second)))
+                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.First) && vertex.Tag.HasFlag(Tag.Second)))
+                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.Both))
                     return false;
                 return true;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -149,7 +160,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Equals(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -165,17 +176,17 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.First) || !face.Tag.HasFlag(Tag.Second)))
+                if (graph.Faces.Any(face => face.Tag != Tag.Both))
                     return false;
-                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.First) || !edge.Tag.HasFlag(Tag.Second)))
+                if (graph.Edges.Any(edge => edge.Tag != Tag.Both))
                     return false;
-                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.First) || !vertex.Tag.HasFlag(Tag.Second)))
+                if (graph.Vertices.Any(vertex => vertex.Tag != Tag.Both))
                     return false;
                 return true;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -190,7 +201,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Intersects(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -212,7 +223,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Overlaps(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -220,9 +231,7 @@ namespace ELTE.AEGIS.Operations.Geometry
             if (otherGeometry == null)
                 throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
 
-            // the dimensions of the geometries must be at least 2, and must be equal
-            if (geometry.Dimension < 2 || otherGeometry.Dimension < 2)
-                return false;
+            // the dimensions of the geometries must be equal
             if (geometry.Dimension != otherGeometry.Dimension)
                 return false;
 
@@ -241,15 +250,17 @@ namespace ELTE.AEGIS.Operations.Geometry
                     // the dimension of the intersecting part must match the dimension of the geometries
                     if (graph.Faces.Any(face => face.Tag == Tag.Both))
                         return geometry.Dimension == 3;
-                    else
+                    if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
                         return geometry.Dimension == 2;
+
+                   return geometry.Dimension == 1;
                 }
 
                 return false;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -264,13 +275,17 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Touches(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
             if (otherGeometry == null)
                 throw new ArgumentNullException("otherGeometry", "The other geometry is null.");
+
+            // the dimension of least one geometry must be least 2
+            if (Math.Max(geometry.Dimension, otherGeometry.Dimension) < 2)
+                return false;
 
             // check whether the envelopes are disjoint
             if (geometry.Envelope.Disjoint(otherGeometry.Envelope))
@@ -280,17 +295,17 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.First) && face.Tag.HasFlag(Tag.Second)))
+                if (graph.Faces.Any(face => face.Tag == Tag.Both))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag.HasFlag(Tag.First) && edge.Tag.HasFlag(Tag.Second)))
+                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
                     return true;
-                if (graph.Vertices.Any(vertex => vertex.Tag.HasFlag(Tag.First) && vertex.Tag.HasFlag(Tag.Second)))
+                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.Both))
                     return true;
                 return false;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 
@@ -305,7 +320,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// or
         /// The other geometry is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The operation is not supported with the specified geometry type.</exception>
+        /// <exception cref="System.NotSupportedException">The operation is not supported with the specified geometry type.</exception>
         public Boolean Within(IGeometry geometry, IGeometry otherGeometry)
         {
             if (geometry == null)
@@ -321,20 +336,20 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 HalfedgeGraph graph = Merge(geometry, otherGeometry);
 
-                if (graph.Faces.Any(face => !face.Tag.HasFlag(Tag.First) || face.Tag.HasFlag(Tag.Second)))
+                if (graph.Faces.Any(face => face.Tag == Tag.First))
                     return false;
-                if (graph.Edges.Any(edge => !edge.Tag.HasFlag(Tag.First) || edge.Tag.HasFlag(Tag.Second)))
+                if (graph.Edges.Any(edge => edge.Tag == Tag.First))
                     return false;
-                if (graph.Vertices.Any(vertex => !vertex.Tag.HasFlag(Tag.First) || vertex.Tag.HasFlag(Tag.Second)))
+                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First))
                     return false;
-                if (graph.Faces.Any(face => face.Tag.HasFlag(Tag.Second) && !face.Tag.HasFlag(Tag.First)))
+                if (graph.Faces.Any(face => face.Tag == Tag.Second))
                     return true;
 
                 return false;
             }
-            catch (ArgumentException)
+            catch (NotSupportedException)
             {
-                throw new ArgumentException("The operation is not supported with the specified geometry type.");
+                throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
         }
 

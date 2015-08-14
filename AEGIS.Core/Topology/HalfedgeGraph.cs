@@ -157,7 +157,7 @@ namespace ELTE.AEGIS.Topology
         /// Adds an (isolated) vertex to the graph.
         /// </summary>
         /// <param name="position">The position of the vertex.</param>
-        /// <returns>The vertex creatd by this method.</returns>
+        /// <returns>The vertex created by this method.</returns>
         /// <remarks>When a vertex already exists at the given position, it will be returned instead of creating a new one.</remarks>
         public IVertex AddVertex(Coordinate position)
         {
@@ -165,7 +165,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
@@ -185,7 +185,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -207,7 +207,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -293,7 +293,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
@@ -317,7 +317,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -343,7 +343,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -423,7 +423,7 @@ namespace ELTE.AEGIS.Topology
             else if (geometry is IMultiPolygon)
                 AddMultiPolygon(geometry as IMultiPolygon);
             else
-                throw new ArgumentException("The specified geometry type is not supported.");
+                throw new NotSupportedException("The specified geometry type is not supported.");
         }
 
         /// <summary>
@@ -504,7 +504,7 @@ namespace ELTE.AEGIS.Topology
             else if (geometry is IMultiPolygon)
                 MergeMultiPolygon(geometry as IMultiPolygon);
             else
-                throw new ArgumentException("The specified geometry type is not supported.");
+                throw new NotSupportedException("The specified geometry type is not supported.");
         }
 
         /// <summary>
@@ -1005,7 +1005,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph.
+        /// Merges a face into the graph, resolving face intersections.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
