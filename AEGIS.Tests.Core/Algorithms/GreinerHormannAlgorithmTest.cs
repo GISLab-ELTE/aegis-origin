@@ -28,69 +28,6 @@ namespace ELTE.AEGIS.Tests.Algorithms
     [TestFixture]
     public class GreinerHormannAlgorithmTest
     {
-        #region Private types
-
-        /// <summary>
-        /// Defines a default comparer class for <see cref="CoordinateRing"/> instances.
-        /// </summary>
-        private class CoordinateRingComparer : IEqualityComparer<CoordinateRing>
-        {
-            #region Static fields
-
-            /// <summary>
-            /// A singleton instance of the <see cref="CoordinateRingComparer"/> class.
-            /// </summary>
-            private static readonly CoordinateRingComparer _instance = new CoordinateRingComparer();
-
-            #endregion
-
-            #region Static properties
-
-            /// <summary>
-            /// Gets the singleton instance of the <see cref="CoordinateRingComparer"/> class.
-            /// </summary>
-            /// <value>The instance.</value>
-            public static CoordinateRingComparer Instance { get { return _instance; } }
-
-            #endregion
-
-            #region Constructors
-
-            /// <summary>
-            /// Prevents a default instance of the <see cref="CoordinateRingComparer"/> class from being created.
-            /// </summary>
-            private CoordinateRingComparer() { }
-
-            #endregion
-
-            #region IEqualityComparer methods
-
-            /// <summary>
-            /// Determines whether the specified objects are equal.
-            /// </summary>
-            /// <param name="x">The first <see cref="CoordinateRing"/> compare.</param>
-            /// <param name="y">The second <see cref="CoordinateRing"/> to compare.</param>
-            /// <returns>true if the specified objects are equal; otherwise, false.</returns>
-            public Boolean Equals(CoordinateRing x, CoordinateRing y)
-            {
-                return x.Equals(y);
-            }
-
-            /// <summary>
-            /// Returns a hash code for this instance.
-            /// </summary>
-            /// <param name="obj">The <see cref="CoordinateRing"/> for which a hash code is to be returned.</param>
-            /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-            public Int32 GetHashCode(CoordinateRing obj)
-            {
-                return obj.GetHashCode();
-            }
-
-            #endregion
-        }
-
-        #endregion
-
         #region Private fields
 
         /// <summary>
@@ -142,7 +79,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.IsEmpty(algorithm.InternalPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -152,11 +89,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -166,8 +102,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(20, 10),
                     new Coordinate(20, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -190,7 +125,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(10, 10)
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -200,11 +135,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(10, 20),
                     new Coordinate(10, 10)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -214,9 +148,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 30),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -228,9 +161,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(10, 20),
                         new Coordinate(10, 10)
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
             Assert.IsEmpty(algorithm.ExternalSecondPolygons);
         }
@@ -262,7 +194,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.IsEmpty(algorithm.InternalPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -272,11 +204,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -286,8 +217,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -312,7 +242,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.IsEmpty(algorithm.InternalPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -322,11 +252,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -337,8 +266,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -361,7 +289,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(6, 6)
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -371,11 +299,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(6, 10),
                         new Coordinate(6, 6)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -387,8 +314,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.IsEmpty(algorithm.ExternalSecondPolygons);
@@ -419,7 +345,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(5, 5)
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -429,11 +355,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(5, 5),
                     new Coordinate(10, 5)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -445,11 +370,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(5, 5),
                     new Coordinate(5, 10)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -461,8 +385,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(10, 10),
                     new Coordinate(10, 5)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
@@ -493,7 +416,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(10, -10)
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -509,12 +432,11 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(18, 30),
                     new Coordinate(12, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)
-                                           .Select(list => list.Select(coordinate => RoundCoordinate(coordinate)))))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell)
+                                     .Select(list => list.Select(RoundCoordinate)).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -546,12 +468,11 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(40, 30),
                     new Coordinate(50, 25)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)
-                                           .Select(list => list.Select(coordinate => RoundCoordinate(coordinate)))))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)
+                                     .Select(list => list.Select(RoundCoordinate)).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -581,9 +502,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(50, 25),
                     new Coordinate(50, 5)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)
-                                           .Select(list => list.Select(coordinate => RoundCoordinate(coordinate)))))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)
+                                     .Select(list => list.Select(RoundCoordinate)).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -610,7 +530,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(10, 40)
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -636,11 +556,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(42, 30),
                     new Coordinate(48, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -674,11 +593,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(50, 30),
                     new Coordinate(50, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -716,8 +634,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(50, 0),
                     new Coordinate(48, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
@@ -763,7 +680,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             var algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -773,9 +690,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(8, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -787,11 +703,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(7, 5),
                         new Coordinate(5, 5)
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.InternalPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -803,11 +718,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -827,8 +741,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7, 5),
                     new Coordinate(5, 5)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -865,7 +778,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -879,11 +792,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7, 4),
                     new Coordinate(8, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -899,11 +811,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -923,8 +834,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(5, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -962,7 +872,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -976,11 +886,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7, 4),
                     new Coordinate(8, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -994,11 +903,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 4),
                     new Coordinate(4, 8)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1018,8 +926,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(5, 7),
                     new Coordinate(5, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
             // polygon shell intersected with a ring like polygon: shell with shell and shell with hole intersections
@@ -1061,7 +968,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null,
                 precisionModel: new PrecisionModel(0.0001));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1083,11 +990,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7.5, 2),
                     new Coordinate(9, 4),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1105,9 +1011,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(1.2857, 8.2857),
                     new Coordinate(3, 6),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1131,10 +1036,9 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(3, 6),
                     }
                 },
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes).ToRingSet());
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1167,8 +1071,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(1.7143, 7.7143),
                     new Coordinate(-2, 4),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
             */
 
@@ -1217,7 +1120,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, holesB);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1227,9 +1130,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(10, 6),
                     new Coordinate(10, 12)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1251,11 +1153,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(4, 8),
                         new Coordinate(4, 9)
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.InternalPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1281,11 +1182,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(3, 9),
                     new Coordinate(4, 9)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1303,8 +1203,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(8, 8),
                     new Coordinate(8, 9)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
             // two ring like polygon intersects: shell with shell, shell with hole and hole with hole intersections
@@ -1352,7 +1251,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, holesB);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1370,11 +1269,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(7, 4),
                     new Coordinate(8, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1400,11 +1298,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 7),
                     new Coordinate(4, 8),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1430,8 +1327,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(8, 5),
                     new Coordinate(8, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -1474,7 +1370,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.IsEmpty(algorithm.InternalPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1484,9 +1380,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1498,11 +1393,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(8, 2),
                         new Coordinate(2, 2),
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1512,8 +1406,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 8),
                     new Coordinate(2, 2),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -1555,7 +1448,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.IsEmpty(algorithm.InternalPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1565,9 +1458,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1585,11 +1477,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(8, 8),
                         new Coordinate(2, 2),
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1598,8 +1489,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(8, 8),
                     new Coordinate(2, 2),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
             
@@ -1651,7 +1541,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(polygonA, polygonB);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1661,9 +1551,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 10),
                     new Coordinate(0, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1675,13 +1564,12 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(8, 2),
                         new Coordinate(2, 2),
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.InternalPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
             Assert.IsEmpty(algorithm.ExternalFirstPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1691,9 +1579,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(-2, 12),
                     new Coordinate(-2, -2),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1705,9 +1592,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(10, 0),
                         new Coordinate(0, 0),
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.ExternalSecondPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
             // first polygon contains second polygon, which in reverse contains the hole of the first polygon
             shellA = new List<Coordinate>
@@ -1742,7 +1628,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, holesA, shellB, null);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1752,9 +1638,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(6, 3),
                     new Coordinate(3, 3)
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1766,11 +1651,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(4, 5),
                         new Coordinate(4, 4)
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.InternalPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1780,9 +1664,8 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 8),
                     new Coordinate(0, 0)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
-            Assert.That(AsRing(new[]
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1794,11 +1677,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(6, 3),
                         new Coordinate(3, 3)
                     }
-                }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes)))
-                  .Using(CoordinateRingComparer.Instance));
+                }.ToRingSet()
+            }, algorithm.ExternalFirstPolygons.Select(polygon => polygon.Holes.ToRingSet()));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1808,8 +1690,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(4, 5),
                     new Coordinate(4, 4)
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
@@ -1842,7 +1723,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(4, 1),
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1854,11 +1735,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 8),
                     new Coordinate(2, 2),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1878,11 +1758,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(6, 1),
                     new Coordinate(4, 1),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1892,8 +1771,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 8),
                     new Coordinate(6, 8),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -1919,7 +1797,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                         new Coordinate(-2, 6),
                     });
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1929,11 +1807,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 6),
                     new Coordinate(2, 8),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1946,11 +1823,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 6),
                     new Coordinate(0, 6),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1961,8 +1837,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(0, 8),
                     new Coordinate(2, 8),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
 
 
@@ -1987,7 +1862,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             algorithm = new GreinerHormannAlgorithm(shellA, shellB);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -1997,11 +1872,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(2, 8),
                     new Coordinate(2, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -2019,8 +1893,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(6, 8),
                     new Coordinate(6, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.IsEmpty(algorithm.ExternalSecondPolygons);
@@ -2029,7 +1902,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             // the previous test case, only the order of the parameters are swapped
             algorithm = new GreinerHormannAlgorithm(shellB, shellA);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -2039,13 +1912,12 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(6, 8),
                     new Coordinate(2, 8),
                 }
-            }), Is.EqualTo(AsRing(algorithm.InternalPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.IsEmpty(algorithm.ExternalFirstPolygons);
 
-            Assert.That(AsRing(new[]
+            Assert.AreEqual(new[]
             {
                 new[]
                 {
@@ -2063,44 +1935,13 @@ namespace ELTE.AEGIS.Tests.Algorithms
                     new Coordinate(6, 8),
                     new Coordinate(6, 0),
                 }
-            }), Is.EqualTo(AsRing(algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell)))
-                  .Using(CoordinateRingComparer.Instance));
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
         #endregion
 
         #region Private methods
-
-        /// <summary>
-        /// Converts a coordinate list into a <see cref="CoordinateRing"/>.
-        /// </summary>
-        /// <param name="value">The input coordinates.</param>
-        /// <returns>The coordinate ring.</returns>
-        private CoordinateRing AsRing(IEnumerable<Coordinate> value)
-        {
-            return new CoordinateRing(value);
-        }
-
-        /// <summary>
-        /// Converts a sequence of coordinate lists into a sequence of <see cref="CoordinateRing"/>.
-        /// </summary>
-        /// <param name="value">The input coordinates.</param>
-        /// <returns>The coordinate rings.</returns>
-        private IEnumerable<CoordinateRing> AsRing(IEnumerable<IEnumerable<Coordinate>> value)
-        {
-            return value.Select(shell => new CoordinateRing(shell));
-        }
-
-        /// <summary>
-        /// Converts a group of sequence of coordinate lists into a group of sequence of <see cref="CoordinateRing"/>.
-        /// </summary>
-        /// <param name="value">The input coordinates.</param>
-        /// <returns>The coordinate rings.</returns>
-        private IEnumerable<IEnumerable<CoordinateRing>> AsRing(IEnumerable<IEnumerable<IEnumerable<Coordinate>>> value)
-        {
-            return value.Select(group => group.Select(shell => new CoordinateRing(shell)));
-        }
 
         /// <summary>
         /// Rounds the specified coordinate.

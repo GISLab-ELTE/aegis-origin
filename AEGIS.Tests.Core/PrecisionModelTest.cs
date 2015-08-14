@@ -1,4 +1,4 @@
-﻿/// <copyright file="PrecisionModel.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="PrecisionModelTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -12,7 +12,6 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
-
 
 using NUnit.Framework;
 using System;
