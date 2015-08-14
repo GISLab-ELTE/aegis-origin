@@ -52,6 +52,11 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         private List<Face> _faces = new List<Face>();
 
+        /// <summary>
+        /// Stores the precision model
+        /// </summary>
+        private readonly PrecisionModel _precisionModel;
+
         #endregion
 
         #region IHalfedgeGraph properties
@@ -565,6 +570,19 @@ namespace ELTE.AEGIS.Topology
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGraph"/> class.
+        /// </summary>
+        /// <param name="precisionModel">The precision model.</param>
+        public HalfedgeGraph(PrecisionModel precisionModel = null)
+        {
+            _precisionModel = precisionModel ?? PrecisionModel.Default;
+        }
+
+        #endregion
+
         #region Object methods
 
         /// <summary>
@@ -1064,7 +1082,7 @@ namespace ELTE.AEGIS.Topology
             Envelope shellEnvelope = Envelope.FromCoordinates(shell);
             IList<Face> collisionFaces = (from face in shellFaces
                                           where Envelope.FromCoordinates(collisionPositions[face.Index]).Intersects(shellEnvelope)
-                                          where ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }) ||
+                                          where ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }, _precisionModel) ||
                                               shell.All(coordinate => PolygonAlgorithms.InInterior(collisionPositions[face.Index], coordinate))
                                           orderby face.Type
                                           select face).ToList();
@@ -1087,7 +1105,8 @@ namespace ELTE.AEGIS.Topology
                     positions.Reverse();
                 }
 
-                var algorithm = new GreinerHormannAlgorithm(collisionShellPositions, collisionHolesPositions, shell, holes);
+                var algorithm = new GreinerHormannAlgorithm(collisionShellPositions, collisionHolesPositions, shell, holes,
+                    precisionModel: _precisionModel);
 
                 // Determine the tag of the collided and the parameter face.
                 Tag oldTag = collisionFace.Tag;
