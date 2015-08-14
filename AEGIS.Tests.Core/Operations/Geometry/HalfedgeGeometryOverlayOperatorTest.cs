@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Tests.Operations.Geometry
         [TestFixtureSetUp]
         public void FixtureInitialize()
         {
-           _factory = new GeometryFactory();
+            _factory = new GeometryFactory();
             _operator = new HalfedgeGeometryOverlayOperator(_factory);
         }
 

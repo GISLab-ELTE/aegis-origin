@@ -72,6 +72,7 @@
     <Compile Include="Management\InversionOfControl\ConcurrentContainerTest.cs" />
     <Compile Include="Management\InversionOfControl\ContainerTest.cs" />
     <Compile Include="Operations\Geometry\HalfedgeGeometryOverlayOperatorTest.cs" />
+    <Compile Include="Operations\Geometry\HalfedgeGeometryRelateOperatorTest.cs" />
     <Compile Include="PrecisionModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Topology\HalfedgeGraphTest.cs" />

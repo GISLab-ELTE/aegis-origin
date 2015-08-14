@@ -249,11 +249,11 @@ namespace ELTE.AEGIS.Operations.Geometry
                 {
                     // the dimension of the intersecting part must match the dimension of the geometries
                     if (graph.Faces.Any(face => face.Tag == Tag.Both))
-                        return geometry.Dimension == 3;
-                    if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
                         return geometry.Dimension == 2;
+                    if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                        return geometry.Dimension == 1;
 
-                   return geometry.Dimension == 1;
+                   return geometry.Dimension == 0;
                 }
 
                 return false;
