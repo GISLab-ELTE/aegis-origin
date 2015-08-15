@@ -371,7 +371,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <param name="otherGeometry">The other geometry.</param>
-        /// <returns>The halfedge graph contatining the geometries.</returns>
+        /// <returns>The halfedge graph containing the geometries.</returns>
         private static HalfedgeGraph Merge(IGeometry geometry, IGeometry otherGeometry)
         {
             HalfedgeGraph graph = new HalfedgeGraph();

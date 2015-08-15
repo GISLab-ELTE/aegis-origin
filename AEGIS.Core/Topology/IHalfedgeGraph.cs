@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.Topology
         IVertex AddVertex(Coordinate position);
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
@@ -101,7 +101,7 @@ namespace ELTE.AEGIS.Topology
         IFace AddFace(IBasicPolygon polygon);
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <remarks>
         /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.Topology
         IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes);
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <remarks>
         /// Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Topology
         void RemoveFace(IFace face, RemoveMode mode = RemoveMode.Clean);
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// /// <param name="polygon">The polygon.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
@@ -185,7 +185,7 @@ namespace ELTE.AEGIS.Topology
         ICollection<IFace> MergeFace(IBasicPolygon polygon);
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <remarks>
         ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -210,7 +210,7 @@ namespace ELTE.AEGIS.Topology
         ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null);
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <remarks>
         ///  Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.
@@ -246,10 +246,10 @@ namespace ELTE.AEGIS.Topology
         #region IGeometry support methods
 
         /// <summary>
-        /// Adds a (supported type of) geometry to the graph.
+        /// Adds a (supported type of) geometry to the graph. The new geometry must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <remarks>
-        /// The supported types are <see cref="IPoint"/>, <see cref="ILinearRing"/>, <see cref="IPolygon"/>, <see cref="IMultiPoint"/>, and <see cref="IMultiPolygon"/>.
+        /// The supported types are <see cref="IPoint"/>, <see cref="ILinearRing"/>, <see cref="IPolygon"/>, <see cref="IMultiPoint"/>, <see cref="IMultiPolygon"/> and <see cref="IGeometryCollection{T}"/>.
         /// </remarks>
         /// <param name="geometry">The geometry to add.</param>
         void AddGeometry(IGeometry geometry);
@@ -293,10 +293,10 @@ namespace ELTE.AEGIS.Topology
         IFace[] AddMultiPolygon(IMultiPolygon multiPolygon);
 
         /// <summary>
-        /// Merges a (supported type of) geometry into the graph.
+        /// Merges a (supported type of) geometry into the graph, resolving geometry overlapping.
         /// </summary>
         /// <remarks>
-        /// The supported types are <see cref="ILinearRing"/>, <see cref="IPolygon"/>, and <see cref="IMultiPolygon"/>.
+        /// The supported types are <see cref="IPoint" />, <see cref="ILinearRing" />, <see cref="IPolygon" />, <see cref="IMultiPoint" />,  <see cref="IMultiPolygon"/> and <see cref="IGeometryCollection{T}"/>.
         /// </remarks>
         /// <param name="geometry">The geometry to merge.</param>
         void MergeGeometry(IGeometry geometry);

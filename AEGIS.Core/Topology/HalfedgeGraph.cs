@@ -156,6 +156,16 @@ namespace ELTE.AEGIS.Topology
                 if (!halfedge.FromVertex.Halfedges.Contains(halfedge))
                     throw new InvalidOperationException("A halfedge is not reachable from the vertex it originates from.");
             }
+
+            foreach (Face face in _faces)
+            {
+                // Retrieve whether the face is contained as a hole by another face.
+                Boolean isHole = _faces.SelectMany(f => f.Holes).Contains(face);
+                if (isHole && !face.Type.HasFlag(FaceType.Hole))
+                    throw new InvalidOperationException("A hole is not marked as hole.");
+                if (!isHole && face.Type.HasFlag(FaceType.Hole))
+                    throw new InvalidOperationException("A not hole shell is marked as hole.");
+            }
         }
 
         /// <summary>
@@ -170,7 +180,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The face created by this method.</returns>
@@ -190,7 +200,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -212,7 +222,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph and contain no intersections.
+        /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -298,7 +308,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
@@ -322,7 +332,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -348,7 +358,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a face into the graph, resolving face intersections.
+        /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
@@ -409,10 +419,10 @@ namespace ELTE.AEGIS.Topology
         #region IGeometry support methods
 
         /// <summary>
-        /// Adds a (supported type of) geometry to the graph.
+        /// Adds a (supported type of) geometry to the graph. The new geometry must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <remarks>
-        /// The supported types are <see cref="IPoint"/>, <see cref="ILinearRing"/>, <see cref="IPolygon"/>, <see cref="IMultiPoint"/>, and <see cref="IMultiPolygon"/>.
+        /// The supported types are <see cref="IPoint"/>, <see cref="ILinearRing"/>, <see cref="IPolygon"/>, <see cref="IMultiPoint"/>, <see cref="IMultiPolygon"/> and <see cref="IGeometryCollection{T}"/>.
         /// </remarks>
         /// <param name="geometry">The geometry to add.</param>
         public void AddGeometry(IGeometry geometry)
@@ -427,6 +437,9 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 AddMultiPolygon(geometry as IMultiPolygon);
+            else if (geometry is IGeometryCollection<IGeometry>)
+                foreach (IGeometry subGeometry in (IGeometryCollection<IGeometry>)geometry)
+                    AddGeometry(subGeometry);
             else
                 throw new NotSupportedException("The specified geometry type is not supported.");
         }
@@ -491,11 +504,11 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a (supported type of) geometry into the graph.
+        /// Merges a (supported type of) geometry into the graph, resolving geomtry overlapping.
         /// </summary>
         /// <param name="geometry">The geometry to merge.</param>
         /// <exception cref="System.ArgumentException">The specified geometry type is not supported.</exception>
-        /// <remarks>The supported types are <see cref="IPoint" />, <see cref="ILinearRing" />, <see cref="IPolygon" />, <see cref="IMultiPoint" />,  and <see cref="IMultiPolygon" />.</remarks>
+        /// <remarks>The supported types are <see cref="IPoint" />, <see cref="ILinearRing" />, <see cref="IPolygon" />, <see cref="IMultiPoint" />,  <see cref="IMultiPolygon"/> and <see cref="IGeometryCollection{T}"/>.</remarks>
         public void MergeGeometry(IGeometry geometry)
         {
             if (geometry is IPoint)
@@ -508,6 +521,9 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 MergeMultiPolygon(geometry as IMultiPolygon);
+            else if(geometry is IGeometryCollection<IGeometry>)
+                foreach(IGeometry subGeometry in (IGeometryCollection<IGeometry>)geometry)
+                    MergeGeometry(subGeometry);
             else
                 throw new NotSupportedException("The specified geometry type is not supported.");
         }
@@ -740,14 +756,32 @@ namespace ELTE.AEGIS.Topology
 
                 // Find existing halfedges for this face.
                 if (vertices[i].FindHalfedgeTo(vertices[j]) == null)
-                    return CreateFace(vertices, addType);
+                {
+                    try
+                    {
+                        return CreateFace(vertices, addType);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException("Face creation error occurred with the given positions.", "positions", ex);
+                    }
+                }
             }
 
             // All necessary halfedges exist, check for the face itself.
             CoordinateRing ring = new CoordinateRing(positions);
             Face face = _faces.Find(f => ring.Equals(new CoordinateRing(f.Vertices.Select(v => v.Position))));
             if (face == null)
-                return CreateFace(vertices, addType);
+            {
+                try
+                {
+                    return CreateFace(vertices, addType);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException("Face creation error occurred with the given positions.", "positions", ex);
+                }
+            }
 
             face.Type |= addType;
             return face;
