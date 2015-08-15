@@ -90,9 +90,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(String path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
@@ -114,9 +114,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
@@ -134,9 +134,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
@@ -158,9 +158,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
@@ -172,7 +172,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="path">The file path to be read.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public GeoTiffReader(Stream stream)
             : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
         {
@@ -189,7 +189,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public GeoTiffReader(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
         {

@@ -204,7 +204,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <returns>The device information.</returns>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during metafile reading.</exception>
         public ImagingDevice ReadDeviceData() 
         { 
             if (_disposed) 
@@ -216,7 +216,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during metafile reading.", ex);
+                throw new IOException("Exception occurred during metafile reading.", ex);
             }
         }
 
@@ -225,7 +225,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <value>The imaging data.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during metafile reading.</exception>
         public RasterImaging ReadImaging()
         {
             if (_disposed)
@@ -237,7 +237,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during metafile reading.", ex);
+                throw new IOException("Exception occurred during metafile reading.", ex);
             }
         }
 
@@ -246,7 +246,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <value>The raster mapping.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during metafile reading.</exception>
         public RasterMapper ReadMapping()
         {
             if (_disposed)
@@ -258,7 +258,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during metafile reading.", ex);
+                throw new IOException("Exception occurred during metafile reading.", ex);
             }
         }
 
@@ -267,7 +267,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <value>The reference system.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during metafile reading.</exception>
         public IReferenceSystem ReadReferenceSystem()
         {
             if (_disposed)
@@ -279,7 +279,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during metafile reading.", ex);
+                throw new IOException("Exception occurred during metafile reading.", ex);
             }
         }
 
@@ -288,7 +288,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <value>The dictionary containing additional metadata.</value>
         /// <exception cref="System.ObjectDisposedException">Object is disposed.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during metafile reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during metafile reading.</exception>
         public IDictionary<String, Object> ReadMetadata()
         {
             if (_disposed)
@@ -300,7 +300,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during metafile reading.", ex);
+                throw new IOException("Exception occurred during metafile reading.", ex);
             }
         }
 

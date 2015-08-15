@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The path is invalid.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public EsriRawImageReader(String path) 
             : base(path, SpectralGeometryStreamFormats.EsriRawImage, null)
         {
@@ -67,7 +67,7 @@ namespace ELTE.AEGIS.IO.RawImage
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
         }
 
@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public EsriRawImageReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.EsriRawImage, parameters)
         {
@@ -102,7 +102,7 @@ namespace ELTE.AEGIS.IO.RawImage
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
         }
 
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The path is invalid.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public EsriRawImageReader(Uri path)
             : base(path, SpectralGeometryStreamFormats.EsriRawImage, null)
         {
@@ -131,7 +131,7 @@ namespace ELTE.AEGIS.IO.RawImage
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
         }
 
@@ -150,7 +150,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public EsriRawImageReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.EsriRawImage, parameters)
         {
@@ -165,7 +165,7 @@ namespace ELTE.AEGIS.IO.RawImage
             }
             catch (Exception ex)
             {
-                throw new IOException("Exception occured during stream opening.", ex);
+                throw new IOException("Exception occurred during stream opening.", ex);
             }
         }
 

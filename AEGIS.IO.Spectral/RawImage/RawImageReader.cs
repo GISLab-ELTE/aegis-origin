@@ -478,7 +478,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public RawImageReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GenericRawImage, parameters)
         {
@@ -508,7 +508,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public RawImageReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GenericRawImage, parameters)
         {
@@ -566,9 +566,9 @@ namespace ELTE.AEGIS.IO.RawImage
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         protected RawImageReader(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, format, parameters)
@@ -602,9 +602,9 @@ namespace ELTE.AEGIS.IO.RawImage
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         protected RawImageReader(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, format, parameters)
@@ -633,7 +633,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         protected RawImageReader(Stream stream, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream, format, parameters)
         {

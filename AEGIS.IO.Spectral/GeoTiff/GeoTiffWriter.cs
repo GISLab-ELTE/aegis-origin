@@ -49,7 +49,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The path is invalid.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public GeoTiffWriter(String path)
             : base(path)
         {
@@ -65,7 +65,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The path is invalid.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public GeoTiffWriter(Uri path)
             : base(path)
         {
