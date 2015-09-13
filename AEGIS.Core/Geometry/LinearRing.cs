@@ -210,7 +210,7 @@ namespace ELTE.AEGIS.Geometry
             }
             else
             {
-                base.RemoveAt(0);
+                base.RemoveAt(index);
             }
         }
 
