@@ -307,6 +307,15 @@ namespace ELTE.AEGIS.IO
 
             if (geometry == null)
                 throw new ArgumentNullException("geometry", MessageGeometryIsNull);
+
+            // required, because IGeometryCollection -> IGeometry conversion is prioritized over 
+            //                   IGeometryCollection -> IEnumerable<IGeometry> conversion
+            if (geometry is IEnumerable<IGeometry>)
+            {
+                Write(geometry as IEnumerable<IGeometry>);
+                return;
+            }
+
             if (Format.SupportedGeometries.Contains(geometry.GetType()))
                 throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
 
