@@ -316,7 +316,7 @@ namespace ELTE.AEGIS.IO
                 return;
             }
 
-            if (Format.SupportedGeometries.Contains(geometry.GetType()))
+            if (!Format.SupportedGeometries.Any(type => type.IsInstanceOfType(geometry)))
                 throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
 
             try
