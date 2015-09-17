@@ -14,7 +14,6 @@
 /// <author>Roberto Giachetta</author>
 /// <author>Máté Cserép</author>
 
-using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +74,7 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
-
+            
             return SignedArea(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates));
         }
 
@@ -96,17 +95,9 @@ namespace ELTE.AEGIS.Algorithms
             if (shell.Count < 3)
                 return 0;
 
-            Double zValue = shell[0].Z;
-            if (shell[0].IsValid)
-                return Double.NaN;
-
             Double area = 0;
             for (Int32 i = 0; i < shell.Count - 1; i++)
             {
-                // check for the validity of the coordinates
-                if (shell[i].Z != zValue || !shell[i].IsValid)
-                    return Double.NaN;
-
                 // compute area
                 area += shell[i].X * shell[i + 1].Y - shell[i + 1].X * shell[i].Y;
             }
@@ -122,6 +113,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         public static Double SignedArea(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes)
         {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
             Double area = SignedArea(shell);
             if (holes != null)
             {
@@ -149,10 +143,28 @@ namespace ELTE.AEGIS.Algorithms
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
-            if (polygon.HoleCount > 0)
+            if (polygon.HoleCount > 0 && polygon.Holes.Count(hole => hole != null) > 0)
                 return false;
 
-            return IsConvex(polygon.Shell.Coordinates);
+            return IsConvex(polygon.Shell.Coordinates, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is convex.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the polygon is convex; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static Boolean IsConvex(IBasicPolygon polygon, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            if (polygon.HoleCount > 0 && polygon.Holes.Count(hole => hole != null) > 0)
+                return false;
+
+            return IsConvex(polygon.Shell.Coordinates, precision);
         }
 
         /// <summary>
@@ -166,18 +178,43 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            if (shell.Count < 3)
+            return IsConvex(shell, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is convex.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the polygon is convex; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsConvex(IList<Coordinate> shell, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
+            if (shell.Count < 4)
                 return false;
 
             // source: http://blog.csharphelper.com/2010/01/04/determine-whether-a-polygon-is-convex-in-c.aspx
 
-            AEGIS.Orientation initialOrientation = Coordinate.Orientation(shell[shell.Count - 2], shell[0], shell[1]);
+            AEGIS.Orientation baseOrientation = AEGIS.Orientation.Collinear;
 
-            for (Int32 i = 2; i < shell.Count; i++)
+            for (Int32 shellIndex = 2; shellIndex < shell.Count && baseOrientation == AEGIS.Orientation.Collinear; shellIndex++)
             {
-                if (Coordinate.Orientation(shell[i - 2], shell[i - 1], shell[i]) != initialOrientation)
+                baseOrientation = Coordinate.Orientation(shell[shellIndex - 2], shell[shellIndex - 1], shell[shellIndex], precision);
+            }
+
+            if (baseOrientation == AEGIS.Orientation.Collinear)
+                return false;
+
+            for (Int32 shellIndex = 2; shellIndex < shell.Count; shellIndex++)
+            {
+                if (Coordinate.Orientation(shell[shellIndex - 2], shell[shellIndex - 1], shell[shellIndex], precision) != baseOrientation &&
+                    Coordinate.Orientation(shell[shellIndex - 2], shell[shellIndex - 1], shell[shellIndex], precision) != AEGIS.Orientation.Collinear)
                     return false;
             }
+
             return true;
         }
 
@@ -196,10 +233,28 @@ namespace ELTE.AEGIS.Algorithms
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
-            if (polygon.HoleCount > 0)
+            if (polygon.HoleCount > 0 && polygon.Holes.Count(hole => hole != null) > 0)
                 return false;
 
             return IsSimple(polygon.Shell.Coordinates);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is simple.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="precision">The precision.</param>
+        /// <returns><c>true</c> if no edges of the shell intersect and there are no holes in the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static Boolean IsSimple(IBasicPolygon polygon, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            if (polygon.HoleCount > 0 && polygon.Holes.Count(hole => hole != null) > 0)
+                return false;
+
+            return IsSimple(polygon.Shell.Coordinates, precision);
         }
 
         /// <summary>
@@ -213,16 +268,34 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
+            return IsSimple(shell, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is simple.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precision">The precision.</param>
+        /// <returns><c>true</c> if no edges of the shell intersect; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsSimple(IList<Coordinate> shell, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
             // simple checks
             if (shell.Count == 0)
                 return true;
-            if (shell.Count < 3)
+            if (shell.Count < 4)
                 return false;
-            if (!shell[0].Equals(shell[shell.Count - 1]))
+            if (shell[0] != shell[shell.Count - 1])
                 return false;
 
             // check for orientation
-            if (Orientation(shell) == AEGIS.Orientation.Undefined)
+            if (Orientation(shell, precision) == AEGIS.Orientation.Undefined)
                 return false;
 
             // check for edge intersections
@@ -231,19 +304,19 @@ namespace ELTE.AEGIS.Algorithms
                 {
                     if (firstEdgeIndex == 0 && secondEdgeIndex == shell.Count - 2) // for the first and final edges the endpoints must match, 
                     {
-                        if (LineAlgorithms.Contains(shell[0], shell[1], shell[shell.Count - 2]) ||
-                            LineAlgorithms.Contains(shell[shell.Count - 1], shell[shell.Count - 2], shell[1]))
+                        if (LineAlgorithms.Contains(shell[0], shell[1], shell[shell.Count - 2], precision) ||
+                            LineAlgorithms.Contains(shell[shell.Count - 1], shell[shell.Count - 2], shell[1], precision))
                             return false;
                     }
                     else if (secondEdgeIndex == firstEdgeIndex + 1) // for neighbour edges containement must be examined
                     {
-                        if (LineAlgorithms.Contains(shell[firstEdgeIndex], shell[firstEdgeIndex + 1], shell[secondEdgeIndex + 1]) ||
-                            LineAlgorithms.Contains(shell[secondEdgeIndex], shell[secondEdgeIndex + 1], shell[firstEdgeIndex]))
+                        if (LineAlgorithms.Contains(shell[firstEdgeIndex], shell[firstEdgeIndex + 1], shell[secondEdgeIndex + 1], precision) ||
+                            LineAlgorithms.Contains(shell[secondEdgeIndex], shell[secondEdgeIndex + 1], shell[firstEdgeIndex], precision))
                             return false;
                     }
                     else // for every other edge intersection must be examined
                     {
-                        if (LineAlgorithms.Intersects(shell[firstEdgeIndex], shell[firstEdgeIndex + 1], shell[secondEdgeIndex], shell[secondEdgeIndex + 1]))
+                        if (LineAlgorithms.Intersects(shell[firstEdgeIndex], shell[firstEdgeIndex + 1], shell[secondEdgeIndex], shell[secondEdgeIndex + 1], precision))
                             return false;
                     }
                 }
@@ -266,7 +339,22 @@ namespace ELTE.AEGIS.Algorithms
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
-            return IsValid(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates));
+            return IsValid(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is valid.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="precision">The precision.</param>
+        /// <returns><c>true</c> if the polygon is valid; otherwise false.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsValid(IBasicPolygon polygon, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return IsValid(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), precision);
         }
 
         /// <summary>
@@ -277,7 +365,19 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         public static Boolean IsValid(IList<Coordinate> shell)
         {
-            return IsValid(shell, null);
+            return IsValid(shell, null, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is valid.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precision">The precision.</param>
+        /// <returns><c>true</c> if the polygon is valid; otherwise false.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsValid(IList<Coordinate> shell, PrecisionModel precision)
+        {
+            return IsValid(shell, null, precision);
         }
 
         /// <summary>
@@ -292,6 +392,22 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
+            return IsValid(shell, holes, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the specified polygon is valid.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="holes">The coordinates of the polygon holes.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the polygon is valid; otherwise false.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean IsValid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
             // check for existence
             if (shell.Count == 0 && holes == null)
                 return true;
@@ -300,16 +416,15 @@ namespace ELTE.AEGIS.Algorithms
                 return false;
 
             // check for count and closure
-            if (shell.Count < 4 || !shell[0].IsValid || !shell[0].Equals(shell[shell.Count - 1]))
+            if (shell.Count < 4 || !shell[0].IsValid || shell[0] != shell[shell.Count - 1])
                 return false;
 
             // shell
-            Double zValue = shell[0].Z;
             for (Int32 i = 1; i < shell.Count; i++)
             {
-                if (!shell[i].IsValid || shell[i].Z != zValue) // check for validity and planarity
+                if (!shell[i].IsValid || shell[i].Z != shell[0].Z) // check for validity and planarity
                     return false;
-                if (shell[i - 1].Equals(shell[i])) // check for distinct coordinates
+                if (shell[i - 1] == shell[i]) // check for distinct coordinates
                     return false;
             }
 
@@ -322,14 +437,14 @@ namespace ELTE.AEGIS.Algorithms
                 foreach (IList<Coordinate> hole in holes)
                 {
                     // check for count and closure
-                    if (hole.Count < 4 || !hole[0].IsValid || !hole[0].Equals(hole[hole.Count - 1]))
+                    if (hole.Count < 4 || !hole[0].IsValid || hole[0] != hole[hole.Count - 1])
                         return false;
 
                     for (Int32 i = 1; i < hole.Count; i++)
                     {
-                        if (!hole[i].IsValid || hole[i].Z != zValue) // check for validity and planarity
+                        if (!hole[i].IsValid || hole[i].Z != shell[0].Z) // check for validity and planarity
                             return false;
-                        if (hole[i - 1].Equals(hole[i])) // check for distinct coordinates
+                        if (hole[i - 1] == hole[i]) // check for distinct coordinates
                             return false;
                     }
 
@@ -338,7 +453,7 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             // check for any intersection
-            if (ShamosHoeyAlgorithm.Intersects(ringList))
+            if (ShamosHoeyAlgorithm.Intersects(ringList, precision))
                 return false;
 
             return true;
@@ -359,7 +474,22 @@ namespace ELTE.AEGIS.Algorithms
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
-            return Orientation(polygon.Shell.Coordinates);
+            return Orientation(polygon.Shell.Coordinates, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the orientation of a polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The orientation of the polygon shell. If the polygon is invalid <c>Undefined</c> is returned.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static Orientation Orientation(IBasicPolygon polygon, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return Orientation(polygon.Shell.Coordinates, precision);
         }
 
         /// <summary>
@@ -370,15 +500,27 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         public static Orientation Orientation(IList<Coordinate> shell)
         {
+            return Orientation(shell, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the orientation of a polygon.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The orientation of the polygon. If the polygon is invalid <c>Undefined</c> is returned.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Orientation Orientation(IList<Coordinate> shell, PrecisionModel precision)
+        {
             // source: http://geomalgorithms.com/a01-_area.html
 
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
             // check for polygon properties
-            if (shell.Count < 3)
+            if (shell.Count < 4)
                 return AEGIS.Orientation.Undefined;
-            if (!shell[0].Equals(shell[shell.Count - 1]))
+            if (shell[0] != shell[shell.Count - 1])
                 return AEGIS.Orientation.Undefined;
 
             // check for planarity
@@ -411,7 +553,7 @@ namespace ELTE.AEGIS.Algorithms
                 if (topPrevIndex < 0)
                     topPrevIndex += (shell.Count - 1);
             }
-            while (topPrevIndex != topIndex && shell[topPrevIndex].Equals(shell[topIndex]) && shell[topPrevIndex].Equals(shell[topIndex]));
+            while (topPrevIndex != topIndex && shell[topPrevIndex] == shell[topIndex] && shell[topPrevIndex] == shell[topIndex]);
 
             // check if it is different
             if (shell[topIndex].Equals(shell[topPrevIndex]))
@@ -425,14 +567,14 @@ namespace ELTE.AEGIS.Algorithms
                 if (topNextIndex < 0)
                     topNextIndex += shell.Count;
             }
-            while (topNextIndex != topIndex && shell[topNextIndex].Equals(shell[topIndex]) && shell[topNextIndex].Equals(shell[topIndex]));
+            while (topNextIndex != topIndex && shell[topNextIndex] == shell[topIndex] && shell[topNextIndex] == shell[topIndex]);
 
-            // heck if it is different
-            if (shell[topIndex].Equals(shell[topNextIndex]))
+            // check if it is different
+            if (shell[topIndex] == shell[topNextIndex])
                 return AEGIS.Orientation.Undefined;
 
             // check the orientation of the three coordinates
-            Orientation coordinateOrientation = Coordinate.Orientation(shell[topPrevIndex], shell[topIndex], shell[topNextIndex]);
+            Orientation coordinateOrientation = Coordinate.Orientation(shell[topPrevIndex], shell[topIndex], shell[topNextIndex], precision);
 
             if (coordinateOrientation == AEGIS.Orientation.Collinear)
             {
@@ -459,7 +601,23 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            return ComputeLocation(shell, null, coordinate);
+            return ComputeLocation(shell, null, coordinate, null);
+        }
+
+        /// <summary>
+        /// Computes the location of the specified coordinate with respect to a polygon.
+        /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static RelativeLocation Location(IList<Coordinate> shell, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
+            return ComputeLocation(shell, null, coordinate, null);
         }
 
         /// <summary>
@@ -470,11 +628,27 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
         public static RelativeLocation Location(IBasicPolygon polygon, Coordinate coordinate)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return ComputeLocation(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, null);
+        }
+
+        /// <summary>
+        /// Computes the location of the specified coordinate with respect to a polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        public static RelativeLocation Location(IBasicPolygon polygon, Coordinate coordinate, PrecisionModel precision)
         { 
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
-            return ComputeLocation(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate);
+            return ComputeLocation(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, precision);
         }
 
         /// <summary>
@@ -486,7 +660,20 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         public static Boolean OnBoundary(IList<Coordinate> shell, Coordinate coordinate)
         {
-            return OnBoundary(shell, null, coordinate);
+            return OnBoundary(shell, null, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is on the boundary of the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is on the boundary of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static Boolean OnBoundary(IList<Coordinate> shell, Coordinate coordinate, PrecisionModel precision)
+        {
+            return OnBoundary(shell, null, coordinate, precision);
         }
 
         /// <summary>
@@ -502,12 +689,30 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+
+            return OnBoundary(shell, holes, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is on the boundary of the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is on the boundary of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">One or more holes are null.</exception>
+        public static Boolean OnBoundary(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
             if (holes != null && holes.Any(hole => hole == null))
                 throw new ArgumentException("One or more holes are null.", "holes");
 
             // Check whether the coordinate is on the shell of the polygon.
             for (Int32 coordIndex = 0; coordIndex < shell.Count - 1 || (coordIndex < shell.Count && shell[0] != shell[shell.Count - 1]); ++coordIndex)
-                if (LineAlgorithms.Contains(shell[coordIndex], shell[(coordIndex + 1) % shell.Count], coordinate))
+                if (LineAlgorithms.Contains(shell[coordIndex], shell[(coordIndex + 1) % shell.Count], coordinate, precision))
                     return true;
 
             // Check whether the coordinate is on the shell of any holes in the polygon.
@@ -516,7 +721,7 @@ namespace ELTE.AEGIS.Algorithms
                 foreach (IList<Coordinate> hole in holes)
                 {
                     for (Int32 coordIndex = 0; coordIndex < hole.Count - 1 || (coordIndex < hole.Count && hole[0] != hole[hole.Count - 1]); ++coordIndex)
-                        if (LineAlgorithms.Contains(hole[coordIndex], hole[(coordIndex + 1) % hole.Count], coordinate))
+                        if (LineAlgorithms.Contains(hole[coordIndex], hole[(coordIndex + 1) % hole.Count], coordinate, precision))
                             return true;
                 }
             }
@@ -539,7 +744,26 @@ namespace ELTE.AEGIS.Algorithms
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
             
-            return InInterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate);
+            return InInterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is in the interior of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is in the interior of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InInterior(IBasicPolygon polygon, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+            return InInterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, precision);
         }
 
         /// <summary>
@@ -561,7 +785,30 @@ namespace ELTE.AEGIS.Algorithms
             if (holes != null && holes.Any(hole => hole == null))
                 throw new ArgumentException("One or more holes are null.", "holes");
 
-            return InInterior(shell.Coordinates, holes.Select(hole => hole.Coordinates), coordinate);
+            return InInterior(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates), coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is in the interior of the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is in the interior of the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">One or more holes are null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InInterior(IBasicLineString shell, IList<IBasicLineString> holes, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (holes != null && holes.Any(hole => hole == null))
+                throw new ArgumentException("One or more holes are null.", "holes");
+
+            return InInterior(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates), coordinate, precision);
         }
 
         /// <summary>
@@ -576,7 +823,23 @@ namespace ELTE.AEGIS.Algorithms
         /// </remarks>
         public static Boolean InInterior(IList<Coordinate> shell, Coordinate coordinate)
         {
-            return InInterior(shell, null, coordinate);
+            return InInterior(shell, null, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is inside the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is inside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InInterior(IList<Coordinate> shell, Coordinate coordinate, PrecisionModel precision)
+        {
+            return InInterior(shell, null, coordinate, precision);
         }
 
         /// <summary>
@@ -598,14 +861,37 @@ namespace ELTE.AEGIS.Algorithms
             if (holes != null && holes.Any(hole => hole == null))
                 throw new ArgumentException("One or more holes are null.", "holes");
 
-            return ComputeLocation(shell, holes, coordinate) == RelativeLocation.Interior;
+            return ComputeLocation(shell, holes, coordinate, PrecisionModel.Default) == RelativeLocation.Interior;
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is inside the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <returns><c>true</c> if the coordinate is inside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">One or more holes are null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell (or its holes) are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InInterior(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+            if (holes != null && holes.Any(hole => hole == null))
+                throw new ArgumentException("One or more holes are null.", "holes");
+
+            return ComputeLocation(shell, holes, coordinate, precision) == RelativeLocation.Interior;
         }
 
         /// <summary>
         /// Computes whether the given coordinate is outside the polygon.
         /// </summary>
-        /// <param name="shell">The polygon.</param>
+        /// <param name="polygon">The polygon.</param>
         /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
         /// <remarks>
@@ -617,7 +903,27 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("polygon", "The polygon is null.");
             
 
-            return InExterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate);
+            return InExterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is outside the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InExterior(IBasicPolygon polygon, Coordinate coordinate, PrecisionModel precision)
+        {
+            if (polygon == null)
+                throw new ArgumentNullException("polygon", "The polygon is null.");
+
+
+            return InExterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, precision);
         }
 
         /// <summary>
@@ -632,7 +938,23 @@ namespace ELTE.AEGIS.Algorithms
         /// </remarks>
         public static Boolean InExterior(IList<Coordinate> shell, Coordinate coordinate)
         {
-            return InExterior(shell, null, coordinate);
+            return InExterior(shell, null, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes whether the given coordinate is outside the polygon.
+        /// </summary>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InExterior(IList<Coordinate> shell, Coordinate coordinate, PrecisionModel precision)
+        {
+            return InExterior(shell, null, coordinate, precision);
         }
 
         /// <summary>
@@ -654,253 +976,30 @@ namespace ELTE.AEGIS.Algorithms
             if (holes != null && holes.Any(hole => hole == null))
                 throw new ArgumentException("One or more holes are null.", "holes");
 
-            return ComputeLocation(shell, holes, coordinate) == RelativeLocation.Exterior;
+            return ComputeLocation(shell, holes, coordinate, PrecisionModel.Default) == RelativeLocation.Exterior;
         }
 
-        #endregion
-
-        #region Intersects computation
-
         /// <summary>
-        /// Determines whether a polygon and a line intersect.
+        /// Computes whether the given coordinate is outside the polygon.
         /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="lineStart">The starting coordinates of the line.</param>
-        /// <param name="lineEnd">The ending coordinates of the line.</param>
-        /// <returns><c>true</c> if the polygon and the line intersect; otherwise, <c>false</c>.</returns>
+        /// <param name="shell">The polygon shell.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate to check.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the coordinate is outside the polygon; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public static Boolean Intersects(IList<Coordinate> shell, Coordinate lineStart, Coordinate lineEnd)
+        /// <exception cref="System.ArgumentException">One or more holes are null.</exception>
+        /// <remarks>
+        /// Positions on the boundary of the polygon shell (or its holes) are neither inside or outside the polygon.
+        /// </remarks>
+        public static Boolean InExterior(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
+            if (holes != null && holes.Any(hole => hole == null))
+                throw new ArgumentException("One or more holes are null.", "holes");
 
-            IList<Coordinate> intersection = null;
-            return Intersection(shell, lineStart, lineEnd, out intersection);
-        }
-
-        /// <summary>
-        /// Determines whether two polygons intersect.
-        /// </summary>
-        /// <param name="firstShell">The first shell.</param>
-        /// <param name="secondShell">The second shell.</param>
-        /// <returns><c>true</c> if the two polygons intersect; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The first shell is null.
-        /// or
-        /// The second shell is null.
-        /// </exception>
-        public static Boolean Intersects(IList<Coordinate> firstShell, IList<Coordinate> secondShell)
-        {
-            if (firstShell == null)
-                throw new ArgumentNullException("firstShell", "The first shell is null.");
-            if (secondShell == null)
-                throw new ArgumentNullException("secondShell", "The second shell is null.");
-
-            IList<Coordinate> intersection;
-            if (PolygonAlgorithms.IsConvex(firstShell) && PolygonAlgorithms.IsConvex(secondShell))
-            {                
-                return IntersectionOfConvexPolygons(firstShell, secondShell, out intersection);
-            }
-            else
-            {
-                return IntersectionOfConcavePolygons(firstShell, secondShell, out intersection);
-            }
-        }
-
-        #endregion
-
-        #region Intersection computation
-
-        /// <summary>
-        /// Computes the intersection of a polygon and a line.
-        /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="lineStart">The starting coordinates of the line.</param>
-        /// <param name="lineEnd">The ending coordinates of the line.</param>
-        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public static IList<Coordinate> Intersection(IList<Coordinate> shell, Coordinate lineStart, Coordinate lineEnd)
-        {
-            if (shell == null)
-                throw new ArgumentNullException("shell", "The shell is null.");
-
-            IList<Coordinate> intersection = null;
-            if (Intersection(shell, lineStart, lineEnd, out intersection))
-                return intersection;
-            else
-                return new List<Coordinate>();
-        }
-
-        #endregion
-
-        #region Private intersection computation methods
-
-        /// <summary>
-        /// Computes the intersection of a polygon and a line.
-        /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="lineStart">The starting coordinates of the line.</param>
-        /// <param name="lineEnd">The ending coordinates of the line.</param>
-        /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
-        /// <returns><c>true</c> if the polygon and the line intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean Intersection(IList<Coordinate> shell, Coordinate lineStart, Coordinate lineEnd, out IList<Coordinate> intersection)
-        {
-            intersection = null;
-
-            if (shell.Count < 3)
-                return false;
-
-            if (lineStart.Equals(lineEnd))
-            {
-                if (WindingNumberAlgorithm.IsInsidePolygon(shell, lineStart))
-                {
-                    intersection = new List<Coordinate>() { lineStart };
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-                
-            if (lineStart.Z == lineEnd.Z)
-            {
-                if (lineStart.Z != shell[0].Z)
-                    return false;
-
-                if (PolygonAlgorithms.IsConvex(shell))
-                {
-                    // in case of convex polygons a simplified algorithm can be used
-                    return IntersectionWithConvexPolygon(shell, lineStart, lineEnd, out intersection);
-                }
-                else
-                {
-                    return IntersectionWithConcavePolygon(shell, lineStart, lineEnd, out intersection);
-                }
-            }
-            else
-            {
-                IList<Coordinate> intersectionWithPlane = LineAlgorithms.IntersectionWithPlane(lineStart, lineEnd, shell[0], new CoordinateVector(0, 0, 1));
-
-                if (intersectionWithPlane.Count == 0 || intersectionWithPlane.Count == 2)
-                    return false;
-
-                if (!WindingNumberAlgorithm.IsInsidePolygon(shell, intersectionWithPlane[0]))
-                    return false;
-
-                intersection = new List<Coordinate> { intersectionWithPlane[0] };
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// Computes the intersection of a convex polygon and a line located in the same plane.
-        /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="lineStart">The starting coordinates of the line.</param>
-        /// <param name="lineEnd">The ending coordinates of the line.</param>
-        /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
-        /// <returns><c>true</c> if the polygon and the line intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean IntersectionWithConvexPolygon(IList<Coordinate> shell, Coordinate lineStart, Coordinate lineEnd, out IList<Coordinate> intersection)
-        {
-            // source: http://geomalgorithms.com/a13-_intersect-4.html
-
-            intersection = null;
-
-            Double maxEntering = 0;
-            Double minLeaving = 1;
-            Double t, numerator, denominator;
-            CoordinateVector lineDirection = lineEnd - lineStart;
-            CoordinateVector edge;
-
-            for (Int32 i = 0; i < shell.Count - 1; i++)
-            {
-                edge = shell[i + 1] - shell[i];
-                numerator = CoordinateVector.PerpProduct(edge, lineStart - shell[i]);
-                denominator = -CoordinateVector.PerpProduct(edge, lineDirection);
-
-                // check whether the line is parallel to the edge
-                if (Math.Abs(denominator) < Calculator.Tolerance)
-                {
-                    if (numerator < 0) // the segment is outside of the edge
-                        return false;
-                    else // the segment is inside, but does not intersect the edge
-                        continue; 
-                }
-
-                t = numerator / denominator;
-
-                // check whether the line enters at this edge
-                if (denominator < 0)
-                {
-                    if (t > maxEntering) 
-                    {
-                        maxEntering = t;
-
-                        // the line enters after it has left
-                        if (maxEntering > minLeaving)
-                        {
-                            return false;   
-                        }
-                    }
-                }
-                // check whether the line leaves at this edge
-                else
-                {
-                    if (t < minLeaving)
-                    {
-                        minLeaving = t;
-
-                        // the line leaves before it has entered
-                        if (minLeaving < maxEntering)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            // compute the intersection coordinates
-            intersection = new List<Coordinate>() { lineStart + maxEntering * lineDirection, lineStart + minLeaving * lineDirection };
-            return true;
-        }
-
-        /// <summary>
-        /// Computes the intersection of a concave polygon and a line located in the same plane.
-        /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="lineStart">The starting coordinates of the line.</param>
-        /// <param name="lineEnd">The ending coordinates of the line.</param>
-        /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
-        /// <returns><c>true</c> if the polygon and the line intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean IntersectionWithConcavePolygon(IList<Coordinate> shell, Coordinate lineStart, Coordinate lineEnd, out IList<Coordinate> intersection)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Computes the intersection of two convex polygons.
-        /// </summary>
-        /// <param name="firstShell">The coordinates of the first polygon shell.</param>
-        /// <param name="secondShell">The coordinates of the second polygon shell.</param>
-        /// <param name="intersection">The coordinates of the intersection polygon shell.</param>
-        /// <returns><c>true</c> if the two polygons intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean IntersectionOfConvexPolygons(IList<Coordinate> firstShell, IList<Coordinate> secondShell, out IList<Coordinate> intersection)
-        { 
-            // source: Laszlo, M. J.: Computatonal Geometry and Computer Graphics in C++, p. 154
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Computes the intersection of two concave polygons.
-        /// </summary>
-        /// <param name="firstShell">The coordinates of the first polygon shell.</param>
-        /// <param name="secondShell">The coordinates of the second polygon shell.</param>
-        /// <param name="intersection">The coordinates of the intersection polygon shell.</param>
-        /// <returns><c>true</c> if the two polygons intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean IntersectionOfConcavePolygons(IList<Coordinate> firstShell, IList<Coordinate> secondShell, out IList<Coordinate> intersection)
-        {
-            throw new NotImplementedException();
+            return ComputeLocation(shell, holes, coordinate, precision) == RelativeLocation.Exterior;
         }
 
         #endregion
@@ -913,8 +1012,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="shell">The shell of the polygon.</param>
         /// <param name="holes">The holes of the polygon.</param>
         /// <param name="coordinate">The examined coordinate.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns>The location of the coordinate.</returns>
-        private static RelativeLocation ComputeLocation(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate) 
+        private static RelativeLocation ComputeLocation(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision) 
         {
             if (!coordinate.IsValid)
                 return RelativeLocation.Undefined;

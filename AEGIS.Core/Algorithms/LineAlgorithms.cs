@@ -15,7 +15,6 @@
 
 using System;
 using System.Collections.Generic;
-using ELTE.AEGIS.Numerics;
 
 namespace ELTE.AEGIS.Algorithms
 {
@@ -41,6 +40,21 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         /// <summary>
+        /// Computes the centroid of a line.
+        /// </summary>
+        /// <param name="lineStart">The starting coordinate of the line.</param>
+        /// <param name="lineEnd">The ending coordinate of the line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The centroid of the line. The centroid is <c>Undefined</c> if either coordinates are invalid.</returns>
+        public static Coordinate Centroid(Coordinate lineStart, Coordinate lineEnd, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(Centroid(lineStart, lineEnd));
+        }
+
+        /// <summary>
         /// Computes the centroid of a line string.
         /// </summary>
         /// <param name="lineString">The line string.</param>
@@ -57,8 +71,23 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Computes the centroid of a line string.
         /// </summary>
-        /// <param name="coordinates">The coordinates of the line string.</param>
+        /// <param name="lineString">The line string.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns>>The centroid of the line string. The centroid is <c>Undefined</c> if either coordinates are invalid or there are no coordinates specified.</returns>
+        /// <exception cref="System.ArgumentNullException">The line string is null.</exception>
+        public static Coordinate Centroid(IBasicLineString lineString, PrecisionModel precision)
+        {
+            if (lineString == null)
+                throw new ArgumentNullException("lineString", "The line string is null.");
+
+            return Centroid(lineString.Coordinates, precision); 
+        }
+
+        /// <summary>
+        /// Computes the centroid of a line string.
+        /// </summary>
+        /// <param name="coordinates">The coordinates of the line string.</param>
+        /// <returns>The centroid of the line string. The centroid is <c>Undefined</c> if either coordinates are invalid or there are no coordinates specified.</returns>
         /// <exception cref="System.ArgumentNullException">The list of coordinates is null.</exception>
         public static Coordinate Centroid(IList<Coordinate> coordinates)
         {
@@ -94,6 +123,25 @@ namespace ELTE.AEGIS.Algorithms
             return new Coordinate(centroidX, centroidY, centroidZ);
         }
 
+
+        /// <summary>
+        /// Computes the centroid of a line string.
+        /// </summary>
+        /// <param name="coordinates">The coordinates of the line string.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The centroid of the line string. The centroid is <c>Undefined</c> if either coordinates are invalid or there are no coordinates specified.</returns>
+        /// <exception cref="System.ArgumentNullException">The list of coordinates is null.</exception>
+        public static Coordinate Centroid(IList<Coordinate> coordinates, PrecisionModel precision)
+        {
+            if (coordinates == null)
+                throw new ArgumentNullException("coordinates", "The list of coordinates is null.");
+
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(Centroid(coordinates));
+        }
+
         #endregion
 
         #region Coincides computation
@@ -108,10 +156,28 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines coincide; otherwise, <c>false</c>.</returns>
         public static Boolean Coincides(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
+            return Coincides(firstCoordinate, firstVector, secondCoordinate, secondVector, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether two infinite lines coincide.
+        /// </summary>
+        /// <param name="firstCoordinate">The coordinate of the first line.</param>
+        /// <param name="firstVector">The direction vector of the first line.</param>
+        /// <param name="secondCoordinate">The coordinate of the second line.</param>
+        /// <param name="secondVector">The direction vector of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines coincide; otherwise, <c>false</c>.</returns>
+        public static Boolean Coincides(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision)
+        {
             if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
                 return false;
-            
-            return CoordinateVector.IsParallel(firstVector, secondVector) && Distance(firstCoordinate, firstVector, secondCoordinate) <= Calculator.Tolerance;
+
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return CoordinateVector.IsParallel(firstVector, secondVector, precision) &&
+                   Distance(firstCoordinate, firstVector, secondCoordinate) < Math.Max(precision.Tolerance(firstCoordinate, secondCoordinate), precision.Tolerance(firstVector, secondVector));
         }
 
         #endregion
@@ -127,15 +193,31 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the line contains the <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
         public static Boolean Contains(Coordinate lineStart, Coordinate lineEnd, Coordinate coordinate)
         {
+            return Contains(lineStart, lineEnd, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether a line contains a specified coordinate.
+        /// </summary>
+        /// <param name="lineStart">The starting coordinate of the line.</param>
+        /// <param name="lineEnd">The ending coordinate of the line.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the line contains the <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
+        public static Boolean Contains(Coordinate lineStart, Coordinate lineEnd, Coordinate coordinate, PrecisionModel precision)
+        {
             if (!lineStart.IsValid || !lineEnd.IsValid || !coordinate.IsValid)
                 return false;
 
-            // check for empty line
-            if (lineStart.Equals(lineEnd))
-                return lineStart.Equals(coordinate);
+            if (precision == null)
+                precision = PrecisionModel.Default;
 
-            // chekc the staring and ending coordinates
-            if (lineStart.Equals(coordinate) || lineEnd.Equals(coordinate))
+            // check for empty line
+            if (lineStart == lineEnd)
+                return lineStart == coordinate;
+
+            // check the staring and ending coordinates
+            if (lineStart == coordinate || coordinate == lineEnd)
                 return true;
 
             // check the envelope
@@ -143,7 +225,7 @@ namespace ELTE.AEGIS.Algorithms
                 return false;
 
             // check the distance from the line
-            return Distance(lineStart, lineEnd, coordinate) <= Calculator.Tolerance;
+            return Distance(lineStart, lineEnd, coordinate, precision) < precision.Tolerance(lineStart, lineEnd, coordinate);
         }
 
         /// <summary>
@@ -155,10 +237,26 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the line contains the <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
         public static Boolean Contains(Coordinate lineCoordinate, CoordinateVector lineVector, Coordinate coordinate)
         {
+            return Contains(lineCoordinate, lineVector, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether an infinite line contains a specified coordinate.
+        /// </summary>
+        /// <param name="lineCoordinate">The coordinate of the line.</param>
+        /// <param name="lineVector">The direction vector of the line.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the line contains the <paramref name="coordinate" />; otherwise, <c>false</c>.</returns>
+        public static Boolean Contains(Coordinate lineCoordinate, CoordinateVector lineVector, Coordinate coordinate, PrecisionModel precision)
+        {
             if (!lineCoordinate.IsValid || !lineVector.IsValid || !coordinate.IsValid)
                 return false;
 
-            return Distance(lineCoordinate, lineVector, coordinate) <= Calculator.Tolerance;
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return Distance(lineCoordinate, lineVector, coordinate) < precision.Tolerance(lineCoordinate, coordinate);
         }
 
         #endregion
@@ -174,13 +272,29 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The distance of <paramref name="coordinate" /> from the line.</returns>
         public static Double Distance(Coordinate lineStart, Coordinate lineEnd, Coordinate coordinate)
         {
+            return Distance(lineStart, lineEnd, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the distance of a line to a specified coordinate.
+        /// </summary>
+        /// <param name="lineStart">The starting coordinate of the line.</param>
+        /// <param name="lineEnd">The ending coordinate of the line.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The distance of <paramref name="coordinate" /> from the line.</returns>
+        public static Double Distance(Coordinate lineStart, Coordinate lineEnd, Coordinate coordinate, PrecisionModel precision)
+        {
             if (!lineStart.IsValid || !lineEnd.IsValid || !coordinate.IsValid)
                 return Double.NaN;
 
             // source: http://geomalgorithms.com/a02-_lines.html
 
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
             // check for empty line
-            if (lineStart.Equals(lineEnd))
+            if (lineStart == lineEnd)
                 return Coordinate.Distance(coordinate, lineStart);
 
             // compute directional vector
@@ -197,7 +311,7 @@ namespace ELTE.AEGIS.Algorithms
             // compute distance to the nearest coordinate
             return Coordinate.Distance(coordinate, lineStart + (c1 / c2) * v);
         }
-
+        
         /// <summary>
         /// Computes the distance of two lines.
         /// </summary>
@@ -208,9 +322,23 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The distance of the two lines.</returns>
         public static Double Distance(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
+            return Distance(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the distance of two lines.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precisio model.</param>
+        /// <returns>The distance of the two lines.</returns>
+        public static Double Distance(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
             if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
                 return Double.NaN;
-
+            
             // source: http://geomalgorithms.com/a07-_distance.html
 
             CoordinateVector u = firstLineEnd - firstLineStart;
@@ -225,7 +353,12 @@ namespace ELTE.AEGIS.Algorithms
             Double sc, sN, sD = D;
             Double tc, tN, tD = D;
 
-            if (D < Calculator.Tolerance) // the lines are collinear
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            Double tolerance = precision.Tolerance(firstLineStart, firstLineStart, secondLineStart, secondLineEnd);
+
+            if (D < tolerance) // the lines are collinear
             {
                 sN = 0.0;
                 sD = 1.0; 
@@ -276,10 +409,13 @@ namespace ELTE.AEGIS.Algorithms
                     sD = a;
                 }
             }
-            sc = (Math.Abs(sN) < Calculator.Tolerance ? 0.0 : sN / sD);
-            tc = (Math.Abs(tN) < Calculator.Tolerance ? 0.0 : tN / tD);
+            sc = (Math.Abs(sN) < tolerance ? 0.0 : sN / sD);
+            tc = (Math.Abs(tN) < tolerance ? 0.0 : tN / tD);
 
-            CoordinateVector dP = w + (sc * u) - (tc * v);  
+            CoordinateVector dP = w + (sc * u) - (tc * v);
+
+            if (dP.IsNull)
+                return 0;
 
             return Math.Sqrt(dP * dP);
         }
@@ -296,26 +432,15 @@ namespace ELTE.AEGIS.Algorithms
             if (!lineCoordinate.IsValid || !lineVector.IsValid || !coordinate.IsValid)
                 return Double.NaN;
 
-            return Coordinate.Distance(coordinate, lineCoordinate + (coordinate - lineCoordinate) * lineVector * lineVector);
+            Double x = Math.Abs(lineVector.Y * coordinate.X + (-lineVector.X) * coordinate.Y - (lineVector.Y * lineCoordinate.X + ((-lineVector.X) * lineCoordinate.Y)));
+            Double y = Math.Sqrt(Math.Pow(lineVector.Y, 2) + Math.Pow(lineVector.X, 2));
+
+            return x / y;
         }
 
         #endregion
 
         #region Intersects computation
-
-        /// <summary>
-        /// Determines whether two lines intersect.
-        /// </summary>
-        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
-        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
-        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
-        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
-        /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
-        public static Boolean Intersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
-        {
-            IList<Coordinate> intersection;
-            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
-        }
 
         /// <summary>
         /// Determines whether two lines intersect internally.
@@ -328,7 +453,56 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean InternalIntersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            return ComputeInternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection);
+            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, false, PrecisionModel.Default, out intersection);
+        }
+
+        /// <summary>
+        /// Determines whether two lines intersect internally.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
+        public static Boolean InternalIntersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, false, precision, out intersection);
+        }
+
+        /// <summary>
+        /// Determines whether two lines intersect.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
+        public static Boolean Intersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
+        {
+            IList<Coordinate> intersection;
+            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, true, PrecisionModel.Default, out intersection);
+        }
+
+        /// <summary>
+        /// Determines whether two lines intersect.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
+        public static Boolean Intersects(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            return ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, true, precision, out intersection);
         }
 
         /// <summary>
@@ -343,7 +517,26 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean Intersects(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
             Coordinate intersection;
-            return ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection);
+            return ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, PrecisionModel.Default, out intersection);
+        }
+
+        /// <summary>
+        /// Determines whether two infinite lines intersect.
+        /// </summary>
+        /// <param name="firstCoordinate">The coordinate of the first line.</param>
+        /// <param name="firstVector">The direction vector of the first line.</param>
+        /// <param name="secondCoordinate">The coordinate of the second line.</param>
+        /// <param name="secondVector">The direction vector of the second line.</param>
+        /// <param name="intersection">The coordinate of intersection.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
+        public static Boolean Intersects(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            Coordinate intersection;
+            return ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, precision, out intersection);
         }
 
         /// <summary>
@@ -357,13 +550,68 @@ namespace ELTE.AEGIS.Algorithms
         public static Boolean IntersectsWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
             IList<Coordinate> intersection;
-            return ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection);
+            return ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, PrecisionModel.Default, out intersection);
         }
 
+        /// <summary>
+        /// Determines whether a line intersects with a plane.
+        /// </summary>
+        /// <param name="lineStart">The starting coordinate of the line.</param>
+        /// <param name="lineEnd">The ending coordinate of the line.</param>
+        /// <param name="planeCoordinate">A coordinate located on the plane.</param>
+        /// <param name="planeNormalVector">The normal vector of the plane.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
+        public static Boolean IntersectsWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            return ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, precision, out intersection);
+        }
 
         #endregion
 
         #region Intersection computation
+
+        /// <summary>
+        /// Computes the internal intersection of two lines.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
+        public static IList<Coordinate> InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
+        {
+            IList<Coordinate> intersection;
+            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, false, PrecisionModel.Default, out intersection))
+                return intersection;
+            else
+                return new List<Coordinate>();
+        }
+
+        /// <summary>
+        /// Computes the internal intersection of two lines.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
+        public static IList<Coordinate> InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, false, precision, out intersection))
+                return intersection;
+            else
+                return new List<Coordinate>();
+        }
 
         /// <summary>
         /// Computes the intersection of two lines.
@@ -376,7 +624,28 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> Intersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
             IList<Coordinate> intersection;
-            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
+            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, true, PrecisionModel.Default, out intersection))
+                return intersection;
+            else
+                return new List<Coordinate>();
+        }
+
+        /// <summary>
+        /// Computes the intersection of two lines.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
+        public static IList<Coordinate> Intersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            if (ComputeIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, true, precision, out intersection))
                 return intersection;
             else
                 return new List<Coordinate>();
@@ -393,27 +662,31 @@ namespace ELTE.AEGIS.Algorithms
         public static Coordinate Intersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
             Coordinate intersection;
-            if (ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, out intersection))
+            if (ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, PrecisionModel.Default, out intersection))
                 return intersection;
             else
                 return Coordinate.Undefined;
         }
 
         /// <summary>
-        /// Computes the internal intersection of two lines.
+        /// Computes the intersection of two infinite lines.
         /// </summary>
-        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
-        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
-        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
-        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
-        /// <returns>A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection; or nothing if no intersection exists.</returns>
-        public static IList<Coordinate> InternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
+        /// <param name="firstCoordinate">The coordinate of the first line.</param>
+        /// <param name="firstVector">The direction vector of the first line.</param>
+        /// <param name="secondCoordinate">The coordinate of the second line.</param>
+        /// <param name="secondVector">The direction vector of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The coordinate of the intersection. The coordinate is <c>Undefined</c> if there is no intersection.</returns>
+        public static Coordinate Intersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision)
         {
-            IList<Coordinate> intersection;
-            if (ComputeInternalIntersection(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, out intersection))
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            Coordinate intersection;
+            if (ComputeIntersection(firstCoordinate, firstVector, secondCoordinate, secondVector, precision, out intersection))
                 return intersection;
             else
-                return new List<Coordinate>();
+                return Coordinate.Undefined;
         }
 
         /// <summary>
@@ -427,7 +700,28 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> IntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector)
         {
             IList<Coordinate> intersection;
-            if (ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, out intersection))
+            if (ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, PrecisionModel.Default, out intersection))
+                return intersection;
+            else
+                return new List<Coordinate>();
+        }
+
+        /// <summary>
+        /// Computes the intersection of a line with a plane.
+        /// </summary>
+        /// <param name="lineStart">The starting coordinate of the line.</param>
+        /// <param name="lineEnd">The ending coordinate of the line.</param>
+        /// <param name="planeCoordinate">A coordinate located on the plane.</param>
+        /// <param name="planeNormalVector">The normal vector of the plane.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the line and the plane intersect; otherwise, <c>false</c>.</returns>
+        public static IList<Coordinate> IntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            IList<Coordinate> intersection;
+            if (ComputeIntersectionWithPlane(lineStart, lineEnd, planeCoordinate, planeNormalVector, precision, out intersection))
                 return intersection;
             else
                 return new List<Coordinate>();
@@ -438,7 +732,7 @@ namespace ELTE.AEGIS.Algorithms
         #region IsCollinear computation
 
         /// <summary>
-        /// Determines whether two lines are collnear.
+        /// Determines whether two lines are collinear.
         /// </summary>
         /// <param name="firstLineStart">The starting coordinate of the first line.</param>
         /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
@@ -447,14 +741,32 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines are collinear; otherwise, <c>false</c>.</returns>
         public static Boolean IsCollinear(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
+            return IsCollinear(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether two lines are collinear.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines are collinear; otherwise, <c>false</c>.</returns>
+        public static Boolean IsCollinear(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
             if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
                 return false;
+
+            if (precision == null)
+                precision = PrecisionModel.Default;
 
             // compute the directional vectors
             CoordinateVector u = (firstLineEnd - firstLineStart).Normalize();
             CoordinateVector v = (secondLineEnd - secondLineStart).Normalize();
 
-            return CoordinateVector.IsParallel(u, v) && Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) <= Calculator.Tolerance;
+            return CoordinateVector.IsParallel(u, v, precision) && 
+                   Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) < precision.Tolerance(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd);
         }
 
         #endregion
@@ -471,11 +783,25 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
         public static Boolean IsParallel(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd)
         {
+            return IsParallel(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether two lines are parallel.
+        /// </summary>
+        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
+        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
+        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
+        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
+        public static Boolean IsParallel(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
+        {
             if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
                 return false;
 
             // check if the directional vectors are parallel
-            return CoordinateVector.IsParallel(firstLineEnd - firstLineStart, secondLineEnd - secondLineStart);
+            return CoordinateVector.IsParallel(firstLineEnd - firstLineStart, secondLineEnd - secondLineStart, precision);
         }
 
         /// <summary>
@@ -488,10 +814,24 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
         public static Boolean IsParallel(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector)
         {
+            return IsParallel(firstCoordinate, firstVector, secondCoordinate, secondVector, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether two infinite lines are parallel.
+        /// </summary>
+        /// <param name="firstCoordinate">The coordinate of the first line.</param>
+        /// <param name="firstVector">The direction vector of the first line.</param>
+        /// <param name="secondCoordinate">The coordinate of the second line.</param>
+        /// <param name="secondVector">The direction vector of the second line.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two lines are parallel; otherwise, <c>false</c>.</returns>
+        public static Boolean IsParallel(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision)
+        {
             if (!firstCoordinate.IsValid || !firstVector.IsValid || !secondCoordinate.IsValid || !secondVector.IsValid)
                 return false;
 
-            return CoordinateVector.IsParallel(firstVector, secondVector);
+            return CoordinateVector.IsParallel(firstVector, secondVector, precision);
         }
 
         #endregion
@@ -505,10 +845,15 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
         /// <param name="secondLineStart">The starting coordinate of the second line.</param>
         /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
+        /// <param name="includeBoundary">A value indicating whether to include intersection on the boundary.</param>
+        /// <param name="precision">The precision model.</param>
         /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
         /// <returns><c>true</c> if the lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean ComputeIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
+        private static Boolean ComputeIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, Boolean includeBoundary, PrecisionModel precision, out IList<Coordinate> intersection)
         {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
             intersection = null;
 
             // source: http://geomalgorithms.com/a05-_intersect-1.html
@@ -522,12 +867,12 @@ namespace ELTE.AEGIS.Algorithms
             {
                 if (firstLineStart.Equals(secondLineStart) || firstLineStart.Equals(secondLineEnd))
                 {
-                    intersection = new List<Coordinate>() { firstLineStart };
+                    intersection = new List<Coordinate>() { precision.MakePrecise(firstLineStart) };
                     return true;
                 }
-                if (Contains(secondLineStart, secondLineEnd, firstLineStart))
+                if (Contains(secondLineStart, secondLineEnd, firstLineStart, precision))
                 {
-                    intersection = new List<Coordinate>() { firstLineStart };
+                    intersection = new List<Coordinate>() { precision.MakePrecise(firstLineStart) };
                     return true;
                 }
                 else
@@ -537,12 +882,12 @@ namespace ELTE.AEGIS.Algorithms
             {
                 if (secondLineStart.Equals(firstLineStart) || secondLineStart.Equals(firstLineEnd))
                 {
-                    intersection = new List<Coordinate>() { secondLineStart };
+                    intersection = new List<Coordinate>() { precision.MakePrecise(secondLineStart) };
                     return true;
                 }
-                if (Contains(firstLineStart, firstLineEnd, secondLineStart))
+                if (Contains(firstLineStart, firstLineEnd, secondLineStart, precision))
                 {
-                    intersection = new List<Coordinate>() { secondLineStart };
+                    intersection = new List<Coordinate>() { precision.MakePrecise(secondLineStart) };
                     return true;
                 }
                 else
@@ -550,9 +895,10 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             // check for equal lines
-            if (firstLineStart.Equals(secondLineStart) && firstLineEnd.Equals(secondLineEnd) || firstLineEnd.Equals(secondLineStart) && firstLineStart.Equals(secondLineEnd))
+            if (firstLineStart.Equals(secondLineStart) && firstLineEnd.Equals(secondLineEnd) || 
+                firstLineEnd.Equals(secondLineStart) && firstLineStart.Equals(secondLineEnd))
             {
-                intersection = new List<Coordinate>() { secondLineStart, secondLineEnd };
+                intersection = new List<Coordinate>() { precision.MakePrecise(secondLineStart), precision.MakePrecise(secondLineEnd) };
                 return true;
             }
 
@@ -568,14 +914,16 @@ namespace ELTE.AEGIS.Algorithms
             CoordinateVector w = firstLineStart - secondLineStart;
 
             // check for parallel lines
-            if (CoordinateVector.IsParallel(u, v))
+            if (CoordinateVector.IsParallel(u, v, precision))
             {
                 // the starting or ending coordinate of the second line must be on the first line
                 Double b = (secondLineStart - firstLineStart) * u / (u * u);
-                if (Coordinate.Distance(secondLineStart, firstLineStart + b * u) >= Calculator.Tolerance)
+
+                if (Coordinate.Distance(secondLineStart, firstLineStart + b * u) >= precision.Tolerance(secondLineStart, firstLineStart))
                 {
                     return false;
                 }
+
                 Double t0, t1;
                 CoordinateVector z = firstLineEnd - secondLineStart;
                 if (v.X != 0)
@@ -588,12 +936,17 @@ namespace ELTE.AEGIS.Algorithms
                     t0 = Math.Min(w.Y / v.Y, z.Y / v.Y);
                     t1 = Math.Max(w.Y / v.Y, z.Y / v.Y);
                 }
+
                 if (t0 > 1 || t1 < 0)
                 {
                     return false;
                 }
 
-                intersection = new List<Coordinate>() { secondLineStart + Math.Max(t0, 0) * v, secondLineStart + Math.Min(t1, 1) * v };
+                intersection = new List<Coordinate>()
+                {
+                    precision.MakePrecise(secondLineStart + Math.Max(t0, 0) * v),
+                    precision.MakePrecise(secondLineStart + Math.Min(t1, 1) * v)
+                };
                 return true;
             }
 
@@ -605,24 +958,30 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             Double sI = CoordinateVector.PerpProduct(v, w) / d;
-            if (sI < 0 || sI > 1) // if the intersection is beyond the line
-            {
-                return false;
-            }
-
             Double tI = CoordinateVector.PerpProduct(u, w) / d;
-            if (tI < 0 || tI > 1)
+
+            if (includeBoundary)
             {
-                return false;
+                if (sI < 0 || sI > 1 || tI < 0 || tI > 1) // if the intersection is beyond the line
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (sI <= 0 || sI >= 1 || tI <= 0 || tI >= 1) // if the intersection is beyond the line
+                {
+                    return false;
+                }
             }
 
             // finally, we check if we computed one coordinate
-            if (Coordinate.Distance(firstLineStart + sI * u, secondLineStart + tI * v) > Calculator.Tolerance)
+            if (Coordinate.Distance(firstLineStart + sI * u, secondLineStart + tI * v) >= precision.Tolerance(secondLineStart, firstLineStart))
             {
                 return false;
             }
 
-            intersection = new List<Coordinate>() { firstLineStart + sI * u, firstLineStart + sI * u };
+            intersection = new List<Coordinate>() { precision.MakePrecise(firstLineStart + sI * u) };
             return true;
         }
 
@@ -634,17 +993,20 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondCoordinate">The coordinate of the second line.</param>
         /// <param name="secondVector">The direction vector of the second line.</param>
         /// <param name="intersection">The coordinate of intersection.</param>
+        /// <param name="precision">Thge precision model.</param>
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean ComputeIntersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, out Coordinate intersection)
+        private static Boolean ComputeIntersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision, out Coordinate intersection)
         {
             // source: http://geomalgorithms.com/a05-_intersect-1.html
 
             intersection = Coordinate.Undefined;
 
+            Double tolerance = precision.Tolerance(firstCoordinate, firstCoordinate + firstVector, secondCoordinate, secondCoordinate + secondVector);
+
             // if they are parallel, they must also be collinear
             if (CoordinateVector.IsParallel(firstVector, secondVector))
             {
-                intersection = (Distance(firstCoordinate, firstVector, secondCoordinate) <= Calculator.Tolerance) ? firstCoordinate : Coordinate.Undefined;
+                intersection = (Distance(firstCoordinate, firstVector, secondCoordinate) < tolerance) ? precision.MakePrecise(firstCoordinate) : Coordinate.Undefined;
                 return true;
             }
 
@@ -659,136 +1021,15 @@ namespace ELTE.AEGIS.Algorithms
             Double sI = CoordinateVector.PerpProduct(secondVector, v) / d;
             Double tI = CoordinateVector.PerpProduct(firstVector, v) / d;
 
-            if (Coordinate.Distance(firstCoordinate + sI * firstVector, secondCoordinate + tI * secondVector) > Calculator.Tolerance)
+            if (Coordinate.Distance(firstCoordinate + sI * firstVector, secondCoordinate + tI * secondVector) >= tolerance)
             {
                 return false;
             }
 
-            intersection = firstCoordinate + sI * firstVector;
+            intersection = precision.MakePrecise(firstCoordinate + sI * firstVector);
             return true;
         }
-
-        /// <summary>
-        /// Computes the internal intersection of two lines.
-        /// </summary>
-        /// <param name="firstLineStart">The starting coordinate of the first line.</param>
-        /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
-        /// <param name="secondLineStart">The starting coordinate of the second line.</param>
-        /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
-        /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
-        /// <returns><c>true</c> if the lines intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean ComputeInternalIntersection(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, out IList<Coordinate> intersection)
-        {
-            intersection = null;
-
-            // source: http://geomalgorithms.com/a05-_intersect-1.html
-
-            // check validity
-            if (!firstLineStart.IsValid || !firstLineEnd.IsValid || !secondLineStart.IsValid || !secondLineEnd.IsValid)
-                return false;
-
-            // check for empty lines
-            if (firstLineStart.Equals(firstLineEnd))
-            {
-                if (firstLineStart.Equals(secondLineStart) || firstLineStart.Equals(secondLineEnd))
-                    return false;
-                if (Contains(secondLineStart, secondLineEnd, firstLineStart))
-                {
-                    intersection = new List<Coordinate>() { firstLineStart };
-                    return true;
-                }
-                else
-                    return false;
-            }
-            if (secondLineStart.Equals(secondLineEnd))
-            {
-                if (secondLineStart.Equals(firstLineStart) || secondLineStart.Equals(firstLineEnd))
-                    return false;
-                if (Contains(firstLineStart, firstLineEnd, secondLineStart))
-                {
-                    intersection = new List<Coordinate>() { secondLineStart };
-                    return true;
-                }
-                else
-                    return false;
-            }
-
-            // check for equal lines
-            if (firstLineStart.Equals(secondLineStart) && firstLineEnd.Equals(secondLineEnd) || firstLineEnd.Equals(secondLineStart) && firstLineStart.Equals(secondLineEnd))
-            {
-                intersection = new List<Coordinate>() { secondLineStart, secondLineEnd };
-                return true;
-            }
-
-            // check for the envelope
-            if (!Envelope.Intersects(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd))
-            {
-                return false;
-            }
-            // compute the direction vectors
-            CoordinateVector u = firstLineEnd - firstLineStart;
-            CoordinateVector v = secondLineEnd - secondLineStart;
-            CoordinateVector w = firstLineStart - secondLineStart;
-
-            // check for parallel lines
-            if (CoordinateVector.IsParallel(u, v))
-            {
-                // the starting or ending coordinate of the second line must be on the first line
-                Double b = (secondLineStart - firstLineStart) * u / (u * u);
-                if (Coordinate.Distance(secondLineStart, firstLineStart + b * u) >= Calculator.Tolerance)
-                {
-                    return false;
-                }
-                Double t0, t1;
-                CoordinateVector z = firstLineEnd - secondLineStart;
-                if (v.X != 0)
-                {
-                    t0 = Math.Min(w.X / v.X, z.X / v.X);
-                    t1 = Math.Max(w.X / v.X, z.X / v.X);
-                }
-                else
-                {
-                    t0 = Math.Min(w.Y / v.Y, z.Y / v.Y);
-                    t1 = Math.Max(w.Y / v.Y, z.Y / v.Y);
-                }
-                if (t0 >= 1 || t1 <= 0)
-                {
-                    return false;
-                }
-
-                intersection = new List<Coordinate>() { secondLineStart + Math.Max(t0, 0) * v, secondLineStart + Math.Min(t1, 1) * v };
-                return true;
-            }
-
-            // the lines are projected into a plane
-            Double d = CoordinateVector.PerpProduct(u, v);
-            if (d == 0) // this should not happen (case of parallel lines)
-            {
-                return false;
-            }
-
-            Double sI = CoordinateVector.PerpProduct(v, w) / d;
-            if (sI <= 0 || sI >= 1) // if the intersection is beyond the line
-            {
-                return false;
-            }
-
-            Double tI = CoordinateVector.PerpProduct(u, w) / d;
-            if (tI <= 0 || tI >= 1)
-            {
-                return false;
-            }
-
-            // finally, we check if we computed one coordinate
-            if (Coordinate.Distance(firstLineStart + sI * u, secondLineStart + tI * v) > Calculator.Tolerance)
-            {
-                return false;
-            }
-
-            intersection = new List<Coordinate>() { firstLineStart + sI * u, firstLineStart + sI * u };
-            return true;
-        }
-
+        
         /// <summary>
         /// Computes the intersection of a line with a plane.
         /// </summary>
@@ -797,8 +1038,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="planeCoordinate">A coordinate located on the plane.</param>
         /// <param name="planeNormalVector">The normal vector of the plane.</param>
         /// <param name="intersection">A list containing the staring and ending coordinate of the intersection; or the single coordinate of intersection.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns><c>true</c> if the line and the plane intersect; otherwise, <c>false</c>.</returns>
-        private static Boolean ComputeIntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, out IList<Coordinate> intersection)
+        private static Boolean ComputeIntersectionWithPlane(Coordinate lineStart, Coordinate lineEnd, Coordinate planeCoordinate, CoordinateVector planeNormalVector, PrecisionModel precision, out IList<Coordinate> intersection)
         {
             // source: http://geomalgorithms.com/a05-_intersect-1.html
 
@@ -810,11 +1052,15 @@ namespace ELTE.AEGIS.Algorithms
             Double d = CoordinateVector.DotProduct(planeNormalVector, u);
             Double n = -CoordinateVector.DotProduct(planeNormalVector, w);
 
-            if (Math.Abs(d) < Calculator.Tolerance) // line is parallel to plane
+            if (Math.Abs(d) < precision.Tolerance(lineStart, lineEnd, planeCoordinate)) // line is parallel to plane
             {
                 if (n == 0) // the line lies on the plane
                 {
-                    intersection = new List<Coordinate>() { lineStart, lineEnd };
+                    intersection = new List<Coordinate>
+                    {
+                        precision.MakePrecise(lineStart),
+                        precision.MakePrecise(lineEnd)
+                    };
                     return true;
                 }
                 else
@@ -826,7 +1072,7 @@ namespace ELTE.AEGIS.Algorithms
                 return false;
 
             // compute segment intersection coordinate
-            intersection = new List<Coordinate>() { lineStart + sI * u };
+            intersection = new List<Coordinate> { precision.MakePrecise(lineStart + sI * u) };
             return false;
         }
 
