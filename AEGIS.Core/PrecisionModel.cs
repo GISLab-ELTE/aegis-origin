@@ -13,7 +13,9 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Numerics;
 using System;
+using System.Linq;
 
 namespace ELTE.AEGIS
 {
@@ -22,6 +24,15 @@ namespace ELTE.AEGIS
     /// </summary>
     public class PrecisionModel : IComparable<PrecisionModel>, IEquatable<PrecisionModel>
     {
+        #region Private fields
+
+        /// <summary>
+        /// The base tolerance value.
+        /// </summary>
+        private Double _baseTolerance;
+
+        #endregion
+
         #region Public properties
 
         /// <summary>
@@ -42,10 +53,30 @@ namespace ELTE.AEGIS
                 {
                     case PrecisionModelType.FloatingSingle:
                         return 6;
-                    case PrecisionModelType.Fixed:
-                        return 1 + Math.Max(0, (Int32)Math.Ceiling(Math.Log(Scale) / Math.Log(10)));
-                    default:
+                    case PrecisionModelType.Floating:
                         return 16;
+                    default: // PrecisionModelType.Fixed
+                        return 1 + Math.Max(0, (Int32)Math.Ceiling(Math.Log(Scale) / Math.Log(10)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the maximum precise value in the model.
+        /// </summary>
+        /// <value>The greatest precise value in the precision model.</value>
+        public Double MaximumPreciseValue
+        { 
+            get 
+            {
+                switch (ModelType)
+                {
+                    case PrecisionModelType.FloatingSingle:
+                        return 8388607.0;
+                    case PrecisionModelType.Floating:
+                        return 9007199254740992.0;
+                    default: // PrecisionModelType.Fixed
+                        return Math.Floor((9007199254740992.5 * Scale) / Scale);
                 }
             }
         }
@@ -55,6 +86,26 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <value>The scale of the precision model if the type is fixed, otherwise <c>0</c>.</value>
         public Double Scale { get; private set; }
+
+        /// <summary>
+        /// Gets the smallest positive value representable by the specified precision.
+        /// </summary>
+        /// <value>The smallest positive value greater than 0, which is representable by the specified precision.</value>
+        public Double Epsilon
+        {
+            get
+            {
+                switch (ModelType)
+                {
+                    case PrecisionModelType.FloatingSingle:
+                        return Single.Epsilon;
+                    case PrecisionModelType.Floating:
+                        return Double.Epsilon;
+                    default:
+                        return Scale;
+                }
+            }
+        }
 
         #endregion
 
@@ -66,6 +117,7 @@ namespace ELTE.AEGIS
         public PrecisionModel()
         {
             ModelType = PrecisionModelType.Floating;
+            _baseTolerance = 1 / Math.Pow(10, MaximumSignificantDigits - 1);
         }
 
         /// <summary>
@@ -75,9 +127,13 @@ namespace ELTE.AEGIS
         public PrecisionModel(PrecisionModelType modelType)
         {
             ModelType = modelType;
+            _baseTolerance = 1 / Math.Pow(10, MaximumSignificantDigits - 1);
 
             if (modelType == PrecisionModelType.Fixed)
+            {
                 Scale = 1.0;
+                _baseTolerance = 0.5;
+            }
         }
 
         /// <summary>
@@ -92,6 +148,7 @@ namespace ELTE.AEGIS
 
             ModelType = PrecisionModelType.Fixed;
             Scale = scale;
+            _baseTolerance = 0.5 / Scale;
         }
 
         #endregion
@@ -113,7 +170,7 @@ namespace ELTE.AEGIS
                 case PrecisionModelType.FloatingSingle:
                     return (Single)value;
                 case PrecisionModelType.Fixed:
-                    return Math.Round(value / Scale) * Scale;
+                    return Math.Floor((value * Scale) + 0.5) / Scale;
                 default:
                     return value;
             }
@@ -126,7 +183,17 @@ namespace ELTE.AEGIS
         /// <returns>The precise coordinate.</returns>
         public Coordinate MakePrecise(Coordinate coordinate)
         {
-            return new Coordinate(MakePrecise(coordinate.X), MakePrecise(coordinate.Y), MakePrecise(coordinate.Z));
+            switch (ModelType)
+            {
+                case PrecisionModelType.FloatingSingle:
+                    return new Coordinate((Single)coordinate.X, (Single)coordinate.Y, (Single)coordinate.Z);
+                case PrecisionModelType.Fixed:
+                    return new Coordinate(Math.Floor((coordinate.X * Scale) + 0.5) / Scale, 
+                                          Math.Floor((coordinate.Y * Scale) + 0.5) / Scale, 
+                                          Math.Floor((coordinate.Z * Scale) + 0.5) / Scale);
+                default:
+                    return coordinate;
+            }
         }
 
         /// <summary>
@@ -136,7 +203,92 @@ namespace ELTE.AEGIS
         /// <returns>The precise coordinate vector.</returns>
         public CoordinateVector MakePrecise(CoordinateVector vector)
         {
-            return new CoordinateVector(MakePrecise(vector.X), MakePrecise(vector.Y), MakePrecise(vector.Z));
+            switch (ModelType)
+            {
+                case PrecisionModelType.FloatingSingle:
+                    return new CoordinateVector((Single)vector.X, (Single)vector.Y, (Single)vector.Z);
+                case PrecisionModelType.Fixed:
+                    return new CoordinateVector(Math.Floor((vector.X * Scale) + 0.5) / Scale,
+                                                Math.Floor((vector.Y * Scale) + 0.5) / Scale,
+                                                Math.Floor((vector.Z * Scale) + 0.5) / Scale);
+                default:
+                    return vector;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified values are equal.
+        /// </summary>
+        /// <param name="first">The first value.</param>
+        /// <param name="second">The second value.</param>
+        /// <returns><c>true</c> if the two values are considered equal at the specified precision; otherwise, <c>false</c>.</returns>
+        public Boolean AreEqual(Double first, Double second)
+        {
+            if (first == second)
+                return true;
+
+            return Math.Abs(first - second) < Math.Max(first, second) * _baseTolerance;
+        }
+
+        /// <summary>
+        /// Determines whether the specified coordinates are equal.
+        /// </summary>
+        /// <param name="first">The first coordinate.</param>
+        /// <param name="second">The second coordinate.</param>
+        /// <returns><c>true</c> if the two coordinates are considered equal at the specified precision; otherwise, <c>false</c>.</returns>
+        public Boolean AreEqual(Coordinate first, Coordinate second)
+        {
+            return AreEqual(first.X, second.X) && AreEqual(first.Y, second.Y) && AreEqual(first.Z, second.Z);
+        }
+
+        /// <summary>
+        /// Determines whether the specified coordinate vectors are equal.
+        /// </summary>
+        /// <param name="first">The first coordinate vector.</param>
+        /// <param name="second">The second coordinate vector.</param>
+        /// <returns><c>true</c> if the two coordinate vectors are considered equal at the specified precision; otherwise, <c>false</c>.</returns>
+        public Boolean AreEqual(CoordinateVector first, CoordinateVector second)
+        {
+            return AreEqual(first.X, second.X) && AreEqual(first.Y, second.Y) && AreEqual(first.Z, second.Z);
+        }
+
+        /// <summary>
+        /// Returns the tolerance for the specified values.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>The tolerance for the values at the specified precision.</returns>
+        public Double Tolerance(params Double[] values)
+        {
+            if (ModelType == PrecisionModelType.Fixed)
+                return _baseTolerance;
+
+            return values.Max(value => Math.Abs(value)) * _baseTolerance;
+        }
+
+        /// <summary>
+        /// Returns the tolerance for the specified coordinates.
+        /// </summary>
+        /// <param name="values">The coordinates.</param>
+        /// <returns>The tolerance for the coordinates at the specified precision.</returns>
+        public Double Tolerance(params Coordinate[] values)
+        {
+            if (ModelType == PrecisionModelType.Fixed)
+                return _baseTolerance;
+
+            return values.Max(coordinate => Calculator.Max(Math.Abs(coordinate.X), Math.Abs(coordinate.Y), Math.Abs(coordinate.Z))) * _baseTolerance;
+        }
+
+        /// <summary>
+        /// Returns the tolerance for the specified coordinate vectors.
+        /// </summary>
+        /// <param name="values">The coordinate vectors.</param>
+        /// <returns>The tolerance for the coordinate vectors at the specified precision.</returns>
+        public Double Tolerance(params CoordinateVector[] values)
+        {
+            if (ModelType == PrecisionModelType.Fixed)
+                return _baseTolerance;
+
+            return values.Max(vector => Calculator.Max(Math.Abs(vector.X), Math.Abs(vector.Y), Math.Abs(vector.Z))) * _baseTolerance;
         }
 
         #endregion
