@@ -293,9 +293,25 @@ namespace ELTE.AEGIS
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are parallel; otherwise <c>false</c>.</returns>
-        public static Boolean IsParallel(CoordinateVector x, CoordinateVector y)
+        public static Boolean IsParallel(CoordinateVector first, CoordinateVector second)
         {
-            return Math.Abs(x._x * y._y - x._y * y._x) <= Calculator.Tolerance && Math.Abs(x._x * y._z - x._z * y._z) <= Calculator.Tolerance;
+            return IsParallel(first, second, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether the two <see cref="CoordinateVector" /> instances are parallel.
+        /// </summary>
+        /// <param name="first">The first vector.</param>
+        /// <param name="second">The second vector.</param>
+        /// <param name="precision">The precision modell.</param>
+        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are parallel; otherwise <c>false</c>.</returns>
+        public static Boolean IsParallel(CoordinateVector first, CoordinateVector second, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return Math.Abs(first._x * second._y - first._y * second._x) <= precision.Tolerance(first, second) && 
+                   Math.Abs(first._x * second._z - first._z * second._z) <= precision.Tolerance(first, second);
         }
 
         /// <summary>
@@ -304,26 +320,24 @@ namespace ELTE.AEGIS
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are perpendicular; otherwise <c>false</c>.</returns>
-        public static Boolean IsPerpendicular(CoordinateVector x, CoordinateVector y)
+        public static Boolean IsPerpendicular(CoordinateVector first, CoordinateVector second)
         {
-            return x._x * y._x + x._y * y._y + x._z * y._z <= Calculator.Tolerance;
+            return IsPerpendicular(first, second, PrecisionModel.Default);
         }
 
         /// <summary>
-        /// Sums the specified <see cref="CoordinateVector" /> instances.
+        /// Determines whether the two <see cref="CoordinateVector" /> instances are perpendicular.
         /// </summary>
-        /// <param name="vectors">The vectors.</param>
-        /// <returns>The sum of the <paramref name="vectors" />.</returns>
-        public static CoordinateVector Sum(IEnumerable<CoordinateVector> vectors)
+        /// <param name="first">The first vector.</param>
+        /// <param name="second">The second vector.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are perpendicular; otherwise <c>false</c>.</returns>
+        public static Boolean IsPerpendicular(CoordinateVector first, CoordinateVector second, PrecisionModel precision)
         {
-            Double sumX = 0, sumY = 0, sumZ = 0;
-            foreach (CoordinateVector vector in vectors)
-            {
-                sumX += vector._x;
-                sumY += vector._y;
-                sumZ += vector._z;
-            }
-            return new CoordinateVector(sumX, sumY, sumZ);
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return first._x * second._x + first._y * second._y + first._z * second._z <= precision.Tolerance(first, second);
         }
 
         /// <summary>
@@ -344,14 +358,46 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
+        /// Sums the specified <see cref="CoordinateVector" /> instances.
+        /// </summary>
+        /// <param name="vectors">The vectors.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The sum of the <paramref name="vectors" />.</returns>
+        public static CoordinateVector Sum(IEnumerable<CoordinateVector> vectors)
+        {
+            Double sumX = 0, sumY = 0, sumZ = 0;
+            foreach (CoordinateVector vector in vectors)
+            {
+                sumX += vector._x;
+                sumY += vector._y;
+                sumZ += vector._z;
+            }
+            return new CoordinateVector(sumX, sumY, sumZ);
+        }
+
+        /// <summary>
+        /// Sums the specified <see cref="CoordinateVector" /> instances.
+        /// </summary>
+        /// <param name="vectors">The vectors.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The sum of the <paramref name="vectors" />.</returns>
+        public static CoordinateVector Sum(IEnumerable<CoordinateVector> vectors, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(Sum(vectors));
+        }
+
+        /// <summary>
         /// Computes the distance between two <see cref="CoordinateVector" /> instances.
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns>The distance between the two <see cref="CoordinateVector" /> instances.</returns>
-        public static Double Distance(CoordinateVector x, CoordinateVector y)
+        public static Double Distance(CoordinateVector first, CoordinateVector second)
         {
-            return Math.Sqrt(Calculator.Pow(x._x - y._x, 2) + Calculator.Pow(x._y - y._y, 2) + Calculator.Pow(x._z - y._z, 2));
+            return Math.Sqrt(Calculator.Pow(first._x - second._x, 2) + Calculator.Pow(first._y - second._y, 2) + Calculator.Pow(first._z - second._z, 2));
         }
 
         /// <summary>
@@ -360,9 +406,9 @@ namespace ELTE.AEGIS
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns>The dot product of two <see cref="CoordinateVector" /> instances.</returns>
-        public static Double DotProduct(CoordinateVector x, CoordinateVector y)
+        public static Double DotProduct(CoordinateVector first, CoordinateVector second)
         {
-            return x._x * y._x + x._y * y._y + x._z * y._z;
+            return first._x * second._x + first._y * second._y + first._z * second._z;
         }
 
         /// <summary>
@@ -371,9 +417,9 @@ namespace ELTE.AEGIS
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns>The perp product of two <see cref="CoordinateVector" /> instances.</returns>
-        public static Double PerpProduct(CoordinateVector x, CoordinateVector y)
+        public static Double PerpProduct(CoordinateVector first, CoordinateVector second)
         {
-            return x._x * y._y - x._y * y._x;
+            return first._x * second._y - first._y * second._x;
         }
 
         /// <summary>
@@ -382,9 +428,9 @@ namespace ELTE.AEGIS
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
         /// <returns>The cross product of two <see cref="CoordinateVector" /> instances.</returns>
-        public static CoordinateVector CrossProduct(CoordinateVector x, CoordinateVector y)
+        public static CoordinateVector CrossProduct(CoordinateVector first, CoordinateVector second)
         {
-            return new CoordinateVector(x._y * y._z - x._z * y._y, x._z * y._x - x._x * y._z, x._x * y._y - x._y * y._x);
+            return new CoordinateVector(first._y * second._z - first._z * second._y, first._z * second._x - first._x * second._z, first._x * second._y - first._y * second._x);
         }
 
         #endregion

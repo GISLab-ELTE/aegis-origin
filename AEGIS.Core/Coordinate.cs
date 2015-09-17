@@ -299,7 +299,7 @@ namespace ELTE.AEGIS
         /// <param name="coordinates">The array of coordinates.</param>
         /// <param name="count">The number of coordinates taken from the array.</param>
         /// <returns>The centroid of the specified <see cref="Coordinate" /> instances.</returns>
-        /// <exception cref="System.ArgumentNullException">coordinates;The coordinate array is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The coordinate array is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The count is negative.
         /// or
@@ -334,9 +334,30 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Computes the centroid of the specified <see cref="Coordinate" /> instances.
         /// </summary>
+        /// <param name="coordinates">The array of coordinates.</param>
+        /// <param name="count">The number of coordinates taken from the array.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The centroid of the specified <see cref="Coordinate" /> instances.</returns>
+        /// <exception cref="System.ArgumentNullException">The coordinate array is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The count is negative.
+        /// or
+        /// The count is greater than the number of elements in the array.
+        /// </exception>
+        public static Coordinate Centroid(Coordinate[] coordinates, Int32 count, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(Centroid(coordinates, count));
+        }
+
+        /// <summary>
+        /// Computes the centroid of the specified <see cref="Coordinate" /> instances.
+        /// </summary>
         /// <param name="coordinates">The coordinates.</param>
         /// <returns>The centroid of the specified <see cref="Coordinate" /> instances.</returns>
-        /// <exception cref="System.ArgumentNullException">coordinates;The coordinate collection is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The coordinate collection is null.</exception>
         public static Coordinate Centroid(IEnumerable<Coordinate> coordinates)
         {
             if (coordinates == null)
@@ -363,6 +384,21 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
+        /// Computes the centroid of the specified <see cref="Coordinate" /> instances.
+        /// </summary>
+        /// <param name="coordinates">The coordinates.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The centroid of the specified <see cref="Coordinate" /> instances.</returns>
+        /// <exception cref="System.ArgumentNullException">coordinates;The coordinate collection is null.</exception>
+        public static Coordinate Centroid(IEnumerable<Coordinate> coordinates, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(Centroid(coordinates));
+        }
+
+        /// <summary>
         /// Computes the lower bound of the specified <see cref="Coordinate" /> instances.
         /// </summary>
         /// <param name="coordinates">The coordinates.</param>
@@ -380,6 +416,20 @@ namespace ELTE.AEGIS
         public static Coordinate LowerBound(IEnumerable<Coordinate> coordinates)
         {
             return new Coordinate(coordinates.Min(coordinate => coordinate.X), coordinates.Min(coordinate => coordinate.Y), coordinates.Min(coordinate => coordinate.Z));
+        }
+
+        /// <summary>
+        /// Computes the lower bound of the specified <see cref="Coordinate" /> instances.
+        /// </summary>
+        /// <param name="coordinates">The coordinates.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The lower bound of the specified <see cref="Coordinate" /> instances.</returns>
+        public static Coordinate LowerBound(IEnumerable<Coordinate> coordinates, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(LowerBound(coordinates));
         }
 
         /// <summary>
@@ -403,6 +453,20 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
+        /// Computes the upper bound of the specified <see cref="Coordinate" /> instances.
+        /// </summary>
+        /// <param name="coordinates">The coordinates.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The upper bound of the specified <see cref="Coordinate" /> instances.</returns>
+        public static Coordinate UpperBound(IEnumerable<Coordinate> coordinates, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+
+            return precision.MakePrecise(UpperBound(coordinates));
+        }
+
+        /// <summary>
         /// Computes the orientation of the specified <see cref="Coordinate" /> instances.
         /// </summary>
         /// <param name="origin">The coordinate of origin.</param>
@@ -411,13 +475,31 @@ namespace ELTE.AEGIS
         /// <returns>The orientation of the second <see cref="Coordinate" /> to the first with respect to origin.</returns>
         public static Orientation Orientation(Coordinate origin, Coordinate first, Coordinate second)
         {
+            return Orientation(origin, first, second, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the orientation of the specified <see cref="Coordinate" /> instances.
+        /// </summary>
+        /// <param name="origin">The coordinate of origin.</param>
+        /// <param name="first">The first coordinate.</param>
+        /// <param name="second">The second coordinate.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The orientation of the second <see cref="Coordinate" /> to the first with respect to origin.</returns>
+        public static Orientation Orientation(Coordinate origin, Coordinate first, Coordinate second, PrecisionModel precision)
+        {
+            if (precision == null)
+                precision = PrecisionModel.Default;
+            
             Double det = (first.X - origin.X) * (second.Y - origin.Y) - (first.Y - origin.Y) * (second.X - origin.X);
+
+            if (Math.Abs(det) < precision.Tolerance(origin, first, second))
+                return AEGIS.Orientation.Collinear;
+
             if (det > 0)
                 return AEGIS.Orientation.CounterClockwise;
-            else if (det < 0)
-                return AEGIS.Orientation.Clockwise;
             else
-                return AEGIS.Orientation.Collinear;
+                return AEGIS.Orientation.Clockwise;
         }
 
         /// <summary>
