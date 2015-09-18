@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -1025,7 +1025,7 @@ namespace ELTE.AEGIS.Algorithms
             if (!Envelope.FromCoordinates(shell).Contains(coordinate))
                 return RelativeLocation.Exterior;
 
-            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, coordinate, true);
+            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, coordinate, true, precision);
             algorithm.Compute();
 
             // Probably the Winding Number algorithm already detected that the coordinate is on the boundary of the polygon shell.
@@ -1044,7 +1044,7 @@ namespace ELTE.AEGIS.Algorithms
                     if (hole.Count < 3 || hole.Any(coord => !coord.IsValid))
                         return RelativeLocation.Undefined;
 
-                    algorithm = new WindingNumberAlgorithm(hole, coordinate, true);
+                    algorithm = new WindingNumberAlgorithm(hole, coordinate, true, precision);
                     algorithm.Compute();
 
                     // Probably the Winding Number algorithm already detected that the coordinate is on the boundary of a hole shell.

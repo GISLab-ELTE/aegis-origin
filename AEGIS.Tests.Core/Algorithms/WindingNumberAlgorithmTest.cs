@@ -1,5 +1,5 @@
 ﻿/// <copyright file="WindingNumberAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 new Coordinate(0, 0),
             };
 
-            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, new Coordinate(0, 5), true);
+            WindingNumberAlgorithm algorithm = new WindingNumberAlgorithm(shell, new Coordinate(0, 5), true, PrecisionModel.Default);
             algorithm.Compute();
             Assert.IsTrue(algorithm.IsOnBoundary.Value);
 
@@ -191,7 +191,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 new Coordinate(0, 0),
             };
 
-            algorithm = new WindingNumberAlgorithm(shell, new Coordinate(5, 12.5), true);
+            algorithm = new WindingNumberAlgorithm(shell, new Coordinate(5, 12.5), true, PrecisionModel.Default);
             algorithm.Compute();
             Assert.IsTrue(algorithm.IsOnBoundary.Value);
 

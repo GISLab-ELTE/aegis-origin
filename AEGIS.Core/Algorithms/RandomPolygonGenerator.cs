@@ -28,15 +28,28 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Generates a random polygon.
         /// </summary>
-        /// <param name="vertexNumber">The number of the polygon vertices.</param>
-        /// <param name="rectangleMinCoordinate">The bottom-left coordinate of the rectangle you want to place the random shaped polygon in.</param>
-        /// <param name="rectangleMaxCoordinate">The top-right coordinate of the rectangle you want to place the random shaped polygon in.</param>
+        /// <param name="coordinateNumber">The number of the polygon coordinates.</param>
+        /// <param name="minCoordinate">The lower boundary of the generated polygon.</param>
+        /// <param name="maxCoordinate">The upper boundary of the generated polygon.</param>
         /// <returns>The generated polygon.</returns>
-        public static IBasicPolygon CreateRandomPolygon(Int32 vertexNumber, Coordinate rectangleMinCoordinate, Coordinate rectangleMaxCoordinate)
+        public static IBasicPolygon CreateRandomPolygon(Int32 coordinateNumber, Coordinate minCoordinate, Coordinate maxCoordinate)
         {
-            return CreateRandomPolygon(vertexNumber, rectangleMinCoordinate, rectangleMaxCoordinate, 0.1);
+            return CreateRandomPolygon(coordinateNumber, minCoordinate, maxCoordinate, 0.1, PrecisionModel.Default);
         }
 
+        /// <summary>
+        /// Generates a random polygon.
+        /// </summary>
+        /// <param name="coordinateNumber">The number of the polygon coordinates.</param>
+        /// <param name="minCoordinate">The lower boundary of the generated polygon.</param>
+        /// <param name="maxCoordinate">The upper boundary of the generated polygon.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The generated polygon.</returns>
+        public static IBasicPolygon CreateRandomPolygon(Int32 coordinateNumber, Coordinate minCoordinate, Coordinate maxCoordinate, PrecisionModel precisionModel)
+        {
+            return CreateRandomPolygon(coordinateNumber, minCoordinate, maxCoordinate, 0.1, precisionModel);
+        }
+        
         /// <summary>
         /// Generates a random polygon.
         /// </summary>
@@ -49,6 +62,23 @@ namespace ELTE.AEGIS.Algorithms
         /// Statistics for <paramref name="convexRation" /> with respect to chance of convex polygon: 0.1 => 1%, 0.2 => 3%, 0.3 => 6%, 0.4 => 10%, 0.5 => 15%, 0.6 => 25%, 0.7 => 39%, 0.8 => 53%, 0.9 => 72%, 1.0 => 100%
         /// </remarks>
         public static IBasicPolygon CreateRandomPolygon(Int32 coordinateNumber, Coordinate minCoordinate, Coordinate maxCoordinate, Double convexityRatio)
+        {
+            return CreateRandomPolygon(coordinateNumber, minCoordinate, maxCoordinate, convexityRatio, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Generates a random polygon.
+        /// </summary>
+        /// <param name="coordinateNumber">The number of the polygon coordinates.</param>
+        /// <param name="minCoordinate">The lower boundary of the generated polygon.</param>
+        /// <param name="maxCoordinate">The upper boundary of the generated polygon.</param>
+        /// <param name="convexityRatio">The convexity ratio.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The generated polygon.</returns>
+        /// <remarks>
+        /// Statistics for <paramref name="convexRation" /> with respect to chance of convex polygon: 0.1 => 1%, 0.2 => 3%, 0.3 => 6%, 0.4 => 10%, 0.5 => 15%, 0.6 => 25%, 0.7 => 39%, 0.8 => 53%, 0.9 => 72%, 1.0 => 100%
+        /// </remarks>
+        public static IBasicPolygon CreateRandomPolygon(Int32 coordinateNumber, Coordinate minCoordinate, Coordinate maxCoordinate, Double convexityRatio, PrecisionModel precisionModel)
         {
             // source: http://csharphelper.com/blog/2012/08/generate-random-polygons-in-c/
 
@@ -99,8 +129,8 @@ namespace ELTE.AEGIS.Algorithms
 
             for (Int32 i = 0; i < coordinateNumber; i++)
             {
-                shell.Add(new Coordinate(midPointX + (halfWidth * points[i] * Math.Cos(theta)),
-                                         midPointY + (halfHeight * points[i] * Math.Sin(theta))));
+                shell.Add(precisionModel.MakePrecise(new Coordinate(midPointX + (halfWidth * points[i] * Math.Cos(theta)),
+                                                                    midPointY + (halfHeight * points[i] * Math.Sin(theta)))));
                 theta += angles[i];
             }
             shell.Add(shell[0]);

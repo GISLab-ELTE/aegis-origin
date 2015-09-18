@@ -23,7 +23,8 @@ namespace ELTE.AEGIS.Algorithms
     /// </summary>
     /// <remarks>
     /// Monotone subdivision is an algorithm for creating the triangulation of the polygon by partitioning to trapezoids, 
-    /// converting them to monotone subdivisions, and triangulating each montone piece.
+    /// converting them to monotone subdivisions, and triangulating each monotone piece. 
+    /// The algorithm can only handle simple polygons without holes. When a polygon with holes is specified, the holes will be ignored.
     /// </remarks>
     public class MonotoneSubdivisionAlgorithm
     {
@@ -47,6 +48,12 @@ namespace ELTE.AEGIS.Algorithms
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
 
         /// <summary>
         /// Gets the coordinates of the polygon shell.
@@ -88,6 +95,17 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         public MonotoneSubdivisionAlgorithm(IList<Coordinate> shell)
+            : this(shell, PrecisionModel.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonotoneSubdivisionAlgorithm"/> class.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public MonotoneSubdivisionAlgorithm(IList<Coordinate> shell, PrecisionModel precisionModel)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -103,6 +121,7 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -127,9 +146,9 @@ namespace ELTE.AEGIS.Algorithms
             while (shell.Count != 4)
             {
                 Coordinate centroid = LineAlgorithms.Centroid(shell[(shell.Count + coordinateIndex - 1) % coordinateCount],
-                                                              shell[(shell.Count + coordinateIndex + 1) % coordinateCount]);
+                                                              shell[(shell.Count + coordinateIndex + 1) % coordinateCount], PrecisionModel);
                 nextShell.Remove(nextShell[coordinateIndex]);
-                if (WindingNumberAlgorithm.IsInsidePolygon(shell, centroid) && !ShamosHoeyAlgorithm.Intersects(nextShell))
+                if (WindingNumberAlgorithm.IsInsidePolygon(shell, centroid, PrecisionModel) && !ShamosHoeyAlgorithm.Intersects(nextShell, PrecisionModel))
                 {
                     triangle = new Coordinate[3]
                     {
@@ -160,11 +179,53 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Determines the triangles of the polygon.
         /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="source">The polygon.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        public static IList<Coordinate[]> Triangulate(IList<Coordinate> shell)
+        public static IList<Coordinate[]> Triangulate(IBasicPolygon source)
         {
-            return new MonotoneSubdivisionAlgorithm(shell).Result;
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
+
+            return new MonotoneSubdivisionAlgorithm(source.Shell.Coordinates).Result;
+        }
+
+        /// <summary>
+        /// Determines the triangles of the polygon.
+        /// </summary>
+        /// <param name="source">The polygon.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static IList<Coordinate[]> Triangulate(IBasicPolygon source, PrecisionModel precisionModel)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
+
+            return new MonotoneSubdivisionAlgorithm(source.Shell.Coordinates, precisionModel).Result;
+        }
+
+        /// <summary>
+        /// Determines the triangles of the polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static IList<Coordinate[]> Triangulate(IList<Coordinate> source)
+        {
+            return new MonotoneSubdivisionAlgorithm(source).Result;
+        }
+
+        /// <summary>
+        /// Determines the triangles of the polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        public static IList<Coordinate[]> Triangulate(IList<Coordinate> source, PrecisionModel precisionModel)
+        {
+            return new MonotoneSubdivisionAlgorithm(source, precisionModel).Result;
         }
 
         #endregion

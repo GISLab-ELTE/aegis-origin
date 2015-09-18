@@ -72,9 +72,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             if (geometry is IPoint)
                 return factory.CreatePoint((geometry as IPoint).Coordinate);
             if (geometry is ICurve)
-                return factory.CreatePolygon(BentleyFaustPreparataAlgorithm.ComputeApproximateConvexHull((geometry as ILineString).Coordinates));
+                return factory.CreatePolygon(BentleyFaustPreparataAlgorithm.ApproximateConvexHull((geometry as ILineString).Coordinates, geometry.PrecisionModel));
             if (geometry is IPolygon)
-                return factory.CreatePolygon(BentleyFaustPreparataAlgorithm.ComputeApproximateConvexHull((geometry as IPolygon).Shell.Coordinates));
+                return factory.CreatePolygon(BentleyFaustPreparataAlgorithm.ApproximateConvexHull((geometry as IPolygon).Shell.Coordinates, geometry.PrecisionModel));
 
             throw new ArgumentException("The operation is not supported with the specified geometry type.");
         }

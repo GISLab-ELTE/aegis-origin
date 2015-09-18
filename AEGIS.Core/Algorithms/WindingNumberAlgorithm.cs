@@ -1,5 +1,5 @@
 ﻿/// <copyright file="WindingNumberAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Algorithms
 {
@@ -61,6 +62,12 @@ namespace ELTE.AEGIS.Algorithms
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
 
         /// <summary>
         /// Gets or sets the coordinates of the polygon shell.
@@ -145,13 +152,14 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="coordinate">The coordinate for which the Winding Number is calculated.</param>
         /// <param name="verifyBoundary">A value indicating whether to verify if the coordinate is on the boundary.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The shell must contain at least 3 different coordinates.
         /// or
         /// The first and the last coordinates must be equal.
         /// </exception>
-        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary = false)
+        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary, PrecisionModel precisionModel)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -171,6 +179,7 @@ namespace ELTE.AEGIS.Algorithms
             _coordinate = coordinate;
             _verifyBoundary = verifyBoundary;
             _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -195,7 +204,7 @@ namespace ELTE.AEGIS.Algorithms
                 // An upward crossing.
                 if (_shell[coordIndex].Y <= _coordinate.Y && _shell[(coordIndex + 1) % _shell.Count].Y > _coordinate.Y)
                 {
-                    orientation = Coordinate.Orientation(_coordinate, _shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count]);
+                    orientation = Coordinate.Orientation(_coordinate, _shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count], PrecisionModel);
                     switch (orientation)
                     {
                         case Orientation.CounterClockwise:
@@ -211,7 +220,7 @@ namespace ELTE.AEGIS.Algorithms
                 // A downward crossing.
                 else if (_shell[coordIndex].Y > _coordinate.Y && _shell[(coordIndex + 1) % _shell.Count].Y <= _coordinate.Y)
                 {
-                    orientation = Coordinate.Orientation(_coordinate, _shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count]);
+                    orientation = Coordinate.Orientation(_coordinate, _shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count], PrecisionModel);
                     switch (orientation)
                     {
                         case Orientation.Clockwise:
@@ -244,7 +253,7 @@ namespace ELTE.AEGIS.Algorithms
             IsOnBoundary = false;
 
             for (Int32 coordIndex = 0; coordIndex < _shell.Count - 1 || (coordIndex < _shell.Count && _shell[0] != _shell[_shell.Count - 1]); coordIndex++)
-                if (LineAlgorithms.Contains(_shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count], _coordinate))
+                if (LineAlgorithms.Contains(_shell[coordIndex], _shell[(coordIndex + 1) % _shell.Count], _coordinate, PrecisionModel))
                 {
                     IsOnBoundary = true;
                     break;
@@ -258,19 +267,41 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>
-        /// <param name="polygon">The polygon.</param>
+        /// <param name="source">The polygon.</param>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns><c>true</c> if the polygon contains <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <remarks>
         /// This method might also result <c>true</c> for coordinates on the boundary of the polygon.
         /// </remarks>
-        public static Boolean IsInsidePolygon(IBasicPolygon polygon, Coordinate coordinate)
+        public static Boolean IsInsidePolygon(IBasicPolygon source, Coordinate coordinate)
         {
-            if (polygon == null)
-                throw new ArgumentNullException("polygon", "The polygon is null.");
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return false;
 
-            return IsInsidePolygon(polygon.Shell, polygon.Holes, coordinate);
+            return IsInsidePolygon(source.Shell, source.Holes, coordinate);
+        }
+
+        /// <summary>
+        /// Determines whether a coordinate is inside a polygon.
+        /// </summary>
+        /// <param name="source">The polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon.
+        /// </remarks>
+        public static Boolean IsInsidePolygon(IBasicPolygon source, Coordinate coordinate, PrecisionModel precisionModel)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return false;
+
+            return IsInsidePolygon(source.Shell, source.Holes, coordinate, precisionModel);
         }
 
         /// <summary>
@@ -288,7 +319,26 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            return (new WindingNumberAlgorithm(shell.Coordinates, coordinate).Result != 0);
+            return IsInsidePolygon(shell.Coordinates, null, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether a coordinate is inside a polygon.
+        /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon.
+        /// </remarks>
+        public static Boolean IsInsidePolygon(IBasicLineString shell, Coordinate coordinate, PrecisionModel precisionModel)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
+
+            return IsInsidePolygon(shell.Coordinates, null, coordinate, precisionModel);
         }
 
         /// <summary>
@@ -303,10 +353,23 @@ namespace ELTE.AEGIS.Algorithms
         /// </remarks>
         public static Boolean IsInsidePolygon(IList<Coordinate> shell, Coordinate coordinate)
         {
-            if (shell == null)
-                throw new ArgumentNullException("shell", "The shell is null.");
+            return IsInsidePolygon(shell, null, coordinate, PrecisionModel.Default);
+        }
 
-            return (new WindingNumberAlgorithm(shell, coordinate).Result != 0);
+        /// <summary>
+        /// Determines whether a coordinate is inside a polygon.
+        /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate"/>; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon.
+        /// </remarks>
+        public static Boolean IsInsidePolygon(IList<Coordinate> shell, Coordinate coordinate, PrecisionModel precisionModel)
+        {
+            return IsInsidePolygon(shell, null, coordinate, precisionModel);
         }
 
         /// <summary>
@@ -326,24 +389,30 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            if (new WindingNumberAlgorithm(shell.Coordinates, coordinate).Result == 0)
-                return false;
-
-            if (holes != null)
-            {
-                foreach (IBasicLineString hole in holes)
-                {
-                    if (hole == null)
-                        throw new ArgumentException("A hole is null.", "hole");
-
-                    if (new WindingNumberAlgorithm(hole.Coordinates, coordinate).Result != 0)
-                        return false;
-                }
-            }
-
-            return true;
+            return IsInsidePolygon(shell.Coordinates, holes != null ? holes.Select(hole => hole.Coordinates) : null, coordinate, PrecisionModel.Default);
         }
+        
+        /// <summary>
+        /// Determines whether a coordinate is inside a polygon.
+        /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate" />; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
+        /// <exception cref="System.ArgumentException">A hole is null.</exception>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon or the holes.
+        /// </remarks>
+        public static Boolean IsInsidePolygon(IBasicLineString shell, IEnumerable<IBasicLineString> holes, Coordinate coordinate, PrecisionModel precisionModel)
+        {
+            if (shell == null)
+                throw new ArgumentNullException("shell", "The shell is null.");
 
+            return IsInsidePolygon(shell.Coordinates, holes != null ? holes.Select(hole => hole.Coordinates) : null, coordinate, precisionModel);
+        }
+        
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>
@@ -356,10 +425,26 @@ namespace ELTE.AEGIS.Algorithms
         /// </remarks>
         public static Boolean IsInsidePolygon(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate)
         {
+            return IsInsidePolygon(shell, holes, coordinate, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Determines whether a coordinate is inside a polygon.
+        /// </summary>
+        /// <param name="shell">The shell of the polygon.</param>
+        /// <param name="holes">The holes of the polygon.</param>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns><c>true</c> if the polygon contains <paramref name="coordinate"/>; otherwise <c>false</c>.</returns>
+        /// <remarks>
+        /// This method might also result <c>true</c> for coordinates on the boundary of the polygon or the holes.
+        /// </remarks>
+        public static Boolean IsInsidePolygon(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precisionModel)
+        {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            if (new WindingNumberAlgorithm(shell, coordinate).Result == 0)
+            if (new WindingNumberAlgorithm(shell, coordinate, false, precisionModel).Result == 0)
                 return false;
 
             if (holes != null)
@@ -369,7 +454,7 @@ namespace ELTE.AEGIS.Algorithms
                     if (hole == null)
                         throw new ArgumentException("A hole is null.", "hole");
 
-                    if (new WindingNumberAlgorithm(hole, coordinate).Result != 0)
+                    if (new WindingNumberAlgorithm(hole, coordinate, false, precisionModel).Result != 0)
                         return false;
                 }
             }

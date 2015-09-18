@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BentleyFaustPreparataAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -72,6 +72,12 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
+
+        /// <summary>
         /// Gets the source coordinates.
         /// </summary>
         /// <value>The read-only list of source coordinates.</value>
@@ -109,27 +115,25 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="source">The source coordinates.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyFaustPreparataAlgorithm(IBasicPolygon source)
+        public BentleyFaustPreparataAlgorithm(IList<Coordinate> source)
+            : this(source, PrecisionModel.Default)
         {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _source = source.Shell.Coordinates;
-            _hasResult = false;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BentleyFaustPreparataAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public BentleyFaustPreparataAlgorithm(IList<Coordinate> source) 
+        public BentleyFaustPreparataAlgorithm(IList<Coordinate> source, PrecisionModel precisionModel)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source;
             _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -217,13 +221,13 @@ namespace ELTE.AEGIS.Algorithms
                 if (_source[i].X == xMin || _source[i].X == xMax)
                     continue;
 
-                if (Coordinate.Orientation(_source[minMin], _source[maxMin], _source[i]) == Orientation.Clockwise) // below lower line
+                if (Coordinate.Orientation(_source[minMin], _source[maxMin], _source[i], PrecisionModel) == Orientation.Clockwise) // below lower line
                 {
                     b = Convert.ToInt32(numberOfContainers * (_source[i].X - xMin) / (xMax - xMin)) + 1;
                     if (binArray[b].Min == null || _source[i].Y < _source[binArray[b].Min.Value].Y)
                         binArray[b].Min = i;
                 }
-                else if (Coordinate.Orientation(_source[minMin], _source[maxMin], _source[i]) == Orientation.CounterClockwise) // above upper line
+                else if (Coordinate.Orientation(_source[minMin], _source[maxMin], _source[i], PrecisionModel) == Orientation.CounterClockwise) // above upper line
                 {
                     b = Convert.ToInt32(numberOfContainers * (_source[i].X - xMin) / (xMax - xMin)) + 1;
                     if (binArray[b].Max == null || _source[i].Y > _source[binArray[b].Max.Value].Y)
@@ -243,7 +247,7 @@ namespace ELTE.AEGIS.Algorithms
 
                 while (topOfStack > 0) // there are at least 2 points on the stack
                 {
-                    if (Coordinate.Orientation(hullStack[topOfStack - 1], hullStack[topOfStack], currentCoordinate) == Orientation.CounterClockwise)
+                    if (Coordinate.Orientation(hullStack[topOfStack - 1], hullStack[topOfStack], currentCoordinate, PrecisionModel) == Orientation.CounterClockwise)
                         break;
                     else
                         --topOfStack;
@@ -270,7 +274,7 @@ namespace ELTE.AEGIS.Algorithms
 
                 while (topOfStack > bottomOfStack) // there are at least 2 points on the upper stack
                 {
-                    if (Coordinate.Orientation(hullStack[topOfStack - 1], hullStack[topOfStack], currentCoordinate) == Orientation.CounterClockwise)
+                    if (Coordinate.Orientation(hullStack[topOfStack - 1], hullStack[topOfStack], currentCoordinate, PrecisionModel) == Orientation.CounterClockwise)
                         break;
                     else
                         topOfStack--;
@@ -305,9 +309,26 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="source">The source polygon.</param>
         /// <returns>The approximate convex hull of <see cref="source" />.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> ComputeApproximateConvexHull(IBasicPolygon source)
+        public static IList<Coordinate> ApproximateConvexHull(IBasicPolygon source)
         {
-            return new BentleyFaustPreparataAlgorithm(source).Result;
+            return ApproximateConvexHull(source, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Computes the approximate convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The source polygon.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The approximate convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ApproximateConvexHull(IBasicPolygon source, PrecisionModel precisionModel)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
+
+            return new BentleyFaustPreparataAlgorithm(source.Shell.Coordinates, precisionModel).Result;
         }
 
         /// <summary>
@@ -316,9 +337,21 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="source">The coordinates of the polygon shell.</param>
         /// <returns>The approximate convex hull of <see cref="source" />.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        public static IList<Coordinate> ComputeApproximateConvexHull(IList<Coordinate> source)
+        public static IList<Coordinate> ApproximateConvexHull(IList<Coordinate> source)
         {
             return new BentleyFaustPreparataAlgorithm(source).Result;
+        }
+
+        /// <summary>
+        /// Computes the approximate convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The approximate convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ApproximateConvexHull(IList<Coordinate> source, PrecisionModel precisionModel)
+        {
+            return new BentleyFaustPreparataAlgorithm(source, precisionModel).Result;
         }
 
         #endregion

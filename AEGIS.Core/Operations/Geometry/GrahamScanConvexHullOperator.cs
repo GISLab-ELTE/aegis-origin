@@ -72,9 +72,9 @@ namespace ELTE.AEGIS.Operations.Geometry
             if (geometry is IPoint)
                 return factory.CreatePoint((geometry as IPoint).Coordinate);
             if (geometry is ICurve)
-                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as ILineString).Coordinates));
+                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as ILineString).Coordinates, geometry.PrecisionModel));
             if (geometry is IPolygon)
-                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as IPolygon).Shell.Coordinates));
+                return factory.CreatePolygon(GrahamScanAlgorithm.ComputeConvexHull((geometry as IPolygon).Shell.Coordinates, geometry.PrecisionModel));
 
             throw new ArgumentException("The operation is not supported with the specified geometry type.");
         }

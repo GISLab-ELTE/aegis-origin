@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonCentroidAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -115,7 +115,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             Assert.Throws<ArgumentNullException>(() => PolygonCentroidAlgorithm.ComputeCentroid((IBasicPolygon)null));
             Assert.Throws<ArgumentNullException>(() => PolygonCentroidAlgorithm.ComputeCentroid((IList<Coordinate>)null));
-            Assert.Throws<ArgumentNullException>(() => PolygonCentroidAlgorithm.ComputeCentroid((IList<Coordinate>)null, null));
+            Assert.Throws<ArgumentNullException>(() => PolygonCentroidAlgorithm.ComputeCentroid((IList<Coordinate>)null, null, PrecisionModel.Default));
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonCentroidAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -64,6 +64,12 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
+
+        /// <summary>
         /// Gets the coordinates of the polygon shell.
         /// </summary>
         /// <value>The read-only list of coordinates representing the polygon shell.</value>
@@ -111,39 +117,20 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
         /// </summary>
-        /// <param name="source">The source polygon.</param>
-        public PolygonCentroidAlgorithm(IBasicPolygon source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-
-            _shell = source.Shell.Coordinates;
-            _holes = source.Holes.Select(hole => hole.Coordinates);
-            _result = Coordinate.Undefined;
-            _hasResult = false;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
-        /// </summary>
-        /// <param name="shell">The coordinates of the polygon shell.</param>
-        public PolygonCentroidAlgorithm(IList<Coordinate> shell) 
-        {
-            if (shell == null)
-                throw new ArgumentNullException("shell", "The shell is null.");
-
-            _shell = shell;
-            _holes = null;
-            _result = Coordinate.Undefined;
-            _hasResult = false;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
-        /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="holes">The collection of coordinates representing the polygon holes.</param>
         public PolygonCentroidAlgorithm(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes) 
+            : this(shell, holes, PrecisionModel.Default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolygonCentroidAlgorithm" /> class.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <param name="holes">The collection of coordinates representing the polygon holes.</param>
+        public PolygonCentroidAlgorithm(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, PrecisionModel precisionModel)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
@@ -152,6 +139,7 @@ namespace ELTE.AEGIS.Algorithms
             _holes = holes;
             _result = Coordinate.Undefined;
             _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -163,9 +151,6 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         public void Compute()
         {
-            if (_hasResult)
-                return;
-
             if (_holes == null)
             {
                 // in case there are no holes, a simplified algorithm may be used
@@ -203,12 +188,6 @@ namespace ELTE.AEGIS.Algorithms
 
             for (Int32 i = 0; i < _shell.Count - 1; i++)
             {
-                if (_shell[i].Z != _shell[0].Z) // the coordinates are not in one plane
-                {
-                    _hasResult = true;
-                    return;
-                }
-
                 resultX += (_shell[i].X + _shell[i + 1].X) * (_shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y);
                 resultY += (_shell[i].Y + _shell[i + 1].Y) * (_shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y);
                 _area += _shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y;
@@ -217,7 +196,7 @@ namespace ELTE.AEGIS.Algorithms
             resultX /= (6 * _area);
             resultY /= (6 * _area);
 
-            _result = new Coordinate(resultX, resultY, _shell[0].Z);
+            _result = PrecisionModel.MakePrecise(new Coordinate(resultX, resultY, _shell[0].Z));
             _hasResult = true;
         }
 
@@ -239,24 +218,18 @@ namespace ELTE.AEGIS.Algorithms
 
             AddCoordinates(_shell, 1, ref resultX, ref resultY);
 
-            if (_hasResult)
-                return;
-
             foreach (IList<Coordinate> hole in _holes)
             {
-                if (_hasResult)
-                    return;
+                if (hole == null)
+                    continue;
 
                 AddCoordinates(hole, -1, ref resultX, ref resultY);            
             }
 
-            if (_hasResult)
-                return;
-
             resultX = _result.X / 3 / _area;
             resultY = _result.Y / 3 / _area;
 
-            _result = new Coordinate(resultX, resultY, resultZ);
+            _result = PrecisionModel.MakePrecise(new Coordinate(resultX, resultY, resultZ));
             _hasResult = true;
         }
 
@@ -275,18 +248,12 @@ namespace ELTE.AEGIS.Algorithms
         protected void AddCoordinates(IList<Coordinate> coordinates, Int32 sign, ref Double resultX, ref Double resultY)
         {
             if (coordinates.Count < 3) // if there are not enough coordinates
-                _hasResult = true;
+                return;
 
             for (Int32 i = 0; i < coordinates.Count - 1; i++)
             {
-                if (coordinates[i].Z != coordinates[0].Z)
-                    _hasResult = true;
-
                 AddTriangle(_baseCoordinate, coordinates[i], coordinates[i + 1], sign, ref resultX, ref resultY);
             }
-
-            if (coordinates[coordinates.Count - 1].Z != coordinates[0].Z)
-                _hasResult = true;
         }
 
         /// <summary>
@@ -318,7 +285,23 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The centroid of the polygon.</returns>
         public static Coordinate ComputeCentroid(IBasicPolygon source)
         {
-            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(source);
+            return ComputeCentroid(source, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Compute the centroid of the polygon.
+        /// </summary>
+        /// <param name="source">The polygon.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The centroid of the polygon.</returns>
+        public static Coordinate ComputeCentroid(IBasicPolygon source, PrecisionModel precisionModel)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return Coordinate.Undefined;
+
+            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(source.Shell.Coordinates, source.Holes != null ? source.Holes.Select(hole => hole != null ? hole.Coordinates : null) : null, precisionModel);
             algorithm.Compute();
 
             return algorithm.Result;
@@ -331,10 +314,18 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The centroid of the polygon.</returns>
         public static Coordinate ComputeCentroid(IList<Coordinate> shell)
         {
-            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(shell);
-            algorithm.Compute();
+            return ComputeCentroid(shell, PrecisionModel.Default);
+        }
 
-            return algorithm.Result;
+        /// <summary>
+        /// Compute the centroid of the polygon.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The centroid of the polygon.</returns>
+        public static Coordinate ComputeCentroid(IList<Coordinate> shell, PrecisionModel precisionModel)
+        {
+            return ComputeCentroid(shell, null, precisionModel);
         }
 
         /// <summary>
@@ -345,7 +336,19 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The centroid of the polygon.</returns>
         public static Coordinate ComputeCentroid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes)
         {
-            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(shell, holes);
+            return ComputeCentroid(shell, holes, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Compute the centroid of the polygon.
+        /// </summary>
+        /// <param name="shell">The coordinates of the polygon shell.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <param name="holes">The collection of coordinates representing the poolygon holes.</param>
+        /// <returns>The centroid of the polygon.</returns>
+        public static Coordinate ComputeCentroid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, PrecisionModel precisionModel)
+        {
+            PolygonCentroidAlgorithm algorithm = new PolygonCentroidAlgorithm(shell, holes, precisionModel);
             algorithm.Compute();
 
             return algorithm.Result;

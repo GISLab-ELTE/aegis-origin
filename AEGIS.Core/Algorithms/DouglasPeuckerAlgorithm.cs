@@ -61,6 +61,12 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
+
+        /// <summary>
         /// Gets the source coordinates.
         /// </summary>
         /// <value>The read-only list of source coordinates.</value>
@@ -111,6 +117,27 @@ namespace ELTE.AEGIS.Algorithms
             _source = source;
             _delta = delta;
             _hasResult = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DouglasPeuckerAlgorithm" /> class.
+        /// </summary>
+        /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="delta">The tolarance.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
+        public DouglasPeuckerAlgorithm(IList<Coordinate> source, Double delta, PrecisionModel precisionModel)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (delta <= 0)
+                throw new ArgumentOutOfRangeException("delta", "The delta is less than or equal to 0.");
+
+            _source = source;
+            _delta = delta;
+            _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -164,7 +191,7 @@ namespace ELTE.AEGIS.Algorithms
             // find the the most distant coordinate from the line between the starting and ending coordinates
             for (Int32 coordinateIndex = startIndex + 1; coordinateIndex < endIndex; coordinateIndex++)
             {
-                Double distance = LineAlgorithms.Distance(_source[startIndex], _source[endIndex], _source[coordinateIndex]);
+                Double distance = LineAlgorithms.Distance(_source[startIndex], _source[endIndex], _source[coordinateIndex], PrecisionModel);
 
                 if (distance > maxDistance)
                 {
@@ -196,10 +223,26 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
         public static IBasicLineString Simplify(IBasicLineString source, Double delta)
         {
+            return Simplify(source, delta, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Simplifies the specified line string.
+        /// </summary>
+        /// <param name="source">The line string.</param>
+        /// <param name="delta">The tolerance.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The simplified line string.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
+        public static IBasicLineString Simplify(IBasicLineString source, Double delta, PrecisionModel precisionModel)
+        {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
+            if (source.Coordinates == null)
+                return null;
 
-            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source.Coordinates, delta);
+            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source.Coordinates, delta, precisionModel);
             algorithm.Compute();
             return new BasicLineString(algorithm.Result);
         }
@@ -214,17 +257,36 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
         public static IBasicPolygon Simplify(IBasicPolygon source, Double delta)
         {
+            return Simplify(source, delta, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Simplifies the specified polygon.
+        /// </summary>
+        /// <param name="source">The polygon.</param>
+        /// <param name="delta">The tolerance.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The simplified polygon.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
+        public static IBasicPolygon Simplify(IBasicPolygon source, Double delta, PrecisionModel precisionModel)
+        {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
 
-            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source.Shell.Coordinates, delta);
+            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source.Shell.Coordinates, delta, precisionModel);
             algorithm.Compute();
             IList<Coordinate> shell = algorithm.Result;
             List<IList<Coordinate>> holes = new List<IList<Coordinate>>();
 
             foreach (IBasicLineString hole in source.Holes)
             {
-                algorithm = new DouglasPeuckerAlgorithm(hole.Coordinates, delta);
+                if (hole == null || hole.Coordinates == null)
+                    continue;
+
+                algorithm = new DouglasPeuckerAlgorithm(hole.Coordinates, delta, precisionModel);
                 algorithm.Compute();
                 holes.Add(algorithm.Result);
             }
@@ -242,7 +304,21 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
         public static IList<Coordinate> Simplify(IList<Coordinate> source, Double delta)
         {
-            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source, delta);
+            return Simplify(source, delta, PrecisionModel.Default);
+        }
+
+        /// <summary>
+        /// Simplifies the specified line string.
+        /// </summary>
+        /// <param name="source">The coordinates of the line string.</param>
+        /// <param name="delta">The tolerance.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        /// <returns>The list of coordinates of the simplified line string.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
+        public static IList<Coordinate> Simplify(IList<Coordinate> source, Double delta, PrecisionModel precisionModel)
+        {
+            DouglasPeuckerAlgorithm algorithm = new DouglasPeuckerAlgorithm(source, delta, precisionModel);
             algorithm.Compute();
             return algorithm.Result;
         }

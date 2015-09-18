@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GrahamScanAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -42,6 +42,11 @@ namespace ELTE.AEGIS.Algorithms
             /// </summary>
             private Coordinate _origin;
 
+            /// <summary>
+            /// The precision model.
+            /// </summary>
+            private PrecisionModel _precision;
+
             #endregion
 
             #region Constructors
@@ -50,9 +55,10 @@ namespace ELTE.AEGIS.Algorithms
             /// Initializes a new instance of the <see cref="GrahamComparer" /> class.
             /// </summary>
             /// <param name="origin">The origin.</param>
-            public GrahamComparer(Coordinate origin)
+            public GrahamComparer(Coordinate origin, PrecisionModel precision)
             {
                 _origin = origin;
+                _precision = precision;
             }
 
             #endregion
@@ -70,7 +76,7 @@ namespace ELTE.AEGIS.Algorithms
                 if (x.Equals(y))
                     return 0;
 
-                Orientation orientation = Coordinate.Orientation(_origin, x, y);
+                Orientation orientation = Coordinate.Orientation(_origin, x, y, _precision);
 
                 switch (orientation)
                 {
@@ -110,6 +116,12 @@ namespace ELTE.AEGIS.Algorithms
         #region Public properties
 
         /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
+
+        /// <summary>
         /// Gets the source coordinates.
         /// </summary>
         /// <value>The read-only list of source coordinates.</value>
@@ -147,12 +159,12 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="source">The source coordinates.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        protected GrahamScanAlgorithm(IBasicPolygon source)
+        protected GrahamScanAlgorithm(IList<Coordinate> source)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
-            _source = source.Shell.Coordinates;
+            _source = source;
             _hasResult = false;
         }
 
@@ -160,14 +172,16 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="GrahamScanAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The source coordinates.</param>
+        /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        protected GrahamScanAlgorithm(IList<Coordinate> source) 
+        protected GrahamScanAlgorithm(IList<Coordinate> source, PrecisionModel precisionModel) 
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source;
             _hasResult = false;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
         #endregion
@@ -200,7 +214,7 @@ namespace ELTE.AEGIS.Algorithms
             coordinates[0] = temp;
 
             // sort coordinates
-            Array.Sort(coordinates, 1, coordinates.Length - 2, new GrahamComparer(coordinates[0]));
+            Array.Sort(coordinates, 1, coordinates.Length - 2, new GrahamComparer(coordinates[0], PrecisionModel));
 
             // select convex hull candidate coordinates
             Coordinate[] candidateCoordiantes = new Coordinate[coordinates.Length];
@@ -212,7 +226,7 @@ namespace ELTE.AEGIS.Algorithms
             for (Int32 i = 3; i < coordinates.Length; i++)
             {
                 // further coordinates should be checked and removed if not counter clockwise
-                while (convexHullCount > 2 && Coordinate.Orientation(candidateCoordiantes[convexHullCount - 2], candidateCoordiantes[convexHullCount - 1], coordinates[i]) != Orientation.CounterClockwise)
+                while (convexHullCount > 2 && Coordinate.Orientation(candidateCoordiantes[convexHullCount - 2], candidateCoordiantes[convexHullCount - 1], coordinates[i], PrecisionModel) != Orientation.CounterClockwise)
                 {
                     convexHullCount--;
                 }
@@ -239,7 +253,29 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         public static IList<Coordinate> ComputeConvexHull(IBasicPolygon source)
         {
-            return new GrahamScanAlgorithm(source).Result;
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
+
+            return new GrahamScanAlgorithm(source.Shell.Coordinates).Result;
+        }
+
+        /// <summary>
+        /// Computes the convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The source polygon.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ComputeConvexHull(IBasicPolygon source, PrecisionModel precision)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source is null.");
+            if (source.Shell == null || source.Shell.Coordinates == null)
+                return null;
+
+            return new GrahamScanAlgorithm(source.Shell.Coordinates, precision).Result;
         }
 
         /// <summary>
@@ -251,6 +287,18 @@ namespace ELTE.AEGIS.Algorithms
         public static IList<Coordinate> ComputeConvexHull(IList<Coordinate> source)
         {
             return new GrahamScanAlgorithm(source).Result;
+        }
+
+        /// <summary>
+        /// Computes the convex hull of the specified polygon.
+        /// </summary>
+        /// <param name="source">The coordinates of the polygon shell.</param>
+        /// <param name="precision">The precision model.</param>
+        /// <returns>The convex hull of <see cref="source" />.</returns>
+        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
+        public static IList<Coordinate> ComputeConvexHull(IList<Coordinate> source, PrecisionModel precision)
+        {
+            return new GrahamScanAlgorithm(source, precision).Result;
         }
 
         #endregion

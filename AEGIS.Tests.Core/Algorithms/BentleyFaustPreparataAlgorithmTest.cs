@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BentleyFaustPreparataAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 new Coordinate(0, 0)
             };
 
-            IList<Coordinate> convexHull = BentleyFaustPreparataAlgorithm.ComputeApproximateConvexHull(shell);
+            IList<Coordinate> convexHull = BentleyFaustPreparataAlgorithm.ApproximateConvexHull(shell);
 
             Assert.AreEqual(shell.Count, convexHull.Count);
 
@@ -69,7 +69,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 new Coordinate(0, 0)
             };
 
-            convexHull = BentleyFaustPreparataAlgorithm.ComputeApproximateConvexHull(shell);
+            convexHull = BentleyFaustPreparataAlgorithm.ApproximateConvexHull(shell);
 
             Assert.AreEqual(expected.Count, convexHull.Count);
 
