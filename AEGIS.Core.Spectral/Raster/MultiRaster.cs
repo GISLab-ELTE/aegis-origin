@@ -482,7 +482,7 @@ namespace ELTE.AEGIS.Raster
 
                 rasterBandIndex++;
 
-                if (rasterIndex == _rasters[rasterIndex].NumberOfBands)
+                if (rasterBandIndex == _rasters[rasterIndex].NumberOfBands)
                 {
                     rasterIndex++;
                     rasterBandIndex = 0;
