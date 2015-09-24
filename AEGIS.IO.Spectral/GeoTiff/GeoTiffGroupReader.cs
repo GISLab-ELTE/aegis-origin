@@ -18,6 +18,7 @@ using ELTE.AEGIS.IO.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
@@ -28,6 +29,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
     {
         #region Private fields
 
+        private const Int32 MaxBandCount = 50;
         private List<String> _filePaths;
         private GeoTiffMetafileReader _metafileReader;
 
@@ -48,18 +50,31 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             FileSystem fileSystem = FileSystem.GetFileSystemForPath(basePath);
 
+            _filePaths = new List<String>();
+
+            // the base path is a directory
+            if (fileSystem.IsDirectory(basePath))
+            {
+                _filePaths = fileSystem.GetFiles(basePath).ToList();
+                return;
+            }
+
+            // the base path includes part of the file name
             String directoryPath = fileSystem.GetDirectory(basePath);
             String fileNameBase = fileSystem.GetFileNameWithoutExtension(basePath);
             String fileNameExtension = fileSystem.GetExtension(basePath);
-            _filePaths = new List<String>();
 
             // try with underscore
             Int32 fileNumber = 1;
             String currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_" + fileNumber + fileNameExtension;
 
-            while (fileSystem.Exists(currentFileName))
+
+            for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
             {
-                _filePaths.Add(currentFileName);
+                if (fileSystem.Exists(currentFileName))
+                {
+                    _filePaths.Add(currentFileName);
+                }
                 fileNumber++;
                 currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_" + fileNumber + fileNameExtension;
             }
@@ -70,9 +85,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 fileNumber = 1;
                 currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_B" + fileNumber + fileNameExtension;
 
-                while (fileSystem.Exists(currentFileName))
+                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
                 {
-                    _filePaths.Add(currentFileName);
+                    if (fileSystem.Exists(currentFileName))
+                    {
+                        _filePaths.Add(currentFileName);
+                    }
                     fileNumber++;
                     currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_B" + fileNumber + fileNameExtension;
                 }
@@ -84,9 +102,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 fileNumber = 1;
                 currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + fileNumber + fileNameExtension;
 
-                while (fileSystem.Exists(currentFileName))
+                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
                 {
-                    _filePaths.Add(currentFileName);
+                    if (fileSystem.Exists(currentFileName))
+                    {
+                        _filePaths.Add(currentFileName);
+                    }
                     fileNumber++;
                     currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + fileNumber + fileNameExtension;
                 }
@@ -98,9 +119,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 fileNumber = 1;
                 currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase.Replace("*", fileNumber.ToString()) + fileNameExtension;
 
-                while (fileSystem.Exists(currentFileName))
+                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
                 {
-                    _filePaths.Add(currentFileName);
+                    if (fileSystem.Exists(currentFileName))
+                    {
+                        _filePaths.Add(currentFileName);
+                    }
                     fileNumber++;
                     currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase.Replace("*", fileNumber.ToString()) + fileNameExtension;
                 }
@@ -132,6 +156,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The geometry read from the stream.</returns>
         protected override IGeometry ApplyReadGeometry()
         {
+            if (_filePaths.Count == 0)
+                return null;
+                
             List<ISpectralPolygon> polygons = new List<ISpectralPolygon>();
 
             foreach (String filePath in _filePaths)
