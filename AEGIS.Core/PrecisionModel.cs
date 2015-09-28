@@ -293,7 +293,7 @@ namespace ELTE.AEGIS
 
         #endregion
 
-        #region ICompatable methods
+        #region IComparable methods
 
         /// <summary>
         /// Compares the current object with another object of the same type.
