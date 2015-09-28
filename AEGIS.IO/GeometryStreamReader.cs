@@ -468,7 +468,7 @@ namespace ELTE.AEGIS.IO
 
             if (disposing)
             {
-                if (_disposeBaseStream)
+                if (_disposeBaseStream && _baseStream != null)
                     _baseStream.Dispose();
                 if (_parameters != null)
                     _parameters.Clear();
