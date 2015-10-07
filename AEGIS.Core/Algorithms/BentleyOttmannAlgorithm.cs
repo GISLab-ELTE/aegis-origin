@@ -61,11 +61,6 @@ namespace ELTE.AEGIS.Algorithms
         private readonly SweepLine _sweepLine;
 
         /// <summary>
-        /// The precision model.
-        /// </summary>
-        private readonly PrecisionModel _precisionModel;
-
-        /// <summary>
         /// A values indicating whether the result was already computed.
         /// </summary>
         private Boolean _hasResult;
@@ -73,6 +68,12 @@ namespace ELTE.AEGIS.Algorithms
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
 
         /// <summary>
         /// Gets the source coordinates.
@@ -136,9 +137,9 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source.Coordinates;
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source.Coordinates);
-            _sweepLine = new SweepLine(source.Coordinates, _precisionModel);
+            _sweepLine = new SweepLine(source.Coordinates, PrecisionModel);
             _hasResult = false;
         }
 
@@ -154,9 +155,9 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("source", "The source is null.");
 
             _source = source;
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source, _precisionModel);
+            _sweepLine = new SweepLine(source, PrecisionModel);
             _hasResult = false;
         }
 
@@ -175,9 +176,9 @@ namespace ELTE.AEGIS.Algorithms
             foreach (IBasicLineString linestring in source)
                 (_source as List<Coordinate>).AddRange(linestring.Coordinates);
 
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
-            _sweepLine = new SweepLine(source.Select(lineString => lineString == null ? null : lineString.Coordinates), _precisionModel);
+            _sweepLine = new SweepLine(source.Select(lineString => lineString == null ? null : lineString.Coordinates), PrecisionModel);
             _hasResult = false;
         }
 
@@ -196,9 +197,9 @@ namespace ELTE.AEGIS.Algorithms
             foreach (IList<Coordinate> linestring in source)
                 (_source as List<Coordinate>).AddRange(linestring);
 
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new EventQueue(source);
-            _sweepLine = new SweepLine(source, _precisionModel);
+            _sweepLine = new SweepLine(source, PrecisionModel);
             _hasResult = false;
         }
 
@@ -232,9 +233,8 @@ namespace ELTE.AEGIS.Algorithms
                             if (segment.Above != null)
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                            segment.Above.LeftCoordinate, segment.Above.RightCoordinate)
-                                                              .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                              .ToList();
+                                                                            segment.Above.LeftCoordinate, segment.Above.RightCoordinate,
+                                                                            PrecisionModel);
 
                                 if (intersections.Count > 0)
                                 {
@@ -250,9 +250,8 @@ namespace ELTE.AEGIS.Algorithms
                             if (segment.Below != null)
                             {
                                 intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                            segment.Below.LeftCoordinate, segment.Below.RightCoordinate)
-                                                              .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                              .ToList();
+                                                                            segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
+                                                                            PrecisionModel);
 
                                 if (intersections.Count > 0)
                                 {
@@ -277,9 +276,8 @@ namespace ELTE.AEGIS.Algorithms
                                     intersections = LineAlgorithms.Intersection(segment.Above.LeftCoordinate,
                                                                                 segment.Above.RightCoordinate,
                                                                                 segment.Below.LeftCoordinate,
-                                                                                segment.Below.RightCoordinate)
-                                                                  .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                                  .ToList();
+                                                                                segment.Below.RightCoordinate,
+                                                                                PrecisionModel);
 
                                     if (intersections.Count > 0)
                                     {
@@ -332,9 +330,8 @@ namespace ELTE.AEGIS.Algorithms
                                                       Math.Max(segment.Edge, segmentAbove.Edge)));
 
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                        segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate)
-                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                          .ToList();
+                                                                        segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate,
+                                                                        PrecisionModel);
 
                             if (intersections.Count > 1 && !intersections[1].Equals(intersections[0]))
                             {
@@ -352,10 +349,8 @@ namespace ELTE.AEGIS.Algorithms
                         if (segmentAbove.Above != null)
                         {
                             intersections = LineAlgorithms.Intersection(segmentAbove.LeftCoordinate, segmentAbove.RightCoordinate,
-                                                                        segmentAbove.Above.LeftCoordinate,
-                                                                        segmentAbove.Above.RightCoordinate)
-                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                          .ToList();
+                                                                        segmentAbove.Above.LeftCoordinate, segmentAbove.Above.RightCoordinate,
+                                                                        PrecisionModel);
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {
@@ -373,8 +368,9 @@ namespace ELTE.AEGIS.Algorithms
                         if (segment.Below != null)
                         {
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
-                                                                        segment.Below.LeftCoordinate, segment.Below.RightCoordinate)
-                                                          .Select(intersection => _precisionModel.MakePrecise(intersection))
+                                                                        segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
+                                                                        PrecisionModel)
+                                                          .Select(intersection => PrecisionModel.MakePrecise(intersection))
                                                           .ToList();
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)

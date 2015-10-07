@@ -138,7 +138,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     var verticalLineStart = new Coordinate(second.LeftCoordinate.X, verticalCollection.Min());
                     var verticalLineEnd = new Coordinate(second.LeftCoordinate.X, verticalCollection.Max());
                     IList<Coordinate> startIntersections = LineAlgorithms.Intersection(first.LeftCoordinate, first.RightCoordinate,
-                                                                                       verticalLineStart, verticalLineEnd);
+                                                                                       verticalLineStart, verticalLineEnd, 
+                                                                                       _precisionModel);
                     return startIntersections[0].Y.CompareTo(second.LeftCoordinate.Y);
                 }
 
@@ -148,7 +149,8 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     var verticalLineStart = new Coordinate(first.LeftCoordinate.X, verticalCollection.Min());
                     var verticalLineEnd = new Coordinate(first.LeftCoordinate.X, verticalCollection.Max());
                     IList<Coordinate> startIntersections = LineAlgorithms.Intersection(verticalLineStart, verticalLineEnd,
-                                                                                       second.LeftCoordinate, second.RightCoordinate);
+                                                                                       second.LeftCoordinate, second.RightCoordinate,
+                                                                                       _precisionModel);
 
                     return first.LeftCoordinate.Y.CompareTo(startIntersections[0].Y);
                 }
@@ -169,9 +171,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <returns>The type of intersection that exists between the two sweep line segments, considering the position of the sweepline.</returns>
             public SweepLineIntersection GetIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate)
-                                                                .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                                .ToList();
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, 
+                                                                              y.LeftCoordinate, y.RightCoordinate, 
+                                                                              _precisionModel);
 
                 if (intersections.Count == 0)
                     return SweepLineIntersection.NotExists;
@@ -197,9 +199,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// <param name="y">Second sweep line segment.</param>
             public void PassIntersection(SweepLineSegment x, SweepLineSegment y)
             {
-                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, y.LeftCoordinate, y.RightCoordinate)
-                                                                .Select(intersection => _precisionModel.MakePrecise(intersection))
-                                                                .ToList();
+                IList<Coordinate> intersections = LineAlgorithms.Intersection(x.LeftCoordinate, x.RightCoordinate, 
+                                                                              y.LeftCoordinate, y.RightCoordinate,
+                                                                              _precisionModel);
 
                 if (intersections.Count == 0)
                     return;
