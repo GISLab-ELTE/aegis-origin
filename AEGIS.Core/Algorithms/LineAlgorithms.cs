@@ -177,7 +177,7 @@ namespace ELTE.AEGIS.Algorithms
                 precision = PrecisionModel.Default;
 
             return CoordinateVector.IsParallel(firstVector, secondVector, precision) &&
-                   Distance(firstCoordinate, firstVector, secondCoordinate) < Math.Max(precision.Tolerance(firstCoordinate, secondCoordinate), precision.Tolerance(firstVector, secondVector));
+                   Distance(firstCoordinate, firstVector, secondCoordinate) <= Math.Max(precision.Tolerance(firstCoordinate, secondCoordinate), precision.Tolerance(firstVector, secondVector));
         }
 
         #endregion
@@ -225,7 +225,7 @@ namespace ELTE.AEGIS.Algorithms
                 return false;
 
             // check the distance from the line
-            return Distance(lineStart, lineEnd, coordinate, precision) < precision.Tolerance(lineStart, lineEnd, coordinate);
+            return Distance(lineStart, lineEnd, coordinate, precision) <= precision.Tolerance(lineStart, lineEnd, coordinate);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace ELTE.AEGIS.Algorithms
             if (precision == null)
                 precision = PrecisionModel.Default;
 
-            return Distance(lineCoordinate, lineVector, coordinate) < precision.Tolerance(lineCoordinate, coordinate);
+            return Distance(lineCoordinate, lineVector, coordinate) <= precision.Tolerance(lineCoordinate, coordinate);
         }
 
         #endregion
@@ -358,7 +358,7 @@ namespace ELTE.AEGIS.Algorithms
 
             Double tolerance = precision.Tolerance(firstLineStart, firstLineStart, secondLineStart, secondLineEnd);
 
-            if (D < tolerance) // the lines are collinear
+            if (D <= tolerance) // the lines are collinear
             {
                 sN = 0.0;
                 sD = 1.0; 
@@ -409,8 +409,8 @@ namespace ELTE.AEGIS.Algorithms
                     sD = a;
                 }
             }
-            sc = (Math.Abs(sN) < tolerance ? 0.0 : sN / sD);
-            tc = (Math.Abs(tN) < tolerance ? 0.0 : tN / tD);
+            sc = (Math.Abs(sN) <= tolerance ? 0.0 : sN / sD);
+            tc = (Math.Abs(tN) <= tolerance ? 0.0 : tN / tD);
 
             CoordinateVector dP = w + (sc * u) - (tc * v);
 
@@ -766,7 +766,7 @@ namespace ELTE.AEGIS.Algorithms
             CoordinateVector v = (secondLineEnd - secondLineStart).Normalize();
 
             return CoordinateVector.IsParallel(u, v, precision) && 
-                   Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) < precision.Tolerance(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd);
+                   Coordinate.Distance(secondLineStart, firstLineStart + (secondLineStart - firstLineStart) * u * u) <= precision.Tolerance(firstLineStart, firstLineEnd, secondLineStart, secondLineEnd);
         }
 
         #endregion
@@ -919,7 +919,7 @@ namespace ELTE.AEGIS.Algorithms
                 // the starting or ending coordinate of the second line must be on the first line
                 Double b = (secondLineStart - firstLineStart) * u / (u * u);
 
-                if (Coordinate.Distance(secondLineStart, firstLineStart + b * u) >= precision.Tolerance(secondLineStart, firstLineStart))
+                if (Coordinate.Distance(secondLineStart, firstLineStart + b * u) > precision.Tolerance(secondLineStart, firstLineStart))
                 {
                     return false;
                 }
@@ -976,7 +976,7 @@ namespace ELTE.AEGIS.Algorithms
             }
 
             // finally, we check if we computed one coordinate
-            if (Coordinate.Distance(firstLineStart + sI * u, secondLineStart + tI * v) >= precision.Tolerance(secondLineStart, firstLineStart))
+            if (Coordinate.Distance(firstLineStart + sI * u, secondLineStart + tI * v) > precision.Tolerance(secondLineStart, firstLineStart))
             {
                 return false;
             }
@@ -1006,7 +1006,7 @@ namespace ELTE.AEGIS.Algorithms
             // if they are parallel, they must also be collinear
             if (CoordinateVector.IsParallel(firstVector, secondVector))
             {
-                intersection = (Distance(firstCoordinate, firstVector, secondCoordinate) < tolerance) ? precision.MakePrecise(firstCoordinate) : Coordinate.Undefined;
+                intersection = (Distance(firstCoordinate, firstVector, secondCoordinate) <= tolerance) ? precision.MakePrecise(firstCoordinate) : Coordinate.Undefined;
                 return true;
             }
 
@@ -1021,7 +1021,7 @@ namespace ELTE.AEGIS.Algorithms
             Double sI = CoordinateVector.PerpProduct(secondVector, v) / d;
             Double tI = CoordinateVector.PerpProduct(firstVector, v) / d;
 
-            if (Coordinate.Distance(firstCoordinate + sI * firstVector, secondCoordinate + tI * secondVector) >= tolerance)
+            if (Coordinate.Distance(firstCoordinate + sI * firstVector, secondCoordinate + tI * secondVector) > tolerance)
             {
                 return false;
             }
@@ -1052,7 +1052,7 @@ namespace ELTE.AEGIS.Algorithms
             Double d = CoordinateVector.DotProduct(planeNormalVector, u);
             Double n = -CoordinateVector.DotProduct(planeNormalVector, w);
 
-            if (Math.Abs(d) < precision.Tolerance(lineStart, lineEnd, planeCoordinate)) // line is parallel to plane
+            if (Math.Abs(d) <= precision.Tolerance(lineStart, lineEnd, planeCoordinate)) // line is parallel to plane
             {
                 if (n == 0) // the line lies on the plane
                 {
