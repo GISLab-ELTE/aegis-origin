@@ -54,7 +54,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // polygon becomes another polygon after validation
-            precisionModel = new PrecisionModel(0.01);
+            precisionModel = new PrecisionModel(100);
             factory = new GeometryFactory(precisionModel, null);
             polygon = factory.CreatePolygon(new Coordinate[]
             {
@@ -71,7 +71,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // polygon becomes a line after validation
-            precisionModel = new PrecisionModel(0.1);
+            precisionModel = new PrecisionModel(10);
             factory = new GeometryFactory(precisionModel, null);
             polygon = factory.CreatePolygon(new Coordinate[]
             {
