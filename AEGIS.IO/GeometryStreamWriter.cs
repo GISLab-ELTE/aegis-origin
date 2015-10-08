@@ -316,7 +316,7 @@ namespace ELTE.AEGIS.IO
                 return;
             }
 
-            if (!Format.SupportedGeometries.Any(type => type.IsInstanceOfType(geometry)))
+            if (!Format.Supports(geometry))
                 throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
 
             try
@@ -350,7 +350,8 @@ namespace ELTE.AEGIS.IO
                 {
                     if (geometry == null)
                         continue;
-                    if (Format.SupportedGeometries.Contains(geometry.GetType()))
+
+                    if (!Format.Supports(geometry))
                         throw new ArgumentException(MessageGeometriesAreNotSupported, "geometries");
 
                     ApplyWriteGeometry(geometry);
@@ -478,9 +479,9 @@ namespace ELTE.AEGIS.IO
             {
                 // open the stream for reading
                 if (path.IsAbsoluteUri)
-                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.OpenOrCreate, FileAccess.Write);
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.Create, FileAccess.Write);
                 else
-                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.OpenOrCreate, FileAccess.Write);
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.Create, FileAccess.Write);
             }
             catch (Exception ex)
             {

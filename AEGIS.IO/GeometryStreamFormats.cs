@@ -99,7 +99,7 @@ namespace ELTE.AEGIS.IO
                     new GeometryStreamFormat("AEGIS::610101", "Esri shapefile", 
                                              "© 1997, 1998 Environmental Systems Research Institute (ESRI), Inc.", new String[] { "Shapefile" }, "1.0", 
                                              new String[] { "shp" }, null, 
-                                             new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>) },
+                                             new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>), typeof(IMultiPolygon) },
                                              new GeometryModel[] { GeometryModel.Spatial2D, GeometryModel.Spatial3D }));
             }
         }

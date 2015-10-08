@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using System;
+using System.Linq;
 
 namespace ELTE.AEGIS.IO
 {
@@ -110,5 +111,18 @@ namespace ELTE.AEGIS.IO
         }
 
         #endregion
+
+        /// <summary>
+        /// Determines whether the specified geometry is supported by the format.
+        /// </summary>
+        /// <param name="geometry">The goemetry.</param>
+        /// <returns><c>true</c> if the specified geometry is supported by the format; otherwise, <c>false</c>.</returns>
+        public Boolean Supports(IGeometry geometry)
+        {
+            if (geometry == null)
+                throw new ArgumentNullException("geometry", "The geometry is null.");
+
+            return SupportedGeometries.Any(type => type.IsInstanceOfType(geometry));
+        }
     }
 }
