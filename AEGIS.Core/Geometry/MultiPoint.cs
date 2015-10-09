@@ -27,6 +27,12 @@ namespace ELTE.AEGIS.Geometry
         #region IGeometry properties
 
         /// <summary>
+        /// Gets the general name of the geometry list.
+        /// </summary>
+        /// <value>The general name of the specific geometry.</value>
+        public override String Name { get { return "MultiPoint"; } }
+
+        /// <summary>
         /// Gets the inherent dimension of the multi point.
         /// </summary>
         /// <value><c>0</c>, which is the defined dimension of a multi point.</value>

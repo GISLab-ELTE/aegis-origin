@@ -40,6 +40,12 @@ namespace ELTE.AEGIS.Geometry
         #region IGeometry properties
 
         /// <summary>
+        /// Gets the general name of the geometry list.
+        /// </summary>
+        /// <value>The general name of the specific geometry.</value>
+        public override String Name { get { return "MultiPolygon"; } }
+
+        /// <summary>
         /// Gets the inherent dimension of the multi polygon.
         /// </summary>
         /// <value><c>2</c>, which is the defined dimension of a multi polygon.</value>
