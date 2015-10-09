@@ -56,6 +56,8 @@
     <Compile Include="Spectral\Common\SaturatingContrastEnhancement.cs" />
     <Compile Include="Spectral\Common\SpectralInversion.cs" />
     <Compile Include="Spectral\Common\SpectralTranslation.cs" />
+    <Compile Include="Spectral\Enhancement\MorphologicalDilationOperation.cs" />
+    <Compile Include="Spectral\Enhancement\MorphologicalErosionOperation.cs" />
     <Compile Include="Spectral\Filtering\BoxFilterTransformation.cs" />
     <Compile Include="Spectral\Filtering\CustomFilterTransformation.cs" />
     <Compile Include="Spectral\Filtering\MultiFilterTransformation.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Spectral\Segmentation\SequentialCouplingSegmentation .cs" />
     <Compile Include="Spectral\Segmentation\SpectralClustering.cs" />
     <Compile Include="Spectral\Segmentation\SpectralSegmentation.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.Enhancement.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Classification.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Filtering.cs" />
     <Compile Include="Spectral\SpectralOperationDomain.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="Spectral\SpectralOperationParameters.Filtering.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.Segmentation.cs" />
     <Compile Include="Spectral\SpectralTransformation.cs" />
+    <Compile Include="Spectral\SpectralOperationParameters.Enhancement.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core.Spectral\AEGIS.Core.Spectral.csproj">
