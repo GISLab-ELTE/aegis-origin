@@ -41,6 +41,11 @@ namespace ELTE.AEGIS
         /// </summary>
         private IList<SpectralRange> _spectralRanges;
 
+        /// <summary>
+        /// The dictionary of additional parameters.
+        /// </summary>
+        private Dictionary<String, Object> _additionalParameters;
+
         #endregion
 
         #region Public properties
@@ -129,6 +134,33 @@ namespace ELTE.AEGIS
             } 
         }
 
+        /// <summary>
+        /// Gets or sets additional imaging properties.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <returns>The property value for the specified <paramref name="key" /> if it exists; otherwise, <c>null</c>.</returns>
+        public Object this[String key]
+        {
+            get
+            {
+                if (key == null)
+                    return null;
+
+                Object value;
+                if (!_additionalParameters.TryGetValue(key, out value))
+                    return null;
+
+                return value;
+            }
+            set
+            {
+                if (key == null)
+                    return;
+
+                _additionalParameters[key] = value;
+            }
+        }
+
         #endregion
 
         #region Constructors
@@ -161,6 +193,7 @@ namespace ELTE.AEGIS
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
             _bands = bandData.ToArray();
+            _additionalParameters = new Dictionary<String, Object>();
         }
 
         /// <summary>
@@ -191,8 +224,9 @@ namespace ELTE.AEGIS
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
             _bands = bandData.ToArray();
+            _additionalParameters = new Dictionary<String, Object>();
         }
 
-        #endregion
+        #endregion        
     }
 }
