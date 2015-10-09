@@ -95,6 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
+        private static SpectralOperationMethod _temperatureExtraction;
         private static SpectralOperationMethod _topOfAtmospehereReflectanceComputation;
 
         #endregion
@@ -265,6 +266,21 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.SpectralFactor,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Temperature extraction.
+        /// </summary>
+        public static SpectralOperationMethod TemperatureExtraction
+        {
+            get
+            {
+                return _temperatureExtraction ?? (_temperatureExtraction =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213467", "Temperature extraction",
+                                                                         "Determines surface temperature (in Kelvin) on imagery based on long wavelength infrared (thermal) values.", null, "1.0.0",
+                                                                         true, SpectralOperationDomain.Local, 
+                                                                         SpectralOperationParameters.IndexOfLongWavelengthInfraredBand));
             }
         }
 
