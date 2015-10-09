@@ -31,6 +31,11 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         #region Private fields
 
         /// <summary>
+        /// The array of additional imaging property keys.
+        /// </summary>
+        private readonly List<String> _imagingPropertyKeys;
+
+        /// <summary>
         /// The reader.
         /// </summary>
         private StreamReader _reader;
@@ -89,6 +94,12 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         public LandsatMetafileReader(String path)
             : base(path)
         {
+            _imagingPropertyKeys = new List<string>()
+            {
+                "K1_CONSTANT_BAND_10", "K1_CONSTANT_BAND_11",
+                "K2_CONSTANT_BAND_10", "K2_CONSTANT_BAND_11"
+            };
+
             _reader = new StreamReader(_stream);
             if (!_reader.ReadLine().Contains("L1_METADATA_FILE"))
                 throw new InvalidDataException();
@@ -231,7 +242,15 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                     bandData.Add(new RasterImagingBand("BAND " + bandIndex, physicalGain, physicalBias, solarIrradiance[bandIndex], SpectralDomain.Undefined, null));
             }
 
-            return new RasterImaging(device, imagingDateTime, GeoCoordinate.Undefined, imageLocation, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+            RasterImaging imaging = new RasterImaging(device, imagingDateTime, GeoCoordinate.Undefined, imageLocation, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
+
+            foreach (String key in _metadata.Keys)
+            {
+                if (_imagingPropertyKeys.Contains(key))
+                    imaging[key] = _metadata[key];
+            }
+
+            return imaging;
         }
 
         /// <summary>
