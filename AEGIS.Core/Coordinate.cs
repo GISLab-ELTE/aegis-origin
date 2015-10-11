@@ -493,7 +493,7 @@ namespace ELTE.AEGIS
             
             Double det = (first.X - origin.X) * (second.Y - origin.Y) - (first.Y - origin.Y) * (second.X - origin.X);
 
-            if (Math.Abs(det) < precision.Tolerance(origin, first, second))
+            if (Math.Abs(det) <= precision.Tolerance(origin, first, second))
                 return AEGIS.Orientation.Collinear;
 
             if (det > 0)
