@@ -226,8 +226,8 @@ namespace ELTE.AEGIS.Algorithms
                 AddCoordinates(hole, -1, ref resultX, ref resultY);            
             }
 
-            resultX = _result.X / 3 / _area;
-            resultY = _result.Y / 3 / _area;
+            resultX = resultX / 3 / _area;
+            resultY = resultY / 3 / _area;
 
             _result = PrecisionModel.MakePrecise(new Coordinate(resultX, resultY, resultZ));
             _hasResult = true;
