@@ -107,8 +107,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             public Int32 Compare(SweepLineSegment first, SweepLineSegment second)
             {
                 // Comparing non-overlapping segments is not supported.
-                if ((first.LeftCoordinate.X < second.LeftCoordinate.X || first.LeftCoordinate.X > second.RightCoordinate.X) &&
-                    (second.LeftCoordinate.X < first.LeftCoordinate.X || second.LeftCoordinate.X > first.RightCoordinate.X))
+                if(first.RightCoordinate.X < second.LeftCoordinate.X || first.LeftCoordinate.X > second.RightCoordinate.X)
                     throw new InvalidOperationException("Cannot compare non-overlapping sweep line segments.");
 
                 // The segments intersect.
@@ -140,7 +139,11 @@ namespace ELTE.AEGIS.Collections.SweepLine
                     IList<Coordinate> startIntersections = LineAlgorithms.Intersection(first.LeftCoordinate, first.RightCoordinate,
                                                                                        verticalLineStart, verticalLineEnd, 
                                                                                        _precisionModel);
-                    return startIntersections[0].Y.CompareTo(second.LeftCoordinate.Y);
+
+                    // due to precision tolerance degeneracy we might not found the intersection
+                    return startIntersections.Count > 0
+                        ? startIntersections[0].Y.CompareTo(second.LeftCoordinate.Y)
+                        : ((first.LeftCoordinate.Y + first.RightCoordinate.Y) / 2.0).CompareTo(second.LeftCoordinate.Y);
                 }
 
                 if (first.LeftCoordinate.X > second.LeftCoordinate.X)
@@ -152,7 +155,9 @@ namespace ELTE.AEGIS.Collections.SweepLine
                                                                                        second.LeftCoordinate, second.RightCoordinate,
                                                                                        _precisionModel);
 
-                    return first.LeftCoordinate.Y.CompareTo(startIntersections[0].Y);
+                    return startIntersections.Count > 0
+                        ? first.LeftCoordinate.Y.CompareTo(startIntersections[0].Y)
+                        : first.LeftCoordinate.Y.CompareTo((second.LeftCoordinate.Y + second.RightCoordinate.Y) / 2.0);
                 }
 
                 // first.LeftCoordinate.X == second.LeftCoordinate.X

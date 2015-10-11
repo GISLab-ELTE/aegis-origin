@@ -315,7 +315,7 @@ namespace ELTE.AEGIS.Algorithms
                         {
                             _intersections.Add(currentEvent.Vertex);
                             _edgeIndices.Add(Tuple.Create(Math.Min(segment.Edge, segmentAbove.Edge),
-                                                      Math.Max(segment.Edge, segmentAbove.Edge)));
+                                                          Math.Max(segment.Edge, segmentAbove.Edge)));
                         }
                     }
 
@@ -369,9 +369,7 @@ namespace ELTE.AEGIS.Algorithms
                         {
                             intersections = LineAlgorithms.Intersection(segment.LeftCoordinate, segment.RightCoordinate,
                                                                         segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
-                                                                        PrecisionModel)
-                                                          .Select(intersection => PrecisionModel.MakePrecise(intersection))
-                                                          .ToList();
+                                                                        PrecisionModel);
 
                             if (intersections.Count > 0 && intersections[0].X >= intersectionEvent.Vertex.X)
                             {

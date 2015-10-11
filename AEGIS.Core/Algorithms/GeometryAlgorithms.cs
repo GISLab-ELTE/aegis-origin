@@ -45,9 +45,12 @@ namespace ELTE.AEGIS.Algorithms
                 var collection = new GeometryList<IGeometry>(factory, null);
                 foreach (IGeometry subGeometry in (IGeometryCollection<IGeometry>) geometry)
                 {
-                    collection.Add(Validate(subGeometry));
+                    try
+                    {
+                        collection.Add(Validate(subGeometry));
+                    }
+                    catch (ArgumentNullException) { }  // null value cannot be added to the collection                
                 }
-                while (collection.Remove(null)) ;
                 if (collection.Count == 0)
                     collection = null;
                 return collection;
