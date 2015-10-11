@@ -662,7 +662,7 @@ namespace ELTE.AEGIS.Tests.Topology
             Assert.AreEqual(19, _graph.Vertices.Count());
 
 
-            //TODO
+            // merging two adjacent polygons with one intersecting / touching them
 
             _graph.Clear();
             _graph.AddPolygon(_factory.CreatePolygon(

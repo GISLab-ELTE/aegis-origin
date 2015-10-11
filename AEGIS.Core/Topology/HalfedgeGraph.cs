@@ -40,7 +40,7 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Stores the collection of vertices in the graph.
         /// </summary>
-        private VertexCollection _vertices = new VertexCollection();
+        private Dictionary<Coordinate, Vertex> _vertices = new Dictionary<Coordinate, Vertex>();
 
         /// <summary>
         /// Stores the collection of edges in the graph.
@@ -74,7 +74,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         public IEnumerable<IVertex> Vertices
         {
-            get { return _vertices.AsReadOnly(); }
+            get { return _vertices.Values; }
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace ELTE.AEGIS.Topology
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
         public IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
         {
-            return AddFace(shell.Coordinates, holes == null ? null :holes.Select(hole => hole.Coordinates).ToList());
+            return AddFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates).ToList());
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace ELTE.AEGIS.Topology
         /// <remarks>The algorithm may be forced by the <see cref="mode" /> parameter to remove the adjacent faces of the vertex.</remarks>
         public Boolean RemoveVertex(Coordinate position, RemoveMode mode = RemoveMode.Normal)
         {
-            if (!_vertices.Contains(position)) return false;
+            if (!_vertices.ContainsKey(position)) return false;
             RemoveVertex(_vertices[position], mode);
             return true;
         }
@@ -393,7 +393,7 @@ namespace ELTE.AEGIS.Topology
             if (other == null)
                 throw new ArgumentNullException("other", "The other graph is null.");
 
-            foreach (var vertex in _vertices)
+            foreach (Vertex vertex in _vertices.Values)
                 vertex.Tag = Tag.First;
 
             foreach (IFace oFace in other.Faces)
@@ -521,8 +521,8 @@ namespace ELTE.AEGIS.Topology
                 AddMultiPoint(geometry as IMultiPoint);
             else if (geometry is IMultiPolygon)
                 MergeMultiPolygon(geometry as IMultiPolygon);
-            else if(geometry is IGeometryCollection<IGeometry>)
-                foreach(IGeometry subGeometry in (IGeometryCollection<IGeometry>)geometry)
+            else if (geometry is IGeometryCollection<IGeometry>)
+                foreach (IGeometry subGeometry in (IGeometryCollection<IGeometry>)geometry)
                     MergeGeometry(subGeometry);
             else
                 throw new NotSupportedException("The specified geometry type is not supported.");
@@ -642,7 +642,7 @@ namespace ELTE.AEGIS.Topology
         {
             vertex.Index = _vertices.Count;
             vertex.Graph = this;
-            _vertices.Add(vertex);
+            _vertices.Add(vertex.Position, vertex);
         }
 
         /// <summary>
@@ -671,7 +671,7 @@ namespace ELTE.AEGIS.Topology
         /// <param name="halfedge">The halfedge to remove.</param>
         private void RemoveFromHalfedgeList(Halfedge halfedge)
         {
-            foreach (var item in _halfedges.Where(item => item.Index > halfedge.Index))
+            foreach (Halfedge item in _halfedges.Where(item => item.Index > halfedge.Index))
                 item.Index -= 1;
             _halfedges.Remove(halfedge);
         }
@@ -682,9 +682,9 @@ namespace ELTE.AEGIS.Topology
         /// <param name="vertex">The vertex to remove.</param>
         private void RemoveFromVertexList(Vertex vertex)
         {
-            foreach (var item in _vertices.Where(item => item.Index > vertex.Index))
+            foreach (Vertex item in _vertices.Where(pair => pair.Value.Index > vertex.Index).Select(pair => pair.Value))
                 item.Index -= 1;
-            _vertices.Remove(vertex);
+            _vertices.Remove(vertex.Position);
         }
 
         /// <summary>
@@ -693,7 +693,7 @@ namespace ELTE.AEGIS.Topology
         /// <param name="edge">The edge to remove.</param>
         private void RemoveFromEdgeList(Edge edge)
         {
-            foreach (var item in _edges.Where(item => item.Index > edge.Index))
+            foreach (Edge item in _edges.Where(item => item.Index > edge.Index))
                 item.Index -= 1;
             _edges.Remove(edge);
         }
@@ -716,14 +716,11 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The vertex at the given position.</returns>
         private Vertex GetVertex(Coordinate position)
         {
-            try
-            {
-                return _vertices[position];
-            }
-            catch (KeyNotFoundException)
-            {
+            Vertex vertex;
+            if (_vertices.TryGetValue(position, out vertex))
+                return vertex;
+            else
                 return CreateVertex(position);
-            }
         }
 
         /// <summary>
@@ -839,7 +836,7 @@ namespace ELTE.AEGIS.Topology
             #region Create the face and the new edges
 
             // Create face.
-            Face face = new Face {Type = addType};
+            Face face = new Face { Type = addType };
             AppendToFaceList(face);
 
             // Create new edges.
@@ -1061,7 +1058,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
-        /// <param name="tag">The tag ti use for the new face.</param>
+        /// <param name="tag">The tag to use for the new face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -1078,7 +1075,7 @@ namespace ELTE.AEGIS.Topology
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Tag tag)
+        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Tag tag, List<IFace> excluded = null)
         {
             // Shell validation
             if (shell == null)
@@ -1102,22 +1099,27 @@ namespace ELTE.AEGIS.Topology
                 }
             }
 
+            if(excluded == null)
+                excluded = new List<IFace>();
+
             // Retrieve the vertex positions for the possible collision faces.
-            IList<Face> shellFaces = _faces.Where(face => face.Type.HasFlag(FaceType.Shell)).ToList();
-            IDictionary<Int32, IList<Coordinate>> collisionPositions = new Dictionary<Int32, IList<Coordinate>>(shellFaces.Count);
-            foreach (Face face in shellFaces)
+            IList<Face> otherFaces = _faces.Where(face => face.Type.HasFlag(FaceType.Shell))
+                                           .Where(face => !excluded.Contains(face))
+                                           .ToList();
+            IDictionary<Int32, IList<Coordinate>> otherPositions = new Dictionary<Int32, IList<Coordinate>>(otherFaces.Count);
+            foreach (Face face in otherFaces)
             {
                 IList<Coordinate> positions = face.Vertices.Select(vertex => vertex.Position).ToList();
                 positions.Add(positions.First());
-                collisionPositions.Add(face.Index, positions);
+                otherPositions.Add(face.Index, positions);
             }
 
             // Determine the real colliding faces.
             Envelope shellEnvelope = Envelope.FromCoordinates(shell);
-            IList<Face> collisionFaces = (from face in shellFaces
-                                          where Envelope.FromCoordinates(collisionPositions[face.Index]).Intersects(shellEnvelope)
-                                          where ShamosHoeyAlgorithm.Intersects(new[] { collisionPositions[face.Index], shell }, _precisionModel) ||
-                                              shell.All(coordinate => PolygonAlgorithms.InInterior(collisionPositions[face.Index], coordinate))
+            IList<Face> collisionFaces = (from face in otherFaces
+                                          where Envelope.FromCoordinates(otherPositions[face.Index]).Intersects(shellEnvelope)
+                                          where ShamosHoeyAlgorithm.Intersects(new[] { otherPositions[face.Index], shell }, _precisionModel) ||
+                                              shell.All(coordinate => PolygonAlgorithms.InInterior(otherPositions[face.Index], coordinate, _precisionModel))
                                           orderby face.Type
                                           select face).ToList();
 
@@ -1129,7 +1131,7 @@ namespace ELTE.AEGIS.Topology
             if (collisionFace != null)
             {
                 // Calculate the the internal and external clips with the colliding the faces.
-                IList<Coordinate> collisionShellPositions = collisionPositions[collisionFace.Index];
+                IList<Coordinate> collisionShellPositions = otherPositions[collisionFace.Index];
                 IList<List<Coordinate>> collisionHolesPositions =
                     collisionFace.Holes.Select(face => face.Vertices.Select(vertex => vertex.Position).ToList()).ToList();
 
@@ -1141,6 +1143,7 @@ namespace ELTE.AEGIS.Topology
 
                 var algorithm = new GreinerHormannAlgorithm(collisionShellPositions, collisionHolesPositions, shell, holes,
                     precisionModel: _precisionModel);
+                algorithm.Compute();
 
                 // Determine the tag of the collided and the parameter face.
                 Tag oldTag = collisionFace.Tag;
@@ -1162,11 +1165,11 @@ namespace ELTE.AEGIS.Topology
 
                 // Internal clips (requiring re-process).
                 foreach (IBasicPolygon polygon in algorithm.InternalPolygons)
-                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), oldTag | newTag));
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), oldTag | newTag, excluded));
 
                 // External clips of the parameter face that are required to be re-processed.
                 foreach (IBasicPolygon polygon in algorithm.ExternalSecondPolygons)
-                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), newTag));
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), newTag, excluded));
 
                 // External clips of the already existing topology graph.
                 foreach (Face face in algorithm.ExternalFirstPolygons.Select(polygon => (Face)AddFace(polygon)))
@@ -1184,6 +1187,7 @@ namespace ELTE.AEGIS.Topology
                 foreach (Vertex vertex in face.Vertices)
                     vertex.Tag |= tag;
                 result.Add(face);
+                excluded.Add(face);
             }
             return result;
         }
@@ -1203,7 +1207,7 @@ namespace ELTE.AEGIS.Topology
 
             System.Diagnostics.Debug.WriteLine("--------------------");
             System.Diagnostics.Debug.WriteLine("Vertices count: {0}", _vertices.Count);
-            foreach (var vertex in _vertices)
+            foreach (var vertex in _vertices.Values)
             {
                 System.Diagnostics.Debug.WriteLine("Vertex #{0}: {1}, halfedge #{2}", vertex.Index, vertex.Position,
                                                    vertex.Halfedge.Index);
@@ -1247,11 +1251,11 @@ namespace ELTE.AEGIS.Topology
             Double minX, minY, maxX, maxY;
             if (_vertices.Count > 0)
             {
-                minX = _vertices.Min(vertex => vertex.Position.X);
-                minY = _vertices.Min(vertex => vertex.Position.Y);
+                minX = _vertices.Values.Min(vertex => vertex.Position.X);
+                minY = _vertices.Values.Min(vertex => vertex.Position.Y);
 
-                maxX = _vertices.Max(vertex => vertex.Position.X);
-                maxY = _vertices.Max(vertex => vertex.Position.Y);
+                maxX = _vertices.Values.Max(vertex => vertex.Position.X);
+                maxY = _vertices.Values.Max(vertex => vertex.Position.Y);
             }
             else
                 minX = minY = maxX = maxY = 0d;
@@ -1291,7 +1295,7 @@ namespace ELTE.AEGIS.Topology
                                                                                                         (a, b) =>
                                                                                                         String.Format("{0} {1}", a, b))),
                                                                 new XAttribute("style", String.Format("fill: {0}", face.Type.HasFlag(FaceType.Hole) ? "green" : "purple")))),
-                             _vertices.Select(vertex => new XElement(ns + "circle",
+                             _vertices.Values.Select(vertex => new XElement(ns + "circle",
                                                                      new XAttribute("cx", vertex.Position.X),
                                                                      new XAttribute("cy", coordYTransform(vertex.Position.Y)),
                                                                      new XAttribute("r", 0.5),
@@ -1308,7 +1312,7 @@ namespace ELTE.AEGIS.Topology
                                                                                                  : edge.HalfedgeB.OnBoundary
                                                                                                        ? "yellow"
                                                                                                        : "blue")))),
-                             _vertices.Select(vertex => new XElement(ns + "text", vertex.Index,
+                             _vertices.Values.Select(vertex => new XElement(ns + "text", vertex.Index,
                                                                      new XAttribute("x", vertex.Position.X - 0.125),
                                                                      new XAttribute("y", coordYTransform(vertex.Position.Y) + 0.125),
                                                                      new XAttribute("fill", vertex.OnBoundary ? "red" : "black"),
