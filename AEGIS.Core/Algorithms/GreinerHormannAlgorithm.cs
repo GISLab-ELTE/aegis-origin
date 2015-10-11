@@ -456,6 +456,11 @@ namespace ELTE.AEGIS.Algorithms
             if (secondShell == null)
                 throw new ArgumentNullException("secondShell", "The shell of the second polygon is null.");
 
+            if (!PolygonAlgorithms.IsSimple(firstShell) || !PolygonAlgorithms.IsSimple(secondShell) ||
+                firstHoles != null && firstHoles.Any(h => !PolygonAlgorithms.IsSimple(h.Reverse().ToList())) || 
+                secondHoles != null && secondHoles.Any(h => !PolygonAlgorithms.IsSimple(h.Reverse().ToList())))
+                throw new NotSupportedException("Self-intersecting polygons are not (yet) supported by the Greiner-Hormann algorithm.");
+
             _polygonA = new BasicPolygon(firstShell, firstHoles);
             _polygonB = new BasicPolygon(secondShell, secondHoles);
             _computeExternalClips = computeExternalClips;
@@ -762,9 +767,15 @@ namespace ELTE.AEGIS.Algorithms
                     current = current.Next ?? current.List.First;
                     shell.Add(current.Value);
 
-                    // Results with inner loops shall be dropped.
-                    if (shell.Count >= 3 && shell[shell.Count - 1] == shell[shell.Count - 3])
-                        break;
+                    // Trace and remove inner loops.
+                    Int32 match = shell.FindLastIndex(shell.Count - 2, shell.Count -2, coordinate => coordinate == current.Value);
+                    if (match >= 0)
+                    {
+                        List<Coordinate> subResult = shell.GetRange(match, shell.Count - match);
+                        if (subResult.Count > 3)
+                            _internalPolygons.Add(new PolygonClip(subResult));
+                        shell.RemoveRange(match, shell.Count - match - 1);
+                    }
 
                     if (_intersections.Contains(current.Value))
                     {
@@ -779,7 +790,7 @@ namespace ELTE.AEGIS.Algorithms
                         startPositions.Remove(current.Value);
                     }
                 } while (current.Value != shell[0]);
-                if (shell.Count > 3 && shell[shell.Count - 1] != shell[shell.Count - 3])
+                if (shell.Count > 3)
                     _internalPolygons.Add(new PolygonClip(shell));
             }
         }
@@ -811,9 +822,15 @@ namespace ELTE.AEGIS.Algorithms
                         current = current.Previous ?? current.List.Last;
                     shell.Add(current.Value);
 
-                    // Results with inner loops shall be dropped.
-                    if (shell.Count >= 3 && shell[shell.Count - 1] == shell[shell.Count - 3])
-                        break;
+                    // Trace and remove inner loops.
+                    Int32 match = shell.FindLastIndex(shell.Count - 2, shell.Count - 2, coordinate => coordinate == current.Value);
+                    if (match >= 0)
+                    {
+                        List<Coordinate> subResult = shell.GetRange(match, shell.Count - match);
+                        if (subResult.Count > 3)
+                            _internalPolygons.Add(new PolygonClip(subResult));
+                        shell.RemoveRange(match, shell.Count - match - 1);
+                    }
 
                     if (_intersections.Contains(current.Value))
                     {
@@ -828,7 +845,7 @@ namespace ELTE.AEGIS.Algorithms
                         startPositions.Remove(current.Value);
                     }
                 } while (current.Value != shell[0]);
-                if (shell.Count > 3 && shell[shell.Count - 1] != shell[shell.Count - 3])
+                if (shell.Count > 3)
                     _externalPolygonsA.Add(new PolygonClip(shell));
             }
         }
@@ -860,9 +877,15 @@ namespace ELTE.AEGIS.Algorithms
                         current = current.Previous ?? current.List.Last;
                     shell.Add(current.Value);
 
-                    // Results with inner loops shall be dropped.
-                    if (shell.Count >= 3 && shell[shell.Count - 1] == shell[shell.Count - 3])
-                        break;
+                    // Trace and remove inner loops.
+                    Int32 match = shell.FindLastIndex(shell.Count - 2, shell.Count - 2, coordinate => coordinate == current.Value);
+                    if (match >= 0)
+                    {
+                        List<Coordinate> subResult = shell.GetRange(match, shell.Count - match);
+                        if (subResult.Count > 3)
+                            _internalPolygons.Add(new PolygonClip(subResult));
+                        shell.RemoveRange(match, shell.Count - match - 1);
+                    }
 
                     if (_intersections.Contains(current.Value))
                     {
@@ -877,7 +900,7 @@ namespace ELTE.AEGIS.Algorithms
                         checkPositions.Remove(current.Value);
                     }
                 } while (current.Value != shell[0]);
-                if (shell.Count > 3 && shell[shell.Count - 1] != shell[shell.Count - 3])
+                if (shell.Count > 3)
                     _externalPolygonsB.Add(new PolygonClip(shell));
             }
         }
@@ -903,7 +926,7 @@ namespace ELTE.AEGIS.Algorithms
             {
                 _internalPolygons.Add(finalPolygonA);
             }
-            else if (isAinB)            // B contains A
+            else if (isAinB)       // B contains A
             {
                 finalPolygonB.AddHole(finalPolygonA.Shell);
                 _internalPolygons.Add(finalPolygonA);

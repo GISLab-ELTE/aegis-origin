@@ -294,10 +294,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 new[]
                 {
                     new Coordinate(6, 6),
-                        new Coordinate(10, 6),
-                        new Coordinate(10, 10),
-                        new Coordinate(6, 10),
-                        new Coordinate(6, 6)
+                    new Coordinate(10, 6),
+                    new Coordinate(10, 10),
+                    new Coordinate(6, 10),
+                    new Coordinate(6, 6)
                 }
             }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
             Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
@@ -318,6 +318,138 @@ namespace ELTE.AEGIS.Tests.Algorithms
             Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
 
             Assert.IsEmpty(algorithm.ExternalSecondPolygons);
+
+
+            // intersecting polygons with tangential internal part
+            algorithm = new GreinerHormannAlgorithm(
+                new List<Coordinate>
+                    {
+                        new Coordinate(0, 0),
+                        new Coordinate(6, 0),
+                        new Coordinate(6, 5),
+                        new Coordinate(3, 5),
+                        new Coordinate(3, 8),
+                        new Coordinate(0, 8),
+                        new Coordinate(0, 0),
+                    },
+                new List<Coordinate>
+                    {
+                        new Coordinate(2, 3),
+                        new Coordinate(8, 3),
+                        new Coordinate(8, 5),
+                        new Coordinate(3, 5),
+                        new Coordinate(3, 8),
+                        new Coordinate(2, 8),
+                        new Coordinate(2, 3),
+                    });
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(2, 3),
+                    new Coordinate(6, 3),
+                    new Coordinate(6, 5),
+                    new Coordinate(3, 5),
+                    new Coordinate(3, 8),
+                    new Coordinate(2, 8),
+                    new Coordinate(2, 3),
+                }
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(0, 0),
+                    new Coordinate(6, 0),
+                    new Coordinate(6, 3),
+                    new Coordinate(2, 3),
+                    new Coordinate(2, 8),
+                    new Coordinate(0, 8),
+                    new Coordinate(0, 0)
+                }
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(6, 3),
+                    new Coordinate(8, 3),
+                    new Coordinate(8, 5),
+                    new Coordinate(6, 5),
+                    new Coordinate(6, 3),
+                }
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
+
+
+            // intersecting polygons with common border attached to internal part
+            algorithm = new GreinerHormannAlgorithm(
+                new List<Coordinate>
+                    {
+                        new Coordinate(0, 0),
+                        new Coordinate(8, 0),
+                        new Coordinate(8, 10),
+                        new Coordinate(6, 12),
+                        new Coordinate(4, 8),
+                        new Coordinate(0, 8),
+                        new Coordinate(0, 0),
+                    },
+                new List<Coordinate>
+                    {
+                        new Coordinate(3, 6),
+                        new Coordinate(6, 12),
+                        new Coordinate(6, 13),
+                        new Coordinate(3, 13),
+                        new Coordinate(3, 6),
+                    });
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(3, 6),
+                    new Coordinate(4, 8),
+                    new Coordinate(3, 8),
+                    new Coordinate(3, 6),
+                }
+            }.ToRingSet(), algorithm.InternalPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.InternalPolygons.SelectMany(polygon => polygon.Holes));
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(0, 0),
+                    new Coordinate(8, 0),
+                    new Coordinate(8, 10),
+                    new Coordinate(6, 12),
+                    new Coordinate(4, 8),
+                    new Coordinate(3, 6),
+                    new Coordinate(3, 8),
+                    new Coordinate(0, 8),
+                    new Coordinate(0, 0),
+                }
+            }.ToRingSet(), algorithm.ExternalFirstPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.ExternalFirstPolygons.SelectMany(polygon => polygon.Holes));
+
+            Assert.AreEqual(new[]
+            {
+                new[]
+                {
+                    new Coordinate(3, 8),
+                    new Coordinate(4, 8),
+                    new Coordinate(6, 12),
+                    new Coordinate(6, 13),
+                    new Coordinate(3, 13),
+                    new Coordinate(3, 8),
+                }
+            }.ToRingSet(), algorithm.ExternalSecondPolygons.Select(polygon => polygon.Shell).ToRingSet());
+            Assert.IsEmpty(algorithm.ExternalSecondPolygons.SelectMany(polygon => polygon.Holes));
         }
 
         /// <summary>
