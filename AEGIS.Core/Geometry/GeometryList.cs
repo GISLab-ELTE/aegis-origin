@@ -345,37 +345,27 @@ namespace ELTE.AEGIS.Geometry
                 throw new ArgumentNullException("source", "Source is null.");
 
             // copy geometries
-            ICollection<T> collection = source as ICollection<T>;
-            if (collection != null)
+            _geometries = new T[source.Count()];
+            _size = 0;
+            using (IEnumerator<T> en = source.GetEnumerator())
             {
-                Int32 count = collection.Count;
-                _geometries = new T[count];
-                _size = count;
-                collection.CopyTo(_geometries, 0);
-            }
-            else
-            {
-                _geometries = new T[source.Count()];
-                _size = 0;
-                using (IEnumerator<T> en = source.GetEnumerator())
+                while (en.MoveNext())
                 {
-                    while (en.MoveNext())
-                    {
-                        if (en.Current == null)
-                            continue;
+                    if (en.Current == null)
+                        continue;
 
-                        // check precision model and reference system
-                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
-                            en.Current.PrecisionModel.Equals(PrecisionModel))
-                        {
-                            _geometries[_size] = en.Current;
-                        }
-                        else
-                        {
-                            _geometries[_size] = (T)Factory.CreateGeometry(en.Current);
-                        }
-                        _size++;
+                    // check precision model and reference system
+                    if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
+                        en.Current.PrecisionModel.Equals(PrecisionModel))
+                    {
+                        _geometries[_size] = en.Current;
                     }
+                    else
+                    {
+                        _geometries[_size] = (T) Factory.CreateGeometry(en.Current);
+                    }
+                    _size++;
+
                 }
             }
         }
@@ -434,37 +424,26 @@ namespace ELTE.AEGIS.Geometry
                 throw new ArgumentNullException("source", "The source is null.");
 
             // copy geometries
-            ICollection<T> collection = source as ICollection<T>;
-            if (collection != null)
+            _geometries = new T[source.Count()];
+            _size = 0;
+            using (IEnumerator<T> en = source.GetEnumerator())
             {
-                Int32 count = collection.Count;
-                _geometries = new T[count];
-                _size = count;
-                collection.CopyTo(_geometries, 0);
-            }
-            else
-            {
-                _geometries = new T[source.Count()];
-                _size = 0;
-                using (IEnumerator<T> en = source.GetEnumerator())
+                while (en.MoveNext())
                 {
-                    while (en.MoveNext())
-                    {
-                        if (en.Current == null)
-                            continue;
+                    if (en.Current == null)
+                        continue;
 
-                        // check precision model and reference system
-                        if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
-                            en.Current.PrecisionModel.Equals(PrecisionModel))
-                        {
-                            _geometries[_size] = en.Current;
-                        }
-                        else
-                        {
-                            _geometries[_size] = (T)Factory.CreateGeometry(en.Current);
-                        }
-                        _size++;
+                    // check precision model and reference system
+                    if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
+                        en.Current.PrecisionModel.Equals(PrecisionModel))
+                    {
+                        _geometries[_size] = en.Current;
                     }
+                    else
+                    {
+                        _geometries[_size] = (T) Factory.CreateGeometry(en.Current);
+                    }
+                    _size++;
                 }
             }
         }
@@ -575,7 +554,7 @@ namespace ELTE.AEGIS.Geometry
         {
             if (geometry == null)
                 throw new ArgumentNullException("geometry", "The geometry is null.");
-            if (ReferenceSystem != null && geometry.ReferenceSystem != null && geometry.ReferenceSystem.Equals(ReferenceSystem))
+            if (ReferenceSystem != null && geometry.ReferenceSystem != null && !geometry.ReferenceSystem.Equals(ReferenceSystem))
                 throw new ArgumentException("The reference system of the geometry does not match the reference system of the collection.", "geometry");
 
             if (_size == _geometries.Length) EnsureCapacity(_size + 1);
