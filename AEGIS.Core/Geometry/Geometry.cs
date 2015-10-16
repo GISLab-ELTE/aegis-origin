@@ -129,7 +129,7 @@ namespace ELTE.AEGIS.Geometry
         /// Gets the metadata collection.
         /// </summary>
         /// <value>The metadata collection.</value>
-        public IMetadataCollection Metadata { get { return _metadata; } }
+        public IMetadataCollection Metadata { get { return _metadata ?? (_metadata = Factory.GetFactory<IMetadataFactory>().CreateCollection()); } }
 
         /// <summary>
         /// Gets or sets the metadata value for a specified key.
