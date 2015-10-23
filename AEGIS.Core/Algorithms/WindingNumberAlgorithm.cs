@@ -159,7 +159,7 @@ namespace ELTE.AEGIS.Algorithms
         /// or
         /// The first and the last coordinates must be equal.
         /// </exception>
-        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary, PrecisionModel precisionModel)
+        public WindingNumberAlgorithm(IList<Coordinate> shell, Coordinate coordinate, Boolean verifyBoundary, PrecisionModel precisionModel = null)
         {
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");

@@ -639,8 +639,6 @@ namespace ELTE.AEGIS.Algorithms
                              prevLocation == RelativeLocation.Exterior && nextLocation == RelativeLocation.Exterior)
                         _intersections[currentNode.Value].Mode = IntersectionMode.Boundary;
 
-                    // Interior -> Interior,
-                    // Exterior -> Exterior,
                     // Boundary -> Boundary
                     else
                     {
