@@ -1245,8 +1245,12 @@ namespace ELTE.AEGIS.Topology
         /// Writes debug SVG file about this instance.
         /// </summary>
         /// <param name="filename">The output filename.</param>
+        /// <param name="hasLabels">Sets whether to label incrementally the vertices.</param>
+        /// <param name="imageSize">Size of the image.</param>
+        /// <param name="vertexSize">Size of the radius of a vertex.</param>
         [System.Diagnostics.Conditional("DEBUG")]
-        public void DebugSvg(String filename)
+        public void DebugSvg(String filename, 
+            Boolean hasLabels = true, Double imageSize = 800d, Single vertexSize = 0.5f)
         {
             Double minX, minY, maxX, maxY;
             if (_vertices.Count > 0)
@@ -1263,8 +1267,8 @@ namespace ELTE.AEGIS.Topology
             Double sizeX = maxX - minX;
             Double sizeY = maxY - minY;
 
-            Double widthX = 800d;
-            Double widthY = 800d;
+            Double widthX = imageSize;
+            Double widthY = imageSize;
 
             Double ratioX = widthX / sizeX;
             Double ratioY = widthY / sizeY;
@@ -1279,46 +1283,57 @@ namespace ELTE.AEGIS.Topology
             XNamespace ns = "http://www.w3.org/2000/svg";
             XDocument doc = new XDocument(
                 new XElement(ns + "svg",
-                             new XAttribute("width", (Int32)widthX),
-                             new XAttribute("height", (Int32)widthY),
-                             new XAttribute("viewBox", String.Format(System.Globalization.CultureInfo.InvariantCulture,
-                                                                     "{0} {1} {2} {3}", minX - 1, minY - 1, sizeX + 2, sizeY + 2)),
-                             _faces.Select(face => new XElement(ns + "polygon",
-                                                                new XAttribute("points", face.Vertices
-                                                                                             .Select(
-                                                                                                     vertex =>
-                                                                                                     String.Format(System.Globalization.CultureInfo.InvariantCulture,
-                                                                                                                   "{0},{1}",
-                                                                                                                   vertex.Position.X,
-                                                                                                                   coordYTransform(vertex.Position.Y)))
-                                                                                             .Aggregate(
-                                                                                                        (a, b) =>
-                                                                                                        String.Format("{0} {1}", a, b))),
-                                                                new XAttribute("style", String.Format("fill: {0}", face.Type.HasFlag(FaceType.Hole) ? "green" : "purple")))),
-                             _vertices.Values.Select(vertex => new XElement(ns + "circle",
-                                                                     new XAttribute("cx", vertex.Position.X),
-                                                                     new XAttribute("cy", coordYTransform(vertex.Position.Y)),
-                                                                     new XAttribute("r", 0.5),
-                                                                     new XAttribute("fill", vertex.OnBoundary ? "black" : "red"))),
-                             _edges.Select(edge => new XElement(ns + "line",
-                                                                new XAttribute("x1", edge.VertexA.Position.X),
-                                                                new XAttribute("y1", coordYTransform(edge.VertexA.Position.Y)),
-                                                                new XAttribute("x2", edge.VertexB.Position.X),
-                                                                new XAttribute("y2", coordYTransform(edge.VertexB.Position.Y)),
-                                                                new XAttribute("style",
-                                                                               String.Format("stroke: {0}; stroke-width: 0.5",
-                                                                                             edge.HalfedgeA.OnBoundary
-                                                                                                 ? "green"
-                                                                                                 : edge.HalfedgeB.OnBoundary
-                                                                                                       ? "yellow"
-                                                                                                       : "blue")))),
-                             _vertices.Values.Select(vertex => new XElement(ns + "text", vertex.Index,
-                                                                     new XAttribute("x", vertex.Position.X - 0.125),
-                                                                     new XAttribute("y", coordYTransform(vertex.Position.Y) + 0.125),
-                                                                     new XAttribute("fill", vertex.OnBoundary ? "red" : "black"),
-                                                                     new XAttribute("style", "font-size: 0.5")))
+                    new XAttribute("width", (Int32) widthX),
+                    new XAttribute("height", (Int32) widthY),
+                    new XAttribute("viewBox", String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                        "{0} {1} {2} {3}", minX - 1, minY - 1, sizeX + 2, sizeY + 2)),
+
+                    _faces.Select(face => new XElement(ns + "polygon",
+                        new XAttribute("points", face.Vertices
+                                                     .Select(
+                                                         vertex =>
+                                                             String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                                                                 "{0},{1}",
+                                                                 vertex.Position.X,
+                                                                 coordYTransform(vertex.Position.Y)))
+                                                     .Aggregate(
+                                                         (a, b) =>
+                                                             String.Format("{0} {1}", a, b))),
+                        new XAttribute("style", String.Format("fill: {0}", face.Type.HasFlag(FaceType.Hole) ? "green" : "purple")))),
+
+                    _vertices.Values.Select(vertex => new XElement(ns + "circle",
+                        new XAttribute("cx", vertex.Position.X),
+                        new XAttribute("cy", coordYTransform(vertex.Position.Y)),
+                        new XAttribute("r", vertexSize),
+                        new XAttribute("fill", vertex.OnBoundary ? "black" : "red"))),
+
+                    _edges.Select(edge => new XElement(ns + "line",
+                        new XAttribute("x1", edge.VertexA.Position.X),
+                        new XAttribute("y1", coordYTransform(edge.VertexA.Position.Y)),
+                        new XAttribute("x2", edge.VertexB.Position.X),
+                        new XAttribute("y2", coordYTransform(edge.VertexB.Position.Y)),
+                        new XAttribute("style",
+                            String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                                "stroke: {0}; stroke-width: {1}",
+                                edge.HalfedgeA.OnBoundary
+                                    ? "green"
+                                    : edge.HalfedgeB.OnBoundary
+                                        ? "yellow"
+                                        : "blue",
+                                vertexSize))))
                     )
                 );
+
+            if (hasLabels)
+                doc.Descendants(ns + "svg").First().Add(
+                    _vertices.Values.Select(vertex => new XElement(ns + "text", vertex.Index,
+                        new XAttribute("x", vertex.Position.X - vertexSize / 2),
+                        new XAttribute("y", coordYTransform(vertex.Position.Y) + vertexSize / 4),
+                        new XAttribute("fill", vertex.OnBoundary ? "red" : "black"),
+                        new XAttribute("style", String.Format(System.Globalization.CultureInfo.InvariantCulture,
+                            "font-size: {0}", vertexSize))))
+                    );
+
             doc.AddFirst(new XDocumentType("svg", "-//W3//DTD SVG 1.1//EN", "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd", null));
             doc.Save(filename);
         }
