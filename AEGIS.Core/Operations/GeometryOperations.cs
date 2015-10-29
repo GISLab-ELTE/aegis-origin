@@ -19,7 +19,7 @@ using System;
 namespace ELTE.AEGIS.Operations
 {
     /// <summary>
-    /// Represents a type peforming spatial operations on <see cref="IGeometry"/> instances.
+    /// Represents a type performing spatial operations on <see cref="IGeometry"/> instances.
     /// </summary>
     public static class GeometryOperations
     {

@@ -232,6 +232,74 @@ namespace ELTE.AEGIS.Tests.Operations.Geometry
             Assert.AreEqual(expected.ToRingSet(), collection.Select(polygon => polygon.Shell).ToRingSet());
         }
 
+        /// <summary>
+        /// Tests commutative containment.
+        /// </summary>
+        [Test]
+        public void HalfedgeGeometryContainmentTest()
+        {
+            // Case 1
+            ILinearRing first = _factory.CreateLinearRing(new Coordinate[]
+            {
+                new Coordinate(2, 2), 
+                new Coordinate(8, 2), 
+                new Coordinate(8, 8), 
+                new Coordinate(2, 8), 
+                new Coordinate(2, 2),
+            });
+
+            ILinearRing second = _factory.CreateLinearRing(new Coordinate[]
+            {
+                new Coordinate(0, 0), 
+                new Coordinate(10, 0), 
+                new Coordinate(10, 10), 
+                new Coordinate(0, 10), 
+                new Coordinate(0, 0),
+            });
+
+            // Intersection
+            IGeometry result = _operator.Intersection(first, second);
+            Assert.IsInstanceOf<IPolygon>(result);
+            IPolygon polygon = (IPolygon)result;
+            Assert.AreEqual(polygon.Shell.ToRing(), first.ToRing());
+
+            result = _operator.Intersection(second, first);
+            Assert.IsInstanceOf<IPolygon>(result);
+            polygon = (IPolygon)result;
+            Assert.AreEqual(polygon.Shell.ToRing(), first.ToRing());
+
+
+            // Case 2 (similar to 1, only for testing a concrete issue)
+            first = _factory.CreateLinearRing(new Coordinate[]
+            {
+                new Coordinate(308660.021186441, 4920043.37146893),
+                new Coordinate(311001.021186441, 4920043.37146893),
+                new Coordinate(311001.021186441, 4922922.37146893),
+                new Coordinate(308660.021186441, 4922922.37146893),
+                new Coordinate(308660.021186441, 4920043.37146893),
+            });
+
+            second = _factory.CreateLinearRing(new Coordinate[]
+            { 
+                new Coordinate(308333.75, 4920001.75),
+                new Coordinate(311833.75, 4920001.75),
+                new Coordinate(311833.75, 4923501.75),
+                new Coordinate(308333.75, 4923501.75),
+                new Coordinate(308333.75, 4920001.75),
+            });
+
+            // Intersection
+            result = _operator.Intersection(first, second);
+            Assert.IsInstanceOf<IPolygon>(result);
+            polygon = (IPolygon)result;
+            Assert.AreEqual(polygon.Shell.ToRing(), first.ToRing());
+
+            result = _operator.Intersection(second, first);
+            Assert.IsInstanceOf<IPolygon>(result);
+            polygon = (IPolygon)result;
+            Assert.AreEqual(polygon.Shell.ToRing(), first.ToRing());
+        }
+
         #endregion
     }
 }

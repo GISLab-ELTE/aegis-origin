@@ -1119,7 +1119,8 @@ namespace ELTE.AEGIS.Topology
             IList<Face> collisionFaces = (from face in otherFaces
                                           where Envelope.FromCoordinates(otherPositions[face.Index]).Intersects(shellEnvelope)
                                           where ShamosHoeyAlgorithm.Intersects(new[] { otherPositions[face.Index], shell }, _precisionModel) ||
-                                              shell.All(coordinate => PolygonAlgorithms.InInterior(otherPositions[face.Index], coordinate, _precisionModel))
+                                              shell.All(coordinate => PolygonAlgorithms.InInterior(otherPositions[face.Index], coordinate, _precisionModel)) ||
+                                              otherPositions[face.Index].All(coordinate => PolygonAlgorithms.InInterior(shell, coordinate, _precisionModel))
                                           orderby face.Type
                                           select face).ToList();
 
