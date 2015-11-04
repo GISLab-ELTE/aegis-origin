@@ -617,7 +617,7 @@ namespace ELTE.AEGIS.Algorithms
             if (shell == null)
                 throw new ArgumentNullException("shell", "The shell is null.");
 
-            return ComputeLocation(shell, null, coordinate, null);
+            return ComputeLocation(shell, null, coordinate, precision);
         }
 
         /// <summary>
