@@ -97,6 +97,11 @@ namespace ELTE.AEGIS.IO.Utilities
         /// </summary>
         private Dictionary<Int64, Byte[]> _byteArrays;
 
+        /// <summary>
+        /// A value indicating whether to dispose the underlying stream.
+        /// </summary>
+        private Boolean _disposeUnderlyingStream;
+
         #endregion
 
         #region Constructor
@@ -107,9 +112,10 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <param name="underlyingStream">The underlying stream.</param>
         /// <param name="singleUse">Defines whether the stream can be read/ written multiple times or not.</param>
         /// <param name="forced">A value indicating whether proxy mode is forced.</param>
+        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlysing stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
-        public ProxyStream(Stream underlyingStream, Boolean singleUse = true, Boolean forced = false)
+        public ProxyStream(Stream underlyingStream, Boolean singleUse = true, Boolean forced = false, Boolean disposeUnderlyingStream = true)
         {
             if (underlyingStream == null)
                 throw new ArgumentNullException("stream", "The stream is null.");
@@ -137,6 +143,8 @@ namespace ELTE.AEGIS.IO.Utilities
             _byteArrays = new Dictionary<Int64, Byte[]>();
 
             _bitFlagArrays = new Dictionary<Int64, Byte[]>();
+
+            _disposeUnderlyingStream = disposeUnderlyingStream;
         }
 
         #endregion
@@ -639,10 +647,13 @@ namespace ELTE.AEGIS.IO.Utilities
         {
             _disposed = true;
 
-            if (disposing && _accessType == StreamAccessType.Writable)
+            if (disposing)
             {
-                FlushIntoUnderlyingStream();
-                _underlyingStream.Dispose();
+                if (_accessType == StreamAccessType.Writable)
+                    FlushIntoUnderlyingStream();
+
+                if (_disposeUnderlyingStream)
+                    _underlyingStream.Dispose();
             }
         }
 

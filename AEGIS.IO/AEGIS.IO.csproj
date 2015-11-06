@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BufferingMode.cs" />
     <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
+    <Compile Include="Utilities\MemoryBufferedStream.cs" />
     <Compile Include="MetafileFormat.cs" />
     <Compile Include="Shapefile\DBaseField.cs" />
     <Compile Include="Shapefile\DBaseHeader.cs" />
