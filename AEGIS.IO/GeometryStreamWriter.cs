@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.IO.Storage;
+using ELTE.AEGIS.IO.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -114,6 +115,16 @@ namespace ELTE.AEGIS.IO
         private readonly IDictionary<GeometryStreamParameter, Object> _parameters;
 
         /// <summary>
+        /// The source stream.
+        /// </summary>
+        private Stream _sourceStream;
+
+        /// <summary>
+        /// The buffering mode.
+        /// </summary>
+        private BufferingMode _bufferingMode;
+
+        /// <summary>
         /// A value indicating whether this instance is disposed.
         /// </summary>
         private Boolean _disposed;
@@ -121,7 +132,7 @@ namespace ELTE.AEGIS.IO
         /// <summary>
         /// A value indicating whether to dispose the underlying stream.
         /// </summary>
-        private Boolean _disposeBaseStream;
+        private Boolean _disposeSourceStream;
 
         #endregion
 
@@ -219,7 +230,7 @@ namespace ELTE.AEGIS.IO
             : this(ResolveStream(path), format, parameters)
         {
             Path = path;
-            _disposeBaseStream = true;
+            _disposeSourceStream = true;
         }
 
         /// <summary>
@@ -275,9 +286,24 @@ namespace ELTE.AEGIS.IO
 
             Format = format;
             _parameters = parameters;
-            _baseStream = stream;
-            _disposeBaseStream = false;
+            _bufferingMode = ResolveParameter<BufferingMode>(GeometryStreamParameters.BufferingMode);
+            _disposeSourceStream = false;
             _disposed = false;
+            _sourceStream = stream;
+
+            // apply buffering
+            switch (_bufferingMode)
+            {
+                case BufferingMode.Minimal:
+                    _baseStream = new ProxyStream(_sourceStream, true, true, false);
+                    break;
+                case BufferingMode.Maximal:
+                    _baseStream = new MemoryBufferedStream(_sourceStream);
+                    break;
+                default:
+                    _baseStream = _sourceStream;
+                    break;
+            }
         }
 
         /// <summary>
@@ -407,8 +433,17 @@ namespace ELTE.AEGIS.IO
 
             if (disposing)
             {
-                if (_disposeBaseStream)
-                    _baseStream.Dispose();
+                switch (_bufferingMode)
+                {
+                    case BufferingMode.Minimal:
+                    case BufferingMode.Maximal:
+                        _baseStream.Dispose();
+                        break;
+                }
+
+                if (_disposeSourceStream)
+                    _sourceStream.Dispose();
+
                 if (_parameters != null)
                     _parameters.Clear();
             }
@@ -436,6 +471,53 @@ namespace ELTE.AEGIS.IO
         protected Boolean IsProvidedParameter(GeometryStreamParameter parameter)
         {
             return _parameters != null && _parameters.ContainsKey(parameter);
+        }
+
+        /// <summary>
+        /// Opens the file on the specified path.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <returns>The stream of the file.</returns>
+        protected Stream OpenPath(String path)
+        {
+            Stream stream = FileSystem.GetFileSystemForPath(path).OpenFile(path, FileMode.OpenOrCreate, FileAccess.Write);
+
+            // apply buffering
+            switch (_bufferingMode)
+            {
+                case BufferingMode.Minimal:
+                    return new ProxyStream(stream, true, true);
+                case BufferingMode.Maximal:
+                    return new MemoryBufferedStream(stream, true);
+                default:
+                    return stream;
+            }
+        }
+
+        /// <summary>
+        /// Opens the file on the specified path.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <returns>The stream of the file.</returns>
+        protected Stream OpenPath(Uri path)
+        {
+            Stream stream;
+
+            if (path.IsAbsoluteUri)
+                stream = FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.OpenOrCreate, FileAccess.Write);
+            else
+                stream = FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.OpenOrCreate, FileAccess.Write);
+
+            // apply buffering
+            switch (_bufferingMode)
+            {
+                case BufferingMode.Minimal:
+                    return new ProxyStream(stream, true, true);
+                case BufferingMode.Maximal:
+                    return new MemoryBufferedStream(stream, true);
+                default:
+                    return stream;
+            }
         }
 
         #endregion
