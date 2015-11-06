@@ -114,10 +114,10 @@ namespace ELTE.AEGIS.Raster
                     {
                         _coordinates = new Coordinate[4];
 
-                        _coordinates[0] = Mapper.MapCoordinate(0, 0, RasterMapMode.ValueIsArea);
-                        _coordinates[2] = Mapper.MapCoordinate(NumberOfRows, 0, RasterMapMode.ValueIsArea);
+                        _coordinates[0] = Mapper.MapCoordinate(NumberOfRows, 0, RasterMapMode.ValueIsArea);
                         _coordinates[1] = Mapper.MapCoordinate(NumberOfRows, NumberOfColumns, RasterMapMode.ValueIsArea);
-                        _coordinates[3] = Mapper.MapCoordinate(0, NumberOfColumns, RasterMapMode.ValueIsArea);
+                        _coordinates[2] = Mapper.MapCoordinate(0, NumberOfColumns, RasterMapMode.ValueIsArea);
+                        _coordinates[3] = Mapper.MapCoordinate(0, 0, RasterMapMode.ValueIsArea);
                     }
                 }
                 return Array.AsReadOnly(_coordinates);
