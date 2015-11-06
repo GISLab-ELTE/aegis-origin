@@ -44,6 +44,7 @@
     <Compile Include="Algorithms\Distances\ManhattanDistance.cs" />
     <Compile Include="Algorithms\Distances\SpectralDistance.cs" />
     <Compile Include="Algorithms\RasterAlgorithms.cs" />
+    <Compile Include="Algorithms\Resampling\BicubicResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\BilinearResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\NearestNeighbourResamplingAlgorithm.cs" />

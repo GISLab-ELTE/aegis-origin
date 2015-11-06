@@ -50,10 +50,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
             Int32 columnFloor = (Int32)Math.Floor(columnIndex);
             Int32 rowFloor = (Int32)Math.Floor(rowIndex);
 
-            Double columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
-            Double rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
+            Double firstColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
+            Double secondColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
 
-            return (1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity;
+            return (1 - columnIndex + columnFloor) * firstColumnValue + (columnIndex - columnFloor) * secondColumnValue;
         }
 
         /// <summary>
@@ -67,15 +67,15 @@ namespace ELTE.AEGIS.Algorithms.Resampling
             Int32 columnFloor = (Int32)Math.Floor(columnIndex);
             Int32 rowFloor = (Int32)Math.Floor(rowIndex);
 
-            Double columnIntensity, rowIntensity;
+            Double firstColumnValue, secondColumnValue;
 
             Double[] result = new Double[_raster.NumberOfBands];
             for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
             {
-                columnIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
-                rowIntensity = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
+                firstColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
+                secondColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
 
-                result[bandIndex] = (1 - columnIndex + columnFloor) * columnIntensity + (columnIndex - columnFloor) * rowIntensity;
+                result[bandIndex] = (1 - columnIndex + columnFloor) * firstColumnValue + (columnIndex - columnFloor) * secondColumnValue;
             }
 
             return result;
