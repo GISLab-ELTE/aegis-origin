@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BufferingMode.cs" />
     <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
     <Compile Include="MetafileFormat.cs" />
     <Compile Include="Shapefile\DBaseField.cs" />

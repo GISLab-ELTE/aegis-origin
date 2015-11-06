@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GeometryStreamParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -88,6 +88,7 @@ namespace ELTE.AEGIS.IO
 
         private static GeometryStreamParameter _geometryFactory;
         private static GeometryStreamParameter _geometryFactoryType;
+        private static GeometryStreamParameter _bufferingMode;
 
         #endregion
 
@@ -117,6 +118,20 @@ namespace ELTE.AEGIS.IO
                     GeometryStreamParameter.CreateOptionalParameter<Type>("AEGIS::620001", "Geometry factory type",
                                                                           "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used witk the reference system provided by the source.",
                                                                           Conditions.Implements<IGeometryFactory>()));
+            }
+        }
+
+        /// <summary>
+        /// Buffering mode.
+        /// </summary>
+        public static GeometryStreamParameter BufferingMode
+        {
+            get
+            {
+                return _bufferingMode ?? (_bufferingMode =
+                    GeometryStreamParameter.CreateOptionalParameter<BufferingMode>("AEGIS::620008", "buffering mode",
+                                                                                   "The buffering mode.",
+                                                                                   IO.BufferingMode.None));
             }
         }
 
