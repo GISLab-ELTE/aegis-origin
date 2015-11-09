@@ -16,6 +16,7 @@
 using ELTE.AEGIS.IO.Storage.Authentication;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Storage
@@ -749,6 +750,33 @@ namespace ELTE.AEGIS.IO.Storage
         public async virtual void MoveAsync(String sourcePath, String destinationPath)
         {
             await Task.Run(() => Move(sourcePath, destinationPath));
+        }
+
+        /// <summary>
+        /// Combines the specified paths.
+        /// </summary>
+        /// <param name="fileSystem">The file system.</param>
+        /// <param name="path">The array of file system paths.</param>
+        /// <returns>The combined path.</returns>
+        public String Combine(params String[] path)
+        {
+            if (path == null || path.Length == 0)
+                return null;
+
+            StringBuilder pathBuilder = new StringBuilder();
+
+            for (Int32 pathIndex = 1; pathIndex < path.Length; pathIndex++)
+            {
+                if (path[pathIndex] == null || path[pathIndex].Length == 0)
+                    continue;
+
+                if (pathBuilder.Length > 0 && !path[pathIndex - 1].EndsWith(DirectorySeparator.ToString()))
+                    pathBuilder.Append(DirectorySeparator);
+
+                pathBuilder.Append(path[pathIndex]);
+            }
+
+            return pathBuilder.ToString();
         }
 
         /// <summary>
