@@ -674,7 +674,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 // should not load more bytes into the memory than suggested
                 Byte[] stripBytes = new Byte[stripByteCounts[stripIndex] < numberOfReadableBytes ? stripByteCounts[stripIndex] : numberOfReadableBytes];
                 UInt64 numberOfBytesLeft = stripByteCounts[stripIndex];
-                Int32 byteIndex = 0, bitIndex = 0;
+                Int32 byteIndex = 0, bitIndex = 8;
 
                 contentStream.Read(stripBytes, 0, stripBytes.Length);
 
@@ -828,7 +828,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
                 {
                     bitIndex -= radiometricResolutions[i];
-                    values[i] = Convert.ToByte(bytes[byteIndex] >> bitIndex);
+                    values[i] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
 
                     if (bitIndex == 0)
                     {
@@ -879,7 +879,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
                 {
                     bitIndex -= radiometricResolutions[i];
-                    values[i] = Convert.ToSByte(bytes[byteIndex] >> bitIndex);
+                    values[i] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
 
                     if (bitIndex == 0)
                     {

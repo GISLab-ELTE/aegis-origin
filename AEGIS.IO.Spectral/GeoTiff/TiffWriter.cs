@@ -46,7 +46,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// The threshold value (in bytes) after which BigTIFF format is applied. This field is constant.
         /// </summary>
-        private const Int64 BigTiffThreshold = 10;//(Int64)(UInt32.MaxValue * 0.9);
+        private const Int64 BigTiffThreshold = (Int64)(UInt32.MaxValue * 0.9);
 
         #endregion
 
