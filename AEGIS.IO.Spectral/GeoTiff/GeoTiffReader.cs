@@ -93,11 +93,15 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is empty.
         /// or
         /// The path is invalid.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(String path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
@@ -113,28 +117,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
         /// </summary>
         /// <param name="path">The file path to be read.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
-        /// <exception cref="System.ArgumentException">
-        /// The path is empty.
-        /// or
-        /// The path is invalid.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
-        /// or
-        /// Exception occured during stream reading.
-        /// </exception>
-        public GeoTiffReader(String path, GeoTiffMetafileReader metafileReader)
-            : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
-        {
-            _metafileReader = metafileReader;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="path">The file path to be read.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -146,34 +128,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
-        /// </exception>
-        public GeoTiffReader(String path, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
-        {
-            _metafileReader = metafileReader;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="path">The file path to be read.</param>
-        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
-        /// <exception cref="System.ArgumentException">
-        /// The path is empty.
-        /// or
-        /// The path is invalid.
-        /// or
-        /// The type of a parameter value does not match the type specified by the format.
-        /// or
-        /// The parameter value does not satisfy the conditions of the parameter.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
-        /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
@@ -196,9 +153,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The path is invalid.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
@@ -208,54 +165,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
             }
             catch { }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="path">The file path to be read.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
-        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
-        /// <exception cref="System.ArgumentException">
-        /// The path is empty.
-        /// or
-        /// The path is invalid.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
-        /// or
-        /// Exception occured during stream reading.
-        /// </exception>
-        public GeoTiffReader(Uri path, GeoTiffMetafileReader metafileReader)
-            : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
-        {
-            _metafileReader = metafileReader;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="path">The file path to be read.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
-        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
-        /// <exception cref="System.ArgumentException">
-        /// The path is empty.
-        /// or
-        /// The path is invalid.
-        /// or
-        /// The type of a parameter value does not match the type specified by the format.
-        /// or
-        /// The parameter value does not satisfy the conditions of the parameter.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
-        /// or
-        /// Exception occured during stream reading.
-        /// </exception>
-        public GeoTiffReader(Uri path, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
-        {
-            _metafileReader = metafileReader;
         }
 
         /// <summary>
@@ -292,7 +201,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="stream">The source stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public GeoTiffReader(Stream stream)
             : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
         {
@@ -302,20 +211,6 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
         /// </summary>
         /// <param name="stream">The source stream.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
-        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
-        public GeoTiffReader(Stream stream, GeoTiffMetafileReader metafileReader)
-            : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
-        {
-            _metafileReader = metafileReader;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="stream">The source stream.</param>
-        /// <param name="metafileReader">The metafile reader.</param>
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.ArgumentException">
@@ -323,27 +218,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
-        public GeoTiffReader(Stream stream, GeoTiffMetafileReader metafileReader, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
-        {
-            _metafileReader = metafileReader;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeoTiffReader" /> class.
-        /// </summary>
-        /// <param name="stream">The source stream.</param>
-        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
-        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
-        /// <exception cref="System.ArgumentException">
-        /// The type of a parameter value does not match the type specified by the format.
-        /// or
-        /// The parameter value does not satisfy the conditions of the parameter.
-        /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         public GeoTiffReader(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(stream, SpectralGeometryStreamFormats.GeoTiff, null)
+            : base(stream, SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
         }
 
@@ -555,7 +432,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     Coordinate rasterSpaceCoordinate = new Coordinate(modelTiePointsArray[0], modelTiePointsArray[1], modelTiePointsArray[2]);
                     Coordinate modelSpaceCoordinate = new Coordinate(modelTiePointsArray[3], modelTiePointsArray[4], modelTiePointsArray[5]);
                     Double scaleX = modelPixelScaleArray[0];
-                    Double scaleY = modelPixelScaleArray[1];
+                    Double scaleY = -modelPixelScaleArray[1];
                     Double scaleZ = modelPixelScaleArray[2];
 
                     return RasterMapper.FromTransformation(mode, 
@@ -686,8 +563,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             Int32 code = Convert.ToInt32(_currentGeoKeys[2048]);
             // EPSG geodetic coordinate reference system codes
-            if (code >= 400 && code <= 4999)
-                return GeographicCoordinateReferenceSystems.FromIdentifier("EPSG::" + code).FirstOrDefault();
+            if (code < 32767)
+            {
+                GeographicCoordinateReferenceSystem referenceSystem = GeographicCoordinateReferenceSystems.FromIdentifier("EPSG::" + code).FirstOrDefault();
+
+                if (referenceSystem == null)
+                    return new GeographicCoordinateReferenceSystem("EPSG::" + code, "undefined", CoordinateSystems.EllipsoidalLatLonD, GeodeticDatums.WGS84, AreasOfUse.World);
+            }
 
             // user-defined geodetic coordinate reference system
             if (code == 32767)
@@ -873,8 +755,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             Int32 code = Convert.ToInt32(_currentGeoKeys[3072]);
             // EPSG Projected Coordinate Reference System codes
-            if (code >= 20000 && code <= 32760)
-                return ProjectedCoordinateReferenceSystems.FromIdentifier("EPSG::" + code).FirstOrDefault();
+            if (code < 32767)
+            {
+                ProjectedCoordinateReferenceSystem referenceSystem = ProjectedCoordinateReferenceSystems.FromIdentifier("EPSG::" + code).FirstOrDefault();
+
+                if (referenceSystem == null)
+                    return new ProjectedCoordinateReferenceSystem("EPSG::" + code, "undefined", Geographic2DCoordinateReferenceSystems.WGS84, CoordinateSystems.CartesianENM, AreasOfUse.World, null);
+            }
             // user-defined Projected Coordinate Reference System
             if (code == 32767)
             {

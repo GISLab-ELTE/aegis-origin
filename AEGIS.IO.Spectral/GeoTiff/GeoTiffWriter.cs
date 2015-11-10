@@ -59,6 +59,23 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Initializes a new instance of the <see cref="GeoTiff.GeoTiffWriter"/> class.
         /// </summary>
         /// <param name="path">The file path to be written.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
+        public GeoTiffWriter(String path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiff.GeoTiffWriter"/> class.
+        /// </summary>
+        /// <param name="path">The file path to be written.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -74,9 +91,37 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoTiff.GeoTiffWriter"/> class.
         /// </summary>
+        /// <param name="path">The file path to be written.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty.
+        /// or
+        /// The path is invalid.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
+        public GeoTiffWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiff.GeoTiffWriter"/> class.
+        /// </summary>
         /// <param name="stream">The stream to be written.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         public GeoTiffWriter(Stream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiff.GeoTiffWriter"/> class.
+        /// </summary>
+        /// <param name="stream">The stream to be written.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        public GeoTiffWriter(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream)
         {
         }
@@ -106,8 +151,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 geoKeyDirectory.Add(1025, (Int16)((geometry.Raster.Mapper.Mode == RasterMapMode.ValueIsArea) ? 1 : 2)); // GTRasterTypeGeoKey 
 
-                imageFileDirectory.Add(33922, new Object[] { 0, 0, 0, geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y, 0 }); // ModelTiepointTag
-                imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize, 1 }); // ModelPixelScaleTag 
+                imageFileDirectory.Add(33922, new Object[] { 0.0, 0.0, 0.0, geometry.Raster.Mapper.Translation.X, geometry.Raster.Mapper.Translation.Y, 0.0 }); // ModelTiepointTag
+                imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize, 1.0 }); // ModelPixelScaleTag 
             }
 
             if (referenceSystem != null) // if reference system is avaible (and supported)

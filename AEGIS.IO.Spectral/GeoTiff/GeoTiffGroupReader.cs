@@ -14,10 +14,8 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.IO.Storage;
-using ELTE.AEGIS.IO.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
@@ -36,14 +34,26 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #endregion
 
         #region Constructors
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoTiffGroupReader" /> class.
         /// </summary>
         /// <param name="basePath">The base path.</param>
         /// <exception cref="System.ArgumentNullException">The base path is null.</exception>
-        public GeoTiffGroupReader(String basePath) 
-            : base(SpectralGeometryStreamFormats.GeoTiff, null)
+        public GeoTiffGroupReader(String basePath)
+            : this(basePath, null)
+        { 
+        
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffGroupReader" /> class.
+        /// </summary>
+        /// <param name="basePath">The base path.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The base path is null.</exception>
+        public GeoTiffGroupReader(String basePath, IDictionary<GeometryStreamParameter, Object> parameters) 
+            : base(SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
             if (basePath == null)
                 throw new ArgumentNullException("basePath", "The base path is null.");
@@ -163,29 +173,16 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             foreach (String filePath in _filePaths)
             {
-                if (filePath.Contains("hdfs"))
+                using (GeoTiffReader reader = new GeoTiffReader(filePath, Parameters))
                 {
-                    FileStream fileStream = new FileStream(filePath, FileMode.Open);
-                    ProxyStream proxyStream = new ProxyStream(fileStream, true, true);
-
-                    using (GeoTiffReader reader = new GeoTiffReader(proxyStream))
-                    {
-                        polygons.Add(reader.Read() as ISpectralPolygon);
-                    }
-                }
-                else
-                {
-                    using (GeoTiffReader reader = new GeoTiffReader(filePath))
-                    {
-                        polygons.Add(reader.Read() as ISpectralPolygon);
-                    }
+                    polygons.Add(reader.Read() as ISpectralPolygon);
                 }
             }
 
             _filePaths.Clear();
 
             // merge content
-            return polygons[0].Factory.CreateSpectralPolygon(polygons, _metafileReader.ReadImaging());
+            return polygons[0].Factory.CreateSpectralPolygon(polygons, _metafileReader == null ? null : _metafileReader.ReadImaging());
         }
 
         #endregion
