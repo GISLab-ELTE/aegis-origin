@@ -158,7 +158,58 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
-                _metadataWriter = new DBaseStreamWriter(MetadataFilePath);
+                _metadataWriter = new DBaseStreamWriter(OpenPath(MetadataFilePath));
+                _baseStream.Write(new Byte[100], 0, 100); // write empty header 
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(MessageContentWriteError, ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShapefileWriter" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be written.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The path is null.
+        /// or
+        /// The format requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occurred during stream opening.
+        /// or
+        /// Exception occurred during stream writing.
+        /// </exception>
+        public ShapefileWriter(String path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, GeometryStreamFormats.Shapefile, parameters)
+        {
+            _fileSystem = FileSystem.GetFileSystemForPath(path);
+
+            _basePath = _fileSystem.GetDirectory(path);
+            _baseFileName = _fileSystem.GetFileNameWithoutExtension(path);
+
+            _shapeType = ShapeType.Null;
+            _shapeIndex = new List<ShapeRecordInfo>();
+
+            _geometryModel = GeometryModel.None;
+            _envelope = null;
+
+            try
+            {
+                _metadataWriter = new DBaseStreamWriter(OpenPath(MetadataFilePath));
                 _baseStream.Write(new Byte[100], 0, 100); // write empty header 
             }
             catch (Exception ex)
@@ -182,7 +233,59 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// Exception occurred during stream writing.
         /// </exception>
-        public ShapefileWriter(Uri path) : base(path, GeometryStreamFormats.Shapefile, null)
+        public ShapefileWriter(Uri path)
+            : base(path, GeometryStreamFormats.Shapefile, null)
+        {
+            _fileSystem = FileSystem.GetFileSystemForPath(path);
+
+            _basePath = _fileSystem.GetDirectory(path.AbsolutePath);
+            _baseFileName = _fileSystem.GetFileNameWithoutExtension(path.AbsolutePath);
+
+            _shapeType = ShapeType.Null;
+            _shapeIndex = new List<ShapeRecordInfo>();
+
+            _geometryModel = GeometryModel.None;
+            _envelope = null;
+
+            try
+            {
+                _metadataWriter = new DBaseStreamWriter(OpenPath(MetadataFilePath));
+                _baseStream.Write(new Byte[100], 0, 100); // write empty header 
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(MessageContentWriteError, ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShapefileWriter" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be written.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The path is null.
+        /// or
+        /// The format requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">
+        /// Exception occurred during stream opening.
+        /// or
+        /// Exception occurred during stream writing.
+        /// </exception>
+        public ShapefileWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, GeometryStreamFormats.Shapefile, parameters)
         {
             _baseStream.Seek(100, SeekOrigin.Begin);
 
@@ -192,7 +295,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             try
             {
-                _metadataWriter = new DBaseStreamWriter(MetadataFilePath);
+                _metadataWriter = new DBaseStreamWriter(OpenPath(MetadataFilePath));
                 _baseStream.Write(new Byte[100], 0, 100); // write empty header 
             }
             catch (Exception ex)
@@ -352,7 +455,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
 
             // write bytes to stream
-            using (Stream stream = _fileSystem.CreateFile(ShapeIndexFilePath))
+            using (Stream stream = OpenPath(ShapeIndexFilePath))
             {
                 stream.Write(byteArray, 0, byteArray.Length);
             }
@@ -367,7 +470,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                 return;
 
             // writes the reference system as WKT text
-            using (StreamWriter writer = new StreamWriter(ReferenceSystemFilePath))
+            using (StreamWriter writer = new StreamWriter(OpenPath(ReferenceSystemFilePath)))
             {
                 String text = WellKnownTextConverter.ToWellKnownText(_referenceSystem);
                 writer.WriteLine(text);

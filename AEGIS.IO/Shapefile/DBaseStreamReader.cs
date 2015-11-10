@@ -74,6 +74,13 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <summary>
         /// Initializes a new instance of the <see cref="DBaseStreamReader" /> class.
         /// </summary>
+        /// <param name="stream">The file stream.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        public DBaseStreamReader(Stream stream) : this(stream, Encoding.Default) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBaseStreamReader" /> class.
+        /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="encoding">The encoding of the file.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -111,6 +118,29 @@ namespace ELTE.AEGIS.IO.Shapefile
                 throw new IOException("Exception occurred during stream opening.", ex);
             }
 
+            _encoding = encoding;
+            _header = new DBaseHeader(_stream);
+            _disposed = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBaseStreamReader" /> class.
+        /// </summary>
+        /// <param name="stream">The file stream.</param>
+        /// <param name="encoding">The encoding of the file.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The stream is null.
+        /// or
+        /// The encoding is null.
+        /// </exception>
+        public DBaseStreamReader(Stream stream, Encoding encoding)
+        {
+            if (stream == null)
+                throw new ArgumentNullException("stream", "The stream is null.");
+            if (encoding == null)
+                throw new ArgumentNullException("encoding", "The encoding is null.");
+
+            _stream = stream;
             _encoding = encoding;
             _header = new DBaseHeader(_stream);
             _disposed = false;

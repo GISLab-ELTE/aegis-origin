@@ -82,6 +82,13 @@ namespace ELTE.AEGIS.IO.Shapefile
         public DBaseStreamWriter(String path) : this(path, Encoding.Default) { }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DBaseStreamWriter"/> class.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        public DBaseStreamWriter(Stream stream) : this(stream, Encoding.Default) { }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DBaseStreamWriter" /> class.
         /// </summary>
         /// <param name="path">The path.</param>
@@ -104,7 +111,6 @@ namespace ELTE.AEGIS.IO.Shapefile
             if (encoding == null)
                 throw new ArgumentNullException("encoding", "The encoding is null.");
 
-
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException("The path is empty, or consists only of whitespace characters.", "path");
             if (!Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out _path))
@@ -124,6 +130,30 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             _encoding = encoding;
             _header = new DBaseHeader();
+            _headerWritten = false;
+            _numberOfRecords = 0;
+            _disposed = false;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DBaseStreamWriter" /> class.
+        /// </summary>
+        /// <param name="stream">The file stream.</param>
+        /// <param name="encoding">The encoding of the file.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The stream is null.
+        /// or
+        /// The encoding is null.
+        /// </exception>
+        public DBaseStreamWriter(Stream stream, Encoding encoding)
+        {
+            if (stream == null)
+                throw new ArgumentNullException("stream", "The stream is null.");
+            if (encoding == null)
+                throw new ArgumentNullException("encoding", "The encoding is null.");
+
+            _stream = stream;
+            _encoding = encoding;
             _headerWritten = false;
             _numberOfRecords = 0;
             _disposed = false;

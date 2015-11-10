@@ -142,7 +142,49 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// or
         /// Exception occurred during stream reading.
         /// </exception>
-        public ShapefileReader(String path) : base(path, GeometryStreamFormats.Shapefile, null)
+        public ShapefileReader(String path) 
+            : base(path, GeometryStreamFormats.Shapefile, null)
+        {
+            _fileSystem = FileSystem.GetFileSystemForPath(path);
+
+            _basePath = _fileSystem.GetDirectory(path);
+            _baseFileName = _fileSystem.GetFileNameWithoutExtension(path);
+
+            try
+            {
+                ReadHeader();
+                ReadReferenceSystem();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(MessageContentReadError, ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShapefileReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The path is null.
+        /// or
+        /// The format requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
+        public ShapefileReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, GeometryStreamFormats.Shapefile, parameters)
         {
             _fileSystem = FileSystem.GetFileSystemForPath(path);
 
@@ -165,6 +207,11 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </summary>
         /// <param name="path">The file path to be read.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// </exception>
         /// <exception cref="System.IO.IOException">
         /// Exception occurred during stream opening.
         /// or
@@ -172,6 +219,47 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// </exception>
         public ShapefileReader(Uri path)
             : base(path, GeometryStreamFormats.Shapefile, null)
+        {
+            _fileSystem = FileSystem.GetFileSystemForPath(path);
+
+            _basePath = _fileSystem.GetDirectory(path.AbsolutePath);
+            _baseFileName = _fileSystem.GetFileNameWithoutExtension(path.AbsolutePath);
+
+            try
+            {
+                ReadHeader();
+                ReadReferenceSystem();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(MessageContentReadError, ex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShapefileReader" /> class.
+        /// </summary>
+        /// <param name="path">The file path to be read.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The path is null.
+        /// or
+        /// The format requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The path is empty, or consists only of whitespace characters.
+        /// or
+        /// The path is in an invalid format.
+        /// or
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter value does not match the type specified by the format.
+        /// or
+        /// The parameter value does not satisfy the conditions of the parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
+        public ShapefileReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(path, GeometryStreamFormats.Shapefile, parameters)
         {
             _fileSystem = FileSystem.GetFileSystemForPath(path);
 
@@ -290,7 +378,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             // load metadata for shapes
             if (_fileSystem.Exists(MetadataFilePath))
             {
-                _metadataReader = new DBaseStreamReader(MetadataFilePath);
+                _metadataReader = new DBaseStreamReader(OpenPath(MetadataFilePath));
             }
         }
 
@@ -300,7 +388,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         private void ReadReferenceSystem()
         {
             // read the reference system from the WKT text
-            using (StreamReader reader = new StreamReader(ReferenceSystemFilePath))
+            using (StreamReader reader = new StreamReader(OpenPath(ReferenceSystemFilePath)))
             {
                 StringBuilder builder = new StringBuilder();
                 while (!reader.EndOfStream)
@@ -317,7 +405,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         {
             try
             {
-                using (Stream stream = _fileSystem.OpenFile(ShapeIndexFilePath, FileMode.Open))
+                using (Stream stream = OpenPath(ShapeIndexFilePath))
                 {
                     Byte[] headerBytes = new Byte[100];
                     stream.Read(headerBytes, 0, headerBytes.Length); // read header
