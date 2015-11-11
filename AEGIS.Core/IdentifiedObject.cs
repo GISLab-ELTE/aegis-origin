@@ -55,7 +55,7 @@ namespace ELTE.AEGIS
         { 
             get 
             {
-                String codeString = Identifier.Contains("::") ? Identifier.Substring(Identifier.LastIndexOf("::")) : Identifier;
+                String codeString = Identifier.Contains("::") ? Identifier.Substring(Identifier.LastIndexOf("::") + 2) : Identifier;
                 Int32 code;
 
                 return (Int32.TryParse(codeString, out code)) ? code : 0;
