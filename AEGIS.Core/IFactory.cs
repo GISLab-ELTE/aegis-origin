@@ -27,7 +27,7 @@ namespace ELTE.AEGIS
         /// Gets the directly underlying factories.
         /// </summary>
         /// <value>The read-only list of direcly underlying factories.</value>
-        IList<IFactory> Factories { get; }
+        IReadOnlyList<IFactory> Factories { get; }
 
         /// <summary>
         /// Determines whether an underlying factory behavior exists for the specified contract.
@@ -43,21 +43,6 @@ namespace ELTE.AEGIS
         /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
         Boolean ContainsFactory(Type factoryContract);
-
-        /// <summary>
-        /// Determines whether an underlying factory behavior exists for the specified product.
-        /// </summary>
-        /// <typeparam name="ProductType">The product type.</typeparam>
-        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
-        Boolean ContainsFactoryFor<ProductType>();
-
-        /// <summary>
-        /// Determines whether an underlying factory behavior exists for the specified product.
-        /// </summary>
-        /// <param name="productType">The product type.</param>
-        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
-        Boolean ContainsFactoryFor(Type productType);
 
         /// <summary>
         /// Ensures the specified underlying factory.
@@ -100,20 +85,5 @@ namespace ELTE.AEGIS
         /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
         IFactory GetFactory(Type factoryContract);
-
-        /// <summary>
-        /// Returns the underlying factory behavior of the specified product.
-        /// </summary>
-        /// <typeparam name="ProductType">The product type.</typeparam>
-        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
-        IFactory GetFactoryFor<ProductType>();
-
-        /// <summary>
-        /// Returns the underlying factory behavior of the specified product.
-        /// </summary>
-        /// <param name="productType">The product type.</param>
-        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
-        IFactory GetFactoryFor(Type productType);
     }
 }

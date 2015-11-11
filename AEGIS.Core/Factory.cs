@@ -116,14 +116,14 @@ namespace ELTE.AEGIS
         }
 
         #endregion
-
+        
         #region IFactory properties
 
         /// <summary>
         /// Gets the directly underlying factories.
         /// </summary>
-        /// <value>The read-only list of direcly underlying factories.</value>
-        public IList<IFactory> Factories { get { return _factories ?? (_factories = _contractDictionary.Values.ToList()); } }
+        /// <value>The read-only list of directly underlying factories.</value>
+        public IReadOnlyList<IFactory> Factories { get { return _factories ?? (_factories = _contractDictionary.Values.ToList()); } }
 
         #endregion
 
@@ -136,7 +136,7 @@ namespace ELTE.AEGIS
         /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
         public Boolean ContainsFactory<FactoryContract>()
         {
-            return ContainsFactory(typeof(FactoryContract));
+            return ContainsFactory(typeof(FactoryContract), new HashSet<IFactory>());
         }
 
         /// <summary>
@@ -148,33 +148,9 @@ namespace ELTE.AEGIS
         public Boolean ContainsFactory(Type factoryContract)
         {
             if (factoryContract == null)
-                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
+                throw new ArgumentNullException("factoryContract", "The factory contract is null.");
 
-            return (_contractDictionary.ContainsKey(factoryContract)) || _contractDictionary.Values.Any(factory => factory.ContainsFactory(factoryContract));
-        }
-
-        /// <summary>
-        /// Determines whether an underlying factory behavior exists for the specified product.
-        /// </summary>
-        /// <typeparam name="ProductType">The product type.</typeparam>
-        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
-        public Boolean ContainsFactoryFor<ProductType>()
-        {
-            return ContainsFactoryFor(typeof(ProductType));
-        }
-
-        /// <summary>
-        /// Determines whether an underlying factory behavior exists for the specified product.
-        /// </summary>
-        /// <param name="productType">The product type.</param>
-        /// <returns><c>true</c> if an underlying factory exists for the specified product; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
-        public Boolean ContainsFactoryFor(Type productType)
-        {
-            if (productType == null)
-                throw new ArgumentNullException("productType", MessageProductTypeIsNull);
-
-            return (_productDictionary.ContainsKey(productType)) || _productDictionary.Values.Any(factory => factory.ContainsFactoryFor(productType));
+            return ContainsFactory(factoryContract, new HashSet<IFactory>());
         }
 
         /// <summary>
@@ -191,7 +167,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Ensures the specified underlying factory.
         /// </summary>
-        /// <param name="factoryContract">The factory contract.</typeparam>
+        /// <param name="factoryContract">The factory contract.</param>
         /// <param name="factory">The factory behavior.</param>
         /// <exception cref="System.ArgumentNullException">
         /// The factory contract is null.
@@ -203,22 +179,16 @@ namespace ELTE.AEGIS
         public void EnsureFactory(Type factoryContract, IFactory factory)
         {
             if (factoryContract == null)
-                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
+                throw new ArgumentNullException("factoryContract", "The factory contract is null.");
             if (factory == null)
-                throw new ArgumentNullException("factory", MessageFactoryBehaviorIsNull);
+                throw new ArgumentNullException("factory", "The factory behavior is null.");
             if (!factory.GetType().GetInterfaces().Contains(factoryContract))
-                throw new ArgumentException("factory", MessageFactoryNotImplementContract);
+                throw new ArgumentException("factory", "The factory behavior does not implement the contract.");
 
             if (_contractDictionary.ContainsKey(factoryContract))
-                throw new InvalidOperationException(MessageFactoryIsEnsured);
+                throw new InvalidOperationException("The factory contract is already ensured.");
 
             _contractDictionary.Add(factoryContract, factory);
-
-
-            FactoryContractAttribute attribute = factoryContract.GetCustomAttribute(typeof(FactoryContractAttribute), false) as FactoryContractAttribute;
-
-            if (attribute != null)
-                _productDictionary.Add(attribute.Product, factory);
         }
 
         /// <summary>
@@ -234,13 +204,13 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Returns the underlying factory behavior of the specified contract.
         /// </summary>
-        /// <param name="FactoryContract">The factory contract.</typeparam>
+        /// <param name="factoryContract">The factory contract.</param>
         /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The factory contract is null.</exception>
         public IFactory GetFactory(Type factoryContract)
         {
             if (factoryContract == null)
-                throw new ArgumentNullException("factoryContract", MessageFactoryBehaviorIsNull);
+                throw new ArgumentNullException("factoryContract", "The factory contract is null.");
 
             if (_contractDictionary.ContainsKey(factoryContract))
                 return _contractDictionary[factoryContract];
@@ -256,36 +226,80 @@ namespace ELTE.AEGIS
             return null;
         }
 
+        #endregion
+
+        #region Private methods
 
         /// <summary>
-        /// Returns the underlying factory behavior of the specified product.
+        /// Determines whether an underlying factory behavior exists for the specified contract.
         /// </summary>
-        /// <typeparam name="ProductType">The product type.</typeparam>
-        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
-        public IFactory GetFactoryFor<ProductType>()
+        /// <param name="factoryContract">The factory contract.</param>
+        /// <param name="examinedFactories">The set of examined factories.</param>
+        /// <returns><c>true</c> if an underlying factory exists for the specified contract; otherwise, <c>false</c>.</returns>
+        private Boolean ContainsFactory(Type factoryContract, HashSet<IFactory> examinedFactories)
         {
-            return GetFactoryFor(typeof(ProductType));
+            if (_contractDictionary.ContainsKey(factoryContract))
+                return true;
+
+            examinedFactories.Add(this);
+
+            foreach (IFactory factory in _contractDictionary.Values)
+            {
+                if (examinedFactories.Contains(factory))
+                    continue;
+
+                if (factory is Factory)
+                {
+                    if ((factory as Factory).ContainsFactory(factoryContract, examinedFactories))
+                        return true;
+                }
+                else
+                {
+                    if (factory.ContainsFactory(factoryContract))
+                        return true;
+
+                    examinedFactories.Add(factory);
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
-        /// Returns the underlying factory behavior of the specified product.
+        /// Returns the underlying factory behavior of the specified contract.
         /// </summary>
-        /// <param name="productType">The product type.</param>
-        /// <returns>The factory behavior for the specified product if any; otherwise, <c>null</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The product type is null.</exception>
-        public IFactory GetFactoryFor(Type productType)
+        /// <param name="factoryContract">The factory contract.</param>
+        /// <param name="examinedFactories">The set of examined factories.</param>
+        /// <returns>The factory behavior for the specified contract if any; otherwise, <c>null</c>.</returns>
+        private IFactory GetFactory(Type factoryContract, HashSet<IFactory> examinedFactories)
         {
-            if (productType == null)
-                throw new ArgumentNullException("productType", MessageProductTypeIsNull);
+            if (_contractDictionary.ContainsKey(factoryContract))
+                return _contractDictionary[factoryContract];
 
-            if (_productDictionary.ContainsKey(productType))
-                return _productDictionary[productType];
+            examinedFactories.Add(this);
 
             // recursively process all undelying factories
             foreach (IFactory factory in _contractDictionary.Values)
             {
-                if (factory.ContainsFactoryFor(productType))
-                    return factory.GetFactoryFor(productType);
+                if (examinedFactories.Contains(factory))
+                    continue;
+
+                if (factory is Factory)
+                {
+                    IFactory resolvedFactory = (factory as Factory).GetFactory(factoryContract, examinedFactories);
+
+                    if (resolvedFactory != null)
+                    {
+                        return resolvedFactory;
+                    }
+                }
+                else
+                {
+                    if (factory.ContainsFactory(factoryContract))
+                        return factory.GetFactory(factoryContract);
+
+                    examinedFactories.Add(factory);
+                }
             }
 
             // no factory found
