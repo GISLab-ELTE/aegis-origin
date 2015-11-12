@@ -247,6 +247,10 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          true, SpectralOperationDomain.BandFocal,
                                                                          SpectralOperationParameters.NumberOfRows,
                                                                          SpectralOperationParameters.NumberOfColumns,
+                                                                         SpectralOperationParameters.SourceColumnCount,
+                                                                         SpectralOperationParameters.SourceColumnOffset,
+                                                                         SpectralOperationParameters.SourceRowCount,
+                                                                         SpectralOperationParameters.SourceRowOffset,
                                                                          SpectralOperationParameters.RasterResamplingAlgorithm,
                                                                          SpectralOperationParameters.RasterResamplingAlgorithmType));
             }

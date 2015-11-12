@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override sealed UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
+        protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
             UInt32[] values = new UInt32[_result.Raster.NumberOfBands];
             for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)
@@ -170,7 +170,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <param name="rowIndex">The zero-based row index of the value.</param>
         /// <param name="columnIndex">The zero-based column index of the value.</param>
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override sealed Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
+        protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
         {
             Double[] values = new Double[_result.Raster.NumberOfBands];
             for (Int32 k = 0; k < _result.Raster.NumberOfBands; k++)

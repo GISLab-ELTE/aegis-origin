@@ -29,6 +29,26 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         #region Private fields
 
         /// <summary>
+        /// The number of columns taken from the source image.
+        /// </summary>
+        private Double _sourceColumnCount;
+
+        /// <summary>
+        /// The column offset (shift) within the source image.
+        /// </summary>
+        private Double _sourceColumnOffset;
+
+        /// <summary>
+        /// The number of rows taken from the source image.
+        /// </summary>
+        private Double _sourceRowCount;
+
+        /// <summary>
+        /// The row offset (shift) within the source image.
+        /// </summary>
+        private Double _sourceRowOffset;
+
+        /// <summary>
         /// The number of columns in the target image.
         /// </summary>
         private Int32 _targetNumberOfColumns;
@@ -96,6 +116,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         public SpectralResampling(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.SpectralResampling, parameters)
         {
+            _sourceColumnCount = IsProvidedParameter(SpectralOperationParameters.SourceColumnCount) ? Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SourceColumnCount)) : Source.Raster.NumberOfColumns;
+            _sourceColumnOffset = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SourceColumnOffset));
+            _sourceRowCount = IsProvidedParameter(SpectralOperationParameters.SourceRowCount) ? Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SourceRowCount)) : Source.Raster.NumberOfRows;
+            _sourceRowOffset = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SourceRowOffset));
+
             _targetNumberOfRows = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfRows));
             _targetNumberOfColumns = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfColumns));
 
@@ -130,9 +155,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
             RasterMapper mapper = null;
 
             if (Source.Raster.IsMapped)
-                mapper = RasterMapper.FromMapper(Source.Raster.Mapper, Coordinate.Empty, new CoordinateVector((Double)_targetNumberOfRows / Source.Raster.NumberOfRows, (Double)_targetNumberOfColumns / Source.Raster.NumberOfColumns));
+                mapper = RasterMapper.FromMapper(Source.Raster.Mapper, 
+                                                 (Coordinate)(Source.Raster.Mapper.MapCoordinate(_sourceRowOffset, _sourceColumnOffset) - Source.Raster.Mapper.MapCoordinate(0, 0)), 
+                                                 new CoordinateVector(_sourceRowCount / _targetNumberOfRows, _sourceColumnCount / _targetNumberOfColumns));
 
-            _result = _source.Factory.CreateSpectralGeometry(Source,
+            IPolygon polygon;
+
+            if (mapper.Mode == RasterMapMode.ValueIsArea)
+            {
+                polygon = Source.Factory.CreatePolygon(mapper.MapCoordinate(0, 0), mapper.MapCoordinate(_targetNumberOfRows - 1, 0), mapper.MapCoordinate(_targetNumberOfRows - 1, _targetNumberOfColumns - 1), mapper.MapCoordinate(0, _targetNumberOfColumns - 1));
+            }
+            else
+            {
+                polygon = Source.Factory.CreatePolygon(mapper.MapCoordinate(0, 0), mapper.MapCoordinate(_targetNumberOfRows, 0), mapper.MapCoordinate(_targetNumberOfRows, _targetNumberOfColumns), mapper.MapCoordinate(0, _targetNumberOfColumns));
+            }
+
+            _result = _source.Factory.CreateSpectralGeometry(polygon,
                                                              PrepareRasterResult(Source.Raster.Format,
                                                                                  Source.Raster.NumberOfBands,
                                                                                  _targetNumberOfRows,
@@ -156,8 +194,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
-            Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
+            Double originalRowIndex = _sourceRowOffset + (rowIndex + 0.5) / _targetNumberOfRows * _sourceRowCount - 0.5;
+            Double originalColumnIndex = _sourceColumnOffset + (columnIndex + 0.5) / _targetNumberOfColumns * _sourceColumnCount - 0.5;
 
             return _resamplingAlgorithm.Compute(originalRowIndex, originalColumnIndex, bandIndex);
         }
@@ -170,8 +208,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
-            Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
+            Double originalRowIndex = _sourceRowOffset + (rowIndex + 0.5) / _targetNumberOfRows * _sourceRowCount - 0.5;
+            Double originalColumnIndex = _sourceColumnOffset + (columnIndex + 0.5) / _targetNumberOfColumns * _sourceColumnCount - 0.5;
 
             return _resamplingAlgorithm.Compute(originalRowIndex, originalColumnIndex);
         }
@@ -185,8 +223,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
-            Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
+            Double originalRowIndex = _sourceRowOffset + (rowIndex + 0.5) / _targetNumberOfRows * _sourceRowCount - 0.5;
+            Double originalColumnIndex = _sourceColumnOffset + (columnIndex + 0.5) / _targetNumberOfColumns * _sourceColumnCount - 0.5;
 
             return _resamplingAlgorithm.ComputeFloat(originalRowIndex, originalColumnIndex, bandIndex);
         }
@@ -200,8 +238,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
         {
-            Double originalRowIndex = (Double)rowIndex / _targetNumberOfRows * _source.Raster.NumberOfRows;
-            Double originalColumnIndex = (Double)columnIndex / _targetNumberOfColumns * _source.Raster.NumberOfColumns;
+            Double originalRowIndex = _sourceRowOffset + (rowIndex + 0.5) / _targetNumberOfRows * _sourceRowCount - 0.5;
+            Double originalColumnIndex = _sourceColumnOffset + (columnIndex + 0.5) / _targetNumberOfColumns * _sourceColumnCount - 0.5;
 
             return _resamplingAlgorithm.ComputeFloat(originalRowIndex, originalColumnIndex);
         }

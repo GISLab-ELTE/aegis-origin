@@ -114,6 +114,10 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _rasterResamplingAlgorithm;
         private static OperationParameter _rasterResamplingAlgorithmType;
         private static OperationParameter _segmentCollection;
+        private static OperationParameter _sourceColumnCount;
+        private static OperationParameter _sourceColumnOffset;
+        private static OperationParameter _sourceRowCount;
+        private static OperationParameter _sourceRowOffset;
         private static OperationParameter _spectralDistance;
         private static OperationParameter _spectralDistanceType;
         private static OperationParameter _spectralFactor;
@@ -478,7 +482,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _rasterResamplingAlgorithmType ?? (_rasterResamplingAlgorithmType =
                     OperationParameter.CreateOptionalParameter<Type>("AEGIS::223383", "Raster resampling algorithm type",
                                                                      "The type of the algorithm that performs the resampling of the raster.", null,
-                                                                     typeof(BilinearResamplingAlgorithm))
+                                                                     typeof(BilinearResamplingAlgorithm),
+                                                                     Conditions.Inherits<RasterResamplingAlgorithm>())
                 );
             }
         }
@@ -492,6 +497,58 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _segmentCollection ?? (_segmentCollection =
                     OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::213060", "Segment collection", "An enumerable collection of segments.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Source column count.
+        /// </summary>
+        public static OperationParameter SourceColumnCount
+        {
+            get
+            {
+                return _sourceColumnCount ?? (_sourceColumnCount =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223484", "Source column count", "The number of columns taken from the source image.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Source column offset.
+        /// </summary>
+        public static OperationParameter SourceColumnOffset
+        {
+            get
+            {
+                return _sourceColumnOffset ?? (_sourceColumnOffset =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223482", "Source column offset", "The offset of columns within the source image.", null, 0.0)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Source row count.
+        /// </summary>
+        public static OperationParameter SourceRowCount
+        {
+            get
+            {
+                return _sourceRowCount ?? (_sourceRowCount =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223483", "Source row count", "The number of rows taken from the source image.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Source row offset.
+        /// </summary>
+        public static OperationParameter SourceRowOffset
+        {
+            get
+            {
+                return _sourceRowOffset ?? (_sourceRowOffset =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223481", "Source row offset", "The offset of rows within the source image.", null, 0.0)
                 );
             }
         }
