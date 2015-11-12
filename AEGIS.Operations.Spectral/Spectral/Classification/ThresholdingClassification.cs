@@ -104,7 +104,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             {
                 _result = _source.Factory.CreateSpectralGeometry(_source,
                                                                  PrepareRasterResult(RasterFormat.Integer, 
-                                                                                     1,
+                                                                                     _sourceBandIndices.Length,
                                                                                      _source.Raster.NumberOfRows,
                                                                                      _source.Raster.NumberOfColumns,
                                                                                      Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
