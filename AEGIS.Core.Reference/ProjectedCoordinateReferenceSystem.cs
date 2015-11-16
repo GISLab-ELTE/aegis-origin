@@ -91,8 +91,6 @@ namespace ELTE.AEGIS.Reference
         /// The base reference system is null.
         /// or
         /// The coordinate system is null.
-        /// or
-        /// The projection is null.
         /// </exception>
         public ProjectedCoordinateReferenceSystem(String identifier, String name, GeographicCoordinateReferenceSystem baseReferenceSystem, CoordinateSystem coordinateSystem, AreaOfUse areaOfUse, CoordinateProjection projection)
             : this(identifier, name, null, null, null, baseReferenceSystem, coordinateSystem, areaOfUse, projection)
@@ -125,9 +123,7 @@ namespace ELTE.AEGIS.Reference
         {
             if (baseReferenceSystem == null)
                 throw new ArgumentNullException("baseReferenceSystem", "The base reference system is null.");
-            if (projection == null)
-                throw new ArgumentNullException("projection", "The projection is null.");
-
+            
             _baseReferenceSystem = baseReferenceSystem;
             _projection = projection;
         }
