@@ -169,15 +169,9 @@ namespace ELTE.AEGIS.Operations
             _method = method;
 
             if (parameters != null)
-            {
-                _parameters = new Dictionary<OperationParameter, Object>(method.Parameters.Count);
-                // only keep the parameters which apply according to the method
-                foreach (OperationParameter parameter in parameters.Keys)
-                {
-                    if (method.Parameters.Contains(parameter))
-                        _parameters.Add(parameter, parameters[parameter]);
-                }
-            }
+                _parameters = new Dictionary<OperationParameter, Object>(parameters);
+            else
+                _parameters = new Dictionary<OperationParameter, Object>();
 
             _state = OperationState.Initialized;
         }
