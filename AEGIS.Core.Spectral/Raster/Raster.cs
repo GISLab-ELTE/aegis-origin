@@ -1110,8 +1110,8 @@ namespace ELTE.AEGIS.Raster
             if (bandIndex >= _bands.Length)
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
 
-            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? NumberOfRows - 1 - (rowIndex - NumberOfRows) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? NumberOfColumns - 1 - (columnIndex - NumberOfColumns) : Math.Abs(columnIndex);     
 
             return ApplyGetValue(trueRowIndex, trueColumnIndex, bandIndex);
         }
@@ -1156,8 +1156,8 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
 
-            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? NumberOfRows - 1 - (rowIndex - NumberOfRows) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? NumberOfColumns - 1 - (columnIndex - NumberOfColumns) : Math.Abs(columnIndex);
 
             return ApplyGetValues(trueRowIndex, trueColumnIndex);
         }
@@ -1207,8 +1207,8 @@ namespace ELTE.AEGIS.Raster
             if (bandIndex >= _bands.Length)
                 throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
 
-            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? NumberOfRows - 1 - (rowIndex - NumberOfRows) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? NumberOfColumns - 1 - (columnIndex - NumberOfColumns) : Math.Abs(columnIndex);
 
             return ApplyGetFloatValue(trueRowIndex, trueColumnIndex, bandIndex);
         }
@@ -1253,8 +1253,8 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
 
-            Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
-            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
+            Int32 trueRowIndex = rowIndex >= NumberOfRows ? NumberOfRows - 1 - (rowIndex - NumberOfRows) : Math.Abs(rowIndex);
+            Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? NumberOfColumns - 1 - (columnIndex - NumberOfColumns) : Math.Abs(columnIndex);
 
             return ApplyGetFloatValues(trueRowIndex, trueColumnIndex);
         }
