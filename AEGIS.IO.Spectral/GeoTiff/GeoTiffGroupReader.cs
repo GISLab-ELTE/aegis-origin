@@ -181,8 +181,24 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             _filePaths.Clear();
 
+            RasterImaging imaging = _metafileReader == null ? null : _metafileReader.ReadImaging();
+
+            if (polygons.Count == 0)
+                return null;
+
+            // remove rasters with different size
+            for (Int32 index = polygons.Count - 1; index >= 0; index--)
+            {
+                if (polygons[index].Raster.NumberOfRows != polygons[0].Raster.NumberOfRows || polygons[index].Raster.NumberOfColumns != polygons[0].Raster.NumberOfColumns)
+                {
+                    polygons.RemoveAt(index);
+                    if (imaging != null)
+                        imaging.RemoveBand(index);
+                }
+            }
+
             // merge content
-            return polygons[0].Factory.CreateSpectralPolygon(polygons, _metafileReader == null ? null : _metafileReader.ReadImaging());
+            return polygons[0].Factory.CreateSpectralPolygon(polygons, imaging);
         }
 
         #endregion
