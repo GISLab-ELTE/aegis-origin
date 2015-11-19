@@ -29,7 +29,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// The array of band data.
         /// </summary>
-        private RasterImagingBand[] _bands;
+        private List<RasterImagingBand> _bands;
 
         /// <summary>
         /// The list of spectral domains for each band.
@@ -192,7 +192,7 @@ namespace ELTE.AEGIS
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bands = bandData.ToArray();
+            _bands = bandData.ToList();
             _additionalParameters = new Dictionary<String, Object>();
         }
 
@@ -223,10 +223,49 @@ namespace ELTE.AEGIS
             ViewingAngle = viewingAngle;
             SunAzimuth = sunAzimuth;
             SunElevation = sunElevation;
-            _bands = bandData.ToArray();
+            _bands = bandData.ToList();
             _additionalParameters = new Dictionary<String, Object>();
         }
 
-        #endregion        
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// Inserts a band at the specified index.
+        /// </summary>
+        /// <param name="index">The band index.</param>
+        /// <param name="band">The raster imaging band.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The band index is out of range.</exception>
+        public void InsertBand(Int32 index, RasterImagingBand band)
+        {
+            if (index < 0 || index > _bands.Count)
+                throw new ArgumentOutOfRangeException("index", "The band index is out of range.");
+
+            if (index == _bands.Count)
+                _bands.Add(band);
+            else
+                _bands.Insert(index, band);
+
+            _spectralDomains = null;
+            _spectralRanges = null;
+        }
+
+        /// <summary>
+        /// Removes a band at the specified index.
+        /// </summary>
+        /// <param name="index">The band index.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The band index is out of range.</exception>
+        public void RemoveBand(Int32 index)
+        {
+            if (index < 0 || index >= _bands.Count)
+                throw new ArgumentOutOfRangeException("index", "The band index is out of range.");
+
+            _bands.RemoveAt(index);
+            _spectralDomains = null;
+            _spectralRanges = null;
+        }
+
+        #endregion
     }
 }
