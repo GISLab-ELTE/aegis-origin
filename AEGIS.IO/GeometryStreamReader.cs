@@ -494,20 +494,20 @@ namespace ELTE.AEGIS.IO
 
             if (disposing)
             {
-                switch (_bufferingMode)
+                if (_baseStream != null)
                 {
-                    case BufferingMode.Minimal:
-                    case BufferingMode.Maximal:
-                        _baseStream.Dispose();
-                        break;
+                    switch (_bufferingMode)
+                    {
+                        case BufferingMode.Minimal:
+                        case BufferingMode.Maximal:
+                            _baseStream.Dispose();
+                            break;
+                    }
+
+                    if (_disposeSourceStream)
+                        _sourceStream.Dispose();
                 }
-
-                if (_disposeSourceStream)
-                    _sourceStream.Dispose();
-
-                if (_parameters != null)
-                    _parameters.Clear();
-
+                
                 _factoryType = null;
             }
         }
