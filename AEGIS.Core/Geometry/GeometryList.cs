@@ -434,8 +434,8 @@ namespace ELTE.AEGIS.Geometry
                         continue;
 
                     // check precision model and reference system
-                    if (en.Current.ReferenceSystem != null && !en.Current.ReferenceSystem.Equals(ReferenceSystem) &&
-                        en.Current.PrecisionModel.Equals(PrecisionModel))
+                    if (((en.Current.ReferenceSystem == null && ReferenceSystem == null) || en.Current.ReferenceSystem.Equals(ReferenceSystem))
+                        && en.Current.PrecisionModel.Equals(PrecisionModel))
                     {
                         _geometries[_size] = en.Current;
                     }
