@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     }
                     break;
                 case GeoTiffMetafilePathOption.IsGeoTiffFilePath:
-                    
+
                     // search the extension
                     foreach (MetafileFormat format in _readers.Keys)
                     {
@@ -251,7 +251,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                             {
                                 return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
                             }
-                            catch 
+                            catch
                             {
                             }
                         }
@@ -301,6 +301,25 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     String pattern = path.Replace(directory + fileSystem.DirectorySeparator, String.Empty);
                     filePaths = fileSystem.GetFiles(directory, pattern, false);
 
+                    // check for matching paths
+                    foreach (MetafileFormat format in _readers.Keys)
+                    {
+                        foreach (String filePath in filePaths)
+                        {
+                            if (!format.IsMatchingName(filePath))
+                                continue;
+
+                            try
+                            {
+                                return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+
+                    // check for all paths
                     foreach (MetafileFormat format in _readers.Keys)
                     {
                         foreach (String filePath in filePaths)

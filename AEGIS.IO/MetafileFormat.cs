@@ -14,6 +14,7 @@
 /// <author>Roberto Giachetta</author>
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace ELTE.AEGIS.IO
 {
@@ -96,6 +97,25 @@ namespace ELTE.AEGIS.IO
             DefaultFileName = defaultFileName;
             DefaultNamingPattern = defaultNamingPattern;
             DefaultExtension = defaultExtension;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// Returns whether the specified file name mathes the format.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <returns><c>true</c> if the file name matches the format; otherwise, <c>false</c>.</returns>
+        public Boolean IsMatchingName(String fileName)
+        {
+            if (HasDefaultFileName)
+                return fileName.Contains(DefaultFileName);
+            if (HasDefaultNamingPattern)
+                return Regex.IsMatch(fileName, DefaultNamingPattern);
+
+            return fileName.EndsWith(DefaultExtension);
         }
 
         #endregion
