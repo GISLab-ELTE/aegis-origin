@@ -94,7 +94,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         public LandsatMetafileReader(String path)
             : base(path)
         {
-            _imagingPropertyKeys = new List<string>()
+            _imagingPropertyKeys = new List<String>()
             {
                 "K1_CONSTANT_BAND_10", "K1_CONSTANT_BAND_11",
                 "K2_CONSTANT_BAND_10", "K2_CONSTANT_BAND_11"
@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the device information stored in the metafile stream.
         /// </summary>
         /// <returns>The device data.</returns>
-        protected override ImagingDevice ReadDeviceFromStream()
+        protected override ImagingDevice ReadDeviceInternal()
         {
             ReadContent();
 
@@ -166,12 +166,12 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the imaging information stored in the metafile stream.
         /// </summary>
         /// <returns>The imaging data.</returns>
-        protected override RasterImaging ReadImagingFromStream()
+        protected override RasterImaging ReadImagingInternal()
         {
             ReadContent();
 
             // read the device data
-            ImagingDevice device = ReadDeviceFromStream();
+            ImagingDevice device = ReadDeviceInternal();
 
             // time            
             DateTime imagingDateTime = DateTime.Parse(_metadata["DATE_ACQUIRED"] + " " + _metadata["SCENE_CENTER_TIME"], CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeUniversal);
@@ -215,10 +215,10 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                     break;
             }
 
-            for (Int32 bandIndex = 0; bandIndex < numberOfBands; bandIndex++)
+            for (Int32 bandNumber = 1; bandNumber <= numberOfBands; bandNumber++)
             {
-                String indexString = (bandIndex + 1).ToString();
-                if (device.MissionNumber == 7 && bandIndex == 5) // Landsat 7 band 6 has high gain and low gain modes
+                String indexString = bandNumber.ToString();
+                if (device.MissionNumber == 7 && bandNumber == 6) // Landsat 7 band 6 has high gain and low gain modes
                     indexString += "_VCID_1";
 
                 Double maximumRadiance = Double.Parse(_metadata["RADIANCE_MAXIMUM_BAND_" + indexString], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat);
@@ -234,12 +234,12 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                 ImagingDeviceBand deviceBand = null;
 
                 if (device != null)
-                    deviceBand = device.Bands.FirstOrDefault(band => band.Description.Contains("BAND " + bandIndex));
+                    deviceBand = device.Bands.FirstOrDefault(band => band.Description.Contains("BAND " + bandNumber));
 
                 if (deviceBand != null)
-                    bandData.Add(new RasterImagingBand(deviceBand.Description, physicalGain, physicalBias, solarIrradiance[bandIndex], deviceBand.SpectralDomain, deviceBand.SpectralRange));
+                    bandData.Add(new RasterImagingBand(deviceBand.Description, physicalGain, physicalBias, solarIrradiance[bandNumber - 1], deviceBand.SpectralDomain, deviceBand.SpectralRange));
                 else // if no match is found
-                    bandData.Add(new RasterImagingBand("BAND " + bandIndex, physicalGain, physicalBias, solarIrradiance[bandIndex], SpectralDomain.Undefined, null));
+                    bandData.Add(new RasterImagingBand("BAND " + bandNumber, physicalGain, physicalBias, solarIrradiance[bandNumber - 1], SpectralDomain.Undefined, null));
             }
 
             RasterImaging imaging = new RasterImaging(device, imagingDateTime, GeoCoordinate.Undefined, imageLocation, incidenceAngle, viewingAngle, sunAzimuth, sunElevation, bandData);
@@ -257,7 +257,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the reference system stored in the metafile stream.
         /// </summary>
         /// <returns>The reference system.</returns>
-        protected override IReferenceSystem ReadReferenceSystemFromStream()
+        protected override IReferenceSystem ReadReferenceSystemInternal()
         {
             ReadContent();
 
@@ -265,6 +265,26 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
                 return ProjectedCoordinateReferenceSystems.FromName(_metadata["MAP_PROJECTION"]).FirstOrDefault();
 
             return Geographic2DCoordinateReferenceSystems.FromName(_metadata["DATUM"]).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Reads file paths stored in the metafile.
+        /// </summary>
+        /// <returns>The list of file paths.</returns>
+        protected override IList<String> ReadFilePathsInternal()
+        {
+            ReadContent();
+
+            List<String> paths = new List<String>(12);
+            for (Int32 bandNumber = 1; bandNumber <= 11; bandNumber++)
+            {
+                if (_metadata.ContainsKey("FILE_NAME_BAND_" + bandNumber))
+                    paths.Add(_metadata["FILE_NAME_BAND_" + bandNumber]);
+            }
+            if (_metadata.ContainsKey("FILE_NAME_BAND_QUALITY"))
+                paths.Add(_metadata["FILE_NAME_BAND_QUALITY"]);
+
+            return paths;
         }
 
         #endregion

@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the device information stored in the metafile stream.
         /// </summary>
         /// <returns>The device data.</returns>
-        protected override ImagingDevice ReadDeviceFromStream()
+        protected override ImagingDevice ReadDeviceInternal()
         {
             XElement sceneSourceElement = _document.Element("Dimap_Document").Element("Dataset_Sources").Element("Source_Information").Element("Scene_Source");
 
@@ -161,7 +161,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the imaging information stored in the metafile stream.
         /// </summary>
         /// <returns>The imaging data.</returns>
-        protected override RasterImaging ReadImagingFromStream()
+        protected override RasterImaging ReadImagingInternal()
         {
             // read the device data.
             ImagingDevice device = ReadDeviceData();
@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the raster mapping stored in the metafile stream.
         /// </summary>
         /// <returns>The raster mapping.</returns>
-        protected override RasterMapper ReadMappingFromStream()
+        protected override RasterMapper ReadMappingInternal()
         {
             List<RasterCoordinate> coordinates = new List<RasterCoordinate>(4);
 
@@ -254,7 +254,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
         /// Reads the reference system stored in the metafile stream.
         /// </summary>
         /// <returns>The reference system.</returns>
-        protected override IReferenceSystem ReadReferenceSystemFromStream()
+        protected override IReferenceSystem ReadReferenceSystemInternal()
         {
             IReferenceSystem referenceSystem = null;
             XElement referenceSystemElement = _document.Element("Dimap_Document").Element("Coordinate_Reference_System");

@@ -52,99 +52,55 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="basePath">The base path.</param>
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentNullException">The base path is null.</exception>
-        public GeoTiffGroupReader(String basePath, IDictionary<GeometryStreamParameter, Object> parameters) 
+        public GeoTiffGroupReader(String basePath, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
             if (basePath == null)
                 throw new ArgumentNullException("basePath", "The base path is null.");
 
             FileSystem fileSystem = FileSystem.GetFileSystemForPath(basePath);
-
+            
             _filePaths = new List<String>();
 
             // the base path is a directory
             if (fileSystem.IsDirectory(basePath))
             {
-                _filePaths = fileSystem.GetFiles(basePath).ToList();
-                return;
-            }
-
-            // the base path includes part of the file name
-            String directoryPath = fileSystem.GetDirectory(basePath);
-            String fileNameBase = fileSystem.GetFileNameWithoutExtension(basePath);
-            String fileNameExtension = fileSystem.GetExtension(basePath);
-
-            // try with underscore
-            Int32 fileNumber = 1;
-            String currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_" + fileNumber + fileNameExtension;
-
-
-            for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
-            {
-                if (fileSystem.Exists(currentFileName))
+                try
                 {
-                    _filePaths.Add(currentFileName);
+                    _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(basePath, GeoTiffMetafilePathOption.IsDirectoryPath);
                 }
-                fileNumber++;
-                currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_" + fileNumber + fileNameExtension;
-            }
+                catch { }
 
-            // try with underscore and band
-            if (_filePaths.Count == 0)
-            {
-                fileNumber = 1;
-                currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_B" + fileNumber + fileNameExtension;
-
-                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
+                if (_metafileReader != null)
                 {
-                    if (fileSystem.Exists(currentFileName))
-                    {
-                        _filePaths.Add(currentFileName);
-                    }
-                    fileNumber++;
-                    currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + "_B" + fileNumber + fileNameExtension;
+                    _filePaths = _metafileReader.ReadFilePaths().Select(path => fileSystem.Combine(basePath, path)).ToList();
+                }
+                else
+                {
+                    _filePaths = fileSystem.GetFiles(basePath, "*.tif", false).ToList();
                 }
             }
-
-            // try without underscore
-            if (_filePaths.Count == 0)
+            else
             {
-                fileNumber = 1;
-                currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + fileNumber + fileNameExtension;
+                String directoryPath = fileSystem.GetDirectory(basePath);
+                String fileNameBase = fileSystem.GetFileNameWithoutExtension(basePath);
+                String extension = fileSystem.GetExtension(basePath);
 
-                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
+                try
                 {
-                    if (fileSystem.Exists(currentFileName))
-                    {
-                        _filePaths.Add(currentFileName);
-                    }
-                    fileNumber++;
-                    currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase + fileNumber + fileNameExtension;
+                    _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(fileSystem.Combine(directoryPath, fileNameBase + "*"), GeoTiffMetafilePathOption.IsSearchPattern);
                 }
-            }
+                catch { }
 
-            // try with replacement
-            if (_filePaths.Count == 0)
-            {
-                fileNumber = 1;
-                currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase.Replace("*", fileNumber.ToString()) + fileNameExtension;
-
-                for (Int32 bandIndex = 0; bandIndex < MaxBandCount; bandIndex++)
+                if (_metafileReader != null)
                 {
-                    if (fileSystem.Exists(currentFileName))
-                    {
-                        _filePaths.Add(currentFileName);
-                    }
-                    fileNumber++;
-                    currentFileName = directoryPath + fileSystem.DirectorySeparator + fileNameBase.Replace("*", fileNumber.ToString()) + fileNameExtension;
+                    _filePaths = _metafileReader.ReadFilePaths().Select(path => fileSystem.Combine(directoryPath, path)).ToList();
                 }
+                else
+                {
+                    _filePaths = fileSystem.GetFiles(directoryPath, fileNameBase + "*" + extension, false).ToList();
+                }                
             }
-
-            try
-            {
-                _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(directoryPath + fileSystem.DirectorySeparator + fileNameBase.TrimEnd('B', '_') + "*", GeoTiffMetafilePathOption.IsSearchPattern);
-            }
-            catch { }
         }
 
         #endregion
@@ -168,37 +124,44 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             if (_filePaths.Count == 0)
                 return null;
-                
+               
+            // read imaging data
+            RasterImaging imaging = _metafileReader == null ? null : _metafileReader.ReadImaging();
+
+            // read files
             List<ISpectralPolygon> polygons = new List<ISpectralPolygon>();
 
             foreach (String filePath in _filePaths)
             {
-                using (GeoTiffReader reader = new GeoTiffReader(filePath, Parameters))
+                try
                 {
-                    polygons.Add(reader.Read() as ISpectralPolygon);
+                    using (GeoTiffReader reader = new GeoTiffReader(filePath, Parameters))
+                    {
+                        polygons.Add(reader.Read() as ISpectralPolygon);
+                    }
                 }
+                catch { }
             }
 
             _filePaths.Clear();
 
-            RasterImaging imaging = _metafileReader == null ? null : _metafileReader.ReadImaging();
-
+            // if no polygons are available
             if (polygons.Count == 0)
                 return null;
 
-            // remove rasters with different size
-            for (Int32 index = polygons.Count - 1; index >= 0; index--)
-            {
-                if (polygons[index].Raster.NumberOfRows != polygons[0].Raster.NumberOfRows || polygons[index].Raster.NumberOfColumns != polygons[0].Raster.NumberOfColumns)
+                // remove rasters with different size
+                for (Int32 index = polygons.Count - 1; index >= 0; index--)
                 {
-                    polygons.RemoveAt(index);
-                    if (imaging != null)
-                        imaging.RemoveBand(index);
+                    if (polygons[index].Raster.NumberOfRows != polygons[0].Raster.NumberOfRows || polygons[index].Raster.NumberOfColumns != polygons[0].Raster.NumberOfColumns)
+                    {
+                        polygons.RemoveAt(index);
+                        if (imaging != null)
+                            imaging.RemoveBand(index);
+                    }
                 }
-            }
 
-            // merge content
-            return polygons[0].Factory.CreateSpectralPolygon(polygons, imaging);
+                // merge content
+                return polygons[0].Factory.CreateSpectralPolygon(polygons, imaging);
         }
 
         #endregion

@@ -152,7 +152,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadDeviceFromStream();
+                return ReadDeviceInternal();
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadImagingFromStream();
+                return ReadImagingInternal();
             }
             catch (Exception ex)
             {
@@ -194,7 +194,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadMappingFromStream();
+                return ReadMappingInternal();
             }
             catch (Exception ex)
             {
@@ -215,7 +215,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadReferenceSystemFromStream();
+                return ReadReferenceSystemInternal();
             }
             catch (Exception ex)
             {
@@ -236,7 +236,26 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             try
             {
-                return ReadMetadataFromStream();
+                return ReadMetadataInternal();
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Exception occurred during metafile reading.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Reads file paths stored in the metafile.
+        /// </summary>
+        /// <returns>The list of file paths.</returns>
+        public IList<String> ReadFilePaths()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            try
+            {
+                return ReadFilePathsInternal();
             }
             catch (Exception ex)
             {
@@ -262,34 +281,40 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Protected fields
 
         /// <summary>
-        /// Reads the device information stored in the metafile stream.
+        /// Reads the device information stored in the metafile.
         /// </summary>
         /// <returns>The device data.</returns>
-        protected virtual ImagingDevice ReadDeviceFromStream() { return null; }
+        protected virtual ImagingDevice ReadDeviceInternal() { return null; }
 
         /// <summary>
-        /// Reads the imaging information stored in the metafile stream.
+        /// Reads the imaging information stored in the metafile.
         /// </summary>
         /// <returns>The imaging data.</returns>
-        protected virtual RasterImaging ReadImagingFromStream() { return null; }
+        protected virtual RasterImaging ReadImagingInternal() { return null; }
 
         /// <summary>
-        /// Reads the raster mapping stored in the metafile stream.
+        /// Reads the raster mapping stored in the metafile.
         /// </summary>
         /// <returns>The raster mapping.</returns>
-        protected virtual RasterMapper ReadMappingFromStream() { return null; }
+        protected virtual RasterMapper ReadMappingInternal() { return null; }
 
         /// <summary>
-        /// Reads the reference system stored in the metafile stream.
+        /// Reads the reference system stored in the metafile.
         /// </summary>
         /// <returns>The reference system.</returns>
-        protected virtual IReferenceSystem ReadReferenceSystemFromStream() { return null; }
+        protected virtual IReferenceSystem ReadReferenceSystemInternal() { return null; }
 
         /// <summary>
-        /// Reads additional metadata stored in the metafile stream.
+        /// Reads additional metadata stored in the metafile.
         /// </summary>
         /// <returns>The dictionary containing additional metadata.</returns>
-        protected virtual IDictionary<String, Object> ReadMetadataFromStream() { return new Dictionary<String, Object>(); }
+        protected virtual IDictionary<String, Object> ReadMetadataInternal() { return new Dictionary<String, Object>(); }
+
+        /// <summary>
+        /// Reads file paths stored in the metafile.
+        /// </summary>
+        /// <returns>The list of file paths.</returns>
+        protected virtual IList<String> ReadFilePathsInternal() { return null; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
