@@ -51,6 +51,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
         JPEG = 6,
 
         /// <summary>
+        /// Deflate
+        /// </summary>
+        Deflate = 8,
+
+        /// <summary>
         /// PackBits.
         /// </summary>
         PackBits = 32773
