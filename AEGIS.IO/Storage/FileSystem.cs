@@ -765,7 +765,7 @@ namespace ELTE.AEGIS.IO.Storage
 
             StringBuilder pathBuilder = new StringBuilder();
 
-            for (Int32 pathIndex = 1; pathIndex < path.Length; pathIndex++)
+            for (Int32 pathIndex = 0; pathIndex < path.Length; pathIndex++)
             {
                 if (path[pathIndex] == null || path[pathIndex].Length == 0)
                     continue;
