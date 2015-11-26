@@ -85,11 +85,11 @@ namespace ELTE.AEGIS.Tests.Algorithms.Resampling
                     // individual bands
                     for (Int32 bandIndex = 0; bandIndex < _rasterMock.Object.NumberOfBands; bandIndex++)
                     {
-                        Assert.AreEqual(_rasterMock.Object.GetValue((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex), bandIndex), strategy.Compute(rowIndex, columnIndex, bandIndex));
+                        Assert.AreEqual(_rasterMock.Object.GetValue(Convert.ToInt32(Math.Floor(rowIndex + 0.5)), Convert.ToInt32(Math.Floor(columnIndex + 0.5)), bandIndex), strategy.Compute(rowIndex, columnIndex, bandIndex));
                     }
 
                     // all bands
-                    Assert.IsTrue(_rasterMock.Object.GetValues((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex)).SequenceEqual(strategy.Compute(rowIndex, columnIndex)));
+                    Assert.IsTrue(_rasterMock.Object.GetValues(Convert.ToInt32(Math.Floor(rowIndex + 0.5)), Convert.ToInt32(Math.Floor(columnIndex + 0.5))).SequenceEqual(strategy.Compute(rowIndex, columnIndex)));
                 }
         }
 
@@ -107,11 +107,11 @@ namespace ELTE.AEGIS.Tests.Algorithms.Resampling
                     // individual bands
                     for (Int32 bandIndex = 0; bandIndex < _rasterMock.Object.NumberOfBands; bandIndex++)
                     {
-                        Assert.AreEqual(_rasterMock.Object.GetFloatValue((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex), bandIndex), strategy.ComputeFloat(rowIndex, columnIndex, bandIndex));
+                        Assert.AreEqual(_rasterMock.Object.GetFloatValue(Convert.ToInt32(Math.Floor(rowIndex + 0.5)), Convert.ToInt32(Math.Floor(columnIndex + 0.5)), bandIndex), strategy.ComputeFloat(rowIndex, columnIndex, bandIndex));
                     }
 
                     // all bands
-                    Assert.IsTrue(_rasterMock.Object.GetFloatValues((Int32)Math.Round(rowIndex), (Int32)Math.Round(columnIndex)).SequenceEqual(strategy.ComputeFloat(rowIndex, columnIndex)));
+                    Assert.IsTrue(_rasterMock.Object.GetFloatValues(Convert.ToInt32(Math.Floor(rowIndex + 0.5)), Convert.ToInt32(Math.Floor(columnIndex + 0.5))).SequenceEqual(strategy.ComputeFloat(rowIndex, columnIndex)));
                 }
         }
 
