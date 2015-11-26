@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
                 for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
                     for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
                     {
-                        Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, bandIndex), 0);
+                        Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, bandIndex));
                     }
 
 
@@ -120,7 +120,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
                 {
-                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, 0), 0);
+                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, 0));
                 }
 
 
@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
                 {
-                    Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetFloatValue(rowIndex, columnIndex, 0), 0);
+                    Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetFloatValue(rowIndex, columnIndex, 0));
                 }
         }
 

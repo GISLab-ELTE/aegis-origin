@@ -78,8 +78,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             {
                 for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
                 {
-                    _lowerThresholdValues[k] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
-                    _upperThresholdValues[k] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
+                    _lowerThresholdValues[_sourceBandIndices[k]] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                    _upperThresholdValues[_sourceBandIndices[k]] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
                 }
             }
             else
