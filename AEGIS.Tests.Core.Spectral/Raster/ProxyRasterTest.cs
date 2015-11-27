@@ -110,10 +110,10 @@ namespace ELTE.AEGIS.Tests.Raster
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
             Assert.IsTrue(raster.IsMapped);
             Assert.AreEqual(mapper, raster.Mapper);
-            Assert.AreEqual(new Coordinate(1000, 1000), raster.Coordinates[0]);
+            Assert.AreEqual(new Coordinate(1000, 1200), raster.Coordinates[0]);
             Assert.AreEqual(new Coordinate(1150, 1200), raster.Coordinates[1]);
-            Assert.AreEqual(new Coordinate(1000, 1200), raster.Coordinates[2]);
-            Assert.AreEqual(new Coordinate(1150, 1000), raster.Coordinates[3]);
+            Assert.AreEqual(new Coordinate(1150, 1000), raster.Coordinates[2]);
+            Assert.AreEqual(new Coordinate(1000, 1000), raster.Coordinates[3]);
 
             // argument null exception
 
