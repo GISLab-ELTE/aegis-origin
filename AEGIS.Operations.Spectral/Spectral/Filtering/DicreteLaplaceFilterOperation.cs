@@ -1,9 +1,9 @@
-﻿/// <copyright file="MeanRemovalFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+﻿/// <copyright file="DiscreteLaplaceFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -11,7 +11,7 @@
 ///     or implied. See the License for the specific language governing
 ///     permissions and limitations under the License.
 /// </copyright>
-/// <author>Roberto Giachetta</author>
+/// <author>Andras Fabian</author>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -20,15 +20,20 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a mean removal filter.
+    /// Represents a Discreate Leplace Filter.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213241", "Mean removal filter")]
-    public class MeanRemovalFilterTransformation : FilterTransformation
+    /// <remarks>
+    /// Discrete Laplace operator is often used in image processing e.g. in edge detection and motion estimation applications. 
+    /// The discrete Laplacian is defined as the sum of the second derivatives Laplace operator and calculated as sum of differences 
+    /// over the nearest neighbours of the central pixel.
+    /// </remarks>
+    [OperationMethodImplementation("AEGIS::213205", "Discrete Laplace filter")]
+    public class DiscreteLaplaceFilterOperation : GradientFilterOperation
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="DiscreteLaplaceFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -43,16 +48,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// The type of a parameter does not match the type specified by the method.
         /// or
         /// The value of a parameter is not within the expected range.
-        /// or
-        /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public MeanRemovalFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public DiscreteLaplaceFilterOperation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="DiscreteLaplaceFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -60,10 +63,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <exception cref="System.ArgumentNullException">
         /// The source is null.
         /// or
-        /// The method requires parameters which are not specified.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The parameters do not contain a required parameter value.
+        /// The method requires parameters which are not specified.</exception>
+        /// <exception cref="System.ArgumentException">The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter does not match the type specified by the method.
         /// or
@@ -71,12 +72,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public MeanRemovalFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.MeanRemovalFilter, parameters)
+        public DiscreteLaplaceFilterOperation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.DiscreteLaplaceFilter, parameters)
         {
-            _filter = FilterFactory.CreateMeanRemovalFilter(Convert.ToDouble(ResolveParameter(SpectralOperationParameters.FilterWeight)));
+            AddFilter(FilterFactory.CreateDiscreteLaplaceFilter());
         }
 
         #endregion
+
+
     }
 }

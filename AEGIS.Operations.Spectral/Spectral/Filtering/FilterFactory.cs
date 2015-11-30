@@ -1,9 +1,9 @@
 ﻿/// <copyright file="FilterFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -79,6 +79,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         }
 
         /// <summary>
+        /// Creates the discrete laplace filter.
+        /// </summary>
+        /// <returns>The created laplace filter.</returns>
+        public static Filter CreateDiscreteLaplaceFilter()
+        {
+            Matrix matrix = new Matrix(3, 3, 1f);
+            matrix[0, 0] = matrix[2, 2] = matrix[2, 0] = matrix[0, 2] = 0.5f;
+            matrix[1, 1] = -6;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
         /// Creates a mean removal filter.
         /// </summary>
         /// <param name="weight">The weight of the mean value.</param>
@@ -113,6 +126,33 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             Matrix matrix = new Matrix(3, 3);
             matrix[0, 0] = matrix[0, 1] = matrix[0, 2] = -1;
             matrix[2, 0] = matrix[2, 1] = matrix[2, 2] = 1;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+
+        /// <summary>
+        /// Creates a horizontal Roberts operator filter.
+        /// </summary>
+        /// <returns>The produced Roberts filter operator.</returns>
+        public static Filter CreateRobertsHorizontalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3, 0);
+            matrix[0, 0] = 1;
+            matrix[2, 2] = -1;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a vertical Roberts Operator Filter.
+        /// </summary>
+        /// <returns>The produced Roberts filter operator.</returns>
+        public static Filter CreateRobertsVerticalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3, 0);
+            matrix[0, 2] = 1;
+            matrix[2, 0] = -1;
 
             return new Filter(matrix, 1, 0);
         }

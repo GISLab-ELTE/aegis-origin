@@ -1,9 +1,9 @@
-﻿/// <copyright file="UnsharpMaskingTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+﻿/// <copyright file="UnsharpMaskingOperation.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -20,8 +20,17 @@ using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
+    /// <summary>
+    /// Represents an Unsharp madking filter operation.
+    /// </summary>
+    /// <remarks>
+    /// Unsharp masking (USM) is an image sharpening technique. 
+    /// The "unsharp" of the name derives from the fact that the technique uses a blurred, or "unsharp", negative image to create a mask of the original image.
+    /// The unsharped mask is then combined with the positive (original) image, creating an image that is less blurry than the original. 
+    /// The resulting image, although clearer, may be a less accurate representation of the image's subject. 
+    /// </remarks>
     [OperationMethodImplementation("AEGIS::213242", "Unsharp masking filter")]
-    public class UnsharpMaskingTransformation : PerBandSpectralTransformation
+    public class UnsharpMaskingOperation : PerBandSpectralTransformation
     {
         #region Private fields
 
@@ -34,7 +43,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnsharpMaskingTransformation" /> class.
+        /// Initializes a new instance of the <see cref="UnsharpMaskingOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -52,13 +61,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public UnsharpMaskingTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public UnsharpMaskingOperation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UnsharpMaskingTransformation" /> class.
+        /// Initializes a new instance of the <see cref="UnsharpMaskingOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -77,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public UnsharpMaskingTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+        public UnsharpMaskingOperation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.UnsharpMasking, parameters)
         {
             _amount = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SharpeningAmount));

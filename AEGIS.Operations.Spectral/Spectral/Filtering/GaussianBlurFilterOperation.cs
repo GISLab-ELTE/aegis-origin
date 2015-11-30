@@ -1,5 +1,5 @@
-﻿/// <copyright file="GaussianBlurFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+﻿/// <copyright file="GaussianBlurFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -20,18 +20,18 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a Gaussian blur filter transformation.
+    /// Represents a Gaussian blur filter operation.
     /// </summary>
     /// <remarks>
     /// A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function. It is a widely used effect in graphics software, typically to reduce image noise and reduce detail.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::213204", "Gaussian blur filter")]
-    public class GaussianBlurFilterTransformation : FilterTransformation
+    public class GaussianBlurFilterOperation : GradientFilterOperation
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="BoxFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -49,13 +49,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public GaussianBlurFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public GaussianBlurFilterOperation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BoxFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="BoxFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -74,10 +74,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public GaussianBlurFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+        public GaussianBlurFilterOperation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.GaussianBlurFilter, parameters)
         {
-            _filter = FilterFactory.CreateGaussianFilter(Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius)), Convert.ToDouble(ResolveParameter(SpectralOperationParameters.GaussianStandardDeviation)));
+            AddFilter(FilterFactory.CreateGaussianFilter(Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius)), 
+                                                         Convert.ToDouble(ResolveParameter(SpectralOperationParameters.GaussianStandardDeviation))));
         }
 
         #endregion

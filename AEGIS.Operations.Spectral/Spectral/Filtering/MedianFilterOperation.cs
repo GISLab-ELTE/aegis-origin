@@ -1,5 +1,5 @@
-﻿/// <copyright file="MedianFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+﻿/// <copyright file="MedianFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -20,10 +20,10 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a median filter transformation.
+    /// Represents a median filter operation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::213213", "Median filter")]
-    public class MedianFilterTransformation : PerBandSpectralTransformation
+    public class MedianFilterOperation : PerBandSpectralTransformation
     {
         #region Private fields
 
@@ -42,7 +42,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedianFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="MedianFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -60,13 +60,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public MedianFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public MedianFilterOperation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MedianFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="MedianFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -85,7 +85,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public MedianFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+        public MedianFilterOperation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.MedianFilter, parameters)
         {
             _filterRadius = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.FilterRadius));

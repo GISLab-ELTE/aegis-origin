@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,19 +76,20 @@
     <Compile Include="Spectral\Common\SpectralTranslation.cs" />
     <Compile Include="Spectral\Enhancement\MorphologicalDilationOperation.cs" />
     <Compile Include="Spectral\Enhancement\MorphologicalErosionOperation.cs" />
-    <Compile Include="Spectral\Filtering\BoxFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\CustomFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\MultiFilterTransformation.cs" />
+    <Compile Include="Spectral\Filtering\BoxFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\CustomFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\DicreteLaplaceFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\GradientFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\Filter.cs" />
     <Compile Include="Spectral\Filtering\FilterFactory.cs" />
-    <Compile Include="Spectral\Filtering\FilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\GaussianBlurFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\MeanRemovalFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\MedianFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\PrewittFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\SobelFilterTransformation.cs" />
-    <Compile Include="Spectral\Filtering\UnsharpMaskingTransformation.cs" />
-    <Compile Include="Spectral\Filtering\WeightedMedianFilterTransformation.cs" />
+    <Compile Include="Spectral\Filtering\GaussianBlurFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\MeanRemovalFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\MedianFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\PrewittFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\RobertsFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\SobelFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\UnsharpMaskingOperation.cs" />
+    <Compile Include="Spectral\Filtering\WeightedMedianFilterOperation.cs" />
     <Compile Include="Spectral\Indexing\NormalizedDifferenceIndexComputation.cs" />
     <Compile Include="Spectral\Indexing\NormalizedDifferenceSoilIndexComputation.cs" />
     <Compile Include="Spectral\Indexing\NormalizedDifferenceVegetationIndexComputation.cs" />

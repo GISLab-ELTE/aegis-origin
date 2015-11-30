@@ -28,7 +28,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for the <see cref="GaussianBlurFilterTransformation" /> class.
+    /// Test fixture for the <see cref="GaussianBlurFilter" /> class.
     /// </summary>
     [TestFixture]
     public class GaussianBlurFilterTransformationTest
@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             // integer values with default parameters
 
-            GaussianBlurFilterTransformation operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
+            GaussianBlurFilterOperation operation = new GaussianBlurFilterOperation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -105,7 +105,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.FilterRadius, 3);
 
-            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new GaussianBlurFilterOperation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(SpectralOperationParameters.BandIndex, 1);
 
-            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
+            operation = new GaussianBlurFilterOperation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
             operation.Execute();
 
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
@@ -143,7 +143,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
 
-            operation = new GaussianBlurFilterTransformation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
+            operation = new GaussianBlurFilterOperation(factory.CreateSpectralPolygon(_rasterMock.Object), null);
             operation.Execute();
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)

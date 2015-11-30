@@ -1,5 +1,5 @@
-﻿/// <copyright file="WeightedMedianFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+﻿/// <copyright file="WeightedMedianFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,12 +24,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// Represents a median filter transformation with weight modifiers.
     /// </summary>
     [OperationMethodImplementation("AEGIS::213214", "Weighted median filter")]
-    public class WeightedMedianFilterTransformation : FilterTransformation
+    public class WeightedMedianFilterOperation : PerBandSpectralTransformation
     {
+        #region Private fields
+
+        /// <summary>
+        /// The weight filter.
+        /// </summary>
+        private Filter _filter;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeightedMedianFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="WeightedMedianFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -47,13 +56,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public WeightedMedianFilterTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public WeightedMedianFilterOperation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeightedMedianFilterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="WeightedMedianFilterOperation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -72,7 +81,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public WeightedMedianFilterTransformation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+        public WeightedMedianFilterOperation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.WeightedMedianFilter, parameters)
         {
             _filter = new Filter(ResolveParameter<Matrix>(SpectralOperationParameters.FilterKernel), 1, 0);

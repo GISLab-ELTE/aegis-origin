@@ -25,12 +25,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _boxFilter;
         private static SpectralOperationMethod _customFilter;
         private static SpectralOperationMethod _gaussianBlurFilter;
-        private static SpectralOperationMethod _laplaceFilter;
+        private static SpectralOperationMethod _discreteLaplaceFilter;
         private static SpectralOperationMethod _maximumFilter;
         private static SpectralOperationMethod _meanRemovalFilter;
         private static SpectralOperationMethod _medianFilter;
         private static SpectralOperationMethod _minimumFilter;
         private static SpectralOperationMethod _prewittFilter;
+        private static SpectralOperationMethod _robertsFilter;
         private static SpectralOperationMethod _sobelFilter;
         private static SpectralOperationMethod _unsharpMasking;
         private static SpectralOperationMethod _weightedMedianFilter;
@@ -94,14 +95,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Laplace filter.
+        /// Discrete Laplace filter.
         /// </summary>
-        public static SpectralOperationMethod LaplaceFilter
+        public static SpectralOperationMethod DiscreteLaplaceFilter
         {
             get
             {
-                return _laplaceFilter ?? (_laplaceFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213205", "Laplace filter",
+                return _discreteLaplaceFilter ?? (_discreteLaplaceFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213205", "Discrete Laplace filter",
                                                                          "The Laplace filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -188,6 +189,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _prewittFilter ?? (_prewittFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213264", "Prewitt filter",
                                                                          "The Prewitt filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.BandIndex));
+            }
+        }
+
+        /// <summary>
+        /// Roberts filter.
+        /// </summary>
+        public static SpectralOperationMethod RobertsFilter
+        {
+            get
+            {
+                return _robertsFilter ?? (_robertsFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213266", "Roberts filter",
+                                                                         "The Roberts filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex));
