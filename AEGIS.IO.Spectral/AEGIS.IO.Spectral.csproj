@@ -54,6 +54,8 @@
     <Compile Include="GeoTiff\Metafile\DimapMetafileReader.cs" />
     <Compile Include="GeoTiff\Metafile\LandsatMetafileReader.cs" />
     <Compile Include="GeoTiff\Metafile\XElementExtensions.cs" />
+    <Compile Include="RawImage\EsriRawImageWriter.cs" />
+    <Compile Include="RawImage\RawImageWriter.cs" />
     <Compile Include="SpectralGeometryStreamFormats.cs" />
     <Compile Include="SpectralGeometryStreamParameters.cs" />
     <Compile Include="GeoTiff\GeoTiffReader.cs" />

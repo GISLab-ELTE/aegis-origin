@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             private readonly Int32 _numberOfColumns;
             private readonly Int32 _numberOfRows;
             private readonly Int32[] _radiometricResolutions;
-            private readonly RasterRepresentation _representation;
+            private readonly RasterFormat _format;
             private static RasterDataOrder[] _supportedOrders;
             private RawImageWriter _rawImageWriter;
 
@@ -86,10 +86,10 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             public Boolean IsWritable { get { return true; } }
 
             /// <summary>
-            /// Gets the representation of the dataset.
+            /// Gets the format of the dataset.
             /// </summary>
-            /// <value>The representation of the dataset.</value>
-            public RasterRepresentation Representation { get { return _representation; } }
+            /// <value>The format of the dataset.</value>
+            public RasterFormat Format { get { return _format; } }
 
             /// <summary>
             /// Gets the supported read/write orders.
@@ -112,7 +112,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
                 _numberOfColumns = rawImageWriter._numberOfColumns;
                 _numberOfRows = rawImageWriter._numberOfRows;
                 _radiometricResolutions = Enumerable.Repeat(rawImageWriter._radiometricResolution, rawImageWriter._numberOfBands).ToArray();
-                _representation = rawImageWriter._representation;
+                _format = rawImageWriter._format;
 
                 switch (rawImageWriter._layout)
                 {
@@ -665,7 +665,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         protected Int32 _bytesPerRow;
         protected Int32 _bytesSkipped;
         protected RasterMapper _mapper;
-        protected RasterRepresentation _representation;
+        protected RasterFormat _format;
         protected Double _upperLeftX;
         protected Double _upperLeftY;
         protected Double _vectorX;
@@ -887,7 +887,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
                 _upperLeftY = _mapper.Translation.Y;
                 _vectorX = _mapper.RowSize;
                 _vectorY = _mapper.ColumnSize;
-                _representation = raster.Representation;
+                _format = raster.Format;
 
                 WriteRasterContent(geometry.ReferenceSystem, raster);
                 WriteGeometryMetadata(geometry.Metadata);
@@ -909,7 +909,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         private void SetParameters(IDictionary<GeometryStreamParameter, Object> parameters)
         {
             _layout = ResolveParameter<RawImageLayout>(SpectralGeometryStreamParameters.Layout);
-            _byteOrder = ResolveParameter<ByteOrder>(SpectralGeometryStreamParameters.NumberOfBands);
+            _byteOrder = ResolveParameter<ByteOrder>(SpectralGeometryStreamParameters.ByteOrder);
             _bytesPerBandRow = Convert.ToInt32(Math.Ceiling(_numberOfColumns * _radiometricResolution / 8.0));
             switch (_layout)
             {
