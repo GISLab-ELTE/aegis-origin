@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalculatorTest.cs" />
     <Compile Include="LinearAlgebra\CholeskyDecompositionTest.cs" />
     <Compile Include="LinearAlgebra\HouseholderTransformationTest.cs" />
     <Compile Include="LinearAlgebra\LUDecompositionTest.cs" />
