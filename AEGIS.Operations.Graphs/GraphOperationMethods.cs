@@ -87,6 +87,7 @@ namespace ELTE.AEGIS.Operations
 
         private static OperationMethod _aStarAlgorithm;
         private static OperationMethod _bellmannFordAlgorithm;
+        private static OperationMethod _boruvkasAlgorithm;
         private static OperationMethod _breathFirstSearch;
         private static OperationMethod _depthFirstSearch;
         private static OperationMethod _dijkstrasAlgorithm;
@@ -98,8 +99,8 @@ namespace ELTE.AEGIS.Operations
         private static OperationMethod _geometryToGraphConversion;
         private static OperationMethod _geometryToNetworkConversion;
         private static OperationMethod _graphToGeometryConversion;
+        private static OperationMethod _kruskalsAlgorithm;
         private static OperationMethod _primsAlgorithm;
-        private static OperationMethod _kruskalAlgorithm;
         private static OperationMethod _reverseDeleteAlgorithm;
 
         #endregion
@@ -140,6 +141,23 @@ namespace ELTE.AEGIS.Operations
                         "Computes shortest paths from a single source vertex to all of the other vertices in a weighted directed graph.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
+                        GraphOperationParameters.WeightMetric
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Borůvka's algorithm.
+        /// </summary>
+        public static OperationMethod BoruvkasAgorithm
+        {
+            get
+            {
+                return _boruvkasAlgorithm ?? (_boruvkasAlgorithm =
+                    OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
+                        "AEGIS::212508", "Borůvka's algorithm (also known as Sollin's algorithm).",
+                        "Algorithm for finding a minimum spanning tree in a graph for which all edge weights are distinct.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.WeightMetric
                     ));
             }
@@ -341,6 +359,25 @@ namespace ELTE.AEGIS.Operations
             }
         }
 
+
+        /// <summary>
+        /// Kruskal's algorithm.
+        /// </summary>
+        public static OperationMethod KruskalsAlgorithm
+        {
+            get
+            {
+                return _kruskalsAlgorithm ?? (_kruskalsAlgorithm =
+                    OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
+                        "AEGIS::212502", "Kruskal's algorithm",
+                        "A greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.",
+                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
+                        GraphOperationParameters.WeightMetric
+                    ));
+            }
+        }
+
+
         /// <summary>
         /// Prim's algorithm.
         /// </summary>
@@ -352,24 +389,6 @@ namespace ELTE.AEGIS.Operations
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::212501", "Prim's algorithm",
                         "Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a connected weighted undirected graph.",
-                        false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
-                        GraphOperationParameters.SourceVertex,
-                        GraphOperationParameters.WeightMetric
-                    ));
-            }
-        }
-
-        /// <summary>
-        /// Kruskal's algorithm.
-        /// </summary>
-        public static OperationMethod KruskalAlgorithm
-        {
-            get
-            {
-                return _kruskalAlgorithm ?? (_kruskalAlgorithm = 
-                    OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
-                        "AEGIS::212501", "Kruskal's algorithm",
-                        "Kruskal's algorithm is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.WeightMetric

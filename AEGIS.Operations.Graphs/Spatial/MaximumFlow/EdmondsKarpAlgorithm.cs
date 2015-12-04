@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
             {
                 _maximumFlow += capacity;
 
-                // backtrack seach
+                // backtrack search
                 IGraphVertex currentVertex = _targetVertex;
 
                 while (!_source.VertexComparer.Equals(currentVertex, _sourceVertex))
@@ -131,7 +131,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
 
         #endregion
 
-        #region Protected methods 
+        #region Protected methods
 
         /// <summary>
         /// Executes a breath first-search on the graph.
