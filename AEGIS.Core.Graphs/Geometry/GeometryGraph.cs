@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Geometry
             /// <summary>
             /// Initializes a new instance of the <see cref="BreadthFirstEnumerator" /> class.
             /// </summary>
-            /// <param name="heap">The graph.</param>
+            /// <param name="graph">The graph.</param>
             internal BreadthFirstEnumerator(GeometryGraph graph)
             {
                 _localGraph = graph;
@@ -244,7 +244,7 @@ namespace ELTE.AEGIS.Geometry
             /// <summary>
             /// Initializes a new instance of the <see cref="DepthFirstEnumerator" /> class.
             /// </summary>
-            /// <param name="heap">The graph.</param>
+            /// <param name="graph">The graph.</param>
             internal DepthFirstEnumerator(GeometryGraph localGraph) {
                 _localGraph = localGraph;
                 _localVersion = localGraph._version;
@@ -649,15 +649,15 @@ namespace ELTE.AEGIS.Geometry
         }
 
         /// <summary>
-        /// Gets the <see cref="IEqualityComparer" /> object used by the graph for comparing vertices.
+        /// Gets the <see cref="IEqualityComparer{IGraphVertex}" /> object used by the graph for comparing vertices.
         /// </summary>
-        /// <value>The <see cref="IEqualityComparer" /> object used by the graph for comparing vertices.</value>
+        /// <value>The <see cref="IEqualityComparer{IGraphVertex}" /> object used by the graph for comparing vertices.</value>
         public IEqualityComparer<IGraphVertex> VertexComparer { get { return _vertexEqualityComparer; } }
 
         /// <summary>
-        /// Gets the <see cref="IEqualityComparer" /> object used by the graph for comparing edges.
+        /// Gets the <see cref="IEqualityComparer{IGraphEdge}" /> object used by the graph for comparing edges.
         /// </summary>
-        /// <value>The <see cref="IEqualityComparer" /> object used by the graph for comparing edges.</value>
+        /// <value>The <see cref="IEqualityComparer{IGraphEdge}" /> object used by the graph for comparing edges.</value>
         public IEqualityComparer<IGraphEdge> EdgeComparer { get { return _edgeEqualityComparer; } }
 
         #endregion
@@ -1360,5 +1360,4 @@ namespace ELTE.AEGIS.Geometry
 
         #endregion
     }
-
 }

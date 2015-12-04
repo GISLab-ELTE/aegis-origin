@@ -19,7 +19,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Defines a graph form of geometries in coordinate space.
+    /// Represents a graph form of geometry.
     /// </summary>
     public interface IGeometryGraph : IGeometry, IEnumerable<IGraphVertex>
     {
@@ -50,15 +50,15 @@ namespace ELTE.AEGIS
         IList<IGraphEdge> Edges { get; }
 
         /// <summary>
-        /// Gets the <see cref="IEqualityComparer" /> object used by the graph for comparing vertices.
+        /// Gets the <see cref="IEqualityComparer{IGraphVertex}" /> object used by the graph for comparing vertices.
         /// </summary>
-        /// <value>The <see cref="IEqualityComparer" /> object used by the graph for comparing vertices.</value>
+        /// <value>The <see cref="IEqualityComparer{IGraphVertex}" /> object used by the graph for comparing vertices.</value>
         IEqualityComparer<IGraphVertex> VertexComparer { get; }
 
         /// <summary>
-        /// Gets the <see cref="IEqualityComparer" /> object used by the graph for comparing edges.
+        /// Gets the <see cref="IEqualityComparer{IGraphEdge}" /> object used by the graph for comparing edges.
         /// </summary>
-        /// <value>The <see cref="IEqualityComparer" /> object used by the graph for comparing edges.</value>
+        /// <value>The <see cref="IEqualityComparer{IGraphEdge}" /> object used by the graph for comparing edges.</value>
         IEqualityComparer<IGraphEdge> EdgeComparer { get; }
 
         #endregion
@@ -69,14 +69,14 @@ namespace ELTE.AEGIS
         /// Returns the outgoing edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The read-only set containing edges with <paramref="vertex"> as source.</returns>
+        /// <returns>The read-only set containing edges with <paramref name="vertex"/> as source.</returns>
         ISet<IGraphEdge> OutEdges(IGraphVertex vertex);
 
         /// <summary>
         /// Returns the incoming edges of a vertex.
         /// </summary>
         /// <param name="vertex">The vertex.</param>
-        /// <returns>The read-only set containing edges with <paramref="vertex"> as target.</returns>
+        /// <returns>The read-only set containing edges with <paramref name="vertex"/> as target.</returns>
         ISet<IGraphEdge> InEdges(IGraphVertex vertex);
 
         /// <summary>
