@@ -45,6 +45,16 @@
   <ItemGroup>
     <Compile Include="BufferingMode.cs" />
     <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
+    <Compile Include="Storage\Operation\FileListingOperationResult.cs" />
+    <Compile Include="Storage\Operation\FtpCreateDirectoryOperation.cs" />
+    <Compile Include="Storage\Operation\FtpCreateFileOperation.cs" />
+    <Compile Include="Storage\Operation\FtpDeleteOperation.cs" />
+    <Compile Include="Storage\Operation\FtpFileListingOperation.cs" />
+    <Compile Include="Storage\FtpFileSystem.cs" />
+    <Compile Include="Storage\Operation\FtpFileSystemOperation.cs" />
+    <Compile Include="Storage\Operation\FtpMoveOperation.cs" />
+    <Compile Include="Storage\Operation\FtpOpenFileOperation.cs" />
+    <Compile Include="Storage\Operation\StreamOperationResult.cs" />
     <Compile Include="Utilities\MemoryBufferedStream.cs" />
     <Compile Include="MetafileFormat.cs" />
     <Compile Include="Shapefile\DBaseField.cs" />
