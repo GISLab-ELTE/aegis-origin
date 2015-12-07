@@ -305,7 +305,7 @@ namespace ELTE.AEGIS.IO.Storage
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileSystem"/> class.
+        /// Initializes a new instance of the <see cref="FileSystem" /> class.
         /// </summary>
         /// <param name="location">The URI of the file system location.</param>
         protected FileSystem(Uri location, IFileSystemAuthentication authentication)
@@ -365,7 +365,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public virtual async void CreateDirectoryAsync(String path)
+        public virtual async Task CreateDirectoryAsync(String path)
         {
             await Task.Run(() => CreateDirectory(path));
         }
@@ -672,7 +672,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async virtual void DeleteAsync(String path)
+        public async virtual Task DeleteAsync(String path)
         {
             await Task.Run(() => Delete(path));
         }
@@ -747,7 +747,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async virtual void MoveAsync(String sourcePath, String destinationPath)
+        public async virtual Task MoveAsync(String sourcePath, String destinationPath)
         {
             await Task.Run(() => Move(sourcePath, destinationPath));
         }
@@ -849,7 +849,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async virtual void CopyAsync(String sourcePath, String destinationPath)
+        public async virtual Task CopyAsync(String sourcePath, String destinationPath)
         {
             await Task.Run(() => Copy(sourcePath, destinationPath));
         }

@@ -37,14 +37,14 @@ namespace ELTE.AEGIS.IO.Storage
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         public ConnectionException()
             : base() 
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public ConnectionException(String message)
@@ -52,7 +52,7 @@ namespace ELTE.AEGIS.IO.Storage
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="path">The path where the exception occurred.</param>
@@ -63,7 +63,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (Nothing in Visual Basic) if no inner exception is specified.</param>
@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.IO.Storage
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="path">The path where the exception occurred.</param>
@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectionException"/> class.
+        /// Initializes a new instance of the <see cref="ConnectionException" /> class.
         /// </summary>
         /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>

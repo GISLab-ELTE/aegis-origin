@@ -1,9 +1,9 @@
 ﻿/// <copyright file="FileSystemOperationResult.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -16,7 +16,7 @@
 namespace ELTE.AEGIS.IO.Storage.Operation
 {
     /// <summary>
-    /// 
+    /// Represents a file system operation result.
     /// </summary>
     public class FileSystemOperationResult
     {
@@ -33,13 +33,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileSystemOperationResult"/> class.
-        /// </summary>
-        public FileSystemOperationResult()
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileSystemOperationResult"/> class.
+        /// Initializes a new instance of the <see cref="FileSystemOperationResult" /> class.
         /// </summary>
         /// <param name="code">The result code.</param>
         public FileSystemOperationResult(FileSystemOperationResultCode code)

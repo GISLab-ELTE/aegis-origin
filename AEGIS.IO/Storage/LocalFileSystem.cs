@@ -109,7 +109,7 @@ namespace ELTE.AEGIS.IO.Storage
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LocalFileSystem"/> class.
+        /// Initializes a new instance of the <see cref="LocalFileSystem" /> class.
         /// </summary>
         public LocalFileSystem() : base(LocalhostUri, null) { }
 

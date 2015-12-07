@@ -119,7 +119,7 @@ namespace ELTE.AEGIS.IO.Storage
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
+        /// Initializes a new instance of the <see cref="HadoopFileSystem" /> class.
         /// </summary>
         /// <param name="hostname">The hostname.</param>
         /// <param name="portNumber">The port number.</param>
@@ -174,7 +174,7 @@ namespace ELTE.AEGIS.IO.Storage
         public HadoopFileSystem(String hostname, Int32 portNumber, IHadoopFileSystemAuthentication authentication, HttpClient client) : this(CreateLocation(hostname, portNumber), authentication, client) { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
+        /// Initializes a new instance of the <see cref="HadoopFileSystem" /> class.
         /// </summary>
         /// <param name="hostname">The hostname.</param>
         /// <param name="portNumber">The port number.</param>
@@ -254,7 +254,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HadoopFileSystem"/> class.
+        /// Initializes a new instance of the <see cref="HadoopFileSystem" /> class.
         /// </summary>
         /// <param name="location">The location of the file system.</param>
         /// <param name="client">The HTTP client.</param>
@@ -360,7 +360,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public override async void CreateDirectoryAsync(String path)
+        public override async Task CreateDirectoryAsync(String path)
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
@@ -675,7 +675,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async override void DeleteAsync(String path)
+        public async override Task DeleteAsync(String path)
         {
             if (path == null)
                 throw new ArgumentNullException("path", MessagePathIsNull);
@@ -843,7 +843,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// or
         /// No connection is available to the file system.
         /// </exception>
-        public async override void MoveAsync(String sourcePath, String destinationPath)
+        public async override Task MoveAsync(String sourcePath, String destinationPath)
         {
             if (sourcePath == null)
                 throw new ArgumentNullException("sourcePath", MessageSourcePathIsNull);

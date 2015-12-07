@@ -52,19 +52,19 @@ namespace ELTE.AEGIS.IO.Storage
         /// <summary>
         /// Gets or sets the time of creation.
         /// </summary>
-        /// <value>The time of creation. If the query is not supported by the file system, the minimum <see cref="DateTime"/> valus is returned.</value>
+        /// <value>The time of creation. If the query is not supported by the file system, the minimum <see cref="DateTime" /> valus is returned.</value>
         public DateTime CreationTime { get; set; }
 
         /// <summary>
         /// Gets or sets the time of the last access.
         /// </summary>
-        /// <value>The time of the last access. If the query is not supported by the file system, the minimum <see cref="DateTime"/> valus is returned.</value>
+        /// <value>The time of the last access. If the query is not supported by the file system, the minimum <see cref="DateTime" /> valus is returned.</value>
         public DateTime LastAccessTime { get; set; }
 
         /// <summary>
         /// Gets or sets the time of the last modification.
         /// </summary>
-        /// <value>The time of the last modification. If the query is not supported by the file system, the minimum <see cref="DateTime"/> valus is returned.</value>
+        /// <value>The time of the last modification. If the query is not supported by the file system, the minimum <see cref="DateTime" /> valus is returned.</value>
         public DateTime LastModificationTime { get; set; }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.IO.Storage
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileSystemEntry"/> class.
+        /// Initializes a new instance of the <see cref="FileSystemEntry" /> class.
         /// </summary>
         public FileSystemEntry() { }
 
