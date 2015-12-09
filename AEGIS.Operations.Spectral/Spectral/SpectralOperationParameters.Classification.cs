@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationParameters.Classification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -31,11 +31,16 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _classificationReferenceGeometry;
         private static OperationParameter _classificationSegmentationMethod;
         private static OperationParameter _classificationSegmentationType;
+        private static OperationParameter _classificationStandardDeviation;
         private static OperationParameter _classificationValidationGeometry;
         private static OperationParameter _colorPalette;
         private static OperationParameter _densitySlicingThresholds;
         private static OperationParameter _lowerThresholdBoundary;
+        private static OperationParameter _meanthreshThresholdingConstant;
         private static OperationParameter _spectralPredicate;
+        private static OperationParameter _standardDeviationRange;
+        private static OperationParameter _standardDeviationWeight;
+        private static OperationParameter _thresholdingWindowRadius;
         private static OperationParameter _upperThresholdBoundary;
 
         #endregion
@@ -119,6 +124,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Standard deviation of the classification operation.
+        /// </summary>
+        public static OperationParameter ClassificationStandardDeviation
+        {
+            get
+            {
+                return _classificationStandardDeviation ?? (_classificationStandardDeviation =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::213857", "Standard deviation of the classification operation",
+                                                                     "The standard deviation value used for the implementation of the Niblack local thresholding classification.", null)
+                );
+            }
+        }
+
+        /// <summary>
         /// Validation spectral geometry of the classification.
         /// </summary>
         public static OperationParameter ClassificationValidationGeometry
@@ -177,6 +196,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Meanthresh thresholding constant.
+        /// </summary>
+        public static OperationParameter MeanthreshThresholdingConstant
+        {
+            get
+            {
+                return _meanthreshThresholdingConstant ?? (_meanthreshThresholdingConstant =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223826", "Meanthresh thresholding constant",
+                                                                       "Defines a constant which increases the resistance to noise of the Meanthresh algorithm.", null,
+                                                                       0, Conditions.IsNotNegative()));
+            }
+        }
+
+        /// <summary>
         /// Spectral predicate.
         /// </summary>
         public static OperationParameter SpectralPredicate
@@ -187,6 +220,51 @@ namespace ELTE.AEGIS.Operations.Spectral
                     OperationParameter.CreateRequiredParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>("AEGIS::223800", "Spectral predicate",
                                                                                                             "Represents a function that defines a set of criteria on the specified raster and determines whether the current value meets those criteria.", null)
                 );
+            }
+        }
+
+        /// <summary>
+        /// Standard deviation range.
+        /// </summary>
+        public static OperationParameter StandardDeviationRange
+        {
+            get
+            {
+                return _standardDeviationRange ?? (_standardDeviationRange =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::213827", "Standard deviation range", "The range of the standard deviation used by Sauvola's algorithm.", null,
+                                                                       128,
+                                                                       Conditions.IsGreaterThanOrEqualTo(1))
+                );
+            }
+        }
+
+        /// <summary>
+        /// Standard deviation weight.
+        /// </summary>
+        public static OperationParameter StandardDeviationWeight
+        {
+            get
+            {
+                return _standardDeviationWeight ?? (_standardDeviationWeight =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::213828", "Standard deviation weight",
+                                                                       "Determines the weight of the standard deviation for thresholding.", null,
+                                                                       0.5, 
+                                                                       Conditions.IsBetween(0, 1))
+                );
+            }
+        }
+
+        /// <summary>
+        /// Thresholding window radius.
+        /// </summary>
+        public static OperationParameter ThresholdingWindowRadius
+        {
+            get
+            {
+                return _thresholdingWindowRadius ?? (_thresholdingWindowRadius =
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::213829", "Thresholding window radius", 
+                                                                      "The window radius of local thresholding operations.", null, 
+                                                                      3, Conditions.IsPositive()));
             }
         }
 

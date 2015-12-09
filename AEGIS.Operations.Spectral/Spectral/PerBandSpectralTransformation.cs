@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PerBandSpectralTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -33,13 +33,12 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Operations.Spectral.PerBandRasterTransformation" /> class.
+        /// Initializes a new instance of the <see cref="PerBandRasterTransformation" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
         /// <param name="method">The method.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The specified band index parameter or greater or equal to the spectral resoultion of the source.</exception>
         /// <exception cref="System.ArgumentNullException">
         /// The source is null.
         /// or
@@ -48,13 +47,17 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
+        /// The source is invalid.
+        /// or
+        /// The target is invalid.
+        /// or
+        /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter does not match the type specified by the method.
         /// or
-        /// The value of a parameter is not within the expected range.
-        /// or
-        /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// A parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         protected PerBandSpectralTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
@@ -63,13 +66,17 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 _sourceBandIndices = new Int32[] { Convert.ToInt32(ResolveParameter(SpectralOperationParameters.BandIndex)) };
 
+                if (_sourceBandIndices[0] < 0 || _sourceBandIndices[0] >= Source.Raster.NumberOfBands)
+                    throw new ArgumentException("parameters", "A parameter value does not satisfy the conditions of the parameter.", new ArgumentOutOfRangeException("BandIndex", "BandIndex is not within the range 0.." + (Source.Raster.NumberOfBands - 1) + "."));
+
             }
             else if (IsProvidedParameter(SpectralOperationParameters.BandIndices))
+            {
                 _sourceBandIndices = ResolveParameter<Int32[]>(SpectralOperationParameters.BandIndices);
 
-
-            if (_sourceBandIndices != null && (_sourceBandIndices.Min() < 0 || _sourceBandIndices.Max() >= source.Raster.NumberOfBands))
-                throw new ArgumentOutOfRangeException("The specified band index parameter is greater or equal to the number of bands in the source.", "parameters");
+                if (_sourceBandIndices.Any(index => index < 0 || index >= Source.Raster.NumberOfBands))
+                    throw new ArgumentException("parameters", "A parameter value does not satisfy the conditions of the parameter.", new ArgumentOutOfRangeException("BandIndices", "One or more values within BandIndices is not within the range 0.." + (Source.Raster.NumberOfBands - 1) + "."));
+            }
         }
 
         #endregion

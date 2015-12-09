@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -649,25 +649,27 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
+        /// The source is invalid.
+        /// or
+        /// The target is invalid.
+        /// or
+        /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter does not match the type specified by the method.
         /// or
-        /// The value of a parameter is not within the expected range.
-        /// or
-        /// The specified source and result are the same objects, but the method does not support in-place operations.
-        /// or
-        /// The source geometry does not contain raster data.
-        /// or
-        /// The raster format of the source is not supported by the method.
+        /// A parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         protected SpectralTransformation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
             if (source.Raster == null)
-                throw new ArgumentException("The source geometry does not contain raster data.", "source");
+                throw new ArgumentException("The source is invalid.", "source", new InvalidOperationException("The geometry does not contain raster data."));
             if (!method.SupportedFormats.Contains(source.Raster.Format))
-                throw new ArgumentException("The raster format of the source is not supported by the method.", "source");
+                throw new ArgumentException("The source is invalid.", "source", new InvalidOperationException("The raster format is not supported by the method."));
+            if (target != null && target.Raster == null)
+                throw new ArgumentException("The target is invalid.", "source", new InvalidOperationException("The geometry does not contain raster data."));
         }
 
         #endregion

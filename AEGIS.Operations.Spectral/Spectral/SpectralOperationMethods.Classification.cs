@@ -23,12 +23,16 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private static fields
 
         private static SpectralOperationMethod _densitySlicing;
+        private static SpectralOperationMethod _bernsenLocalThresholdingClassification;
+        private static SpectralOperationMethod _meanthreshLocalThresholdingClassification;
+        private static SpectralOperationMethod _niblackLocalThresholdingClassification;
         private static SpectralOperationMethod _balancedHistogramThresholdingClassification;
         private static SpectralOperationMethod _constantBasedThresholdingClassification;
         private static SpectralOperationMethod _functionBasedThresholdingClassification;
         private static SpectralOperationMethod _otsuThresholdingClassification;
         private static SpectralOperationMethod _paletteColorClassification;
         private static SpectralOperationMethod _randomColorClassification;
+        private static SpectralOperationMethod _sauvolaLocalThresholdingClassification;
         private static SpectralOperationMethod _segmentClassification;
         private static SpectralOperationMethod _referenceMatchingClassification;
 
@@ -46,9 +50,27 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _balancedHistogramThresholdingClassification ?? (_balancedHistogramThresholdingClassification =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213826", "Balanced histogram thresholding",
                                                                          "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandGlobal,
+                                                                         RasterFormat.Integer,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Bernsen local thresholding.
+        /// </summary>
+        public static SpectralOperationMethod BernsenLocalThresholdingClassification
+        {
+            get
+            {
+                return _bernsenLocalThresholdingClassification ?? (_bernsenLocalThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213832", "Bernsen local thresholding",
+                                                                         "Performs raster thresholding based on local mean value.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -65,7 +87,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.LowerThresholdBoundary,
                                                                          SpectralOperationParameters.UpperThresholdBoundary,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -81,6 +104,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "For density slicing the range of grayscale levels is divided into intervals, with each interval assigned to one of a few discrete colors – this is in contrast to pseudo color, which uses a continuous color scale.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.DensitySlicingThresholds));
             }
         }
@@ -97,7 +121,45 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Creates a monochrome raster by separating values based on the specified selector function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.SpectralPredicate,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Meanthresh local thresholding.
+        /// </summary>
+        public static SpectralOperationMethod MeanthreshLocalThresholdingClassification
+        {
+            get
+            {
+                return _meanthreshLocalThresholdingClassification ?? (_meanthreshLocalThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213833", "Meanthresh local thresholding",
+                                                                         "Performs raster thresholding based on band mean value.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         RasterFormat.Integer,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
+                                                                         SpectralOperationParameters.MeanthreshThresholdingConstant));
+            }
+        }
+
+        /// <summary>
+        /// Niblack local thresholding.
+        /// </summary>
+        public static SpectralOperationMethod NiblackLocalThresholdingClassification
+        {
+            get
+            {
+                return _niblackLocalThresholdingClassification ?? (_niblackLocalThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213836", "Niblack local thresholding",
+                                                                         "Performs raster thresholding based on local mean and standard deviation value.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         RasterFormat.Integer,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
+                                                                         SpectralOperationParameters.StandardDeviationWeight,
+                                                                         SpectralOperationParameters.ThresholdingWindowRadius));
             }
         }
 
@@ -113,7 +175,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
                                                                          RasterFormat.Integer,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -161,6 +224,26 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.SegmentCollection,
                                                                          SpectralOperationParameters.ClassificationReferenceGeometry));
+            }
+        }
+
+        /// <summary>
+        /// Sauvola local thresholding.
+        /// </summary>
+        public static SpectralOperationMethod SauvolaLocalThresholdingClassification
+        {
+            get
+            {
+                return _sauvolaLocalThresholdingClassification ?? (_sauvolaLocalThresholdingClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213837", "Sauvola local thresholding",
+                                                                         "Local adaptive thresholding based on The Niblack algroithm.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         RasterFormat.Integer,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
+                                                                         SpectralOperationParameters.StandardDeviationRange,
+                                                                         SpectralOperationParameters.StandardDeviationWeight,
+                                                                         SpectralOperationParameters.ThresholdingWindowRadius));
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Operation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -120,13 +120,17 @@ namespace ELTE.AEGIS.Operations
         /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
+        /// The source is invalid.
+        /// or
+        /// The target is invalid.
+        /// or
+        /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// or
         /// The parameters do not contain a required parameter value.
         /// or
         /// The type of a parameter does not match the type specified by the method.
         /// or
-        /// The parameter value does not satisfy the conditions of the parameter.
-        /// or
-        /// The specified source and result are the same objects, but the method does not support in-place operations.
+        /// A parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         protected Operation(SourceType source, ResultType target, OperationMethod method, IDictionary<OperationParameter, Object> parameters)
         {
@@ -159,7 +163,7 @@ namespace ELTE.AEGIS.Operations
 
                         // check parameter value
                         if (!parameter.IsValid(parameters[parameter]))
-                            throw new ArgumentException("The parameter value (" + parameter.Name + ") does not satisfy the conditions of the parameter.", "parameters");
+                            throw new ArgumentException("A parameter value (" + parameter.Name + ") does not satisfy the conditions of the parameter.", "parameters");
                     }
                 }
             }
