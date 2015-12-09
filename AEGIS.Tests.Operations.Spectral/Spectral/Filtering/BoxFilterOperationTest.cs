@@ -1,4 +1,4 @@
-﻿/// <copyright file="BoxFilterTranformationTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="BoxFilterOperationTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -29,10 +29,10 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for the <see cref="BoxFilterTranformation" /> class.
+    /// Test fixture for the <see cref="BoxFilterOperation" /> class.
     /// </summary>
     [TestFixture]
-    public class BoxFilterTransformationTest
+    public class BoxFilterOperationTest
     {
         #region Private fields
 
@@ -79,7 +79,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         /// Tests operation execution.
         /// </summary>
         [Test]
-        public void BoxFilterTransformationExecuteTest()
+        public void BoxFilterOperationExecuteTest()
         {
             IGeometryFactory factory = new GeometryFactory();
 

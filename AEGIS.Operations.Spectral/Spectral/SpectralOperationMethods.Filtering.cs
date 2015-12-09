@@ -24,8 +24,10 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         private static SpectralOperationMethod _boxFilter;
         private static SpectralOperationMethod _customFilter;
-        private static SpectralOperationMethod _gaussianBlurFilter;
         private static SpectralOperationMethod _discreteLaplaceFilter;
+        private static SpectralOperationMethod _gaborFilter;
+        private static SpectralOperationMethod _gaussianBlurFilter;
+        private static SpectralOperationMethod _kuwaharaFilter;
         private static SpectralOperationMethod _maximumFilter;
         private static SpectralOperationMethod _meanRemovalFilter;
         private static SpectralOperationMethod _medianFilter;
@@ -53,7 +55,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -72,25 +75,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.FilterKernel,
                                                                          SpectralOperationParameters.FilterOffset,
                                                                          SpectralOperationParameters.FilterFactor,
-                                                                         SpectralOperationParameters.BandIndex));
-            }
-        }
-
-        /// <summary>
-        /// Gaussian blur filter.
-        /// </summary>
-        public static SpectralOperationMethod GaussianBlurFilter
-        {
-            get
-            {
-                return _gaussianBlurFilter ?? (_gaussianBlurFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213204", "Gaussian blur filter",
-                                                                         "A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandFocal,
-                                                                         ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.GaussianStandardDeviation));
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -107,7 +93,65 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Gaussian blur filter.
+        /// </summary>
+        public static SpectralOperationMethod GaussianBlurFilter
+        {
+            get
+            {
+                return _gaussianBlurFilter ?? (_gaussianBlurFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213204", "Gaussian blur filter",
+                                                                         "A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
+                                                                         SpectralOperationParameters.FilterRadius,
+                                                                         SpectralOperationParameters.GaussianStandardDeviation));
+            }
+        }
+
+        /// <summary>
+        /// Gabor filter.
+        /// </summary>
+        public static SpectralOperationMethod GaborFilter
+        {
+            get
+            {
+                return _gaborFilter ?? (_gaborFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::201380", "Gabor filter",
+                                                                         "Returns with a real component of Gabor filter impulse answer.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.FilterOrientation,
+                                                                         SpectralOperationParameters.FilterPhaseOffset,
+                                                                         SpectralOperationParameters.FilterSpatialAspectRatio,
+                                                                         SpectralOperationParameters.FilterStandardDeviation,
+                                                                         SpectralOperationParameters.FilterWavelength));
+            }
+        }
+
+        /// <summary>
+        /// Kuwahara filter.
+        /// </summary>
+        public static SpectralOperationMethod KuwaharaFilter
+        {
+            get
+            {
+                return _kuwaharaFilter ?? (_kuwaharaFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213218", "Kuwahara filter",
+                                                                         "The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.FilterRadius,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -124,7 +168,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -141,7 +186,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -158,7 +204,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterWeight,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -175,7 +222,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -191,7 +239,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The Prewitt filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -207,7 +256,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The Roberts filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -223,7 +273,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The Sobel filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
@@ -240,6 +291,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.SharpeningAmount,
                                                                          SpectralOperationParameters.SharpeningRadius,
                                                                          SpectralOperationParameters.SharpeningThreshold));
@@ -259,7 +311,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                         false, SpectralOperationDomain.BandFocal,
                                                                         ExecutionMode.OutPlace,
                                                                         SpectralOperationParameters.FilterKernel,
-                                                                        SpectralOperationParameters.BandIndex));
+                                                                        SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 

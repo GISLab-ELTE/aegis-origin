@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationParameters.Filtering.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -29,7 +29,12 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _filterFactor;
         private static OperationParameter _filterKernel;
         private static OperationParameter _filterOffset;
+        private static OperationParameter _filterOrientation;
+        private static OperationParameter _filterPhaseOffset;
         private static OperationParameter _filterRadius;
+        private static OperationParameter _filterSpatialAspectRatio;
+        private static OperationParameter _filterStandardDeviation;
+        private static OperationParameter _filterWavelength;
         private static OperationParameter _filterWeight;
         private static OperationParameter _gaussianStandardDeviation;
         private static OperationParameter _sharpeningAmount;
@@ -86,6 +91,36 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// The orientation of the filter.
+        /// </summary>
+        public static OperationParameter FilterOrientation
+        {
+            get
+            {
+                return _filterOrientation ?? (_filterOrientation =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223284", "Filter orientation",
+                                                                       "The orientation of the filter.", null, 
+                                                                       0,
+                                                                       Conditions.IsBetween(0, 360)));
+            }
+        }
+
+        /// <summary>
+        /// The phase offset of the filter.
+        /// </summary>
+        public static OperationParameter FilterPhaseOffset
+        {
+            get
+            {
+                return _filterPhaseOffset ?? (_filterPhaseOffset =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223283", "Filter phase offset",
+                                                                       "The phase offset of the filter.", null, 
+                                                                       0,
+                                                                       Conditions.IsBetween(-180, 180)));
+            }
+        }
+
+        /// <summary>
         /// Radius of the filter.
         /// </summary>
         public static OperationParameter FilterRadius
@@ -98,6 +133,49 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                       1,
                                                                       Conditions.IsPositive())
                     );
+            }
+        }
+
+        /// <summary>
+        /// The spatial aspect ratio of the filter.
+        /// </summary>
+        public static OperationParameter FilterSpatialAspectRatio
+        {
+            get
+            {
+                return _filterSpatialAspectRatio ?? (_filterSpatialAspectRatio =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223211", "Filter spatial aspect ratio",
+                                                                       "The spatial aspect ratio of the filter.", null, 0));
+            }
+        }
+
+        /// <summary>
+        /// The standard deviation of the filter.
+        /// </summary>
+        public static OperationParameter FilterStandardDeviation
+        {
+            get
+            {
+                return _filterStandardDeviation ?? (_filterStandardDeviation =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223281", "Filter standard deviation",
+                                                                       "The standard deviation of the filter.", null, 
+                                                                       0,
+                                                                       Conditions.IsNotNegative()));
+            }
+        }
+
+        /// <summary>
+        /// Filter wavelength.
+        /// </summary>
+        public static OperationParameter FilterWavelength
+        {
+            get
+            {
+                return _filterWavelength ?? (_filterWavelength =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223282", "Filter wavelength",
+                                                                       "The wavelength of the sinusoidal factor.", null, 
+                                                                       2.0, 
+                                                                       Conditions.IsGreaterThanOrEqualTo(2)));
             }
         }
 

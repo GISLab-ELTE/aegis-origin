@@ -1,4 +1,4 @@
-﻿/// <copyright file="GaussianBlurFilterTransformationTest.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="GaussianBlurFilterOperationTest.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -28,10 +28,10 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Test fixture for the <see cref="GaussianBlurFilter" /> class.
+    /// Test fixture for the <see cref="GaussianBlurFilterOperation" /> class.
     /// </summary>
     [TestFixture]
-    public class GaussianBlurFilterTransformationTest
+    public class GaussianBlurFilterOperationTest
     {
         #region Private fields
 
@@ -61,13 +61,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                              .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
+                                              .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (Byte)(rowIndex * columnIndex * bandIndex)));
             _rasterMock.Setup(raster => raster.GetNearestValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                              .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
+                                              .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) =>  (Byte)(rowIndex * columnIndex * bandIndex)));
             _rasterMock.Setup(raster => raster.GetFloatValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                              .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => (rowIndex * columnIndex * bandIndex + 256) % 256));
+                                              .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => rowIndex * columnIndex * bandIndex));
             _rasterMock.Setup(raster => raster.GetNearestFloatValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
-                                              .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => (rowIndex * columnIndex * bandIndex + 256) % 256));
+                                              .Returns(new Func<Int32, Int32, Int32, Double>((rowIndex, columnIndex, bandIndex) => rowIndex * columnIndex * bandIndex));
         }
 
         #endregion
@@ -78,7 +78,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         /// Tests operation execution.
         /// </summary>
         [Test]
-        public void GaussianBlurFilterTransformationExecuteTest()
+        public void GaussianBlurFilterOperationExecuteTest()
         {
             IGeometryFactory factory = new GeometryFactory();
 
@@ -93,10 +93,13 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(operation.Result.Raster.RadiometricResolutions));
             Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
+            Double defaultFilterFactor = FilterFactory.CreateGaussianFilter((Int32)SpectralOperationParameters.FilterRadius.DefaultValue).Kernel.Sum();
+
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
-                AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex, (Int32)SpectralOperationParameters.FilterRadius.DefaultValue, 
-                                    FilterFactory.CreateGaussianFilter((Int32)SpectralOperationParameters.FilterRadius.DefaultValue).Kernel.Sum());
+                AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex, 
+                                    (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
+                                    defaultFilterFactor);
             }
 
 
@@ -136,7 +139,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
 
             AssertResultForBand(_rasterMock.Object, 1, operation.Result.Raster, 0, (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
-                                FilterFactory.CreateGaussianFilter((Int32)SpectralOperationParameters.FilterRadius.DefaultValue).Kernel.Sum());
+                                defaultFilterFactor);
 
 
             // floating values with default parameters
@@ -148,8 +151,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
 
             for (Int32 bandIndex = 0; bandIndex < operation.Result.Raster.NumberOfBands; bandIndex++)
             {
-                AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex, (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
-                                    FilterFactory.CreateGaussianFilter((Int32)SpectralOperationParameters.FilterRadius.DefaultValue).Kernel.Sum());
+                AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex, 
+                                    (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
+                                    defaultFilterFactor);
             }
         }
 

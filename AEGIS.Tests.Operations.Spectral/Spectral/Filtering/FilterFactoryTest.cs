@@ -1,9 +1,9 @@
 ﻿/// <copyright file="FilterFactoryTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -30,9 +30,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         #region Test methods
 
         /// <summary>
-        /// Test method for box filter creation.
+        /// Tests box filter creation.
         /// </summary>
-        [TestCase]
+        [Test]
         public void FilterFactoryCreateBoxFilterTest()
         {
             // test case 1: bad radius
@@ -48,9 +48,9 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         }
 
         /// <summary>
-        /// Test method for Gaussian filter creation.
+        /// Tests Gaussian filter creation.
         /// </summary>
-        [TestCase]
+        [Test]
         public void FilterFactoryCreateGaussianFilterTest()
         {
             // test case 1: bad radius
@@ -66,6 +66,24 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
             for (Int32 rowIndex = 0; rowIndex < gaussianFilter.Kernel.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < gaussianFilter.Kernel.NumberOfColumns; columnIndex++)
                     Assert.AreEqual(gaussianFilter.Kernel[rowIndex, columnIndex], 1 / (2 * Math.PI) * Math.Exp(-(Calculator.Square(rowIndex - 1) + Calculator.Square(columnIndex - 1)) / 2), 0.000001);
+        }
+
+        /// <summary>
+        /// Tests Gabor filter creation.
+        /// </summary>
+        [Test]
+        public void FilterFactoryCreateGaborFilterTest()
+        {
+            // test case 1: bad radius
+            Assert.Throws<ArgumentOutOfRangeException>(() => FilterFactory.CreateGaborFilter(0, 3, 3, 3, 3, 3));
+
+            // test case 1: good radius
+
+            Filter gaborFilter = FilterFactory.CreateGaborFilter(1, 0.5, 3.0, 180, 90, 1);
+
+            Assert.AreEqual(gaborFilter.Radius, 1);
+            Assert.AreEqual(gaborFilter.Factor, gaborFilter.Kernel.Sum());
+            Assert.AreEqual(gaborFilter.Offset, 0);
         }
 
         #endregion

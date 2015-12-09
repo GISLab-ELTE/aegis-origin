@@ -83,10 +83,16 @@
     <Compile Include="Spectral\Filtering\BoxFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\CustomFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\DicreteLaplaceFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\GaborFilterOperation.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Spectral\Filtering\GradientFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\Filter.cs" />
     <Compile Include="Spectral\Filtering\FilterFactory.cs" />
     <Compile Include="Spectral\Filtering\GaussianBlurFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\KuwaharaFilterOperation.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Spectral\Filtering\MeanRemovalFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\MedianFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\PrewittFilterOperation.cs" />

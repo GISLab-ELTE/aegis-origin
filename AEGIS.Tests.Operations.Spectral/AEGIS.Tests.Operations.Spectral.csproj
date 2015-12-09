@@ -55,10 +55,12 @@
     <Compile Include="Spectral\Classification\SauvolaLocalThresholdingClassificationTest.cs" />
     <Compile Include="Spectral\Common\HistogramEqualizationTest.cs" />
     <Compile Include="Spectral\Common\SpectralInversionTest.cs" />
-    <Compile Include="Spectral\Filtering\BoxFilterTransformationTest.cs" />
+    <Compile Include="Spectral\Filtering\BoxFilterOperationTest.cs" />
     <Compile Include="Spectral\Filtering\FilterFactoryTest.cs" />
     <Compile Include="Spectral\Filtering\FilterTest.cs" />
-    <Compile Include="Spectral\Filtering\GaussianBlurFilterTransformationTest.cs" />
+    <Compile Include="Spectral\Filtering\GaborFilterOperationTest.cs" />
+    <Compile Include="Spectral\Filtering\GaussianBlurFilterOperationTest.cs" />
+    <Compile Include="Spectral\Filtering\KuwaharaFilterOperationTest.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingTest.cs" />
   </ItemGroup>
   <ItemGroup>
