@@ -79,6 +79,7 @@
     <Compile Include="Algorithms\WindingNumberAlgorithmTest.cs" />
     <Compile Include="Collections\DisjointSetForestTest.cs" />
     <Compile Include="Collections\HeapTest.cs" />
+    <Compile Include="Collections\MultiValueDictionaryTest.cs" />
     <Compile Include="Collections\ReadOnlySetTest.cs" />
     <Compile Include="Collections\SearchTree\AvlTreeTest.cs" />
     <Compile Include="Collections\SearchTree\BinarySearchTreeTest.cs" />

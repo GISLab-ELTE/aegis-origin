@@ -80,6 +80,7 @@
     <Compile Include="BasicPolygon.cs" />
     <Compile Include="Collections\DisjointSetForest.cs" />
     <Compile Include="Collections\IDisjointSet.cs" />
+    <Compile Include="Collections\MultiValueDictionary.cs" />
     <Compile Include="Collections\ReadOnlySet.cs" />
     <Compile Include="Collections\SearchTree\BTree.cs" />
     <Compile Include="Collections\SparseArray.cs" />
