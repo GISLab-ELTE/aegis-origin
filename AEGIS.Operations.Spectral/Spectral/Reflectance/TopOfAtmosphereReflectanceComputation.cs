@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// <summary>
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries.
     /// </summary>
-    public abstract class TopOfAtmosphereReflectanceComputation : SpectralTransformation
+    public abstract class TopOfAtmosphereReflectanceComputation : PerBandSpectralTransformation
     {
         #region Constructors
 

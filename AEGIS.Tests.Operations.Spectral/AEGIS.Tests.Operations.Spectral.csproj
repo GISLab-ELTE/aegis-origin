@@ -53,7 +53,9 @@
     <Compile Include="Spectral\Classification\MeanthreshLocalThresholdingTest.cs" />
     <Compile Include="Spectral\Classification\NiblackLocalThresholdingClassificationTest.cs" />
     <Compile Include="Spectral\Classification\SauvolaLocalThresholdingClassificationTest.cs" />
+    <Compile Include="Spectral\Common\ExponentialTransformationTest.cs" />
     <Compile Include="Spectral\Common\HistogramEqualizationTest.cs" />
+    <Compile Include="Spectral\Common\LogarithmicTransformationTest.cs" />
     <Compile Include="Spectral\Common\SpectralInversionTest.cs" />
     <Compile Include="Spectral\Filtering\BoxFilterOperationTest.cs" />
     <Compile Include="Spectral\Filtering\FilterFactoryTest.cs" />

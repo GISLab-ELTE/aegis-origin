@@ -86,11 +86,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Private static fields
 
         private static SpectralOperationMethod _contrastLimitedAdaptingHistogramEqualization;
+        private static SpectralOperationMethod _exponentialTransformation;
         private static SpectralOperationMethod _gammaCorrection;
         private static SpectralOperationMethod _histogramEqualization;
         private static SpectralOperationMethod _histogramSpecification;
         private static SpectralOperationMethod _histogramMatching;
         private static SpectralOperationMethod _inverseGammaCorrection;
+        private static SpectralOperationMethod _logarithmicTransformation;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
@@ -112,6 +114,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _contrastLimitedAdaptingHistogramEqualization ?? (_contrastLimitedAdaptingHistogramEqualization =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213133", "Contrast limited adapting histogram equalization",
                                                                          "Contrast limited adapting histogram equalization (CLAHE) differs from ordinary adaptive histogram equalization in its contrast limiting.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Exponential spectral transformation.
+        /// </summary>
+        public static SpectralOperationMethod ExponentialTransformation
+        {
+            get
+            {
+                return _exponentialTransformation ?? (_exponentialTransformation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213107", "Exponential spectral transformation.",
+                                                                         "Exponential spectral transformation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));
@@ -203,6 +221,22 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Logarithmic spectral transformation.
+        /// </summary>
+        public static SpectralOperationMethod LogarithmicTransformation
+        {
+            get
+            {
+                return _logarithmicTransformation ?? (_logarithmicTransformation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213108", "Logarithmic spectral transformation",
+                                                                         "Logarithmical spectral transformation.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
         /// Saturating contrast enhancement.
         /// </summary>
         public static SpectralOperationMethod SaturatingContrastEnhancement
@@ -243,8 +277,8 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _spectralResampling ?? (_spectralResampling =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213301", "Spectral resampling",
-                                                                         "Resamples spectral values to specified resolution. Resampling of th raster is performed using a predefined algorithm.", null, "1.0.0",
-                                                                         true, SpectralOperationDomain.BandFocal,
+                                                                         "Resamples spectral values to specified resolution. Resampling of the raster is performed using a predefined algorithm.", null, "1.0.0",
+                                                                         true, SpectralOperationDomain.Local,
                                                                          SpectralOperationParameters.NumberOfRows,
                                                                          SpectralOperationParameters.NumberOfColumns,
                                                                          SpectralOperationParameters.SourceColumnCount,
@@ -265,7 +299,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _spectralTranslation ?? (_spectralTranslation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213102", "Spectral translation",
                                                                          "The affine translation of spectral values.", null, "1.0.0",
-                                                                         true, SpectralOperationDomain.Local,
+                                                                         true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.SpectralOffset,
                                                                          SpectralOperationParameters.SpectralFactor,
                                                                          SpectralOperationParameters.BandIndex,
@@ -299,7 +333,9 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213461", "Top of atmosphere reflectance computation",
                                                                          "Top-of-atmosphere reflectance (or TOA reflectance) is the reflectance measured by a space-based sensor flying higher than the earth's atmosphere.", 
                                                                          new String[] { "ToA reflectance computation", "ToAref computation" }, "1.0.0",
-                                                                         true, SpectralOperationDomain.Local));
+                                                                         true, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
