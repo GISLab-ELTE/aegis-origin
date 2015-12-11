@@ -90,6 +90,53 @@ namespace ELTE.AEGIS
             return new ReadOnlySet<T>(collection);
         }
 
+        /// <summary>
+        /// Returns the zero-based index of the first occurrence of the element that matches the defined predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="match">The condition of the element to search for.</param>
+        /// <returns>The zero-based index of the first occurrence of the element that matches the defined predicate.</returns>
+        public static Int32 FindIndex<T>(this IEnumerable<T> collection, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            Int32 index = 0;
+            foreach (T item in collection)
+            {
+                if (match(item))
+                    return index;
+                index++;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Returns the zero-based indices of the elements that match the defined predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="match">The condition of the element to search for.</param>
+        /// <returns>The zero-based indices of the elements that match the defined predicate.</returns>
+        public static IList<Int32> FindIndices<T>(this IEnumerable<T> collection, Predicate<T> match)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            IList<Int32> indices = new List<Int32>();
+
+            Int32 index = 0;
+            foreach (T item in collection)
+            {
+                if (match(item))
+                    indices.Add(index);
+                index++;
+            }
+
+            return indices;
+        }
+
         #endregion
     }
 }
