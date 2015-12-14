@@ -1,4 +1,4 @@
-﻿/// <copyright file="ErosionMathematicalMorphology.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="MorphologicalErosionOperation.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Enhancement
     /// <summary>
     /// Represents the erosion morphological operation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213291", "Morphological erosion operation")]
+    [OperationMethodImplementation("AEGIS::251601", "Morphological erosion operation")]
     public class MorphologicalErosionOperation: PerBandSpectralTransformation
     {
         #region Private fields

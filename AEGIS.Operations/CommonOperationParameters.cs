@@ -87,6 +87,7 @@ namespace ELTE.AEGIS.Operations
 
         private static OperationParameter _geometryFactory;
         private static OperationParameter _metadataPreservation;
+        private static OperationParameter _numberOfIterations;
         private static OperationParameter _numberOfParts;
         private static OperationParameter _overlapMargin;
 
@@ -102,10 +103,9 @@ namespace ELTE.AEGIS.Operations
             get
             {
                 return _geometryFactory ?? (_geometryFactory =
-                    OperationParameter.CreateOptionalParameter<IGeometryFactory>(
-                        "221001", "Geometry factory",
-                        "The factory used for producing resulting geometry instances.", null,
-                        (IGeometryFactory)null
+                    OperationParameter.CreateOptionalParameter<IGeometryFactory>("AEGIS::301001", "Geometry factory",
+                                                                                 "The factory used for producing resulting geometry instances.", null,
+                                                                                 (IGeometryFactory)null
                     ));
             }
         }
@@ -118,11 +118,24 @@ namespace ELTE.AEGIS.Operations
             get
             {
                 return _metadataPreservation ?? (_metadataPreservation =
-                    OperationParameter.CreateOptionalParameter<Boolean>(
-                        "AEGIS::221005", "Metadata preservation",
-                        "Indicates whether the metadata should be perserved suring transformation.", null,
-                        false
+                    OperationParameter.CreateOptionalParameter<Boolean>("AEGIS::301005", "Metadata preservation",
+                                                                        "Indicates whether the metadata should be perserved suring transformation.", null,
+                                                                        false
                     ));
+            }
+        }
+
+        /// <summary>
+        /// Number of iterations.
+        /// </summary>
+        public static OperationParameter NumberOfIterations
+        {
+            get
+            {
+                return _numberOfIterations ?? (_numberOfIterations =
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::301109", "Number of iterations",
+                                                                      "The number of iterations for an iterative algorithm.", null)
+                );
             }
         }
 
@@ -134,11 +147,10 @@ namespace ELTE.AEGIS.Operations
             get
             {
                 return _numberOfParts ?? (_numberOfParts =
-                    OperationParameter.CreateOptionalParameter<Int32>(
-                        "AEGIS::221561", "Number of parts",
-                        "The number of parts to create during partitioning.", null,
-                        1,
-                        Conditions.IsPositive()
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::301561", "Number of parts",
+                                                                      "The number of parts to create during partitioning.", null,
+                                                                      1,
+                                                                      Conditions.IsPositive()
                     ));
             }
         }
@@ -151,11 +163,10 @@ namespace ELTE.AEGIS.Operations
             get
             {
                 return _overlapMargin ?? (_overlapMargin =
-                    OperationParameter.CreateOptionalParameter<Double>(
-                        "AEGIS::221575", "Overlap margin",
-                        "The margin by which the individual parts should overlap after partitiining.", null,
-                        0,
-                        Conditions.IsNotNegative()
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::301575", "Overlap margin",
+                                                                       "The margin by which the individual parts should overlap after partitiining.", null,
+                                                                       0,
+                                                                       Conditions.IsNotNegative()
                     ));
             }
         }

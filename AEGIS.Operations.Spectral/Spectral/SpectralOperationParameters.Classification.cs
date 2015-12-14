@@ -31,7 +31,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _classificationReferenceGeometry;
         private static OperationParameter _classificationSegmentationMethod;
         private static OperationParameter _classificationSegmentationType;
-        private static OperationParameter _classificationStandardDeviation;
         private static OperationParameter _classificationValidationGeometry;
         private static OperationParameter _colorPalette;
         private static OperationParameter _densitySlicingThresholds;
@@ -55,7 +54,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationClusteringMethod ?? (_classificationClusteringMethod =
-                    OperationParameter.CreateOptionalParameter<OperationMethod>("AEGIS::213851", "Clustering method of the classification",
+                    OperationParameter.CreateOptionalParameter<OperationMethod>("AEGIS::354121", "Clustering method of the classification",
                                                                                 "The clustering method used for creating the clusters during thematic classification.", null,
                                                                                 (OperationMethod)null)
                 );
@@ -70,7 +69,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationClusteringType ?? (_classificationClusteringType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::213852", "Clustering type of the classification operation",
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::354122", "Clustering type of the classification operation",
                                                                      "The clustering operation used for creating the clusters during thematic classification.", null,
                                                                      typeof(IsodataClustering),
                                                                      Conditions.Inherits<SpectralClustering>())
@@ -86,7 +85,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationReferenceGeometry ?? (_classificationReferenceGeometry =
-                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::213850", "Reference spectral geometry of the classification",
+                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::354150", "Reference spectral geometry of the classification",
                                                                                   "The pre-classified spectral geometry that serves as a reference area for classification.", null)
                 );
             }
@@ -100,7 +99,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationSegmentationMethod ?? (_classificationSegmentationMethod =
-                    OperationParameter.CreateOptionalParameter<OperationMethod>("AEGIS::213854", "Segmentation method of the classification",
+                    OperationParameter.CreateOptionalParameter<OperationMethod>("AEGIS::354124", "Segmentation method of the classification",
                                                                                 "The segmentation method used for creating the initial segments during thematic classification.", null,
                                                                                 (OperationMethod)null)
                 );
@@ -115,24 +114,10 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationSegmentationType ?? (_classificationSegmentationType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::213855", "Segmentation type of the classification operation",
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::354125", "Segmentation type of the classification operation",
                                                                      "The segmentation operation used for creating the initial segments during thematic classification.", null,
                                                                      typeof(SequentialCouplingSegmentation),
                                                                      Conditions.Inherits<SpectralSegmentation>())
-                );
-            }
-        }
-
-        /// <summary>
-        /// Standard deviation of the classification operation.
-        /// </summary>
-        public static OperationParameter ClassificationStandardDeviation
-        {
-            get
-            {
-                return _classificationStandardDeviation ?? (_classificationStandardDeviation =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::213857", "Standard deviation of the classification operation",
-                                                                     "The standard deviation value used for the implementation of the Niblack local thresholding classification.", null)
                 );
             }
         }
@@ -145,7 +130,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _classificationValidationGeometry ?? (_classificationValidationGeometry =
-                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::213860", "Validation spectral geometry of the classification",
+                    OperationParameter.CreateRequiredParameter<ISpectralGeometry>("AEGIS::354160", "Validation spectral geometry of the classification",
                                                                                   "The pre-classified spectral geometry that serves as validation of classification results.", null)
                 );
             }
@@ -173,7 +158,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _densitySlicingThresholds ?? (_densitySlicingThresholds =
-                    OperationParameter.CreateOptionalParameter<Double[]>("AEGIS::223819", "Density slicing thresholds",
+                    OperationParameter.CreateOptionalParameter<Double[]>("AEGIS::354920", "Density slicing thresholds",
                                                                          "The array of threshold values used for dencity slicing.", null,
                                                                          (Double[])null)
                     );
@@ -188,7 +173,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _lowerThresholdBoundary ?? (_lowerThresholdBoundary =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS:223821", "Lower threshold boundary",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS:354801", "Lower threshold boundary",
                                                                        "The lower threshold boundary value for creating a monochrome image.", null)
                 );
 
@@ -203,7 +188,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _meanthreshThresholdingConstant ?? (_meanthreshThresholdingConstant =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223826", "Meanthresh thresholding constant",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::354826", "Meanthresh thresholding constant",
                                                                        "Defines a constant which increases the resistance to noise of the Meanthresh algorithm.", null,
                                                                        0, Conditions.IsNotNegative()));
             }
@@ -217,7 +202,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _spectralPredicate ?? (_spectralPredicate =
-                    OperationParameter.CreateRequiredParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>("AEGIS::223800", "Spectral predicate",
+                    OperationParameter.CreateRequiredParameter<Func<IRaster, Int32, Int32, Int32, Boolean>>("AEGIS::354200", "Spectral predicate",
                                                                                                             "Represents a function that defines a set of criteria on the specified raster and determines whether the current value meets those criteria.", null)
                 );
             }
@@ -231,7 +216,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _standardDeviationRange ?? (_standardDeviationRange =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::213827", "Standard deviation range", "The range of the standard deviation used by Sauvola's algorithm.", null,
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::354830", "Standard deviation range", "The range of the standard deviation used by Sauvola's algorithm.", null,
                                                                        128,
                                                                        Conditions.IsGreaterThanOrEqualTo(1))
                 );
@@ -246,7 +231,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _standardDeviationWeight ?? (_standardDeviationWeight =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::213828", "Standard deviation weight",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::354831", "Standard deviation weight",
                                                                        "Determines the weight of the standard deviation for thresholding.", null,
                                                                        0.5, 
                                                                        Conditions.IsBetween(0, 1))
@@ -262,7 +247,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _thresholdingWindowRadius ?? (_thresholdingWindowRadius =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::213829", "Thresholding window radius", 
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::354820", "Thresholding window radius", 
                                                                       "The window radius of local thresholding operations.", null, 
                                                                       3, Conditions.IsPositive()));
             }
@@ -276,7 +261,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _upperThresholdBoundary ?? (_upperThresholdBoundary =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223822", "Upper threshold boundary",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:354802", "Upper threshold boundary",
                                                                        "The upper threshold boundary for creating a monochrome image.", null,
                                                                        Double.PositiveInfinity)
                 );

@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// <summary>
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries for Landsat TM7 images.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213461", "Top of atmosphere reflectance computation")]
+    [OperationMethodImplementation("AEGIS::255105", "Top of atmosphere reflectance computation")]
     public class LandsatTopOfAtmosphereReflectanceComputation : TopOfAtmosphereReflectanceComputation
     {
         #region Private fields

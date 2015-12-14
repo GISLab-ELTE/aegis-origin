@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _morphologicalStructuringElement ?? (_morphologicalStructuringElement =
-                    OperationParameter.CreateOptionalParameter<Matrix>("AEGIS::223291", "Morphological structuring element",
+                    OperationParameter.CreateOptionalParameter<Matrix>("AEGIS::350591", "Morphological structuring element",
                                                                       "The structuring element (matrix) used for mathematical morphology operations.", null,
                                                                       new Matrix (new Double[,] { { 0, 1, 0 }, { 1, 1, 1 }, { 0, 1, 0 } })));
             }

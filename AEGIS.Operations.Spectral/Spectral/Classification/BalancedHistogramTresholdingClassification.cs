@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BalancedHistogramTresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification using histogram balancing.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213826", "Balanced histogram thresholding")]
+    [OperationMethodImplementation("AEGIS::253126", "Balanced histogram thresholding")]
     public class BalancedHistogramTresholdingClassification : ThresholdingClassification
     {
         #region Constructors

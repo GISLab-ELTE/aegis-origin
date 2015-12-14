@@ -94,6 +94,34 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _gammaValue;
         private static OperationParameter _histogramMatchFunction;
         private static OperationParameter _histogramMatchValues;
+        private static OperationParameter _indexOf445nmBand;
+        private static OperationParameter _indexOf500nmBand;
+        private static OperationParameter _indexOf510nmBand;
+        private static OperationParameter _indexOf531nmBand;
+        private static OperationParameter _indexOf550nmBand;
+        private static OperationParameter _indexOf570nmBand;
+        private static OperationParameter _indexOf680nmBand;
+        private static OperationParameter _indexOf700nmBand;
+        private static OperationParameter _indexOf705nmBand;
+        private static OperationParameter _indexOf715nmBand;
+        private static OperationParameter _indexOf720nmBand;
+        private static OperationParameter _indexOf726nmBand;
+        private static OperationParameter _indexOf734nmBand;
+        private static OperationParameter _indexOf740nmBand;
+        private static OperationParameter _indexOf747nmBand;
+        private static OperationParameter _indexOf750nmBand;
+        private static OperationParameter _indexOf800nmBand;
+        private static OperationParameter _indexOf819nmBand;
+        private static OperationParameter _indexOf900nmBand;
+        private static OperationParameter _indexOf970nmBand;
+        private static OperationParameter _indexOf1510nmBand;
+        private static OperationParameter _indexOf1599nmBand;
+        private static OperationParameter _indexOf1649nmBand;
+        private static OperationParameter _indexOf1680nmBand;
+        private static OperationParameter _indexOf1754nmBand;
+        private static OperationParameter _indexOf2000nmBand;
+        private static OperationParameter _indexOf2100nmBand;
+        private static OperationParameter _indexOf2200nmBand;
         private static OperationParameter _indexOfBlueBand;
         private static OperationParameter _indexOfFarInfraredBand;
         private static OperationParameter _indexOfGreenBand;
@@ -108,8 +136,8 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _indexOfVioletBand;
         private static OperationParameter _indexOfVisibleBand;
         private static OperationParameter _indexOfYellowBand;
+        private static OperationParameter _indicesOfBandsBetween500nm600nm;
         private static OperationParameter _numberOfColumns;
-        private static OperationParameter _numberOfIterations;
         private static OperationParameter _numberOfRows;
         private static OperationParameter _rasterResamplingAlgorithm;
         private static OperationParameter _rasterResamplingAlgorithmType;
@@ -135,7 +163,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bandIndices ?? (_bandIndices =
-                    OperationParameter.CreateOptionalParameter<Int32[]>("AEGIS::223002", "Band indices",
+                    OperationParameter.CreateOptionalParameter<Int32[]>("AEGIS::350102", "Band indices",
                                                                         "The array of zero-based index of the band the operation should be executed on.", null,
                                                                         (Int32[])null)
                     );
@@ -150,7 +178,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bandIndex ?? (_bandIndex =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223001", "Band index",
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::350101", "Band index",
                                                                       "The zero-based index of the band the operation should be executed on.", null,
                                                                       Int32.MaxValue,
                                                                       Conditions.IsNotNegative())
@@ -166,7 +194,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gammaValue ?? (_gammaValue =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223104", "Gamma value",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::350204", "Gamma value",
                                                                        "The gamma value used for gamma correction.", null)
                 );
             }
@@ -180,7 +208,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _histogramMatchFunction ?? (_histogramMatchFunction =
-                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::223123", "Histogram match function",
+                    OperationParameter.CreateRequiredParameter<Func<Int32, Double>>("AEGIS::354123", "Histogram match function",
                                                                                     "The function that is matched against the current raster histogram.", null)
                     );
             }
@@ -194,9 +222,429 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _histogramMatchValues ?? (_histogramMatchValues =
-                    OperationParameter.CreateRequiredParameter<IList<Int32>>("AEGIS::223124", "Histogram match values.",
+                    OperationParameter.CreateRequiredParameter<IList<Int32>>("AEGIS::354124", "Histogram match values.",
                                                                              "The histrogram values which are matched against the current raster historgam.", null)
                     );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 445nm band.
+        /// </summary>
+        public static OperationParameter IndexOf445nmBand
+        {
+            get
+            {
+                return _indexOf445nmBand ?? (_indexOf445nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351445", "Index of the 445nm band",
+                                                                       "The zero-based index of the 445nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 500nm band.
+        /// </summary>
+        public static OperationParameter IndexOf500nmBand
+        {
+            get
+            {
+                return _indexOf500nmBand ?? (_indexOf500nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351500", "Index of the 500nm band",
+                                                                       "The zero-based index of the 500nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 510nm band.
+        /// </summary>
+        public static OperationParameter IndexOf510nmBand
+        {
+            get
+            {
+                return _indexOf510nmBand ?? (_indexOf510nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351510", "Index of the 510nm band",
+                                                                       "The zero-based index of the 510nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 531nm band.
+        /// </summary>
+        public static OperationParameter IndexOf531nmBand
+        {
+            get
+            {
+                return _indexOf531nmBand ?? (_indexOf531nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351531", "Index of the 531nm band",
+                                                                       "The zero-based index of the 531nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 550nm band.
+        /// </summary>
+        public static OperationParameter IndexOf550nmBand
+        {
+            get
+            {
+                return _indexOf550nmBand ?? (_indexOf550nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351550", "Index of the 550nm band",
+                                                                       "The zero-based index of the 550nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 570nm band.
+        /// </summary>
+        public static OperationParameter IndexOf570nmBand
+        {
+            get
+            {
+                return _indexOf570nmBand ?? (_indexOf570nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351570", "Index of the 570nm band",
+                                                                       "The zero-based index of the 570nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 680nm band.
+        /// </summary>
+        public static OperationParameter IndexOf680nmBand
+        {
+            get
+            {
+                return _indexOf680nmBand ?? (_indexOf680nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351680", "Index of the 680nm band",
+                                                                       "The zero-based index of the 680nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 700nm band.
+        /// </summary>
+        public static OperationParameter IndexOf700nmBand
+        {
+            get
+            {
+                return _indexOf700nmBand ?? (_indexOf700nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351700", "Index of the 700nm band",
+                                                                       "The zero-based index of the 700nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 705nm band.
+        /// </summary>
+        public static OperationParameter IndexOf705nmBand
+        {
+            get
+            {
+                return _indexOf705nmBand ?? (_indexOf705nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351705", "Index of the 705nm band",
+                                                                       "The zero-based index of the 705nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 715nm band.
+        /// </summary>
+        public static OperationParameter IndexOf715nmBand
+        {
+            get
+            {
+                return _indexOf715nmBand ?? (_indexOf715nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351715", "Index of the 715nm band",
+                                                                       "The zero-based index of the 715nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 720nm band.
+        /// </summary>
+        public static OperationParameter IndexOf720nmBand
+        {
+            get
+            {
+                return _indexOf720nmBand ?? (_indexOf720nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351720", "Index of the 720nm band",
+                                                                       "The zero-based index of the 720nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 726nm band.
+        /// </summary>
+        public static OperationParameter IndexOf726nmBand
+        {
+            get
+            {
+                return _indexOf726nmBand ?? (_indexOf726nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351726", "Index of the 726nm band",
+                                                                       "The zero-based index of the 726nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 734nm band.
+        /// </summary>
+        public static OperationParameter IndexOf734nmBand
+        {
+            get
+            {
+                return _indexOf734nmBand ?? (_indexOf734nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351734", "Index of the 734nm band",
+                                                                       "The zero-based index of the 734nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 740nm band.
+        /// </summary>
+        public static OperationParameter IndexOf740nmBand
+        {
+            get
+            {
+                return _indexOf740nmBand ?? (_indexOf740nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351740", "Index of the 740nm band",
+                                                                       "The zero-based index of the 740nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 747nm band.
+        /// </summary>
+        public static OperationParameter IndexOf747nmBand
+        {
+            get
+            {
+                return _indexOf747nmBand ?? (_indexOf747nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351747", "Index of the 747nm band",
+                                                                       "The zero-based index of the 747nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 750nm band.
+        /// </summary>
+        public static OperationParameter IndexOf750nmBand
+        {
+            get
+            {
+                return _indexOf750nmBand ?? (_indexOf750nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351750", "Index of the 750nm band",
+                                                                       "The zero-based index of the 750nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 800nm band.
+        /// </summary>
+        public static OperationParameter IndexOf800nmBand
+        {
+            get
+            {
+                return _indexOf800nmBand ?? (_indexOf800nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351800", "Index of the 800nm band",
+                                                                       "The zero-based index of the 800nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 819nm band.
+        /// </summary>
+        public static OperationParameter IndexOf819nmBand
+        {
+            get
+            {
+                return _indexOf819nmBand ?? (_indexOf819nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351819", "Index of the 819nm band",
+                                                                       "The zero-based index of the 819nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 900nm band.
+        /// </summary>
+        public static OperationParameter IndexOf900nmBand
+        {
+            get
+            {
+                return _indexOf900nmBand ?? (_indexOf900nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351900", "Index of the 900nm band",
+                                                                       "The zero-based index of the 900nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 970nm band.
+        /// </summary>
+        public static OperationParameter IndexOf970nmBand
+        {
+            get
+            {
+                return _indexOf970nmBand ?? (_indexOf970nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351970", "Index of the 970nm band",
+                                                                       "The zero-based index of the 970nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 1510nm band.
+        /// </summary>
+        public static OperationParameter IndexOf1510nmBand
+        {
+            get
+            {
+                return _indexOf1510nmBand ?? (_indexOf1510nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::352510", "Index of the 1510nm band",
+                                                                       "The zero-based index of the 1510nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 1599nm band.
+        /// </summary>
+        public static OperationParameter IndexOf1599nmBand
+        {
+            get
+            {
+                return _indexOf1599nmBand ?? (_indexOf1599nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::352599", "Index of the 1599nm band",
+                                                                       "The zero-based index of the 1599nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 1649nm band.
+        /// </summary>
+        public static OperationParameter IndexOf1649nmBand
+        {
+            get
+            {
+                return _indexOf1649nmBand ?? (_indexOf1649nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::352649", "Index of the 1649nm band",
+                                                                       "The zero-based index of the 1649nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 1680nm band.
+        /// </summary>
+        public static OperationParameter IndexOf1680nmBand
+        {
+            get
+            {
+                return _indexOf1680nmBand ?? (_indexOf1680nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::352680", "Index of the 1680nm band",
+                                                                       "The zero-based index of the 1680nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 1754nm band.
+        /// </summary>
+        public static OperationParameter IndexOf1754nmBand
+        {
+            get
+            {
+                return _indexOf1754nmBand ?? (_indexOf1754nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::353754", "Index of the 1754nm band",
+                                                                       "The zero-based index of the 1754nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 2000nm band.
+        /// </summary>
+        public static OperationParameter IndexOf2000nmBand
+        {
+            get
+            {
+                return _indexOf2000nmBand ?? (_indexOf2000nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::353000", "Index of the 2000nm band",
+                                                                       "The zero-based index of the 2000nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 2100nm band.
+        /// </summary>
+        public static OperationParameter IndexOf2100nmBand
+        {
+            get
+            {
+                return _indexOf2100nmBand ?? (_indexOf2100nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::353100", "Index of the 2100nm band",
+                                                                       "The zero-based index of the 2100nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Index of the 2200nm band.
+        /// </summary>
+        public static OperationParameter IndexOf2200nmBand
+        {
+            get
+            {
+                return _indexOf2200nmBand ?? (_indexOf2200nmBand =
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::353200", "Index of the 2200nm band",
+                                                                       "The zero-based index of the 2200nm band within the raster.", null,
+                                                                       Conditions.IsNotNegative())
+                );
             }
         }
 
@@ -208,7 +656,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfBlueBand ?? (_indexOfBlueBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223013", "Index of blue band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351023", "Index of blue band",
                                                                        "The zero-based index of the blue spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -223,7 +671,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfFarInfraredBand ?? (_indexOfFarInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223035", "Index of far infrared (FIR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351015", "Index of far infrared (FIR) band",
                                                                        "The zero-based index of the far infrared (FIR) spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -238,7 +686,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfGreenBand ?? (_indexOfGreenBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223012", "Index of green band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351022", "Index of green band",
                                                                        "The zero-based index of the green spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -253,7 +701,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfInfraredBand ?? (_indexOfInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223030", "Index of infrared (IR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351010", "Index of infrared (IR) band",
                                                                        "The zero-based index of the infrared (IR) spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -268,7 +716,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfLongWavelengthInfraredBand ?? (_indexOfLongWavelengthInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223034", "Index of Long-wavelength infrared (LWIR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351014", "Index of Long-wavelength infrared (LWIR) band",
                                                                        "The zero-based index of the Long-wavelength infrared (LWIR) spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -283,7 +731,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfMiddleWavelengthInfraredBand ?? (_indexOfMiddleWavelengthInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223033", "Index of Middle-wavelength infrared (MWIR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351013", "Index of Middle-wavelength infrared (MWIR) band",
                                                                        "The zero-based index of the Middle-wavelength infrared (MWIR) spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -298,7 +746,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfNearInfraredBand ?? (_indexOfNearInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223031", "Index of near infrared (NIR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351011", "Index of near infrared (NIR) band",
                                                                        "The zero-based index of the near infrared (NIR) spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -313,7 +761,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfOrangeBand ?? (_indexOfOrangeBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223014", "Index of orange band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351024", "Index of orange band",
                                                                        "The zero-based index of the orange spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -328,7 +776,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfRedBand ?? (_indexOfRedBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223011", "Index of red band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351021", "Index of red band",
                                                                        "The zero-based index of the red spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -343,7 +791,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfShortWavelengthInfraredBand ?? (_indexOfShortWavelengthInfraredBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223032", "Index of Short-wavelength infrared (SWIR) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351012", "Index of Short-wavelength infrared (SWIR) band",
                                                                        "The zero-based index of the Short-wavelength infrared (SWIR) spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -358,7 +806,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfUltravioletBand ?? (_indexOfUltravioletBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223020", "Index of ultraviolet (UV) band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351030", "Index of ultraviolet (UV) band",
                                                                        "The zero-based index of the ultraviolet (UV) spectral band within the raster.", null, 
                                                                        Conditions.IsNotNegative())
                 );
@@ -373,7 +821,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfVioletBand ?? (_indexOfVioletBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223016", "Index of violet band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351026", "Index of violet band",
                                                                        "The zero-based index of the violet spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -388,7 +836,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfVisibleBand ?? (_indexOfVisibleBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223010", "Index of visible band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351020", "Index of visible band",
                                                                        "The zero-based index of the visible spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -403,7 +851,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _indexOfYellowBand ?? (_indexOfYellowBand =
-                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::223015", "Index of yellow band",
+                    OperationParameter.CreateOptionalParameter<UInt32>("AEGIS::351025", "Index of yellow band",
                                                                        "The zero-based index of the yellow spectral band within the raster.", null,
                                                                        Conditions.IsNotNegative())
                 );
@@ -412,6 +860,21 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// Indices of bands between 500nm and 600nm.
+        /// </summary>
+        public static OperationParameter IndicesOfBandsBetween500nm600nm
+        {
+            get
+            {
+                return _indicesOfBandsBetween500nm600nm ?? (_indicesOfBandsBetween500nm600nm =
+                    OperationParameter.CreateOptionalParameter<UInt32[]>("AEGIS::355600", "Indices of bands between 500nm and 600nm",
+                                                                         "The zero-based indices of all bands with wavelength between 500nm and 600nm.", null,
+                                                                         Conditions.IsNotNegative())
+                );
+            }
+        }
+        
+        /// <summary>
         /// Number of columns.
         /// </summary>
         public static OperationParameter NumberOfColumns
@@ -419,25 +882,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _numberOfColumns ?? (_numberOfColumns =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223016", "Number of columns",
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::350106", "Number of columns",
                                                                       "The number of columns in the resulting image.", null,
                                                                       Conditions.IsPositive())
                 );
 
-            }
-        }
-
-        /// <summary>
-        /// Number of iterations.
-        /// </summary>
-        public static OperationParameter NumberOfIterations
-        {
-            get
-            {
-                return _numberOfIterations ?? (_numberOfIterations =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223009", "Number of iterations",
-                                                                      "The number of iterations for an iterative algorithm.", null)
-                );
             }
         }
 
@@ -449,7 +898,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _numberOfRows ?? (_numberOfRows =
-                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::223015", "Number of rows",
+                    OperationParameter.CreateRequiredParameter<Int32>("AEGIS::350107", "Number of rows",
                                                                       "The number of rows in the resulting image.", null,
                                                                       Conditions.IsPositive())
                 );
@@ -465,7 +914,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _rasterResamplingAlgorithm ?? (_rasterResamplingAlgorithm =
-                    OperationParameter.CreateOptionalParameter<RasterResamplingAlgorithm>("AEGIS::223382", "Raster resampling algorithm",
+                    OperationParameter.CreateOptionalParameter<RasterResamplingAlgorithm>("AEGIS::350382", "Raster resampling algorithm",
                                                                                           "The algroithm that performs the resampling of the raster.", null,
                                                                                           (RasterResamplingAlgorithm)null)
                 );
@@ -480,7 +929,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _rasterResamplingAlgorithmType ?? (_rasterResamplingAlgorithmType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223383", "Raster resampling algorithm type",
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::350383", "Raster resampling algorithm type",
                                                                      "The type of the algorithm that performs the resampling of the raster.", null,
                                                                      typeof(BilinearResamplingAlgorithm),
                                                                      Conditions.Inherits<RasterResamplingAlgorithm>())
@@ -496,7 +945,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _segmentCollection ?? (_segmentCollection =
-                    OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::213060", "Segment collection", "An enumerable collection of segments.", null)
+                    OperationParameter.CreateOptionalParameter<SegmentCollection>("AEGIS::354060", "Segment collection", "An enumerable collection of segments.", null)
                 );
             }
         }
@@ -509,7 +958,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sourceColumnCount ?? (_sourceColumnCount =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223484", "Source column count", "The number of columns taken from the source image.", null)
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::350361", "Source column count", "The number of columns taken from the source image.", null)
                 );
             }
         }
@@ -522,7 +971,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sourceColumnOffset ?? (_sourceColumnOffset =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223482", "Source column offset", "The offset of columns within the source image.", null, 0.0)
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::350363", "Source column offset", "The offset of columns within the source image.", null, 0.0)
                 );
             }
         }
@@ -535,7 +984,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sourceRowCount ?? (_sourceRowCount =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223483", "Source row count", "The number of rows taken from the source image.", null)
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::350362", "Source row count", "The number of rows taken from the source image.", null)
                 );
             }
         }
@@ -548,7 +997,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sourceRowOffset ?? (_sourceRowOffset =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223481", "Source row offset", "The offset of rows within the source image.", null, 0.0)
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::350364", "Source row offset", "The offset of rows within the source image.", null, 0.0)
                 );
             }
         }
@@ -561,7 +1010,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _spectralDistance ?? (_spectralDistance =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223412", "Spectral distance algorithm",
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::350212", "Spectral distance algorithm",
                                                                                  "The algorithm used for determining the distance of spectral values.", null, (SpectralDistance)null)
                 );
             }
@@ -575,8 +1024,9 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _spectralDistanceType ?? (_spectralDistanceType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223413", "Spectral distance type",
-                                                                     "The type used for determining the distance of spectral values.", null, (Type)null)
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::350213", "Spectral distance type",
+                                                                     "The type used for determining the distance of spectral values.", null, (Type)null, 
+                                                                     Conditions.Inherits<SpectralDistance>())
                 );
             }
         }
@@ -589,7 +1039,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _spectralFactor ?? (_spectralFactor =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223108", "Spectral factor",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:350208", "Spectral factor",
                                                                        "A factor by which all spectral values are multiplied.", null,
                                                                        1)
                 );
@@ -604,7 +1054,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _spectralOffset ?? (_spectralOffset =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:223107", "Spectral offset",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS:350207", "Spectral offset",
                                                                        "An offset by which the spectral values are changed.", null, 
                                                                        0)
                 );

@@ -13,11 +13,9 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Indexing
 {
@@ -27,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <remarks>
     /// The operation computes normalized difference indices vegetation (NDVI), soil (NDSI) and water (NDWI) in the specified order.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213511", "Normalized difference index (NDxI) computation")]
+    [OperationMethodImplementation("AEGIS::252011", "Normalized difference index (NDxI) computation")]
     public class NormalizedDifferenceIndexComputation : SpectralTransformation
     {
         #region Private fields

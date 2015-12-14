@@ -39,11 +39,11 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bestMergeBasedSegmentation ?? (_bestMergeBasedSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213610", "Best merge segmentation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254101", "Best merge segmentation",
                                                                          "Best merge segmentation chooses any two neighboring segments over the image if their contraction is optimal with respect to the threshold. The algorithm performs multiple iterations, until no merge can be performed, or until the interation number is reached.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.NumberOfIterations,
+                                                                         CommonOperationParameters.NumberOfIterations,
                                                                          SpectralOperationParameters.SegmentMergeThreshold,
                                                                          SpectralOperationParameters.SpectralDistanceAlgorithm,
                                                                          SpectralOperationParameters.SpectralDistanceType));
@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _isodataClustering ?? (_isodataClustering =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213701", "ISODATA clustering",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254210", "ISODATA clustering",
                                                                          "ISODATA clustering performes classification of spectral vectors in different clusters, by randomly initializing cluster centers, and then aligning these centers based on multispectral space properties. The initial number of cluster centers, and the distance thresdhold can be specified.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Global,
                                                                          ExecutionMode.OutPlace,
@@ -80,7 +80,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _graphBasedMergeSegmentation ?? (_graphBasedMergeSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213611", "Graph-based merge segmentation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254104", "Graph-based merge segmentation",
                                                                          "In graph-based merge segmentation, the image is represented in graph form. Edges are taken in the descending order of their weight, and it is decided whether the two segments belonging to the two end nodes can be contracted.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sequentialCouplingSegmentation ?? (_sequentialCouplingSegmentation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213614", "Sequential coupling segmentation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254120", "Sequential coupling segmentation",
                                                                          "Sequential linking deals with the statistical homogeneity of segments using an iteration of merging neighbouring cells in row-major order.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,

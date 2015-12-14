@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <remarks>
     /// Niblack local thresholding separates white and black pixels given the local mean and standard deviation for the current window.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213836", "Niblack local thresholding")]
+    [OperationMethodImplementation("AEGIS::253311", "Niblack local thresholding")]
     public class NiblackLocalThresholdingClassification : PerBandSpectralTransformation
     {
         #region Private fields

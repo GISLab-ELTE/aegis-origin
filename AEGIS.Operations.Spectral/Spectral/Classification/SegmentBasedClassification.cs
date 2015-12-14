@@ -1,5 +1,5 @@
-﻿/// <copyright file="SegmentClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+﻿/// <copyright file="SegmentBasedClassification.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,8 +24,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing spectral classification of segments.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213818", "Segment classification")]
-    public class SegmentClassification : SpectralTransformation
+    [OperationMethodImplementation("AEGIS::253018", "Segment based classification")]
+    public class SegmentBasedClassification : SpectralTransformation
     {
         #region Private fields
 
@@ -44,7 +44,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SegmentClassification" /> class.
+        /// Initializes a new instance of the <see cref="SegmentBasedClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -64,13 +64,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        public SegmentClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
+        public SegmentBasedClassification(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SegmentClassification" /> class.
+        /// Initializes a new instance of the <see cref="SegmentBasedClassification" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -93,8 +93,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        public SegmentClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
-            : base(source, target, SpectralOperationMethods.SegmentClassification, parameters)
+        public SegmentBasedClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
+            : base(source, target, SpectralOperationMethods.SegmentBasedClassification, parameters)
         {
             _segmentCollection = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
         }

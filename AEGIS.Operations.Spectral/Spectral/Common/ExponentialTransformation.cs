@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents an exponential spectral transformation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213107", "Exponential spectral transformation.")]
+    [OperationMethodImplementation("AEGIS::250107", "Exponential spectral transformation.")]
     public class ExponentialTransformation : PerBandSpectralTransformation
     {
         #region Constructors

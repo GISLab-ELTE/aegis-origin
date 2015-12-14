@@ -50,7 +50,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _boxFilter ?? (_boxFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213202", "Box filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251101", "Box filter",
                                                                          "Returns the mean of the neighbouring values, thus smothening the image.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -68,7 +68,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _customFilter ?? (_customFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213200", "Custom filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251100", "Custom filter",
                                                                          "Returns a linear combination of the neighbouring values based on kernel, factor and offset values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -88,7 +88,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _discreteLaplaceFilter ?? (_discreteLaplaceFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213205", "Discrete Laplace filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251205", "Discrete Laplace filter",
                                                                          "The Laplace filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -106,14 +106,14 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gaussianBlurFilter ?? (_gaussianBlurFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213204", "Gaussian blur filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251104", "Gaussian blur filter",
                                                                          "A Gaussian blur (also known as Gaussian smoothing) is the result of blurring an image by a Gaussian function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.FilterRadius,
-                                                                         SpectralOperationParameters.GaussianStandardDeviation));
+                                                                         SpectralOperationParameters.FilterStandardDeviation));
             }
         }
 
@@ -125,7 +125,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _gaborFilter ?? (_gaborFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::201380", "Gabor filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251175", "Gabor filter",
                                                                          "Returns with a real component of Gabor filter impulse answer.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _kuwaharaFilter ?? (_kuwaharaFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213218", "Kuwahara filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251168", "Kuwahara filter",
                                                                          "The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -163,7 +163,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _maximumFilter ?? (_maximumFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213215", "Maximum filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251141", "Maximum filter",
                                                                          "Returns the maximum of the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -181,7 +181,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _minimumFilter ?? (_minimumFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213216", "Minimum filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251142", "Minimum filter",
                                                                          "Returns the minimum of the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -199,7 +199,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _meanRemovalFilter ?? (_meanRemovalFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213241", "Mean removal filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251301", "Mean removal filter",
                                                                          "Removes the mean of the neighbouring values from the central value. This filter has an opposite effect as the box filter, thus helping image sharpening.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -217,7 +217,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _medianFilter ?? (_medianFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213213", "Median filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251108", "Median filter",
                                                                          "Returns the median of the the neighbouring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -235,7 +235,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _prewittFilter ?? (_prewittFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213264", "Prewitt filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251181", "Prewitt filter",
                                                                          "The Prewitt filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -252,7 +252,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _robertsFilter ?? (_robertsFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213266", "Roberts filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251185", "Roberts filter",
                                                                          "The Roberts filter is primarily used for edge detection and motion estimation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -269,7 +269,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sobelFilter ?? (_sobelFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213265", "Sobel filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251182", "Sobel filter",
                                                                          "The Sobel filter is used for edge detection purposes by computing an approximation of the gradient of the image intensity function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -286,7 +286,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _unsharpMasking ?? (_unsharpMasking =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213242", "Unsharp masking",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251302", "Unsharp masking",
                                                                          "Unsharp masking uses a blurred positive image to create a mask of the original image, which is then combined with the negative image to create a sharper image. The method uses Gaussian blur technique.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -306,7 +306,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _weightedMedianFilter ?? (_weightedMedianFilter =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213214", "Weighted median filter",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251109", "Weighted median filter",
                                                                         "Returns the median of the the neighbouring values multiplied by the weight kernel.", null, "1.0.0",
                                                                         false, SpectralOperationDomain.BandFocal,
                                                                         ExecutionMode.OutPlace,

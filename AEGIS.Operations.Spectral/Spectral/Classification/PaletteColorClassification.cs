@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PaletteColorClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing classification using a color palette.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213801", "Palette color classification")]
+    [OperationMethodImplementation("AEGIS::253401", "Palette color classification")]
     public class PaletteColorClassification : SpectralTransformation
     {
         #region Private fields

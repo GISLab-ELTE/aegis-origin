@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing clustering of spectral geometries using the ISODATA method.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213701", "ISODATA clustering")]
+    [OperationMethodImplementation("AEGIS::254210", "ISODATA clustering")]
     public class IsodataClustering : SpectralClustering
     {
         #region Private fields

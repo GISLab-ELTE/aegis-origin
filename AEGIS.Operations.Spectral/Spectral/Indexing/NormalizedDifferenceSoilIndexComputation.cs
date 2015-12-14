@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized difference soil index (NDSI) of raster geometries.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213512", "Normalized difference soil index (NDSI) computation")]
+    [OperationMethodImplementation("AEGIS::252012", "Normalized difference soil index (NDSI) computation")]
     public class NormalizedDifferenceSoilIndexComputation : SpectralTransformation
     {
         #region Private fields

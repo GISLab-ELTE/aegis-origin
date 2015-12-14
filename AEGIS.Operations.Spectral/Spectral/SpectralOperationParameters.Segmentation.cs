@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _clusterDistanceAlgorithm ?? (_clusterDistanceAlgorithm =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::223651", "Cluster distance algorithm",
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::354501", "Cluster distance algorithm",
                                                                                  "The algorithm used for determining the distance of spectral clusters.", null, (SpectralDistance)null)
                 );
             }
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _clusterDistanceThreshold ?? (_clusterDistanceThreshold =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223655", "Cluster distance threshold",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354505", "Cluster distance threshold",
                                                                        "The upper threshold of the spectral distance between clusters.", null)
                 );
             }
@@ -76,7 +76,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _clusterDistanceType ?? (_clusterDistanceType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::223652", "Cluster distance type",
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::354502", "Cluster distance type",
                                                                      "The type used for determining the distance of spectral clusters.", null, (Type)null)
                 );
             }
@@ -90,7 +90,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _clusterSizeThreshold ?? (_clusterSizeThreshold =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::223655", "Cluster size threshold",
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::354509", "Cluster size threshold",
                                                                        "The lower threshold for the size of the generated clusters.", null, 
                                                                        5.0, 
                                                                        Conditions.IsNotNegative())
@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _numberOfClusterCenters ?? (_numberOfClusterCenters =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::223658", "Number of cluster centers",
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::354520", "Number of cluster centers",
                                                                       "The initial number of cluster centers for clustering operations.", null, 0)
                 );
             }
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _segmentHomogeneityThreshold ?? (_segmentHomogeneityThreshold =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223671", "Segment homogeneity threshold",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354621", "Segment homogeneity threshold",
                                                                        "The threshold used for determining whether segments are homogeneous.", null)
                 );
             }
@@ -135,7 +135,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _segmentMergeThreshold ?? (_segmentMergeThreshold =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223672", "Segment merge threshold",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354622", "Segment merge threshold",
                                                                        "The threshold used for determining whether segments should be merged.", null)
                 );
             }
@@ -149,7 +149,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _varianceThresholdBeforeMerge ?? (_varianceThresholdBeforeMerge =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223688", "Threshold value for segment variance before merge",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354638", "Threshold value for segment variance before merge",
                                                                        "The threshold value which the between segment variance must reach in order to be merged.", null)
                 );
             }
@@ -163,7 +163,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _varianceThresholdAfterMerge ?? (_varianceThresholdAfterMerge =
-                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::223689", "Threshold value for segment variance after merge",
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354639", "Threshold value for segment variance after merge",
                                                                        "The threshold value the merged segment variance must reach in order to be merged.", null)
                 );
             }

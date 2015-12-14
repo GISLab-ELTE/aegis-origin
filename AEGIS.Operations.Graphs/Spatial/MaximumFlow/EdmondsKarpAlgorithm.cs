@@ -1,5 +1,5 @@
 ﻿/// <copyright file="EdmondsKarpAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
     /// <summary>
     /// Represents an operation computing the maximum flow between two vertices in a graph using the Edmonds-Karp algorithm.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::212710", "Edmonds-Karp algorithm")]
+    [OperationMethodImplementation("AEGIS::225710", "Edmonds-Karp algorithm")]
     public class EdmondsKarpAlgorithm : MaximumFlowComputation
     {
         // TODO: use multikey dictionary for reverse edges that are not available

@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The Roberts operator is a discrete differentiation operator, computing an approximation of the gradient of the image intensity function.
     /// At each point in the image, the result of the Prewitt operator is either the corresponding gradient vector or the norm of this vector.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213266", "Roberts filter")]
+    [OperationMethodImplementation("AEGIS::251185", "Roberts filter")]
     public class RobertsFilterOperation : GradientFilterOperation
     {
         #region Constructors

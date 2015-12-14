@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents a logarithmic spectral transformation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213108", "Logarithmic spectral transformation")]
+    [OperationMethodImplementation("AEGIS::250108", "Logarithmic spectral transformation")]
     public class LogarithmicTransformation : PerBandSpectralTransformation
     {
         #region Constructors

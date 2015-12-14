@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing graph-based merge segmentation on spectral geometries.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213611", "Graph-based merge segmentation")]
+    [OperationMethodImplementation("AEGIS::254104", "Graph-based merge segmentation")]
     public class GraphBasedMergeSegmentation : SpectralSegmentation
     {
         #region Private types

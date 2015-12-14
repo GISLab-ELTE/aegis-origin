@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized difference vegetation index (NDVI) of raster geometries.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213513", "Normalized difference vegetation index (NDVI) computation")]
+    [OperationMethodImplementation("AEGIS::252013", "Normalized difference vegetation index (NDVI) computation")]
     public class NormalizedDifferenceVegetationIndexComputation : SpectralTransformation
     {
         #region Private fields

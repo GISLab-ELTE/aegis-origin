@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     /// <remarks>
     /// Borůvka's algorithm is an algorithm for finding a minimum spanning tree in a graph for which all edge weights are distinct.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::0", "Borůvka's algorithm")]
+    [OperationMethodImplementation("AEGIS::225508", "Borůvka's algorithm")]
     public class BoruvkasAlgorithm : MinimumSpanningTreeAlgorithm
     {
         #region Private fileds

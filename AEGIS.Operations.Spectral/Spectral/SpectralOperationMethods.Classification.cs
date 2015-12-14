@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _paletteColorClassification;
         private static SpectralOperationMethod _randomColorClassification;
         private static SpectralOperationMethod _sauvolaLocalThresholdingClassification;
-        private static SpectralOperationMethod _segmentClassification;
+        private static SpectralOperationMethod _segmentBasedClassification;
         private static SpectralOperationMethod _referenceMatchingClassification;
 
         #endregion
@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _balancedHistogramThresholdingClassification ?? (_balancedHistogramThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213826", "Balanced histogram thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253126", "Balanced histogram thresholding",
                                                                          "Creates a monochrome raster by separating values based on histogram balancing.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
                                                                          RasterFormat.Integer,
@@ -65,7 +65,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bernsenLocalThresholdingClassification ?? (_bernsenLocalThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213832", "Bernsen local thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253302", "Bernsen local thresholding",
                                                                          "Performs raster thresholding based on local mean value.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
@@ -82,7 +82,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _constantBasedThresholdingClassification ?? (_constantBasedThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213820", "Constant based spectral thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253120", "Constant based spectral thresholding",
                                                                          "Creates a monochrome raster by separating values located within the specified boundaries.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.LowerThresholdBoundary,
@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _densitySlicing ?? (_densitySlicing =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213819", "Density slicing",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253405", "Density slicing",
                                                                          "For density slicing the range of grayscale levels is divided into intervals, with each interval assigned to one of a few discrete colors – this is in contrast to pseudo color, which uses a continuous color scale.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
@@ -117,7 +117,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _functionBasedThresholdingClassification ?? (_functionBasedThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213821", "Function based spectral thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253121", "Function based spectral thresholding",
                                                                          "Creates a monochrome raster by separating values based on the specified selector function.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.SpectralPredicate,
@@ -134,7 +134,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _meanthreshLocalThresholdingClassification ?? (_meanthreshLocalThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213833", "Meanthresh local thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253305", "Meanthresh local thresholding",
                                                                          "Performs raster thresholding based on band mean value.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
@@ -152,7 +152,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _niblackLocalThresholdingClassification ?? (_niblackLocalThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213836", "Niblack local thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253311", "Niblack local thresholding",
                                                                          "Performs raster thresholding based on local mean and standard deviation value.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
@@ -171,7 +171,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _otsuThresholdingClassification ?? (_otsuThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213828", "Otsu thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253205", "Otsu thresholding",
                                                                          "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
                                                                          RasterFormat.Integer,
@@ -188,7 +188,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _paletteColorClassification ?? (_paletteColorClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213801", "Palette color classification",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253401", "Palette color classification",
                                                                          "This classification method relies on using palette RGB colors for creating the classified image based on an image with multiple classes.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          SpectralOperationParameters.ColorPalette));
@@ -203,7 +203,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _randomColorClassification ?? (_randomColorClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213802", "Random color classification",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253402", "Random color classification",
                                                                          "This classification method relies on using random RGB colors for creating the classified image based on a collection of segments and/or clusters. The method garantees that each individual class will have a different color.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          RasterFormat.Integer));
@@ -218,7 +218,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _referenceMatchingClassification ?? (_referenceMatchingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213850", "Reference matching classification",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253010", "Reference matching classification",
                                                                          "In reference matching classification, a pre-classified reference raster is aligned with the current raster, with which the process matches the categories. The also process on the collection of clusters.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          ExecutionMode.OutPlace,
@@ -235,7 +235,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _sauvolaLocalThresholdingClassification ?? (_sauvolaLocalThresholdingClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213837", "Sauvola local thresholding",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253312", "Sauvola local thresholding",
                                                                          "Local adaptive thresholding based on The Niblack algroithm.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
@@ -248,14 +248,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
-        /// Segment classification.
+        /// Segment based classification.
         /// </summary>
-        public static SpectralOperationMethod SegmentClassification
+        public static SpectralOperationMethod SegmentBasedClassification
         {
             get
             {
-                return _segmentClassification ?? (_segmentClassification =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213818", "Segment classification",
+                return _segmentBasedClassification ?? (_segmentBasedClassification =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253018", "Segment based classification",
                                                                          "The classification of spectral imagery based on a collection of segments. The result data contains the segment indices as values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          SpectralOperationParameters.SegmentCollection));

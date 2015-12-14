@@ -29,7 +29,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The unsharped mask is then combined with the positive (original) image, creating an image that is less blurry than the original. 
     /// The resulting image, although clearer, may be a less accurate representation of the image's subject. 
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213242", "Unsharp masking filter")]
+    [OperationMethodImplementation("AEGIS::251302", "Unsharp masking filter")]
     public class UnsharpMaskingOperation : PerBandSpectralTransformation
     {
         #region Private fields

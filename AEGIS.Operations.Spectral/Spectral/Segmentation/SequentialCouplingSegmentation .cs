@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing segmentation on spectral geometries using sequential coupling.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213614", "Sequential coupling segmentation")]
+    [OperationMethodImplementation("AEGIS::254120", "Sequential coupling segmentation")]
     public class SequentialCouplingSegmentation : SpectralSegmentation
     {
         #region Private types

@@ -39,7 +39,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _morphologicalClosingOperation ?? (_morphologicalClosingOperation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213294", "Morphological closing operation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251605", "Morphological closing operation",
                                                                          "Erosion is one of two fundamental operations (the other being dilation) in morphological image processing. In mathematical morphology, the closing of a set by a structuring element is the erosion of the dilation of that set. Closing removes small holes within the image.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -55,7 +55,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _morphologicalDilationOperation ?? (_morphologicalDilationOperation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213292", "Morphological dilation operation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251602", "Morphological dilation operation",
                                                                          "Dilation is one of two fundamental operations (the other being erosion) in morphological image processing. In dilation, the value of the output pixel is the minimum value of all the pixels in the input pixel's neighbourhood.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -71,7 +71,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _morphologicalErosionOperation ?? (_morphologicalErosionOperation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213291", "Morphological erosion operation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251601", "Morphological erosion operation",
                                                                          "In erosion, the value of the output pixel is the maximum value of all the pixels in the input pixel's neighbourhood.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _morphologicalOpeningOperation ?? (_morphologicalOpeningOperation =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::213293", "Morphological opening operation",
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251604", "Morphological opening operation",
                                                                          "In mathematical morphology, opening is the dilation of the erosion of a set by a structuring element. Opening removes small objects within the image. ", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,

@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
     /// <summary>
     /// Represents an operation computing the normalized difference water index (NDWI) of raster geometries.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213514", "Normalized difference water index (NDWI) computation")]
+    [OperationMethodImplementation("AEGIS::252014", "Normalized difference water index (NDWI) computation")]
     public class NormalizedDifferenceWaterIndexComputation : SpectralTransformation
     {
         #region Private fields

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralTranslation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// <summary>
     /// Represents a spectral translation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213102", "Spectral translation")]
+    [OperationMethodImplementation("AEGIS::250102", "Spectral translation")]
     public class SpectralTranslation : PerBandSpectralTransformation
     {
         #region Private fields

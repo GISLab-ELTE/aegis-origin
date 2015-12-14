@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// the pixel is set to white colour, otherwise the pixel is set to black colour. 
     /// To increase the resistance to noise the threshold value can be shifted by a thersholding constant.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213833", "Meanthresh local thresholding")]
+    [OperationMethodImplementation("AEGIS::253305", "Meanthresh local thresholding")]
     public class MeanthreshLocalThresholdingClassification : PerBandSpectralTransformation
     {
         #region Private fields

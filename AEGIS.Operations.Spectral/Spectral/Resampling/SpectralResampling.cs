@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Resampling
     /// <summary>
     /// Represents an operation resampling spectral content of geometries. 
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213301", "Spectral resampling")]
+    [OperationMethodImplementation("AEGIS::259310", "Spectral resampling")]
     public class SpectralResampling : SpectralTransformation
     {
         #region Private fields

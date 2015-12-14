@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.Operations.Spatial
             {
                 return _targetReferenceSystem ?? (_targetReferenceSystem =
                     OperationParameter.CreateRequiredParameter<IReferenceSystem>(
-                        "AEGIS::221701", "Target reference system", 
+                        "AEGIS::305001", "Target reference system", 
                         "The reference system in which the geometry should be translated.", null
                     ));
             }

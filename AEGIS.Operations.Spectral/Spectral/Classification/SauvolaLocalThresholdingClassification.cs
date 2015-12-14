@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Sauvola's thresholding method is a local adaptive thresholding designed primarily for text images. 
     /// It is a variant of Niblack's method.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213837", "Sauvola local thresholding")]
+    [OperationMethodImplementation("AEGIS::253312", "Sauvola local thresholding")]
     public class SauvolaLocalThresholdingClassification : PerBandSpectralTransformation
     {
         #region Private fields

@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The discrete Laplacian is defined as the sum of the second derivatives Laplace operator and calculated as sum of differences 
     /// over the nearest neighbours of the central pixel.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213205", "Discrete Laplace filter")]
+    [OperationMethodImplementation("AEGIS::251205", "Discrete Laplace filter")]
     public class DiscreteLaplaceFilterOperation : GradientFilterOperation
     {
         #region Constructors

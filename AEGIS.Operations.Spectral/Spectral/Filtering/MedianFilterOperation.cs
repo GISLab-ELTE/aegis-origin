@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <summary>
     /// Represents a median filter operation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213213", "Median filter")]
+    [OperationMethodImplementation("AEGIS::251108", "Median filter")]
     public class MedianFilterOperation : PerBandSpectralTransformation
     {
         #region Private fields

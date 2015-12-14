@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <remarks>
     /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighbouring values under the kernel.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213202", "Box filter")]
+    [OperationMethodImplementation("AEGIS::251101", "Box filter")]
     public class BoxFilterOperation : GradientFilterOperation
     {
         #region Constructors

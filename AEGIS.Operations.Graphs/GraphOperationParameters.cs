@@ -1,9 +1,9 @@
 ﻿/// <copyright file="GraphOperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
+///     http://opensource.org/licenses/ECL-2.0
 ///
 ///     Unless required by applicable law or agreed to in writing,
 ///     software distributed under the License is distributed on an "AS IS"
@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _bidirectionalConversion ?? (_bidirectionalConversion =
                     OperationParameter.CreateOptionalParameter<Boolean>(
-                        "AEGIS::222101", "Bidirectional conversion",
+                        "AEGIS::320101", "Bidirectional conversion",
                         "A value indication whether the conversion should keep the line directions of the original geometry, or should the lines be directed in both ways.", null,
                         true
                     ));
@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _capacityMetric ?? (_capacityMetric =
                     OperationParameter.CreateOptionalParameter<Func<IGraphEdge, Int32>>(
-                        "AEGIS::222302", "Capacity metric",
+                        "AEGIS::320302", "Capacity metric",
                         "Capacity metric for edges.", null,
                         (edge => 1)
                     ));
@@ -157,7 +157,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _heuristicMetric ?? (_heuristicMetric =
                     OperationParameter.CreateOptionalParameter<Func<IGraphVertex, IGraphVertex, Double>>(
-                        "AEGIS::222305", "Heuristic metric", 
+                        "AEGIS::320305", "Heuristic metric", 
                         "Heuristic metric for traversal methods used for computing the distance between the current vertex and the specified target vertex.", null, 
                         ((source, target) => Coordinate.Distance(source.Coordinate, target.Coordinate))
                     ));
@@ -173,7 +173,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _heuristicLimitMultiplier ?? (_heuristicLimitMultiplier =
                     OperationParameter.CreateOptionalParameter<Double>(
-                        "AEGIS::222312", "Heuristic limit modifier", 
+                        "AEGIS::320312", "Heuristic limit modifier", 
                         "Heuristic limit modifier for traversal methods for determining the maximum distance factor from the specified target vertex. The value must be at least 2.", null, 
                         5,
                         Conditions.IsGreaterThan(2)
@@ -190,7 +190,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _sourceVertex ?? (_sourceVertex =
                     OperationParameter.CreateRequiredParameter<IGraphVertex>(
-                        "AEGIS::222361", "Source vertex", 
+                        "AEGIS::320361", "Source vertex", 
                         "Source graph vertex for traversal methods.", null
                     ));
             }
@@ -205,7 +205,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _targetVertex ?? (_targetVertex =
                     OperationParameter.CreateRequiredParameter<IGraphVertex>(
-                        "AEGIS::222362", "Target vertex", 
+                        "AEGIS::320362", "Target vertex", 
                         "Target graph vertex for traversal methods.", null
                     ));
             }
@@ -220,7 +220,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _weightMetric ?? (_weightMetric =
                     OperationParameter.CreateOptionalParameter<Func<IGraphEdge, Double>>(
-                        "AEGIS::222301", "Weight metric",
+                        "AEGIS::320301", "Weight metric",
                         "Weight metric for edges used by traversal methods.", null,
                         (edge => Coordinate.Distance(edge.Source.Coordinate, edge.Target.Coordinate))
                     ));

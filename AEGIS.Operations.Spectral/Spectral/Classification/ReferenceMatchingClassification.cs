@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing classification by matching a reference image.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213850", "Reference matching classification")]
+    [OperationMethodImplementation("AEGIS::253010", "Reference matching classification")]
     public class ReferenceMatchingClassification : SpectralTransformation
     {
         #region Private fields

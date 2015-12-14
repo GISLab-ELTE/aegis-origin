@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     /// Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a weighted undirected graph.
     /// By running Prim's algorithm for each connected component of the graph, it can also be used to find the minimum spanning forest.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::212501", "Prim's algorithm")]
+    [OperationMethodImplementation("AEGIS::225501", "Prim's algorithm")]
     public class PrimsAlgorithm : MinimumSpanningTreeAlgorithm
     {
         #region Private fileds

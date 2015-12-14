@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation for converting geometry to graph represetation.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::212100", "Geometry to graph conversion", "1.0")]
+    [OperationMethodImplementation("AEGIS::220100", "Geometry to graph conversion", "1.0")]
     public class GeometryToGraphConversion : Operation<IGeometry, IGeometryGraph>
     {
         #region Protected fields

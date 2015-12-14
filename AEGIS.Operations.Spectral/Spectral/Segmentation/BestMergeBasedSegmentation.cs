@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     /// <summary>
     /// Represents an operation performing segmentation on spectral geometries using best merge.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213610", "Best merge segmentation")]
+    [OperationMethodImplementation("AEGIS::254101", "Best merge segmentation")]
     public class BestMergeBasedSegmentation : SpectralSegmentation
     {
         #region Private types
@@ -69,7 +69,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         public BestMergeBasedSegmentation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, SpectralOperationMethods.BestMergeBasedSegmentation, parameters)
         {
-            _numberOfIterations = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfIterations));
+            _numberOfIterations = Convert.ToInt32(ResolveParameter(CommonOperationParameters.NumberOfIterations));
             _mergeThreshold = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SegmentMergeThreshold));            
         }
         

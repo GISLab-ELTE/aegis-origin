@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     /// <remarks>
     /// Kruskal's algorithm is a greedy algorithm that finds a minimum spanning tree or forest for a weighted undirected graph.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::212502", "Kruskal's algorithm")]
+    [OperationMethodImplementation("AEGIS::225502", "Kruskal's algorithm")]
     public class KruskalsAlgorithm : MinimumSpanningTreeAlgorithm
     {
         #region Private fileds

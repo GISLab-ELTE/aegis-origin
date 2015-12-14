@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// <summary>
     /// Represents an operation computing the surface temperature (in Kelvin) for Landsat images.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::213467", "Temperature extraction")]
+    [OperationMethodImplementation("AEGIS::255167", "Temperature extraction")]
     public class LandsatTemperatureExtraction : SpectralTransformation
     {
         #region Constants

@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Conversion
     /// <summary>
     /// Represents an operation converting any kind of <see cref="IGeometry" /> to polygons.
     /// </summary>
-    [OperationMethodImplementation("AEGIS::212185", "Geometry polygonization")]
+    [OperationMethodImplementation("AEGIS::220205", "Geometry polygonization")]
     public class GeometryPolygonization : Operation<IGeometry, IGeometry>
     {
         #region Private fields

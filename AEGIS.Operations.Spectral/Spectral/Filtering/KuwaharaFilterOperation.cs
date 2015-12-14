@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// <remarks>
     /// The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction.
     /// </remarks>
-    [OperationMethodImplementation("AEGIS::213218", "Kuwahara filter")]
+    [OperationMethodImplementation("AEGIS::251168", "Kuwahara filter")]
     public class KuwaharaFilterOperation : PerBandSpectralTransformation
     {
         #region Private fields
