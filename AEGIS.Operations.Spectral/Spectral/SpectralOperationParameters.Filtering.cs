@@ -158,8 +158,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _filterStandardDeviation ?? (_filterStandardDeviation =
                     OperationParameter.CreateOptionalParameter<Double>("AEGIS::350521", "Filter standard deviation",
                                                                        "The standard deviation of the filter.", null, 
-                                                                       0,
-                                                                       Conditions.IsNotNegative()));
+                                                                       1,
+                                                                       Conditions.IsPositive()));
             }
         }
 
