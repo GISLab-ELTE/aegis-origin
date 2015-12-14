@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SegmentCollection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -28,42 +28,22 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <summary>
         /// The dictionary mapping indices to segments.
         /// </summary>
-        private Dictionary<Int32, Segment> _indexToSegmentDictionary;
+        protected Dictionary<Int32, Segment> _indexToSegmentDictionary;
 
         /// <summary>
         /// The dictionary mapping segments to indices.
         /// </summary>
-        private Dictionary<Segment, List<Int32>> _segmentToIndexDictionary;
-
-        #endregion
-
-        #region Public properties
-
-        /// <summary>
-        /// The number of segments within the collection.
-        /// </summary>
-        /// <value>The number of segments within the collection.</value>
-        public Int32 Count { get; private set; }
-
-        /// <summary>
-        /// The raster of the collection.
-        /// </summary>
-        public IRaster Raster { get; set; }
-        
-        /// <summary>
-        /// Gets the segment at the specified row and column indices.
-        /// </summary>
-        /// <param name="rowIndex">The row index.</param>
-        /// <param name="columnIndex">The column index.</param>
-        /// <returns>The segment at the specified row and column indices.</returns>
-        public Segment this[Int32 rowIndex, Int32 columnIndex]
-        {
-            get { return GetSegment(rowIndex, columnIndex); }
-        }
+        protected Dictionary<Segment, List<Int32>> _segmentToIndexDictionary;
 
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
+        /// </summary>
+        public SegmentCollection()
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
@@ -95,7 +75,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
 
             foreach (Segment otherSegment in other._segmentToIndexDictionary.Keys)
-            { 
+            {
                 List<Int32> otherIndices = other._segmentToIndexDictionary[otherSegment];
 
                 Int32 rowIndex = otherIndices[0] / Raster.NumberOfColumns;
@@ -110,6 +90,32 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 _segmentToIndexDictionary.Add(segment, new List<Int32>(otherIndices));
             }
+        }
+
+        #endregion
+
+        #region Public properties
+
+        /// <summary>
+        /// The number of segments within the collection.
+        /// </summary>
+        /// <value>The number of segments within the collection.</value>
+        public Int32 Count { get; set; }
+
+        /// <summary>
+        /// The raster of the collection.
+        /// </summary>
+        public IRaster Raster { get; set; }
+
+        /// <summary>
+        /// Gets the segment at the specified row and column indices.
+        /// </summary>
+        /// <param name="rowIndex">The row index.</param>
+        /// <param name="columnIndex">The column index.</param>
+        /// <returns>The segment at the specified row and column indices.</returns>
+        public Segment this[Int32 rowIndex, Int32 columnIndex]
+        {
+            get { return GetSegment(rowIndex, columnIndex); }
         }
 
         #endregion
@@ -345,7 +351,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void MergeSegments(Segment segment, Int32 rowIndex, Int32 columnIndex)
         {
             if (segment == null)
-                throw new ArgumentNullException("segment", "The segment is null.");            
+                throw new ArgumentNullException("segment", "The segment is null.");
             if (!_segmentToIndexDictionary.ContainsKey(segment))
                 throw new ArgumentException("The segment is not within the collection.", "segment");
             if (rowIndex < 0)

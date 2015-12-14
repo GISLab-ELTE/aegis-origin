@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SegmentCollectionTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -124,7 +124,7 @@ namespace ELTE.AEGIS.Tests.Collections.Segmentation
 
                 Assert.AreEqual(segment, otherSegment);
 
-                for (Int32 otherQueryIndex = 0; otherQueryIndex < 10;  otherQueryIndex++)
+                for (Int32 otherQueryIndex = 0; otherQueryIndex < 10; otherQueryIndex++)
                     otherSegment = _collection.GetSegment(random.Next(0, _raster.Object.NumberOfRows), random.Next(0, _raster.Object.NumberOfColumns));
 
                 otherSegment = _collection.GetSegment(rowIndex, columnIndex);
@@ -205,7 +205,7 @@ namespace ELTE.AEGIS.Tests.Collections.Segmentation
                 }
 
             Assert.AreEqual(_raster.Object.NumberOfColumns * _raster.Object.NumberOfRows, segment.Count);
-        
+
 
             // merge using indices
 
@@ -217,7 +217,7 @@ namespace ELTE.AEGIS.Tests.Collections.Segmentation
                 for (Int32 columnIndex = 0; columnIndex < _raster.Object.NumberOfColumns; columnIndex++)
                 {
                     collection.MergeSegments(0, 0, rowIndex, columnIndex);
-                    
+
                     Segment otherSegment = collection.GetSegment(rowIndex, columnIndex);
 
                     Assert.AreEqual(segment, otherSegment);

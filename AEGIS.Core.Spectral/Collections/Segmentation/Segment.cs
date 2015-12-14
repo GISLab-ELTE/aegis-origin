@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Segment.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -43,7 +43,95 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The number of bands is less than 1.</exception>
+        public Segment(Int32 numberOfBands)
+        {
+            if (numberOfBands < 1)
+                throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
+
+            Count = 0;
+
+            // initialize collections
+            _mean = new Double[numberOfBands];
+            _variance = new Double[numberOfBands];
+            _comoment = new Double[numberOfBands, numberOfBands];
+            Covariance = new Double[numberOfBands, numberOfBands];
+
+            // initialize read-only wrapper collections
+            Mean = _mean.AsReadOnly();
+            Variance = _variance.AsReadOnly();
+            MortonCode = 0.0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
+        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
+        public Segment(UInt32[] spectralValues)
+        {
+            if (spectralValues == null)
+                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+            if (spectralValues.Length == 0)
+                throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
+
+            Count = 0;
+
+            // initialize collections
+            _mean = new Double[spectralValues.Length];
+            _variance = new Double[spectralValues.Length];
+            _comoment = new Double[spectralValues.Length, spectralValues.Length];
+            Covariance = new Double[spectralValues.Length, spectralValues.Length];
+
+            // initialize read-only wrapper collections
+            Mean = _mean.AsReadOnly();
+            Variance = _variance.AsReadOnly();
+
+            AddValues(spectralValues);
+            MortonCode = 0.0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
+        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
+        public Segment(Double[] spectralValues)
+        {
+            if (spectralValues == null)
+                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+            if (spectralValues.Length == 0)
+                throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
+
+            Count = 0;
+
+            // initialize collections
+            _mean = new Double[spectralValues.Length];
+            _variance = new Double[spectralValues.Length];
+            _comoment = new Double[spectralValues.Length, spectralValues.Length];
+            Covariance = new Double[spectralValues.Length, spectralValues.Length];
+
+            // initialize read-only wrapper collections
+            Mean = _mean.AsReadOnly();
+            Variance = _variance.AsReadOnly();
+
+            AddFloatValues(spectralValues);
+            MortonCode = 0.0;
+        }
+
+        #endregion
+
         #region Public properties
+
+        public Double MortonCode { get; set; }
 
         /// <summary>
         /// Gets the number of spectral vectors within the set.
@@ -75,90 +163,6 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <value>The covariance of spectral values between the bands.</value>
         public Double[,] Covariance { get; private set; }
 
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Segment" /> class.
-        /// </summary>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">The number of bands is less than 1.</exception>
-        public Segment(Int32 numberOfBands)
-        {
-            if (numberOfBands < 1)
-                throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
-
-            Count = 0;
-
-            // initialize collections
-            _mean = new Double[numberOfBands];
-            _variance = new Double[numberOfBands];
-            _comoment = new Double[numberOfBands, numberOfBands];
-            Covariance = new Double[numberOfBands, numberOfBands];
-
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Segment" /> class.
-        /// </summary>
-        /// <param name="spectralValues">The array of spectral values.</param>
-        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
-        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
-        public Segment(UInt32[] spectralValues)
-        {
-            if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
-            if (spectralValues.Length == 0)
-                throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
-
-            Count = 0;
-
-            // initialize collections
-            _mean = new Double[spectralValues.Length];
-            _variance = new Double[spectralValues.Length];
-            _comoment = new Double[spectralValues.Length, spectralValues.Length];
-            Covariance = new Double[spectralValues.Length, spectralValues.Length];
-
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-
-            AddValues(spectralValues);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Segment" /> class.
-        /// </summary>
-        /// <param name="spectralValues">The array of spectral values.</param>
-        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
-        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
-        public Segment(Double[] spectralValues)
-        {
-            if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
-            if (spectralValues.Length == 0)
-                throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
-
-            Count = 0;
-
-            // initialize collections
-            _mean = new Double[spectralValues.Length];
-            _variance = new Double[spectralValues.Length];
-            _comoment = new Double[spectralValues.Length, spectralValues.Length];
-            Covariance = new Double[spectralValues.Length, spectralValues.Length];
-
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-
-            AddFloatValues(spectralValues);
-        }
-
         #endregion
 
         #region Public methods
@@ -180,7 +184,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
             {
-                Double previousMean =  _mean[bandIndex];
+                Double previousMean = _mean[bandIndex];
 
                 // incremental mean and variance computation
                 _mean[bandIndex] = _mean[bandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) / Count;
@@ -334,6 +338,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (this == other)
                 return;
 
+
             Int32 previousCount = Count;
             Count = Count + other.Count;
             for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
@@ -356,6 +361,49 @@ namespace ELTE.AEGIS.Collections.Segmentation
                     Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether the merge of two segments is homogeneous.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <param name="homogeneityThreshold">The homogeneity threshold.</param>
+        /// <returns><c>true</c> if the result of merging the two segments is homogeneous; otherwise <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">other;The other segment is null.</exception>
+        /// <exception cref="System.ArgumentException">The number of bands in the other segment does not match the current segment.;other</exception>
+        public Boolean IsMergeHomogenous(Segment other, Double homogeneityThreshold)
+        {
+            if (other == null)
+                throw new ArgumentNullException("other", "The other segment is null.");
+            if (NumberOfBands != other.NumberOfBands)
+                throw new ArgumentException("The number of bands in the other segment does not match the current segment.", "other");
+
+            if (this == other)
+                return false;
+
+            Int32 previousCount = Count;
+            Int32 count = Count + other.Count;
+            Double[] mean = new Double[NumberOfBands];
+            Double[] variance = new Double[NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
+            {
+                Double previousMean = _mean[bandIndex];
+                mean[bandIndex] = (previousCount * previousMean + other.Count * other._mean[bandIndex]) / count;
+                variance[bandIndex] = (previousCount - 1) * _variance[bandIndex] + (other.Count - 1) * other._variance[bandIndex];
+                variance[bandIndex] += Calculator.Pow(previousMean - other._mean[bandIndex], 2) * (previousCount - 1) * (other.Count - 1) / (count - 2);
+                variance[bandIndex] /= count;
+            }
+
+            if (count <= 1)
+                return true;
+
+            for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
+            {
+                if (Double.IsNaN(variance[bandIndex]) || variance[bandIndex] / (mean[bandIndex] * mean[bandIndex]) > homogeneityThreshold)
+                    return false;
+            }
+
+            return true;
         }
 
         #endregion
