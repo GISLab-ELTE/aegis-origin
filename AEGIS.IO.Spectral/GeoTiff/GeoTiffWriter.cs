@@ -68,7 +68,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </exception>
         /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public GeoTiffWriter(String path, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(path)
+            : base(path, parameters)
         {
         }
 
@@ -101,7 +101,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </exception>
         /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public GeoTiffWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(path)
+            : base(path, parameters)
         {
         }
 
@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="parameters">The parameters of the reader for the specific stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         public GeoTiffWriter(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
-            : base(stream)
+            : base(stream, parameters)
         {
         }
 
