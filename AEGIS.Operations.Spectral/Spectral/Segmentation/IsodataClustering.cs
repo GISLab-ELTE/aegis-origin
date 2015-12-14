@@ -42,9 +42,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private Int32 _clusterSizeThreshold;
 
         /// <summary>
-        /// The number of initial cluster centers.
+        /// The number of initial clusters.
         /// </summary>
-        private Int32 _numberOfClusterCenters;
+        private Int32 _numberOfClusters;
 
         /// <summary>
         /// The initial cluster centers.
@@ -103,12 +103,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         public IsodataClustering(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.IsodataClustering, parameters)  
         {
-            _numberOfClusterCenters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusterCenters));
+            _numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
             _clusterDistanceThreshold = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.ClusterDistanceThreshold));
             _clusterSizeThreshold = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.ClusterSizeThreshold));
 
-            if (_numberOfClusterCenters < 10)
-                _numberOfClusterCenters = Math.Min(Math.Max(10, Convert.ToInt32(Math.Sqrt(_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns))), _source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
+            if (_numberOfClusters < 10)
+                _numberOfClusters = Math.Min(Math.Max(10, Convert.ToInt32(Math.Sqrt(_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns))), _source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
         }
 
         #endregion
@@ -166,10 +166,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             }
 
             // generate the initial clusters
-            _clusterCenters = new Double[_numberOfClusterCenters][];
+            _clusterCenters = new Double[_numberOfClusters][];
             GaussianRandomGenerator randomGenerator = new GaussianRandomGenerator();
 
-            for (Int32 clusterIndex = 0; clusterIndex < _numberOfClusterCenters; clusterIndex++)
+            for (Int32 clusterIndex = 0; clusterIndex < _numberOfClusters; clusterIndex++)
             {
                 Double[] randomNumbers = new Double[_source.Raster.NumberOfBands];
 
@@ -187,7 +187,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         private void MergeValuesToClusters()
         {
-            Segment[] clusters = new Segment[_numberOfClusterCenters];
+            Segment[] clusters = new Segment[_numberOfClusters];
 
             Double minimalDistance;
             Int32 minimalIndex = 0;
@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         private void MergeSegmentsToClusters()
         {
-            Segment[] clusters = new Segment[_numberOfClusterCenters];
+            Segment[] clusters = new Segment[_numberOfClusters];
 
             Double minimalDistance;
             Int32 minimalIndex = 0;

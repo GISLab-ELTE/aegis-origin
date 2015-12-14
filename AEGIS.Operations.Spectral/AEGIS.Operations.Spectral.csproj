@@ -142,9 +142,11 @@
     <Compile Include="Spectral\Segmentation\BestMergeBasedSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\GraphBasedMergeSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\IsodataClustering.cs" />
+    <Compile Include="Spectral\Segmentation\QuadtreeBasedSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\SequentialCouplingSegmentation .cs" />
     <Compile Include="Spectral\Segmentation\SpectralClustering.cs" />
     <Compile Include="Spectral\Segmentation\SpectralSegmentation.cs" />
+    <Compile Include="Spectral\Segmentation\SplitAndMergeSegmentation.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Enhancement.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Classification.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Filtering.cs" />

@@ -25,7 +25,10 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _bestMergeBasedSegmentation;
         private static SpectralOperationMethod _isodataClustering;
         private static SpectralOperationMethod _graphBasedMergeSegmentation;
+        private static SpectralOperationMethod _kMeansClustering;
+        private static SpectralOperationMethod _quadtreeBasedSegmentation;
         private static SpectralOperationMethod _sequentialCouplingSegmentation;
+        private static SpectralOperationMethod _splitAndMergeSegmentation;
 
         #endregion
 
@@ -63,7 +66,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          false, SpectralOperationDomain.Global,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.SegmentCollection,
-                                                                         SpectralOperationParameters.NumberOfClusterCenters,
+                                                                         SpectralOperationParameters.NumberOfClusters,
                                                                          SpectralOperationParameters.ClusterDistanceAlgorithm,
                                                                          SpectralOperationParameters.ClusterDistanceType,
                                                                          SpectralOperationParameters.ClusterDistanceThreshold,
@@ -91,6 +94,43 @@ namespace ELTE.AEGIS.Operations.Spectral
         }
 
         /// <summary>
+        /// K-means clustering.
+        /// </summary>
+        public static SpectralOperationMethod KMeansClustering
+        {
+            get
+            {
+                return _kMeansClustering ?? (_kMeansClustering =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254220", "K-means clustering",
+                                                                         "K-means clustering aims to partition n observations into k clusters in which each observation belongs to the cluster with the nearest mean, serving as a prototype of the cluster.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Global,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.NumberOfClusters,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType,
+                                                                         SpectralOperationParameters.SegmentCollection));
+            }
+        }
+        /// <summary>
+        /// Quadtree-based segmentation.
+        /// </summary>
+        public static SpectralOperationMethod QuadTreeBasedSegmentation
+        {
+            get
+            {
+                return _quadtreeBasedSegmentation ?? (_quadtreeBasedSegmentation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254131", "Quadtree-based segmentation",
+                                                                         "Quadtree-based segmentation.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Zonal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         CommonOperationParameters.NumberOfIterations,
+                                                                         SpectralOperationParameters.SegmentSplitThreshold,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
+            }
+        }
+
+        /// <summary>
         /// Sequential coupling segmentation.
         /// </summary>
         public static SpectralOperationMethod SequentialCouplingSegmentation
@@ -105,6 +145,26 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.SegmentHomogeneityThreshold,
                                                                          SpectralOperationParameters.VarianceThresholdBeforeMerge,
                                                                          SpectralOperationParameters.VarianceThresholdAfterMerge,
+                                                                         SpectralOperationParameters.SpectralDistanceAlgorithm,
+                                                                         SpectralOperationParameters.SpectralDistanceType));
+            }
+        }
+
+        /// <summary>
+        /// Split-and-merge segmentation.
+        /// </summary>
+        public static SpectralOperationMethod SplitAndMergeSegmentation
+        {
+            get
+            {
+                return _splitAndMergeSegmentation ?? (_splitAndMergeSegmentation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254133", "Split-and-merge segmentation",
+                                                                         "Splitting and merging attempts to divide an image into uniform regions.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.Zonal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         CommonOperationParameters.NumberOfIterations,
+                                                                         SpectralOperationParameters.SegmentSplitThreshold,
+                                                                         SpectralOperationParameters.SegmentMergeThreshold,
                                                                          SpectralOperationParameters.SpectralDistanceAlgorithm,
                                                                          SpectralOperationParameters.SpectralDistanceType));
             }

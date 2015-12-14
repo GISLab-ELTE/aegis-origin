@@ -33,6 +33,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _numberOfClusterCenters;
         private static OperationParameter _segmentHomogeneityThreshold;
         private static OperationParameter _segmentMergeThreshold;
+        private static OperationParameter _segmentSplitThreshold;
         private static OperationParameter _varianceThresholdBeforeMerge;
         private static OperationParameter _varianceThresholdAfterMerge;
 
@@ -100,15 +101,15 @@ namespace ELTE.AEGIS.Operations.Spectral
 
 
         /// <summary>
-        /// Number of cluster centers.
+        /// Number of clusters.
         /// </summary>
-        public static OperationParameter NumberOfClusterCenters
+        public static OperationParameter NumberOfClusters
         {
             get
             {
                 return _numberOfClusterCenters ?? (_numberOfClusterCenters =
-                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::354520", "Number of cluster centers",
-                                                                      "The initial number of cluster centers for clustering operations.", null, 0)
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::354520", "Number of clusters",
+                                                                      "The initial number of clusters for clustering operations.", null, 0)
                 );
             }
         }
@@ -137,6 +138,20 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _segmentMergeThreshold ?? (_segmentMergeThreshold =
                     OperationParameter.CreateRequiredParameter<Double>("AEGIS::354622", "Segment merge threshold",
                                                                        "The threshold used for determining whether segments should be merged.", null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Segment split threshold.
+        /// </summary>
+        public static OperationParameter SegmentSplitThreshold
+        {
+            get
+            {
+                return _segmentSplitThreshold ?? (_segmentSplitThreshold =
+                    OperationParameter.CreateRequiredParameter<Double>("AEGIS::354623", "Segment split threshold",
+                                                                       "The threshold used for determining whether segments should be splited.", null)
                 );
             }
         }
