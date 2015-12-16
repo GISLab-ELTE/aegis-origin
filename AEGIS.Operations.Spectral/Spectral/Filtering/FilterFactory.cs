@@ -57,11 +57,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// or
         /// Wavelength is less than of equal to 2.
         /// or
-        /// Phase offset is no -90 or 90, which is required with wavelength value of 2.
+        /// The wavelength is 2 and the phase offset is -90 which results the Gabor filter sampled in it's zero crossings.
+        /// or
+        /// The wavelength is 2 and the phase offset is 90 which results the Gabor filter sampled in it's zero crossings.
         /// or
         /// Orientation is less than 0.
         /// or
-        /// Orientation is grater than 360.
+        /// Orientation is greater than 360.
         /// or
         /// Phase offset is less than -180.
         /// or
@@ -75,12 +77,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 throw new ArgumentOutOfRangeException("sigma", "Standard deviation is less than or equal to 0.");
             if (waveLength < 2.0)
                 throw new ArgumentOutOfRangeException("wavelength", "Wavelength is less than of equal to 2.");
-            if (waveLength.Equals(2.0) && phaseOffset.Equals(Math.Abs(90.0)))
-                throw new ArgumentOutOfRangeException("phaseOffset", "Phase offset is no -90 or 90, which is required with wavelength value of 2.");
+            if (waveLength.Equals(2.0) && phaseOffset == -90)
+                throw new ArgumentOutOfRangeException("phaseOffset", "The wavelength is 2 and the phase offset is -90 which results the Gabor filter sampled in it's zero crossings.");
+            if (waveLength.Equals(2.0) && phaseOffset == 90)
+                throw new ArgumentOutOfRangeException("phaseOffset", "The wavelength is 2 and the phase offset is 90 which results the Gabor filter sampled in it's zero crossings.");
             if (orientation < 0)
                 throw new ArgumentOutOfRangeException("orientation", "Orientation is less than 0.");
             if (orientation > 360)
-                throw new ArgumentOutOfRangeException("orientation", "Orientation is grater than 360.");
+                throw new ArgumentOutOfRangeException("orientation", "Orientation is greater than 360.");
             if (phaseOffset < -180)
                 throw new ArgumentOutOfRangeException("phaseOffset", "Phase offset is less than -180.");
             if (phaseOffset > 180)
