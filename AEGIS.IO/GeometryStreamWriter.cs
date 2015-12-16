@@ -285,7 +285,7 @@ namespace ELTE.AEGIS.IO
             }
 
             Format = format;
-            _parameters = parameters;
+            _parameters = new Dictionary<GeometryStreamParameter, Object>(parameters);
             _bufferingMode = ResolveParameter<BufferingMode>(GeometryStreamParameters.BufferingMode);
             _disposeSourceStream = false;
             _disposed = false;
@@ -443,9 +443,6 @@ namespace ELTE.AEGIS.IO
 
                 if (_disposeSourceStream)
                     _sourceStream.Dispose();
-
-                if (_parameters != null)
-                    _parameters.Clear();
             }
         }
 
