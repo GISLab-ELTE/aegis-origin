@@ -282,10 +282,11 @@ namespace ELTE.AEGIS.IO
                             throw new ArgumentException(String.Format(MessageParameterConditionError, parameter.Name), "parameters");
                     }
                 }
+
+                _parameters = new Dictionary<GeometryStreamParameter, Object>(parameters);
             }
 
             Format = format;
-            _parameters = new Dictionary<GeometryStreamParameter, Object>(parameters);
             _bufferingMode = ResolveParameter<BufferingMode>(GeometryStreamParameters.BufferingMode);
             _disposeSourceStream = false;
             _disposed = false;
@@ -437,11 +438,12 @@ namespace ELTE.AEGIS.IO
                 {
                     case BufferingMode.Minimal:
                     case BufferingMode.Maximal:
-                        _baseStream.Dispose();
+                        if (_baseStream != null)
+                            _baseStream.Dispose();
                         break;
                 }
 
-                if (_disposeSourceStream)
+                if (_disposeSourceStream &&_sourceStream != null)
                     _sourceStream.Dispose();
             }
         }
