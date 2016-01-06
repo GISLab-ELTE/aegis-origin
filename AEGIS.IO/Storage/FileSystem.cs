@@ -942,6 +942,16 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
+        /// Determines whether the specified path has the pattern of directories.
+        /// </summary>
+        /// <param name="path">The path to check.</param>
+        /// <returns><c>true</c> if the path matches the pattern of directories, otherwise, <c>false</c>.</returns>
+        public virtual Boolean IsDirectoryPattern(String path)
+        {
+            return path != null && path.Length > 0 && path[path.Length - 1] == DirectorySeparator;
+        }
+
+        /// <summary>
         /// Returns the root information for the specified path.
         /// </summary>
         /// <param name="path">The path of a file or directory.</param>
