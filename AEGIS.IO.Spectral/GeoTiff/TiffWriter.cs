@@ -240,15 +240,18 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="disposing">A value indicating whether disposing is performed on the object.</param>
         protected override void Dispose(Boolean disposing)
         {
-            // write the 0 address of next image file directory
-            _baseStream.Seek(_currentImageFileDirectoryEndPosition, SeekOrigin.Begin);
-            if (_isBigTiffFormat)
+            if (_baseStream != null)
             {
-                _baseStream.Write(EndianBitConverter.GetBytes((UInt64)0), 0, 8);
-            }
-            else
-            {
-                _baseStream.Write(EndianBitConverter.GetBytes((UInt32)0), 0, 4);
+                // write the 0 address of next image file directory
+                _baseStream.Seek(_currentImageFileDirectoryEndPosition, SeekOrigin.Begin);
+                if (_isBigTiffFormat)
+                {
+                    _baseStream.Write(EndianBitConverter.GetBytes((UInt64)0), 0, 8);
+                }
+                else
+                {
+                    _baseStream.Write(EndianBitConverter.GetBytes((UInt32)0), 0, 4);
+                }
             }
 
             base.Dispose(disposing);
