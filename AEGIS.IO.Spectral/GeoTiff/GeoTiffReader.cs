@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -569,10 +569,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 if (referenceSystem == null)
                     return new GeographicCoordinateReferenceSystem("EPSG::" + code, "undefined", CoordinateSystems.EllipsoidalLatLonD, GeodeticDatums.WGS84, AreasOfUse.World);
+
+                return referenceSystem;
             }
 
             // user-defined geodetic coordinate reference system
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 String citation = _currentGeoKeys[2049].ToString();
                 GeodeticDatum datum = ComputeGeodeticDatum();
@@ -602,7 +604,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 6000 && code <= 6999)
                 return GeodeticDatums.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined geodetic datum
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Ellipsoid ellipsoid = ComputeEllipsoid();
                 Meridian primeMeridian = ComputePrimeMeridian();
@@ -625,7 +627,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 8000 && code <= 8999)
                 return Ellipsoids.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined ellipsoid
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Double semiMajorAxis = Convert.ToDouble(_currentGeoKeys[2057]);
 
@@ -660,7 +662,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 8000 && code <= 8999)
                 return Meridians.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined prime meridian
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Double longitude = Convert.ToDouble(_currentGeoKeys[2061]);
                 UnitOfMeasurement angleUnit = ComputeAngularUnit();
@@ -686,7 +688,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 9000 && code <= 9099)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2053]);
 
@@ -711,7 +713,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 9100 && code <= 9199)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
 
@@ -736,7 +738,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 9100 && code <= 9199)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
 
@@ -761,9 +763,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 if (referenceSystem == null)
                     return new ProjectedCoordinateReferenceSystem("EPSG::" + code, "undefined", Geographic2DCoordinateReferenceSystems.WGS84, CoordinateSystems.CartesianENM, AreasOfUse.World, null);
+
+                return referenceSystem;
             }
             // user-defined Projected Coordinate Reference System
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 GeographicCoordinateReferenceSystem baseReferenceSystem = ComputeGeographicCoordinateReferenceSystem();
                 CoordinateProjection projection = ComputeProjection(baseReferenceSystem.Datum.Ellipsoid);
@@ -806,13 +810,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case 10:
                     return CoordinateOperationMethods.LambertAzimuthalEqualAreaProjection;
                 case 11: // CT_AlbersEqualArea 
-                    return null;
+                    return CoordinateOperationMethods.AlbersEqualAreaProjection;
                 case 12:
                     return CoordinateOperationMethods.LambertAzimuthalEqualAreaProjection;
                 case 13: // CT_EquidistantConic
                     return null;
                 case 14: // CT_Stereographic 
-                    return null;
+                    return CoordinateOperationMethods.ObliqueStereographicProjection;
                 case 15:
                     return CoordinateOperationMethods.PolarStereographicAProjection; // TODO: parameter check
                 case 16:
@@ -839,6 +843,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     return null;
                 case 27:
                     return CoordinateOperationMethods.TransverseMercatorSouthProjection;
+                case 28:
+                    return CoordinateOperationMethods.LambertCylindricalEqualAreaEllipsoidalProjection;
                 case 32767:
                     return new CoordinateOperationMethod(CoordinateOperationMethod.UserDefinedIdentifier, CoordinateOperationMethod.UserDefinedName, 
                                                          false, ComputeCoordinateOperationParameters().Keys.ToArray());
@@ -915,7 +921,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (code >= 10000 && code <= 19999)
                 return CoordinateProjectionFactory.FromIdentifier("EPSG::" + code, ellipsoid).FirstOrDefault();
 
-            if (code == 32767)
+            if (code == Int16.MaxValue)
             {
                 CoordinateOperationMethod method = ComputeCoordinateOperationMethod();
                 Dictionary<CoordinateOperationParameter, Object> parameters = ComputeCoordinateOperationParameters();
