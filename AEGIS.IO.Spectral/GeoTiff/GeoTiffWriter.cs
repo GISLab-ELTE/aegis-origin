@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -16,17 +16,17 @@
 
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Reference;
+using ELTE.AEGIS.Reference.Operations;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
-    using System.Globalization;
-    using GeoKeyDirectory = Dictionary<Int16, Int16>;
-    // short expression for the IFD table
-    using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
+    using GeoKeyDirectory = Dictionary<Int16, Int16>; // short expression for the geo-key directory
+    using TiffImageFileDirectory = Dictionary<UInt16, Object[]>; // short expression for the IFD table
 
     /// <summary>
     /// Represents a GeoTIFF file format writer.
@@ -160,20 +160,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 switch (referenceSystem.Type)
                 {
                     case ReferenceSystemType.Projected:
-                        geoKeyDirectory.Add(1024, 1); // RasterTypeGeoKey
-                        geoKeyDirectory.Add(3072, (Int16)referenceSystem.Code); // ProjectedCSTypeGeoKey
-
-                        // TODO: process user-defined system
+                        ComputeProjectedCoordinateReferenceSystem(geoKeyDirectory, referenceSystem as ProjectedCoordinateReferenceSystem);
                         break;
-
                     case ReferenceSystemType.Geographic2D:
                     case ReferenceSystemType.Geographic3D:
-                        geoKeyDirectory.Add(1024, 2); // RasterTypeGeoKey
-                        geoKeyDirectory.Add(2048, (Int16)referenceSystem.Code); // GeographicTypeGeoKey
-
-                        // TODO: process user-defined system
+                        ComputeGeographicCoordinateReferenceSystem(geoKeyDirectory, referenceSystem as GeographicCoordinateReferenceSystem);
                         break;
-
                     default: // other reference systems are not supported
                         return imageFileDirectory;
                 }
@@ -208,6 +200,69 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #endregion
 
         #region Private methods
+
+        /// <summary>
+        /// Computes the projected coordinate reference system for the geo-key directory.
+        /// </summary>
+        /// <param name="geoKeyDirectory">The geo-key directory.</param>
+        /// <param name="referenceSystem">The reference system.</param>
+        private void ComputeProjectedCoordinateReferenceSystem(GeoKeyDirectory geoKeyDirectory, ProjectedCoordinateReferenceSystem referenceSystem)
+        {
+            geoKeyDirectory.Add(1024, 1); // RasterTypeGeoKey
+
+            if (referenceSystem.Identifier != IdentifiedObject.UserDefinedIdentifier)
+            {
+                geoKeyDirectory.Add(3072, (Int16)referenceSystem.Code); // ProjectedCSTypeGeoKey
+                return;
+            }
+
+            // user-defined reference system
+            geoKeyDirectory.Add(3072, Int16.MaxValue); 
+
+            ComputeGeographicCoordinateReferenceSystem(geoKeyDirectory, referenceSystem.Base);
+            ComputeCoordinateProjection(geoKeyDirectory, referenceSystem.Projection);
+        }
+
+        /// <summary>
+        /// Computes the geographic coordinate reference system for the geo-key directory.
+        /// </summary>
+        /// <param name="geoKeyDirectory">The geo-key directory.</param>
+        /// <param name="referenceSystem">The reference system.</param>
+        private void ComputeGeographicCoordinateReferenceSystem(GeoKeyDirectory geoKeyDirectory, GeographicCoordinateReferenceSystem referenceSystem)
+        {
+            if (!geoKeyDirectory.ContainsKey(1024))
+                geoKeyDirectory.Add(1024, 2); // RasterTypeGeoKey
+            if (referenceSystem.Identifier != IdentifiedObject.UserDefinedIdentifier)
+            {
+                geoKeyDirectory.Add(2048, (Int16)referenceSystem.Code); // GeographicTypeGeoKey
+                return;
+            }
+
+            // user-defined reference system
+            geoKeyDirectory.Add(2048, Int16.MaxValue);
+
+            // TODO: process user-defined reference system
+        }
+
+        /// <summary>
+        /// Computes the coordinate projection for the geo-key directory.
+        /// </summary>
+        /// <param name="geoKeyDirectory">The geo-key directory.</param>
+        /// <param name="projection">The coordinate projection.</param>
+        private void ComputeCoordinateProjection(GeoKeyDirectory geoKeyDirectory, CoordinateProjection projection)
+        {
+            if (projection.Code >= 10000 && projection.Code <= 19999)
+            {
+                geoKeyDirectory.Add(3074, (Int16)projection.Code);
+                return;
+            }
+
+            // user-defined projection
+            geoKeyDirectory.Add(3074, Int16.MaxValue);
+            geoKeyDirectory.Add(3075, (Int16)projection.Method.Code);
+
+            // TODO: process parameters
+        }
 
         /// <summary>
         /// Constructs a short array form a GeoKeyDirectory.
