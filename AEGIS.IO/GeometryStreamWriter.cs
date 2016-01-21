@@ -355,6 +355,7 @@ namespace ELTE.AEGIS.IO
                 throw new IOException(MessageContentWriteError, ex);
             }
         }
+
         /// <summary>
         /// Writes the specified geometries.
         /// </summary>

@@ -381,14 +381,14 @@ namespace ELTE.AEGIS.IO
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            //try
-            //{
+            try
+            {
                 return ApplyReadGeometry();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new InvalidDataException(MessageContentReadError, ex);
-            //}
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException(MessageContentReadError, ex);
+            }
         }
 
         /// <summary>
