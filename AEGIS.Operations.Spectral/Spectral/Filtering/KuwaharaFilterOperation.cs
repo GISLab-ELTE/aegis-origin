@@ -191,7 +191,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             List<Double> result = new List<Double>();
 
             for (Int32 i = Math.Max(rowIndex - _filterRadius, 0); i <= rowIndex; i++)
-                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns); j++)
+                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns - 1); j++)
                     result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
@@ -208,7 +208,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             List<Double> result = new List<Double>();
 
-            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows); i++)
+            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows - 1); i++)
                 for (Int32 j = Math.Max(columnIndex - _filterRadius, 0); j <= columnIndex; j++)
                     result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
 
@@ -226,8 +226,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             List<Double> result = new List<Double>();
 
-            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows); i++)
-                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns); j++)
+            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows - 1); i++)
+                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns - 1); j++)
                     result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
