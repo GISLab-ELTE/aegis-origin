@@ -92,6 +92,7 @@
     <Compile Include="RasterDataOrder.cs" />
     <Compile Include="SpectralRange.cs" />
     <Compile Include="SpectralRanges.cs" />
+    <Compile Include="SpectralStatistics.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
