@@ -103,7 +103,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     if (!segment.IsHomogeneous(_splitHomogeneityThreshold) && segment.Count != 1)
                     {
                         isHomogeneous = false;
-                        result.SplitIntoFour(segment);
+                        result.SplitQuad(segment);
                     }
                 }
                 step++;

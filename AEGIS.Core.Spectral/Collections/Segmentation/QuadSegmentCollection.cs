@@ -13,43 +13,45 @@
 /// </copyright>
 /// <author>Greta Bereczki</author>
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ELTE.AEGIS.Collections.Segmentation
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     /// <summary>
     /// Represents a collections of quadtree segments within a raster.
     /// </summary>
     public class QuadSegmentCollection : SegmentCollection
     {
-        #region Private fields
-
-        /// <summary>
-        /// The Morton code of the parent segment.
-        /// </summary>
-        private Double _parentMortonCode;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuadSegmentCollection"/> class.
+        /// Initializes a new instance of the <see cref="QuadSegmentCollection" /> class.
         /// </summary>
         /// <param name="raster">The raster.</param>
-        /// <exception cref="System.ArgumentNullException">raster;The raster is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
         public QuadSegmentCollection(IRaster raster)
+            : this(raster, SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QuadSegmentCollection" /> class.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public QuadSegmentCollection(IRaster raster, SpectralStatistics statistics)
+            : base(statistics)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
 
             Raster = raster;
-            Count = 0;
+            Count = 1;
 
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
-            Segment segment = new Segment(raster.NumberOfBands);
+            Segment segment = new Segment(raster.NumberOfBands, Statistics);
             Double[] spectralValues;
             for (Int32 rowNumber = 0; rowNumber < Raster.NumberOfRows; rowNumber++)
             {
@@ -68,9 +70,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QuadSegmentCollection"/> class.
+        /// Initializes a new instance of the <see cref="QuadSegmentCollection" /> class.
         /// </summary>
-        /// <param name="other">The other rectangular segment collection.</param>
+        /// <param name="other">The other segment collection.</param>
+        /// <exception cref="System.ArgumentNullException">The other segment collection is null.</exception>
         public QuadSegmentCollection(QuadSegmentCollection other)
             : base(other)
         {
@@ -86,17 +89,17 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <returns>
         /// The collection containing the segments.
         /// </returns>
-        public new IEnumerable<Segment> GetSegments()
+        public override IEnumerable<Segment> GetSegments()
         {
             foreach (Segment segment in _segmentToIndexDictionary.Keys)
                 yield return segment;
         }
 
         /// <summary>
-        /// Splits a segment into four equal segments.
+        /// Splits a segment into four rectangular segments.
         /// </summary>
         /// <param name="segment">The segment.</param>
-        public void SplitIntoFour(Segment segment)
+        public void SplitQuad(Segment segment)
         {
             Int32 startIndex = _segmentToIndexDictionary[segment].First();
             Int32 endIndex = _segmentToIndexDictionary[segment].Last();
@@ -108,12 +111,11 @@ namespace ELTE.AEGIS.Collections.Segmentation
             Int32 endColumnIndex = endIndex % Raster.NumberOfColumns;
 
             _segmentToIndexDictionary.Remove(segment);
-            _parentMortonCode = segment.MortonCode;
 
-            GenerateIndices(startRowIndex, (endRowIndex + startRowIndex) / 2, startColumnIndex, (endColumnIndex + startColumnIndex) / 2, 1);
-            GenerateIndices(startRowIndex, (endRowIndex + startRowIndex) / 2, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 2);
-            GenerateIndices((endRowIndex + startRowIndex) / 2 + 1, endRowIndex, startColumnIndex, (endColumnIndex + startColumnIndex) / 2, 3);
-            GenerateIndices((endRowIndex + startRowIndex) / 2 + 1, endRowIndex, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 4);
+            GenerateIndices(segment.MortonCode, startRowIndex, (endRowIndex + startRowIndex) / 2, startColumnIndex, (endColumnIndex + startColumnIndex) / 2, 1);
+            GenerateIndices(segment.MortonCode, startRowIndex, (endRowIndex + startRowIndex) / 2, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 2);
+            GenerateIndices(segment.MortonCode, (endRowIndex + startRowIndex) / 2 + 1, endRowIndex, startColumnIndex, (endColumnIndex + startColumnIndex) / 2, 3);
+            GenerateIndices(segment.MortonCode, (endRowIndex + startRowIndex) / 2 + 1, endRowIndex, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 4);
 
         }
 
@@ -124,15 +126,17 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <summary>
         /// Generates the indices of the segment.
         /// </summary>
+        /// <param name="parentMortonCode">The morton code of the parent segment.</param>
         /// <param name="startRowIndex">Start row index.</param>
         /// <param name="endRowIndex">End row index.</param>
         /// <param name="startColumnIndex">Start column index.</param>
         /// <param name="endColumnIndex">End column index.</param>
-        private void GenerateIndices(Int32 startRowIndex, Int32 endRowIndex, Int32 startColumnIndex, Int32 endColumnIndex, Int32 step)
+        /// <param name="step">The step number.</param>
+        private void GenerateIndices(Double parentMortonCode, Int32 startRowIndex, Int32 endRowIndex, Int32 startColumnIndex, Int32 endColumnIndex, Int32 step)
         {
             Double[] spectralValues;
             List<Int32> indices = new List<Int32>();
-            Segment segment = new Segment(Raster.NumberOfBands);
+            Segment segment = new Segment(Raster.NumberOfBands, Statistics);
             for (Int32 rowIndex = startRowIndex; rowIndex <= endRowIndex; rowIndex++)
             {
                 for (Int32 columnIndex = startColumnIndex; columnIndex <= endColumnIndex; columnIndex++)
@@ -146,7 +150,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             if (indices.Count != 0)
             {
-                segment.MortonCode = _parentMortonCode * 10 + step;
+                segment.MortonCode = parentMortonCode * 10 + step;
                 _segmentToIndexDictionary.Add(segment, indices);
                 foreach (Int32 index in indices)
                     _indexToSegmentDictionary[index] = segment;
@@ -155,6 +159,5 @@ namespace ELTE.AEGIS.Collections.Segmentation
         }
 
         #endregion
-
     }
 }

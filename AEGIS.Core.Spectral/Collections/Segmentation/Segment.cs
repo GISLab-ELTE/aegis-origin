@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Segment.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -51,6 +51,17 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="numberOfBands">The number of bands.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">The number of bands is less than 1.</exception>
         public Segment(Int32 numberOfBands)
+            : this(numberOfBands, SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="statistics">The statistics computed for the segment.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The number of bands is less than 1.</exception>
+        public Segment(Int32 numberOfBands, SpectralStatistics statistics)
         {
             if (numberOfBands < 1)
                 throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
@@ -59,14 +70,15 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             // initialize collections
             _mean = new Double[numberOfBands];
-            _variance = new Double[numberOfBands];
-            _comoment = new Double[numberOfBands, numberOfBands];
-            Covariance = new Double[numberOfBands, numberOfBands];
 
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-            MortonCode = 0.0;
+            if (statistics.HasFlag(SpectralStatistics.Variance))
+                _variance = new Double[numberOfBands];
+
+            if (statistics.HasFlag(SpectralStatistics.Comoment))
+                _comoment = new Double[numberOfBands, numberOfBands];
+
+            if (statistics.HasFlag(SpectralStatistics.Covariance))
+                Covariance = new Double[numberOfBands, numberOfBands];
         }
 
         /// <summary>
@@ -76,26 +88,26 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
         /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
         public Segment(UInt32[] spectralValues)
+                : this(spectralValues, SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <param name="statistics">The statistics computed for the segment.</param>
+        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
+        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
+        public Segment(UInt32[] spectralValues, SpectralStatistics statistics)
+                : this(spectralValues == null ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
                 throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
             if (spectralValues.Length == 0)
                 throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
 
-            Count = 0;
-
-            // initialize collections
-            _mean = new Double[spectralValues.Length];
-            _variance = new Double[spectralValues.Length];
-            _comoment = new Double[spectralValues.Length, spectralValues.Length];
-            Covariance = new Double[spectralValues.Length, spectralValues.Length];
-
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-
             AddValues(spectralValues);
-            MortonCode = 0.0;
         }
 
         /// <summary>
@@ -105,34 +117,32 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
         /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
         public Segment(Double[] spectralValues)
+            : this(spectralValues, SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <param name="statistics">The statistics computed for the segment.</param>
+        /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
+        /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
+        public Segment(Double[] spectralValues, SpectralStatistics statistics)
+            : this(spectralValues == null ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
                 throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
             if (spectralValues.Length == 0)
                 throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
-
-            Count = 0;
-
-            // initialize collections
-            _mean = new Double[spectralValues.Length];
-            _variance = new Double[spectralValues.Length];
-            _comoment = new Double[spectralValues.Length, spectralValues.Length];
-            Covariance = new Double[spectralValues.Length, spectralValues.Length];
-
-            // initialize read-only wrapper collections
-            Mean = _mean.AsReadOnly();
-            Variance = _variance.AsReadOnly();
-
+            
             AddFloatValues(spectralValues);
-            MortonCode = 0.0;
         }
 
         #endregion
 
         #region Public properties
-
-        public Double MortonCode { get; set; }
-
+        
         /// <summary>
         /// Gets the number of spectral vectors within the set.
         /// </summary>
@@ -149,19 +159,46 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Gets the mean of spectral values for each band.
         /// </summary>
         /// <value>The read-only list containing the mean of spectral values for each band.</value>
-        public IList<Double> Mean { get; private set; }
+        public IReadOnlyList<Double> Mean { get { return _mean; } }
 
         /// <summary>
         /// Gets the estimated variance of spectral values for each band.
         /// </summary>
         /// <value>The read-only list containing the estimated variance of spectral values for each band.</value>
-        public IList<Double> Variance { get; private set; }
+        public IReadOnlyList<Double> Variance { get { return _variance; } }
 
         /// <summary>
         /// Gets the covariance of spectral values between the bands.
         /// </summary>
         /// <value>The covariance of spectral values between the bands.</value>
         public Double[,] Covariance { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the morton code of the segment.
+        /// </summary>
+        /// <value>The morton code of the segment.</value>
+        public Double MortonCode { get; set; }
+
+        /// <summary>
+        /// Gets the statistics computed for the segment.
+        /// </summary>
+        /// <value>The statistics computed for the segment.</value>
+        public SpectralStatistics Statistics
+        {
+            get
+            {
+                SpectralStatistics statistics = SpectralStatistics.None;
+
+                if (_variance != null)
+                    statistics |= SpectralStatistics.Variance;
+                if (Covariance != null)
+                    statistics |= SpectralStatistics.Covariance;
+                if (_comoment != null)
+                    statistics |= SpectralStatistics.Comoment;
+
+                return statistics;
+            }
+        }
 
         #endregion
 
@@ -189,15 +226,22 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 // incremental mean and variance computation
                 _mean[bandIndex] = _mean[bandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) / Count;
 
-                if (Count > 1)
+                if (_variance != null && Count > 1)
                     _variance[bandIndex] = (Count - 2) * _variance[bandIndex] * (Count - 2) / (Count - 1) + (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - previousMean) / Count;
 
                 // use comoment for computing covariance
-                for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                if (_comoment != null)
                 {
-                    _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
-                    Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
-                    Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                    for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                    {
+                        _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
+
+                        if (Covariance != null)
+                        {
+                            Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
+                            Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
         }
@@ -224,15 +268,22 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 // incremental mean and variance computation
                 _mean[bandIndex] = _mean[bandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) / Count;
 
-                if (Count > 1)
+                if (_variance != null && Count > 1)
                     _variance[bandIndex] = (Count - 2) * _variance[bandIndex] * (Count - 2) / (Count - 1) + (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - previousMean) / Count;
 
                 // use comoment for computing covariance
-                for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                if (_comoment != null)
                 {
-                    _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
-                    Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
-                    Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                    for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                    {
+                        _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
+
+                        if (Covariance != null)
+                        {
+                            Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
+                            Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
         }
@@ -258,14 +309,23 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 // incremental mean and variance computation
                 _mean[bandIndex] = _mean[bandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) / Count;
-                _variance[bandIndex] = ((Count + 1) * _variance[bandIndex] - (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - _mean[bandIndex])) / Count;
+
+                if (_variance != null)
+                    _variance[bandIndex] = ((Count + 1) * _variance[bandIndex] - (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - _mean[bandIndex])) / Count;
 
                 // use comoment for computing covariance
-                for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                if (_comoment != null)
                 {
-                    _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
-                    Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
-                    Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                    for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                    {
+                        _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
+
+                        if (Covariance != null)
+                        {
+                            Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
+                            Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
         }
@@ -291,14 +351,23 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 // incremental mean and variance computation
                 _mean[bandIndex] = _mean[bandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) / Count;
-                _variance[bandIndex] = ((Count + 1) * _variance[bandIndex] - (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - _mean[bandIndex])) / Count;
+
+                if (_variance != null)
+                    _variance[bandIndex] = ((Count + 1) * _variance[bandIndex] - (spectralValues[bandIndex] - previousMean) * (spectralValues[bandIndex] - _mean[bandIndex])) / Count;
 
                 // use comoment for computing covariance
-                for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                if (_comoment != null)
                 {
-                    _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
-                    Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
-                    Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                    for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
+                    {
+                        _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] - (spectralValues[bandIndex] - _mean[bandIndex]) * (spectralValues[otherBandIndex] - _mean[otherBandIndex]);
+
+                        if (Covariance != null)
+                        {
+                            Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
+                            Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
         }
@@ -312,6 +381,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
         {
             if (Count <= 1)
                 return true;
+
+            if (_variance == null)
+                return false;
 
             for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
             {
@@ -327,38 +399,53 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// </summary>
         /// <param name="other">The other segment.</param>
         /// <exception cref="System.ArgumentNullException">The other segment is null.</exception>
-        /// <exception cref="System.ArgumentException">The number of bands in the other set does not match the current segment.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of bands in the other set does not match the current segment.
+        /// or
+        /// The statistics of the other segment does not match the current segment.
+        /// </exception>
         public void Merge(Segment other)
         {
             if (other == null)
                 throw new ArgumentNullException("other", "The other segment is null.");
             if (NumberOfBands != other.NumberOfBands)
                 throw new ArgumentException("The number of bands in the other segment does not match the current segment.", "other");
-
+            if (Statistics != other.Statistics)
+                throw new ArgumentException("The statistics of the other segment does not match the current segment.", "other");
+            
             if (this == other)
                 return;
-
-
+            
             Int32 previousCount = Count;
             Count = Count + other.Count;
             for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
             {
                 Double previousMean = _mean[bandIndex];
                 _mean[bandIndex] = (previousCount * previousMean + other.Count * other._mean[bandIndex]) / Count;
-                _variance[bandIndex] = (previousCount - 1) * _variance[bandIndex] + (other.Count - 1) * other._variance[bandIndex];
-                _variance[bandIndex] += Calculator.Pow(previousMean - other._mean[bandIndex], 2) * (previousCount - 1) * (other.Count - 1) / (Count - 2);
-                _variance[bandIndex] /= Count;
+
+                if (_variance != null)
+                {
+                    _variance[bandIndex] = (previousCount - 1) * _variance[bandIndex] + (other.Count - 1) * other._variance[bandIndex];
+                    _variance[bandIndex] += Calculator.Pow(previousMean - other._mean[bandIndex], 2) * (previousCount - 1) * (other.Count - 1) / (Count - 2);
+                    _variance[bandIndex] /= Count;
+                }
 
                 for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
                 {
                     Double bandMean = _mean[bandIndex] - other._mean[bandIndex];
                     Double otherBandMean = _mean[otherBandIndex] - other._mean[otherBandIndex];
 
-                    _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + other._comoment[bandIndex, otherBandIndex];
-                    _comoment[bandIndex, otherBandIndex] += bandMean * otherBandMean * previousCount * other.Count / Count;
+                    if (_comoment != null)
+                    {
+                        _comoment[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] + other._comoment[bandIndex, otherBandIndex];
+                        _comoment[bandIndex, otherBandIndex] += bandMean * otherBandMean * previousCount * other.Count / Count;
 
-                    Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
-                    Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        if (Covariance != null)
+                        {
+                            Covariance[bandIndex, otherBandIndex] = _comoment[bandIndex, otherBandIndex] / Count;
+                            Covariance[otherBandIndex, bandIndex] = Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
         }
@@ -369,16 +456,25 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="other">The other.</param>
         /// <param name="homogeneityThreshold">The homogeneity threshold.</param>
         /// <returns><c>true</c> if the result of merging the two segments is homogeneous; otherwise <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">other;The other segment is null.</exception>
-        /// <exception cref="System.ArgumentException">The number of bands in the other segment does not match the current segment.;other</exception>
+        /// <exception cref="System.ArgumentNullException">The other segment is null.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of bands in the other set does not match the current segment.
+        /// or
+        /// The statistics of the other segment does not match the current segment.
+        /// </exception>
         public Boolean IsMergeHomogenous(Segment other, Double homogeneityThreshold)
         {
             if (other == null)
                 throw new ArgumentNullException("other", "The other segment is null.");
             if (NumberOfBands != other.NumberOfBands)
                 throw new ArgumentException("The number of bands in the other segment does not match the current segment.", "other");
+            if (Statistics != other.Statistics)
+                throw new ArgumentException("The statistics of the other segment does not match the current segment.", "other");
 
             if (this == other)
+                return false;
+
+            if (_variance == null)
                 return false;
 
             Int32 previousCount = Count;
@@ -421,7 +517,11 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The second segment is null.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The number of bands of the two segments does not match.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// The number of bands of the two segments does not match.
+        /// or
+        /// The statistics of the two segments does not match.
+        /// </exception>
         public static Segment operator +(Segment first, Segment second)
         {
             if (first == null)
@@ -431,8 +531,11 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             if (first.NumberOfBands != second.NumberOfBands)
                 throw new ArgumentException("The number of bands of the two segments does not match.", "second");
+            if (first.Statistics != second.Statistics)
+                throw new ArgumentException("The statistics of the two segments does not match.", "other");
 
-            Segment result = new Segment(first.NumberOfBands);
+
+            Segment result = new Segment(first.NumberOfBands, first.Statistics);
 
             // based on the sum of squares for the data
 
@@ -441,21 +544,30 @@ namespace ELTE.AEGIS.Collections.Segmentation
             {
                 result._mean[bandIndex] = (first.Count * first._mean[bandIndex] + second.Count * second._mean[bandIndex]) / result.Count;
 
-                Double firstValue = first.Count * (first._variance[bandIndex] + first._mean[bandIndex] * first._mean[bandIndex]);
-                Double secondValue = second.Count * (second._variance[bandIndex] + second._mean[bandIndex] * second._mean[bandIndex]);
+                if (first._variance != null)
+                {
+                    Double firstValue = first.Count * (first._variance[bandIndex] + first._mean[bandIndex] * first._mean[bandIndex]);
+                    Double secondValue = second.Count * (second._variance[bandIndex] + second._mean[bandIndex] * second._mean[bandIndex]);
 
-                result._variance[bandIndex] = (firstValue + secondValue) / result.Count - result._mean[bandIndex] * result._mean[bandIndex];
+                    result._variance[bandIndex] = (firstValue + secondValue) / result.Count - result._mean[bandIndex] * result._mean[bandIndex];
+                }
 
                 for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < result.NumberOfBands; otherBandIndex++)
                 {
                     Double bandMean = first._mean[bandIndex] - second._mean[bandIndex];
                     Double otherBandMean = first._mean[otherBandIndex] - second._mean[otherBandIndex];
 
-                    result._comoment[bandIndex, otherBandIndex] = first._comoment[bandIndex, otherBandIndex] + second._comoment[bandIndex, otherBandIndex];
-                    result._comoment[bandIndex, otherBandIndex] += bandMean * otherBandMean * first.Count * second.Count / result.Count;
+                    if (first._comoment != null)
+                    {
+                        result._comoment[bandIndex, otherBandIndex] = first._comoment[bandIndex, otherBandIndex] + second._comoment[bandIndex, otherBandIndex];
+                        result._comoment[bandIndex, otherBandIndex] += bandMean * otherBandMean * first.Count * second.Count / result.Count;
 
-                    result.Covariance[bandIndex, otherBandIndex] = result._comoment[bandIndex, otherBandIndex] / result.Count;
-                    result.Covariance[otherBandIndex, bandIndex] = result.Covariance[bandIndex, otherBandIndex];
+                        if (first.Covariance != null)
+                        {
+                            result.Covariance[bandIndex, otherBandIndex] = result._comoment[bandIndex, otherBandIndex] / result.Count;
+                            result.Covariance[otherBandIndex, bandIndex] = result.Covariance[bandIndex, otherBandIndex];
+                        }
+                    }
                 }
             }
 

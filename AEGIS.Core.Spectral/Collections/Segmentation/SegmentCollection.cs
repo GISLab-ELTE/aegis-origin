@@ -43,13 +43,37 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
         /// </summary>
         public SegmentCollection()
-        { }
+            : this(SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
+        /// </summary>
+        /// <param name="statistics">The statistics computed for the segments.</param>
+        public SegmentCollection(SpectralStatistics statistics)
+        {
+            Statistics = statistics;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
         /// </summary>
         /// <param name="raster">The raster.</param>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
         public SegmentCollection(IRaster raster)
+            : this(raster, SpectralStatistics.All)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <param name="statistics">The statistics computed for the segments.</param>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public SegmentCollection(IRaster raster, SpectralStatistics statistics)
+            : this(statistics)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -64,13 +88,15 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
         /// </summary>
         /// <param name="other">The other segment collection.</param>
+        /// <exception cref="System.ArgumentNullException">The other segment collection is null.</exception>
         public SegmentCollection(SegmentCollection other)
         {
             if (other == null)
-                throw new ArgumentNullException("other", "The other segment is null.");
+                throw new ArgumentNullException("other", "The other segment collection is null.");
 
             Raster = other.Raster;
             Count = other.Count;
+            Statistics = other.Statistics;
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
 
@@ -81,7 +107,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 Int32 rowIndex = otherIndices[0] / Raster.NumberOfColumns;
                 Int32 columnIndex = otherIndices[0] % Raster.NumberOfColumns;
 
-                Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
+                Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex), Statistics);
 
                 for (Int32 i = 0; i < other._segmentToIndexDictionary[otherSegment].Count; i++)
                 {
@@ -108,6 +134,12 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public IRaster Raster { get; set; }
 
         /// <summary>
+        /// Gets the statistics computed for the segments.
+        /// </summary>
+        /// <value>The statistics computed for the segments.</value>
+        public SpectralStatistics Statistics { get; private set; }
+
+        /// <summary>
         /// Gets the segment at the specified row and column indices.
         /// </summary>
         /// <param name="rowIndex">The row index.</param>
@@ -117,7 +149,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         {
             get { return GetSegment(rowIndex, columnIndex); }
         }
-
+        
         #endregion
 
         #region Public methods
@@ -162,7 +194,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             if (!_indexToSegmentDictionary.ContainsKey(index))
             {
-                Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
+                Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex), Statistics);
                 _indexToSegmentDictionary.Add(index, segment);
                 _segmentToIndexDictionary.Add(segment, new List<Int32> { index });
             }
@@ -174,7 +206,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Returns the segments within the collection.
         /// </summary>
         /// <returns>The collection containing the segments.</returns>
-        public IEnumerable<Segment> GetSegments()
+        public virtual IEnumerable<Segment> GetSegments()
         {
             // if some segments are not constructed, they must be constructed
             if (_indexToSegmentDictionary.Count < Raster.NumberOfColumns * Raster.NumberOfRows)
@@ -186,7 +218,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
                         Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
                         if (!_indexToSegmentDictionary.ContainsKey(index))
                         {
-                            Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex));
+                            Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex), Statistics);
                             _indexToSegmentDictionary.Add(index, segment);
                             _segmentToIndexDictionary.Add(segment, new List<Int32> { index });
                         }
@@ -373,7 +405,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 if (segment == otherSegment)
                     return;
 
-                ApplyMergeSegments(segment, otherSegment);
+                if (segment.Count > otherSegment.Count)
+                    ApplyMergeSegments(segment, otherSegment);
+                else
+                    ApplyMergeSegments(otherSegment, segment);
             }
             else
                 ApplyMergeSegments(segment, index);
@@ -408,7 +443,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (first == second)
                 return;
 
-            ApplyMergeSegments(first, second);
+            if (first.Count > second.Count)
+                ApplyMergeSegments(first, second);
+            else
+                ApplyMergeSegments(second, first);
         }
 
         /// <summary>
@@ -466,7 +504,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             {
                 if (!_indexToSegmentDictionary.ContainsKey(secondIndex))
                 {
-                    Segment segment = new Segment(Raster.GetFloatValues(firstRowIndex, firstColumnIndex));
+                    Segment segment = new Segment(Raster.GetFloatValues(firstRowIndex, firstColumnIndex), Statistics);
                     segment.AddFloatValues(Raster.GetFloatValues(secondRowIndex, secondColumnIndex));
 
                     _indexToSegmentDictionary.Add(firstIndex, segment);
@@ -489,7 +527,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 if (firstSegment == secondSegment)
                     return;
 
-                ApplyMergeSegments(firstSegment, secondSegment);
+                if (firstSegment.Count > secondSegment.Count)
+                    ApplyMergeSegments(firstSegment, secondSegment);
+                else
+                    ApplyMergeSegments(secondSegment, firstSegment);
             }
         }
 
