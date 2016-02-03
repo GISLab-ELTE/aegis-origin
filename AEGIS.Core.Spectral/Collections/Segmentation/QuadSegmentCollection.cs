@@ -1,5 +1,5 @@
-﻿/// <copyright file="RectangularSegmentCollection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+﻿/// <copyright file="QuadSegmentCollection.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -20,9 +20,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
     using System.Linq;
 
     /// <summary>
-    /// Represents a collections of rectangle/ square segments within a raster.
+    /// Represents a collections of quadtree segments within a raster.
     /// </summary>
-    public class RectangularSegmentCollection : SegmentCollection
+    public class QuadSegmentCollection : SegmentCollection
     {
         #region Private fields
 
@@ -36,11 +36,11 @@ namespace ELTE.AEGIS.Collections.Segmentation
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RectangularSegmentCollection"/> class.
+        /// Initializes a new instance of the <see cref="QuadSegmentCollection"/> class.
         /// </summary>
         /// <param name="raster">The raster.</param>
         /// <exception cref="System.ArgumentNullException">raster;The raster is null.</exception>
-        public RectangularSegmentCollection(IRaster raster)
+        public QuadSegmentCollection(IRaster raster)
         {
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
@@ -68,10 +68,10 @@ namespace ELTE.AEGIS.Collections.Segmentation
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RectangularSegmentCollection"/> class.
+        /// Initializes a new instance of the <see cref="QuadSegmentCollection"/> class.
         /// </summary>
         /// <param name="other">The other rectangular segment collection.</param>
-        public RectangularSegmentCollection(RectangularSegmentCollection other)
+        public QuadSegmentCollection(QuadSegmentCollection other)
             : base(other)
         {
         }

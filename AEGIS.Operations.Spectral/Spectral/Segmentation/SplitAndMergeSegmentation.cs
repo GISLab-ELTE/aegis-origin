@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         protected override void PrepareResult()
         {
             if (_result == null)
-                _result = new RectangularSegmentCollection(_source.Raster);
+                _result = new QuadSegmentCollection(_source.Raster);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         protected override void ComputeResult()
         {
-            RectangularSegmentCollection result = _result as RectangularSegmentCollection;
+            QuadSegmentCollection result = _result as QuadSegmentCollection;
             IList<Segment> segmentList = result.GetSegments().ToList();
 
             // split until all the segments are homogeneous or the threshold is reached
