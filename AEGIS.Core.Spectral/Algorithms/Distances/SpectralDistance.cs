@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralDistance.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,6 +24,16 @@ namespace ELTE.AEGIS.Algorithms.Distances
     /// </summary>
     public abstract class SpectralDistance
     {
+        #region Public properties
+
+        /// <summary>
+        /// Gets the statistics required by the spectral distance.
+        /// </summary>
+        /// <value>The statistics required by the spectral distance.</value>
+        public abstract SpectralStatistics Statistics { get; }
+
+        #endregion
+
         #region Public methods
 
         /// <summary>
@@ -189,9 +199,9 @@ namespace ELTE.AEGIS.Algorithms.Distances
         /// Computes the spectral distance between a segment and a spectral vector.
         /// </summary>
         /// <param name="segment">The segment.</param>
-        /// <param name="values">The spectral vector.</param>
+        /// <param name="values">The values of the spectral vector.</param>
         /// <returns>The spectral distance.</returns>
-        protected virtual Double ComputeDistance(Segment segment, IList<UInt32> values)
+        protected virtual Double ComputeDistance(Segment segment, IEnumerable<UInt32> values)
         {
             return ComputeDistance(segment.Mean, values);
         }
@@ -200,9 +210,9 @@ namespace ELTE.AEGIS.Algorithms.Distances
         /// Computes the spectral distance between a segment and a spectral vector.
         /// </summary>
         /// <param name="segment">The segment.</param>
-        /// <param name="values">The spectral vector.</param>
+        /// <param name="values">The values of the spectral vector.</param>
         /// <returns>The spectral distance.</returns>
-        protected virtual Double ComputeDistance(Segment segment, IList<Double> values)
+        protected virtual Double ComputeDistance(Segment segment, IEnumerable<Double> values)
         {
             return ComputeDistance(segment.Mean, values);
         }
@@ -210,26 +220,26 @@ namespace ELTE.AEGIS.Algorithms.Distances
         /// <summary>
         /// Computes the spectral distance between spectral vectors.
         /// </summary>
-        /// <param name="values">The spectral vector.</param>
-        /// <param name="otherValues">The other spectral vector.</param>
+        /// <param name="values">The values of the spectral vector.</param>
+        /// <param name="otherValues">The values of the other spectral vector.</param>
         /// <returns>The spectral distance.</returns>
-        protected abstract Double ComputeDistance(IList<UInt32> values, IList<UInt32> otherValues);
+        protected abstract Double ComputeDistance(IEnumerable<UInt32> values, IEnumerable<UInt32> otherValues);
 
         /// <summary>
         /// Computes the spectral distance between spectral vectors.
         /// </summary>
-        /// <param name="values">The spectral vector.</param>
-        /// <param name="otherValues">The other spectral vector.</param>
+        /// <param name="values">The values of the spectral vector.</param>
+        /// <param name="otherValues">The values of the other spectral vector.</param>
         /// <returns>The spectral distance.</returns>
-        protected abstract Double ComputeDistance(IList<Double> values, IList<UInt32> otherValues);
+        protected abstract Double ComputeDistance(IEnumerable<Double> values, IEnumerable<UInt32> otherValues);
 
         /// <summary>
         /// Computes the spectral distance between spectral vectors.
         /// </summary>
-        /// <param name="values">The spectral vector.</param>
-        /// <param name="otherValues">The other spectral vector.</param>
+        /// <param name="values">The values of the spectral vector.</param>
+        /// <param name="otherValues">The values of the other spectral vector.</param>
         /// <returns>The spectral distance.</returns>
-        protected abstract Double ComputeDistance(IList<Double> values, IList<Double> otherValues);
+        protected abstract Double ComputeDistance(IEnumerable<Double> values, IEnumerable<Double> otherValues);
 
         #endregion
     }
