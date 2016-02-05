@@ -17,7 +17,6 @@ using ELTE.AEGIS.Collections.Segmentation;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ELTE.AEGIS.Tests.Collections.Segmentation
@@ -174,11 +173,10 @@ namespace ELTE.AEGIS.Tests.Collections.Segmentation
                     Segment otherSegment = collection.GetSegment(rowIndex, columnIndex);
                     collection.MergeSegments(segment, otherSegment);
 
-                    Assert.IsFalse(segment != otherSegment && collection.Contains(otherSegment));
+                    Assert.IsFalse(segment != otherSegment && collection.Contains(segment) && collection.Contains(otherSegment));
 
-                    otherSegment = collection.GetSegment(rowIndex, columnIndex);
-
-                    Assert.AreEqual(segment, otherSegment);
+                    segment = collection.GetSegment(rowIndex, columnIndex);
+                    
                     Assert.AreEqual(count, collection.Count);
                     count--;
                 }

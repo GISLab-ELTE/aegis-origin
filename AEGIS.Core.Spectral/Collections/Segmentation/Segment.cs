@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
         /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
         public Segment(UInt32[] spectralValues, SpectralStatistics statistics)
-                : this(spectralValues == null ? 1 : spectralValues.Length, statistics)
+                : this(spectralValues == null || spectralValues.Length == 0 ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
                 throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
@@ -129,7 +129,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <exception cref="System.ArgumentNullException">The array of spectral values is null.</exception>
         /// <exception cref="System.ArgumentException">The array of spectral values is empty.</exception>
         public Segment(Double[] spectralValues, SpectralStatistics statistics)
-            : this(spectralValues == null ? 1 : spectralValues.Length, statistics)
+            : this(spectralValues == null || spectralValues.Length == 0 ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
                 throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
