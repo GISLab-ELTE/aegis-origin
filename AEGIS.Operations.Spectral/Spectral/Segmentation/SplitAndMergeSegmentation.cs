@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SplitAndMergeSegmentation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,14 +13,14 @@
 /// </copyright>
 /// <author>Greta Bereczki</author>
 
+using ELTE.AEGIS.Collections.Segmentation;
+using ELTE.AEGIS.Operations.Management;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
-    using ELTE.AEGIS.Collections.Segmentation;
-    using ELTE.AEGIS.Operations.Management;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     /// <summary>
     /// Represents an operation performing split-and-merge segmentation of a raster image.
     /// </summary>
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         protected override void PrepareResult()
         {
             if (_result == null)
-                _result = new QuadSegmentCollection(_source.Raster);
+                _result = new QuadSegmentCollection(_source.Raster, _distance.Statistics | SpectralStatistics.Variance);
         }
 
         /// <summary>

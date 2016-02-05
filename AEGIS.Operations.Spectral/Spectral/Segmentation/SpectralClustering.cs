@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             }
             else
             {
-                _result = new SegmentCollection(Source.Raster);
+                _result = new SegmentCollection(Source.Raster, _distance.Statistics);
             }
         }
 

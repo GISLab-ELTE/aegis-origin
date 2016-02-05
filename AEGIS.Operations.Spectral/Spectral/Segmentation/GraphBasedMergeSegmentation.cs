@@ -139,6 +139,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Protected Operation methods
 
         /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        protected override void PrepareResult()
+        {
+            if (_result == null)
+                _result = new SegmentCollection(_source.Raster, _distance.Statistics);
+        }
+
+        /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()

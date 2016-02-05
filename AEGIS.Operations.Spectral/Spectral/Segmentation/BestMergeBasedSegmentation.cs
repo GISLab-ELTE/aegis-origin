@@ -72,10 +72,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             _numberOfIterations = Convert.ToInt32(ResolveParameter(CommonOperationParameters.NumberOfIterations));
             _mergeThreshold = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SegmentMergeThreshold));            
         }
-        
+
         #endregion
 
         #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        protected override void PrepareResult()
+        {
+            if (_result == null)
+                _result = new SegmentCollection(_source.Raster, _distance.Statistics);
+        }
 
         /// <summary>
         /// Computes the result of the operation.
@@ -90,6 +99,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 hasMerged = false;
 
                 for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+                {
                     for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
                     {
                         // select best merge direction
@@ -107,26 +117,27 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         // apply merge
 
                         switch ((SegmentMergeDirection)Array.IndexOf(distances, minDistance))
-                        { 
+                        {
                             case SegmentMergeDirection.Left:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1); 
+                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1);
                                 break;
                             case SegmentMergeDirection.Up:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex); 
+                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex);
                                 break;
                             case SegmentMergeDirection.Right:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1); 
+                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
                                 break;
                             case SegmentMergeDirection.Down:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex); 
+                                _result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
                                 break;
                         }
 
                         hasMerged = true;
                     }
+                }
             }
         }
-
+        
         #endregion
 
         #region Private methods
@@ -147,13 +158,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             if (secondRowIndex < 0 || secondColumnIndex < 0 || secondRowIndex >= _source.Raster.NumberOfRows || secondColumnIndex >= _source.Raster.NumberOfColumns)
                 return Double.MaxValue;
 
-            Segment firtstSegment = _result[firstRowIndex, firstColumnIndex];
+            Segment firstSegment = _result[firstRowIndex, firstColumnIndex];
             Segment secondSegment = _result[secondRowIndex, secondColumnIndex];
 
-            if (firtstSegment == secondSegment)
+            if (firstSegment == secondSegment)
                 return Double.MaxValue;
 
-            return _distance.Distance(firtstSegment, secondSegment);
+            return _distance.Distance(firstSegment, secondSegment);
         }
 
         #endregion

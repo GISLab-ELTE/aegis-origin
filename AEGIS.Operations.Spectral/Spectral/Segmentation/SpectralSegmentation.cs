@@ -95,7 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         protected override void PrepareResult()
         {
             if (_result == null)
-                _result = new SegmentCollection(_source.Raster);
+                _result = new SegmentCollection(_source.Raster, SpectralStatistics.All);
         }
       
         #endregion

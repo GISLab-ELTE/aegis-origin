@@ -13,14 +13,14 @@
 /// </copyright>
 /// <author>Greta Bereczki</author>
 
+using ELTE.AEGIS.Collections.Segmentation;
+using ELTE.AEGIS.Operations.Management;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
-    using ELTE.AEGIS.Collections.Segmentation;
-    using ELTE.AEGIS.Operations.Management;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     /// <summary>
     /// Represents an operation performing clustering of spectral geometries using the k-means method.
     /// </summary>
@@ -125,7 +125,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             Int32 numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
             _numberOfClusters = (numberOfClusters < 1) ? 1 : numberOfClusters;
-            _initialSegmentCollection = new SegmentCollection();
             _initialSegmentCollection = ResolveParameter(SpectralOperationParameters.SegmentCollection) as SegmentCollection;
         }
 
@@ -300,7 +299,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
                     steps++;
                     if (steps < NumberOfSteps)
-                        _result = new SegmentCollection(_source.Raster);
+                        _result = new SegmentCollection(_source.Raster, _distance.Statistics);
                 }
             }
         }

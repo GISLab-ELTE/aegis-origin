@@ -112,9 +112,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         }
 
         #endregion
-  
-        #region Protected Operation methods
 
+        #region Protected Operation methods
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -285,10 +285,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             Boolean clusterMerged = true;
 
-            while (clusterMerged)
+            do
             {
                 clusterMerged = false;
-                Int32 n = _result.Count;
 
                 List<Segment> segments = _result.GetSegments().ToList();
 
@@ -298,7 +297,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     {
                         Double distance = _clusterDistance.Distance(segments[firstIndex], segments[secondIndex]);
 
-                        if (Math.Abs(distance) < _clusterDistanceThreshold)
+                        if (distance < _clusterDistanceThreshold)
                         {
                             _result.MergeSegments(segments[firstIndex], segments[secondIndex]);
                             segments.RemoveAt(secondIndex);
@@ -306,7 +305,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         }
                     }
                 }
-            }
+            } while (clusterMerged);
         }
  
         #endregion
