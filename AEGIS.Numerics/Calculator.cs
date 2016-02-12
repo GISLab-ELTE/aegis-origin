@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Calculator.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -11,7 +11,7 @@
 ///     or implied. See the License for the specific language governing
 ///     permissions and limitations under the License.
 /// </copyright>
-/// <authors>Roberto Giachetta, Ákos Horváth</authors>
+/// <authors>Roberto Giachetta, Ákos Horváth, Dóra Papp</authors>
 
 using System;
 
@@ -867,6 +867,37 @@ namespace ELTE.AEGIS.Numerics
             return _factorialCacheArray[value];
         }
 
+        /// <summary>
+        /// Calculates the Gamma function of a specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The Gamma function value.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">The value is less than or equal to 0.</exception>
+        public static Double Gamma(Double value)
+        {
+
+            if (value <= 0 && Math.Ceiling(value) == Math.Floor(value))
+                throw new ArgumentOutOfRangeException("value", "The value is less than or equal to 0.");
+
+            Double[] p = { 0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+                           771.32342877765313, -176.61502916214059, 12.507343278686905,
+                           -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7 };
+            const Int32 g = 7;
+            const Int32 n = 9;
+            if (value < 0.5)
+                return Math.PI / (Math.Sin(Math.PI * value) * Gamma(1 - value));
+
+            value = value - 1;
+
+            Double a = p[0];
+            for (Int32 i = 1; i < n; i++)
+            {
+                a += p[i] / (value + i);
+            }
+
+            return Math.Sqrt(2 * Math.PI) * Math.Pow(value + g + 0.5, value + 0.5) * Math.Exp(-(value + g + 0.5)) * a;
+        }
+
         #endregion
 
         #region Summation methods
@@ -1056,6 +1087,46 @@ namespace ELTE.AEGIS.Numerics
                     number *= number;
                 }
                 result = 1 / result;
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region Algebra methods
+
+        /// <summary>
+        /// Computes the binomial coefficient indexed by two nonnegative integers.
+        /// </summary>
+        /// <param name="n">The first coefficient.</param>
+        /// <param name="k">The second coefficient.</param>
+        /// <returns>The binomial coefficient indexed by the two specified nonnegative integers</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The first argument is less than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The second argument is less than zero.</exception>
+        public static Double Binomial(Int32 n, Int32 k)
+        {
+            if (n < 0)
+                throw new ArgumentOutOfRangeException("n", "The first argument is less than zero.");
+            if (k < 0)
+                throw new ArgumentOutOfRangeException("k", "The second argument is less than zero.");
+
+            Double result;
+
+            if (k > n)
+                result = 0;
+
+            else
+            {
+                if ((n - k) < k)
+                    k = n - k;
+
+                result = 1;
+
+                for (Int32 i = 1; i <= k; ++i)
+                {
+                    result = (result * (n + 1 - i)) / i;
+                }
             }
 
             return result;
@@ -1322,41 +1393,5 @@ namespace ELTE.AEGIS.Numerics
         }
 
         #endregion
-
-        #region Gamma function computation methods
-
-        /// <summary>
-        /// Calculates the Gamma function of a specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The Gamma function value.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">The value is less than or equal to 0.</exception>
-        public static Double Gamma(Double value)
-        {
-
-            if (value <= 0 && Math.Ceiling(value) == Math.Floor(value))
-                throw new ArgumentOutOfRangeException("value", "The value is less than or equal to 0.");
-
-            Double[] p = { 0.99999999999980993, 676.5203681218851, -1259.1392167224028, 
-                           771.32342877765313, -176.61502916214059, 12.507343278686905, 
-                           -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7 };
-            const Int32 g = 7;
-            const Int32 n = 9;
-            if (value < 0.5)
-                return Math.PI / (Math.Sin(Math.PI * value) * Gamma(1 - value));
-
-            value = value - 1;
-
-            Double a = p[0];
-            for (Int32 i = 1; i < n; i++)
-            {
-                a += p[i] / (value + i);
-            }
-
-            return Math.Sqrt(2 * Math.PI) * Math.Pow(value + g + 0.5, value + 0.5) * Math.Exp(-(value + g + 0.5)) * a;
-        }
-
-        #endregion
-
     }
 }

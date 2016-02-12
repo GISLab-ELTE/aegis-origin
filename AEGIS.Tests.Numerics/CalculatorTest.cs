@@ -1,5 +1,5 @@
 ﻿/// <copyright file="CalculatorTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -11,7 +11,7 @@
 ///     or implied. See the License for the specific language governing
 ///     permissions and limitations under the License.
 /// </copyright>
-/// <author>Ákos Horváth</author>
+/// <author>Ákos Horváth, Dóra Papp</author>
 
 using ELTE.AEGIS.Numerics;
 using NUnit.Framework;
@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Tests.Numerics
         #region Test methods
 
         /// <summary>
-        /// Test case for the <see cref="AbsMax" /> method.
+        /// Tests the <see cref="AbsMax" /> method.
         /// </summary>
         [Test]
         public void CalculatorAbsMaxTest()
@@ -42,7 +42,7 @@ namespace ELTE.AEGIS.Tests.Numerics
         }
 
         /// <summary>
-        /// Test case for the <see cref="Factorial" /> method.
+        /// Tests the <see cref="Factorial" /> method.
         /// </summary>
         [Test]
         public void CalculatorFactorialTest()
@@ -60,7 +60,7 @@ namespace ELTE.AEGIS.Tests.Numerics
         }
 
         /// <summary>
-        /// Test case for the <see cref="Gamma" /> method.
+        /// Tests the <see cref="Gamma" /> method.
         /// </summary>
         [Test]
         public void CalcaultorGammaTest()
@@ -82,6 +82,23 @@ namespace ELTE.AEGIS.Tests.Numerics
             Assert.Throws<ArgumentOutOfRangeException>(() => Calculator.Gamma(-5));
         }
 
+        /// <summary>
+        /// Tests the <see cref="Binomial" /> method.
+        /// </summary>
+        [Test]
+        public void BinomialTest()
+        {
+            Assert.AreEqual(Calculator.Binomial(18, 13), 8568);
+            Assert.AreEqual(Calculator.Binomial(60, 30), 118264581564861424);
+            Assert.AreEqual(Calculator.Binomial(0, 0), 1);
+            Assert.AreEqual(Calculator.Binomial(5, 0), 1);
+            Assert.AreEqual(Calculator.Binomial(0, 5), 0);
+            Assert.AreEqual(Calculator.Binomial(30, 30), 1);
+            Assert.AreEqual(Calculator.Binomial(30, 31), 0);
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => Calculator.Binomial(-1, 1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Calculator.Binomial(1, -1));
+        }
         #endregion
     }
 }
