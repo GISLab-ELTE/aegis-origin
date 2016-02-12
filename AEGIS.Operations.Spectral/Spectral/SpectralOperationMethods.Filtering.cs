@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationMethods.Filtering.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -34,6 +34,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _minimumFilter;
         private static SpectralOperationMethod _prewittFilter;
         private static SpectralOperationMethod _robertsFilter;
+        private static SpectralOperationMethod _scharrFilter;
         private static SpectralOperationMethod _sobelFilter;
         private static SpectralOperationMethod _unsharpMasking;
         private static SpectralOperationMethod _weightedMedianFilter;
@@ -258,6 +259,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Scharr filter.
+        /// </summary>
+        public static SpectralOperationMethod ScharrFilter
+        {
+            get
+            {
+                return _scharrFilter ?? (_scharrFilter =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251183", "Scharr filter",
+                                                                         "The Scharr edge detection filter is a specialization of the Sobel filter. Scharr operators result from an optimization minimizing weighted mean squared angular error in Fourier domain.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandFocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.BandIndex));
             }
         }
 

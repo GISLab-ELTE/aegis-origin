@@ -1,5 +1,5 @@
 ﻿/// <copyright file="FilterFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -222,6 +222,36 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             Matrix matrix = new Matrix(3, 3, 0);
             matrix[0, 2] = 1;
             matrix[2, 0] = -1;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a horizontal Scharr filter.
+        /// </summary>
+        /// <returns>The produced Scharr filter.</returns>
+        public static Filter CreateScharrHorizontalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[2, 0] = 3;
+            matrix[1, 0] = 10;
+            matrix[0, 2] = matrix[2, 2] = -3;
+            matrix[1, 2] = -10;
+
+            return new Filter(matrix, 1, 0);
+        }
+
+        /// <summary>
+        /// Creates a vertical Scharr filter.
+        /// </summary>
+        /// <returns>The produced Scharr filter.</returns>
+        public static Filter CreateScharrVerticalFilter()
+        {
+            Matrix matrix = new Matrix(3, 3);
+            matrix[0, 0] = matrix[0, 2] = 3;
+            matrix[0, 1] = 10;
+            matrix[2, 0] = matrix[2, 2] = -3;
+            matrix[2, 1] = -10;
 
             return new Filter(matrix, 1, 0);
         }

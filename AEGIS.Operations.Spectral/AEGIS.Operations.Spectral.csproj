@@ -99,6 +99,7 @@
     <Compile Include="Spectral\Filtering\MedianFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\PrewittFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\RobertsFilterOperation.cs" />
+    <Compile Include="Spectral\Filtering\ScharrFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\SobelFilterOperation.cs" />
     <Compile Include="Spectral\Filtering\UnsharpMaskingOperation.cs" />
     <Compile Include="Spectral\Filtering\WeightedMedianFilterOperation.cs" />
