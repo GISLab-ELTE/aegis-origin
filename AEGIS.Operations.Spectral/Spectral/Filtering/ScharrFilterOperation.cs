@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Dóra Papp</author>
 
+using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
@@ -25,6 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The Scharr edge detection filter is a specialization of the Sobel filter.
     /// Scharr operators result from an optimization minimizing weighted mean squared angular error in Fourier domain. 
     /// </remarks>
+    [OperationMethodImplementation("AEGIS::251183", "Scharr filter")]
     public class ScharrFilterOperation : GradientFilterOperation
     {
         #region Constructors
