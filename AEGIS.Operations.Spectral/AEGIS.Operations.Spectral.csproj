@@ -73,6 +73,7 @@
     <Compile Include="Spectral\Classification\SauvolaLocalThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\SegmentBasedClassification.cs" />
     <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
+    <Compile Include="Spectral\Common\AdaptiveHistogramEqualization.cs" />
     <Compile Include="Spectral\Common\ExponentialTransformation.cs" />
     <Compile Include="Spectral\Common\HistogramEqualization.cs" />
     <Compile Include="Spectral\Common\HistogramTransformation.cs" />

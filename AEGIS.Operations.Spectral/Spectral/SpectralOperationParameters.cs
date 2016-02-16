@@ -150,6 +150,8 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static OperationParameter _spectralDistanceType;
         private static OperationParameter _spectralFactor;
         private static OperationParameter _spectralOffset;
+        private static OperationParameter _tileNumberHorizontally;
+        private static OperationParameter _tileNumberVertically;
 
         #endregion
 
@@ -1061,6 +1063,37 @@ namespace ELTE.AEGIS.Operations.Spectral
 
             }
         }
+
+        /// <summary>
+        /// Tile number horizontally.
+        /// </summary>
+        public static OperationParameter TileNumberHorizontally
+        {
+            get
+            {
+                return _tileNumberHorizontally ?? (_tileNumberHorizontally =
+                    OperationParameter.CreateOptionalParameter<Int32>("", "Tile number horizontally",
+                                                                       "The number of tiles of the raster besides each other horizontally.",
+                                                                       null, 8, Conditions.IsPositive())
+                );
+            }
+        }
+
+        /// <summary>
+        /// Tile number vertically.
+        /// </summary>
+        public static OperationParameter TileNumberVertically
+        {
+            get
+            {
+                return _tileNumberVertically ?? (_tileNumberVertically =
+                    OperationParameter.CreateOptionalParameter<Int32>("", "Tile number vertically",
+                                                                       "The number of tiles of the raster besides each other vertically.",
+                                                                       null, 8, Conditions.IsPositive())
+                );
+            }
+        }
+
 
         #endregion
     }

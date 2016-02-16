@@ -85,7 +85,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         #region Private static fields
 
-        private static SpectralOperationMethod _contrastLimitedAdaptingHistogramEqualization;
+        private static SpectralOperationMethod _adaptiveHistogramEqualization;
         private static SpectralOperationMethod _exponentialTransformation;
         private static SpectralOperationMethod _gammaCorrection;
         private static SpectralOperationMethod _histogramEqualization;
@@ -105,21 +105,21 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Public static properties
 
         /// <summary>
-        /// Contrast limited adapting histogram equalization.
+        /// Adaptive histogram equalization.
         /// </summary>
-        public static SpectralOperationMethod ContrastLimitedAdaptingHistogramEqualization
+        public static SpectralOperationMethod AdaptiveHistogramEqualization
         {
             get
             {
-                return _contrastLimitedAdaptingHistogramEqualization ?? (_contrastLimitedAdaptingHistogramEqualization =
-                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250218", "Contrast limited adapting histogram equalization",
-                                                                         "Contrast limited adapting histogram equalization (CLAHE) differs from ordinary adaptive histogram equalization in its contrast limiting.", null, "1.0.0",
+                return _adaptiveHistogramEqualization ?? (_adaptiveHistogramEqualization =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250218", "Adaptive histogram equalization",
+                                                                         "Adaptive histogram equalization (AHE) is a computer image processing technique used to improve contrast in images.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         SpectralOperationParameters.TileNumberHorizontally,
+                                                                         SpectralOperationParameters.BandIndex));
             }
         }
-
+        
         /// <summary>
         /// Exponential spectral transformation.
         /// </summary>
