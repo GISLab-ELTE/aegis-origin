@@ -1,5 +1,5 @@
 ﻿/// <copyright file="NiblackLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -16,7 +16,6 @@
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
@@ -27,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Niblack local thresholding separates white and black pixels given the local mean and standard deviation for the current window.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253311", "Niblack local thresholding")]
-    public class NiblackLocalThresholdingClassification : PerBandSpectralTransformation
+    public class NiblackLocalThresholdingClassification : PerBandSpectralClassification
     {
         #region Private fields
 
@@ -116,42 +115,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 return 255;
             else
                 return 0;
-        }
-
-        #endregion
-
-        #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        protected override sealed void PrepareResult()
-        {
-            // the result will have integer representation in all cases
-            if (_sourceBandIndices != null)
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _sourceBandIndices.Length,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 RasterPresentation.CreateGrayscalePresentation(),
-                                                                 _source.Imaging);
-            }
-            else
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _source.Raster.NumberOfBands,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 _source.Presentation,
-                                                                 _source.Imaging);
-            }
         }
 
         #endregion

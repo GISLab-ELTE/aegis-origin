@@ -16,7 +16,6 @@
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
@@ -29,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// To increase the resistance to noise the threshold value can be shifted by a thersholding constant.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253305", "Meanthresh local thresholding")]
-    public class MeanthreshLocalThresholdingClassification : PerBandSpectralTransformation
+    public class MeanthreshLocalThresholdingClassification : PerBandSpectralClassification
     {
         #region Private fields
 
@@ -115,43 +114,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         }
 
         #endregion
-
-        #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        protected override sealed void PrepareResult()
-        {
-            // the result will have integer representation in all cases
-            if (_sourceBandIndices != null)
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _sourceBandIndices.Length,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 RasterPresentation.CreateGrayscalePresentation(),
-                                                                 _source.Imaging);
-            }
-            else
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _source.Raster.NumberOfBands,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 _source.Presentation,
-                                                                 _source.Imaging);
-            }
-        }
-
-        #endregion
-
+        
         #region Private methods
 
         /// <summary>
@@ -161,32 +124,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             _meanValue = new Double[_source.Raster.NumberOfBands];
 
-            if (_sourceBandIndices != null)
+            for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
             {
-                for (Int32 bandIndex = 0; bandIndex < _sourceBandIndices.Length; bandIndex++)
-                {
-                    Double result = 0;
-                    for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                        for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                            result += _source.Raster.GetFloatValue(rowIndex, columnIndex, _sourceBandIndices[bandIndex]);
+                Double result = 0;
+                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                        result += _source.Raster.GetFloatValue(rowIndex, columnIndex, SourceBandIndices[bandIndex]);
 
-                    _meanValue[_sourceBandIndices[bandIndex]] = result / (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
-                }
+                _meanValue[SourceBandIndices[bandIndex]] = result / (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
             }
-            else
-            {
-
-                for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
-                {
-                    Double result = 0;
-                    for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                        for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                            result += _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
-
-                    _meanValue[bandIndex] = result / (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
-                }
-            }
-
         }
 
         #endregion

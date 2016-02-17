@@ -107,11 +107,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             _radiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
             _radiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
 
-            if (_sourceBandIndices != null)
+            if (SourceBandIndices != null)
             {
-                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
                 {
-                    ComputeParameters(_sourceBandIndices[k]);
+                    ComputeParameters(SourceBandIndices[k]);
                 }
             }
             else

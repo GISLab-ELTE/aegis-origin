@@ -110,30 +110,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected override sealed void PrepareResult()
         {
             // the result will have integer representation in all cases
-            if (_sourceBandIndices != null)
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _sourceBandIndices.Length,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 RasterPresentation.CreateGrayscalePresentation(),
-                                                                 _source.Imaging);
-            }
-            else
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer,
-                                                                                     _source.Raster.NumberOfBands,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 _source.Presentation,
-                                                                 _source.Imaging);
-            }
+            _result = _source.Factory.CreateSpectralGeometry(_source,
+                                                             PrepareRasterResult(RasterFormat.Integer,
+                                                                                 SourceBandIndices.Length,
+                                                                                 _source.Raster.NumberOfRows,
+                                                                                 _source.Raster.NumberOfColumns,
+                                                                                 Enumerable.Repeat(8, SourceBandIndices.Length).ToArray(),
+                                                                                 _source.Raster.Mapper),
+                                                             RasterPresentation.CreateGrayscalePresentation(),
+                                                             _source.Imaging);
         }
 
         #endregion

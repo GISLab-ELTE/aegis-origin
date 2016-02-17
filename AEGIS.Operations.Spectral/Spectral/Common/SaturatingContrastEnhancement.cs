@@ -87,56 +87,27 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SaturatingContrastEnhancement(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SaturatingContrastEnhancement, parameters)
         {
-            if (_sourceBandIndices != null)
+            _offset = new Int32[] { SourceBandIndices.Length };
+            _factor = new Double[] { SourceBandIndices.Length };
+
+            for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
             {
-                _offset = new Int32[] { _sourceBandIndices.Length };
-                _factor = new Double[] { _sourceBandIndices.Length };
+                Int32 minIntensity = 0, maxIntensity = _source.Raster.HistogramValues[SourceBandIndices[bandIndex]].Count - 1;
 
-                for (Int32 bandIndex = 0; bandIndex < _sourceBandIndices.Length; bandIndex++)
+                while (minIntensity < _source.Raster.HistogramValues[SourceBandIndices[bandIndex]].Count && _source.Raster.HistogramValues[SourceBandIndices[bandIndex]][minIntensity] == 0)
+                    minIntensity++;
+                while (maxIntensity >= 0 && _source.Raster.HistogramValues[SourceBandIndices[bandIndex]][maxIntensity] == 0)
+                    maxIntensity--;
+
+                if (minIntensity == maxIntensity)
                 {
-                    Int32 minIntensity = 0, maxIntensity = _source.Raster.HistogramValues[_sourceBandIndices[bandIndex]].Count - 1;
-                    
-                    while (minIntensity < _source.Raster.HistogramValues[_sourceBandIndices[bandIndex]].Count && _source.Raster.HistogramValues[_sourceBandIndices[bandIndex]][minIntensity] == 0)
-                        minIntensity++;
-                    while (maxIntensity >= 0 && _source.Raster.HistogramValues[_sourceBandIndices[bandIndex]][maxIntensity] == 0)
-                        maxIntensity--;
-
-                    if (minIntensity == maxIntensity)
-                    {
-                        _offset[bandIndex] = 0;
-                        _factor[bandIndex] = 1;
-                    }
-                    else
-                    {
-                        _offset[bandIndex] = -minIntensity;
-                        _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[_sourceBandIndices[bandIndex]]) / (maxIntensity - minIntensity);
-                    }
+                    _offset[bandIndex] = 0;
+                    _factor[bandIndex] = 1;
                 }
-            }
-            else
-            {
-                _offset = new Int32[_source.Raster.NumberOfBands];
-                _factor = new Double[_source.Raster.NumberOfBands];
-
-                for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
+                else
                 {
-                    Int32 minIntensity = 0, maxIntensity = _source.Raster.HistogramValues[bandIndex].Count - 1;
-
-                    while (minIntensity < _source.Raster.HistogramValues[bandIndex].Count && _source.Raster.HistogramValues[bandIndex][minIntensity] == 0)
-                        minIntensity++;
-                    while (maxIntensity >= 0 && _source.Raster.HistogramValues[bandIndex][maxIntensity] == 0)
-                        maxIntensity--;
-
-                    if (minIntensity == maxIntensity)
-                    {
-                        _offset[bandIndex] = 0;
-                        _factor[bandIndex] = 1;
-                    }
-                    else
-                    {
-                        _offset[bandIndex] = -minIntensity;
-                        _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[bandIndex]) / (maxIntensity - minIntensity);
-                    }
+                    _offset[bandIndex] = -minIntensity;
+                    _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[SourceBandIndices[bandIndex]]) / (maxIntensity - minIntensity);
                 }
             }
         }
@@ -169,26 +140,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             return _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex];
         }
 
-        #endregion
-
-        #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        protected override void PrepareResult()
-        {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Integer,
-                                                                                Source.Raster.NumberOfBands,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                16,
-                                                                                Source.Raster.Mapper),
-                                                            Source.Presentation,
-                                                            Source.Imaging);
-        }
-
-        #endregion
+        #endregion        
     }
 }

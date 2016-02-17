@@ -272,7 +272,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
                     MaskedRaster tile = new MaskedRaster(null, _source.Raster, i * _numberOfPixelRowsOfNormalTile, j * _numberOfPixelColumnsOfNormalTile, numberOfRowsInTile, numberOfColumnsInTile);
 
-                    if (_sourceBandIndices != null)
+                    if (SourceBandIndices != null)
                     {
                         _allTilesParameters[i, j] = new TileHistogramEqualizationParameters();
                         _allTilesParameters[i, j].CumulativeDistributionValues = new Double[_source.Raster.NumberOfBands][];
@@ -281,9 +281,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
                         _allTilesParameters[i, j].RadiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
                         _allTilesParameters[i, j].RadiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
 
-                        for (Int32 bandIndex = 0; bandIndex < _sourceBandIndices.Length; bandIndex++)
+                        for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
                         {
-                            ComputeParametersOfActualTile(_sourceBandIndices[bandIndex], i, j, tile, _allTilesParameters[i, j]);
+                            ComputeParametersOfActualTile(SourceBandIndices[bandIndex], i, j, tile, _allTilesParameters[i, j]);
                         }
                     }
                     else

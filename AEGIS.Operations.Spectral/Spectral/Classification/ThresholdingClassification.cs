@@ -22,7 +22,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents a threshold based spectral classification.
     /// </summary>
-    public abstract class ThresholdingClassification : PerBandSpectralTransformation
+    public abstract class ThresholdingClassification : PerBandSpectralClassification
     {
         #region protected fields
 
@@ -90,42 +90,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             }
         }
 
-        #endregion
-
-        #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        protected override sealed void PrepareResult()
-        {
-            // the result will have integer representation in all cases
-            if (_sourceBandIndices != null)
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer, 
-                                                                                     _sourceBandIndices.Length,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _sourceBandIndices.Length).ToArray(),
-                                                                                     _source.Raster.Mapper), 
-                                                                 RasterPresentation.CreateGrayscalePresentation(),
-                                                                 _source.Imaging);
-            }
-            else
-            {
-                _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                                 PrepareRasterResult(RasterFormat.Integer, 
-                                                                                     _source.Raster.NumberOfBands,
-                                                                                     _source.Raster.NumberOfRows,
-                                                                                     _source.Raster.NumberOfColumns,
-                                                                                     Enumerable.Repeat(8, _source.Raster.NumberOfBands).ToArray(),
-                                                                                     _source.Raster.Mapper),
-                                                                 _source.Presentation,
-                                                                 _source.Imaging);
-            }
-        }
-
-        #endregion
+        #endregion        
     }
 }

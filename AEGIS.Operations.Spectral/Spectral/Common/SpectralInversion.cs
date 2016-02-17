@@ -79,12 +79,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SpectralInversion(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SpectralInversion, parameters)
         {
-            if (_sourceBandIndices != null)
+            if (SourceBandIndices != null)
             {
-                _peeks = new UInt32[_sourceBandIndices.Length];
-                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                _peeks = new UInt32[SourceBandIndices.Length];
+                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
                 {
-                    _peeks[k] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[_sourceBandIndices[k]]);
+                    _peeks[k] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[SourceBandIndices[k]]);
                 }
             }
             else

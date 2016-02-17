@@ -75,11 +75,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public OtsuThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, SpectralOperationMethods.OtsuThresholdingClassification, parameters)
         {
-            if (_sourceBandIndices != null)
+            if (SourceBandIndices != null)
             {
-                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
                 {
-                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(_sourceBandIndices[k]));
+                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(SourceBandIndices[k]));
                 }
             }
             else

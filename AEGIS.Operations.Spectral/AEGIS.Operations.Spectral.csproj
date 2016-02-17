@@ -68,6 +68,7 @@
     <Compile Include="Spectral\Classification\NiblackLocalThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\PaletteColorClassification.cs" />
+    <Compile Include="Spectral\Classification\PerBandSpectralClassification.cs" />
     <Compile Include="Spectral\Classification\RandomColorClassification.cs" />
     <Compile Include="Spectral\Classification\ReferenceMatchingClassification.cs" />
     <Compile Include="Spectral\Classification\SauvolaLocalThresholdingClassification.cs" />

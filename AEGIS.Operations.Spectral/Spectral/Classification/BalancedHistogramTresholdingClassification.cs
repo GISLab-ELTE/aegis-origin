@@ -74,11 +74,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public BalancedHistogramTresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.BalancedHistogramThresholdingClassification, parameters)
         {
-            if (_sourceBandIndices != null)
+            if (SourceBandIndices != null)
             {
-                for (Int32 k = 0; k < _sourceBandIndices.Length; k++)
+                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
                 {
-                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeHistogramBalance(_source.Raster[_sourceBandIndices[k]].HistogramValues);
+                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeHistogramBalance(_source.Raster[SourceBandIndices[k]].HistogramValues);
                 }
             }
             else
