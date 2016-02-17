@@ -88,6 +88,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _adaptiveHistogramEqualization;
         private static SpectralOperationMethod _exponentialTransformation;
         private static SpectralOperationMethod _gammaCorrection;
+        private static SpectralOperationMethod _greyWorldNormalization;
         private static SpectralOperationMethod _histogramEqualization;
         private static SpectralOperationMethod _histogramSpecification;
         private static SpectralOperationMethod _histogramMatching;
@@ -116,7 +117,8 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "Adaptive histogram equalization (AHE) is a computer image processing technique used to improve contrast in images.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.TileNumberHorizontally,
-                                                                         SpectralOperationParameters.BandIndex));
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
         
@@ -150,6 +152,22 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.GammaValue));
+            }
+        }
+
+        /// <summary>
+        /// Grey world normalization.
+        /// </summary>
+        public static SpectralOperationMethod GreyWorldNormalization
+        {
+            get
+            {
+                return _greyWorldNormalization ?? (_greyWorldNormalization =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250285", "Grey world normalization",
+                                                                         "The grey world normalization is a color normalization technique which applies constant factors to the individual bands.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         SpectralOperationParameters.BandIndex,
+                                                                         SpectralOperationParameters.BandIndices));
             }
         }
 
