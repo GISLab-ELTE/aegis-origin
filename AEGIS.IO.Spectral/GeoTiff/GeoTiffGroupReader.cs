@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeoTiffGroupReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -100,6 +100,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 {
                     _filePaths = fileSystem.GetFiles(directoryPath, fileNameBase + "*" + extension, false).ToList();
                 }                
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeoTiffGroupReader" /> class.
+        /// </summary>
+        /// <param name="basePath">The base path.</param>
+        /// <param name="parameters">The parameters of the reader for the specific stream.</param>
+        /// <exception cref="System.ArgumentNullException">The collection of file paths is null.</exception>
+        public GeoTiffGroupReader(IEnumerable<String> filePaths, IDictionary<GeometryStreamParameter, Object> parameters)
+            : base(SpectralGeometryStreamFormats.GeoTiff, parameters)
+        {
+            if (filePaths == null)
+                throw new ArgumentNullException("basePath", "The collection of file paths is null.");
+
+            _filePaths = filePaths.Where(filePath => filePath.ToLower().EndsWith(".tif")).ToList();
+
+            foreach (String path in filePaths.Where(filePath => !filePath.ToLower().EndsWith(".tif")))
+            {
+                try
+                {
+                    _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsMetafilePath);
+                }
+                catch { }
+
+                if (_metafileReader != null)
+                    break;
             }
         }
 
