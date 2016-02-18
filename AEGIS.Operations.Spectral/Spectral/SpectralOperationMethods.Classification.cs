@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationMethods.Classification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Robeto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Robeto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,6 +13,9 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Numerics;
+using System;
+
 namespace ELTE.AEGIS.Operations.Spectral
 {
     /// <summary>
@@ -24,6 +27,9 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         private static SpectralOperationMethod _densitySlicing;
         private static SpectralOperationMethod _bernsenLocalThresholdingClassification;
+        private static OperationMethod _classificationAccuracyValidation;
+        private static OperationMethod _classificationConfusionValidation;
+        private static SpectralOperationMethod _classificationMapValidation;
         private static SpectralOperationMethod _meanthreshLocalThresholdingClassification;
         private static SpectralOperationMethod _niblackLocalThresholdingClassification;
         private static SpectralOperationMethod _balancedHistogramThresholdingClassification;
@@ -71,6 +77,54 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));
+            }
+        }
+
+        /// <summary>
+        /// Classification validation by accuracy.
+        /// </summary>
+        public static OperationMethod ClassificationAccuracyValidation
+        {
+            get
+            {
+                return _classificationAccuracyValidation ?? (_classificationAccuracyValidation =
+                    OperationMethod.CreateMethod<ISpectralGeometry, Double>("AEGIS::253921", "Classification validation by accuracy",
+                                                                            "The validation of classification based on a reference geometry that results in the percentage of correctly classified pixels.", null, "1.0.0",
+                                                                            false, GeometryModel.Spatial,
+                                                                            ExecutionMode.OutPlace,
+                                                                            SpectralOperationParameters.ClassificationValidationGeometry));
+            }
+        }
+
+        /// <summary>
+        /// Classification validation by confusion matrix.
+        /// </summary>
+        public static OperationMethod ClassificationConfusionValidation
+        {
+            get
+            {
+                return _classificationConfusionValidation ?? (_classificationConfusionValidation =
+                    OperationMethod.CreateMethod<ISpectralGeometry, Matrix>("AEGIS::253922", "Classification validation using confusion matrix",
+                                                                            "The validation of classification based on a reference geometry that results in a confusion matrix.", null, "1.0.0",
+                                                                            false, GeometryModel.Spatial,
+                                                                            ExecutionMode.OutPlace,
+                                                                            SpectralOperationParameters.ClassificationValidationGeometry));
+            }
+        }
+
+        /// <summary>
+        /// Classification validation by image map.
+        /// </summary>
+        public static SpectralOperationMethod ClassificationMapValidation
+        {
+            get
+            {
+                return _classificationMapValidation ?? (_classificationMapValidation =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253925", "Classification validation using image map",
+                                                                         "The  validation of classification based on a reference geometry that results in an image map of correctly classified pixels.", null, "1.0.0",
+                                                                         false, SpectralOperationDomain.BandLocal,
+                                                                         ExecutionMode.OutPlace,
+                                                                         SpectralOperationParameters.ClassificationValidationGeometry));
             }
         }
 

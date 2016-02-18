@@ -62,6 +62,9 @@
     <Compile Include="Spatial\Partitioning\BinarySpectralGeometryPartitioning.cs" />
     <Compile Include="Spectral\Classification\BalancedHistogramTresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\BernsenLocalThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\ClassificationAccuracyValidation.cs" />
+    <Compile Include="Spectral\Classification\ClassificationConfusionValidation.cs" />
+    <Compile Include="Spectral\Classification\ClassificationMapValidation.cs" />
     <Compile Include="Spectral\Classification\ConstantBasedThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\FunctionBasedThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\MeanthreshLocalThresholdingClassification.cs" />

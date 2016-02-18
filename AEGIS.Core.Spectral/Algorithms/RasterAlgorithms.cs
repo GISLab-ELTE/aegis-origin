@@ -207,5 +207,23 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         #endregion
+
+        #region Dimension matching
+
+        /// <summary>
+        /// Determines whether the dimension and location of the specified rasters match.
+        /// </summary>
+        /// <param name="first">The first raster.</param>
+        /// <param name="second">The second raster.</param>
+        /// <returns><c>true</c> if the specified rasters have matching dimensions and location; otherwise, <c>false</c>.</returns>
+        public static Boolean IsMatching(IRaster first, IRaster second)
+        {
+            return (!first.IsMapped || !second.IsMapped ||
+                     first.Mapper.Equals(second.Mapper)) &&
+                    first.NumberOfRows == second.NumberOfRows &&
+                    first.NumberOfColumns == second.NumberOfColumns;
+        }
+
+        #endregion
     }
 }
