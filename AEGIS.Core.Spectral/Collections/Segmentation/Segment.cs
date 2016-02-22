@@ -139,10 +139,90 @@ namespace ELTE.AEGIS.Collections.Segmentation
             AddFloatValues(spectralValues);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="raster">The raster from which the segment is derived.</param>
+        /// <param name="statistics">The statistics computed for the segment.</param>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public Segment(IRaster raster, SpectralStatistics statistics)
+        {
+            if (raster == null)
+                throw new ArgumentNullException("raster", "The raster is null.");
+
+            Count = raster.NumberOfRows * raster. NumberOfColumns;
+
+            // mean computation
+            _mean = new Double[raster.NumberOfBands];
+
+            for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+            {
+                for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                {
+                    for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                        _mean[bandIndex] += raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
+                }
+            }
+
+            for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+            {
+                _mean[bandIndex] /= (raster.NumberOfColumns * raster.NumberOfRows);
+            }
+            
+            // variance computation
+            if (statistics.HasFlag(SpectralStatistics.Variance) && raster.NumberOfColumns * raster.NumberOfRows > 1)
+            {
+                _variance = new Double[raster.NumberOfBands];
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                {
+                    for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                    {
+                        for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                           _variance[bandIndex] += Math.Pow(_mean[bandIndex] - raster.GetFloatValue(rowIndex, columnIndex, bandIndex), 2);
+                    }
+                }
+
+                for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                {
+                    _variance[bandIndex] /= (raster.NumberOfColumns * raster.NumberOfRows - 1);
+                }
+            }
+            
+            // comoment computation
+            if (statistics.HasFlag(SpectralStatistics.Comoment))
+            {
+                _comoment = new Double[raster.NumberOfBands, raster.NumberOfBands];
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                {
+                    for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                    {
+                        for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                            for (Int32 otherBandIndex = 0; otherBandIndex < raster.NumberOfBands; otherBandIndex++)
+                                _comoment[bandIndex, otherBandIndex] += (raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - _mean[bandIndex]) * (raster.GetFloatValue(rowIndex, columnIndex, otherBandIndex) - _mean[otherBandIndex]);
+                    }
+                }
+            }
+
+            // covariance computation
+            if (statistics.HasFlag(SpectralStatistics.Covariance) && raster.NumberOfColumns * raster.NumberOfRows > 1)
+            {
+                Covariance = new Double[raster.NumberOfBands, raster.NumberOfBands];
+                for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
+                {
+                    for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
+                    {
+                        for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
+                            for (Int32 otherBandIndex = 0; otherBandIndex < raster.NumberOfBands; otherBandIndex++)
+                                Covariance[bandIndex, otherBandIndex] += (_mean[bandIndex] - raster.GetFloatValue(rowIndex, columnIndex, bandIndex)) * (_mean[otherBandIndex] - raster.GetFloatValue(rowIndex, columnIndex, otherBandIndex));
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Public properties
-        
+
         /// <summary>
         /// Gets the number of spectral vectors within the set.
         /// </summary>
@@ -174,9 +254,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public Double[,] Covariance { get; private set; }
 
         /// <summary>
-        /// Gets or sets the morton code of the segment.
+        /// Gets or sets the Morton code of the segment.
         /// </summary>
-        /// <value>The morton code of the segment.</value>
+        /// <value>The Morton code of the segment.</value>
         public Double MortonCode { get; set; }
 
         /// <summary>

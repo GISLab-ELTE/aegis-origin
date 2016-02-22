@@ -51,21 +51,13 @@ namespace ELTE.AEGIS.Collections.Segmentation
             Count = 1;
 
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
-            Segment segment = new Segment(raster.NumberOfBands, Statistics);
-            Double[] spectralValues;
-            for (Int32 rowNumber = 0; rowNumber < Raster.NumberOfRows; rowNumber++)
-            {
-                for (Int32 columnNumber = 0; columnNumber < raster.NumberOfColumns; columnNumber++)
-                {
-                    spectralValues = new Double[Raster.NumberOfBands];
-                    spectralValues = Raster.GetFloatValues(rowNumber, columnNumber);
-                    segment.AddFloatValues(spectralValues);
-                }
-            }
+            Segment segment = new Segment(raster, Statistics);
 
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
             for (Int32 index = 0; index < raster.NumberOfRows * raster.NumberOfColumns; index++)
+            {
                 _indexToSegmentDictionary.Add(index, segment);
+            }
             _segmentToIndexDictionary.Add(_indexToSegmentDictionary[0], new List<Int32>(Enumerable.Range(0, raster.NumberOfRows * raster.NumberOfColumns)));
         }
 
@@ -116,7 +108,6 @@ namespace ELTE.AEGIS.Collections.Segmentation
             GenerateIndices(segment.MortonCode, startRowIndex, (endRowIndex + startRowIndex) / 2, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 2);
             GenerateIndices(segment.MortonCode, (endRowIndex + startRowIndex) / 2 + 1, endRowIndex, startColumnIndex, (endColumnIndex + startColumnIndex) / 2, 3);
             GenerateIndices(segment.MortonCode, (endRowIndex + startRowIndex) / 2 + 1, endRowIndex, (endColumnIndex + startColumnIndex) / 2 + 1, endColumnIndex, 4);
-
         }
 
         #endregion
