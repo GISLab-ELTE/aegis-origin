@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is CoordinateOperationntrolled through the following 
+// General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AEGIS.Core")]
@@ -14,15 +14,15 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// Setting CoordinateOperationmVisible to false makes the types in this assembly not visible 
-// to CoordinateOperationM CoordinateOperationmponents.  If you need to access a type in this assembly from 
-// CoordinateOperationM, set the CoordinateOperationmVisible attribute to true on that type.
+// Setting ComVisible to false makes the types in this assembly not visible 
+// to COM Components.  If you need to access a type in this assembly from 
+// COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-// The following GUID is for the ID of the typelib if this project is exposed to CoordinateOperationM
+// The following GUID is for the ID of the typelib if this project is exposed to CoM
 [assembly: Guid("ab66249f-9bba-473a-a657-7c4f406d7d01")]
 
-// Version information for an assembly CoordinateOperationnsists of the following four values:
+// Version information for an assembly consists of the following four values:
 //
 //      Major Version
 //      Minor Version 
