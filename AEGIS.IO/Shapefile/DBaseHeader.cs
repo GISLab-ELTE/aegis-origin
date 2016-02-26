@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         #region Private fields
 
         /// <summary>
-        /// The dBase III PLUS filetype identifier. This field is constant.
+        /// The dBase III PLUS file type identifier. This field is constant.
         /// </summary>
         private const Byte DBaseIIIPlusIdentifier = (Byte)0x03;
 
@@ -37,7 +37,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         private const Byte FieldTerminator = (Byte)0x0D;
 
         /// <summary>
-        /// The table filetype identifier (byte 0).
+        /// The table file type identifier (byte 0).
         /// </summary>
         private Byte _identifier;
 
@@ -171,30 +171,25 @@ namespace ELTE.AEGIS.IO.Shapefile
             _numOfRecords = 0;
             _bytesInHeader = (Int16)(32 + (sampleRecord.Count * 32) + 1);
 
-            // write dBase ID
-            stream.WriteByte(_identifier);
+            Byte[] headerBytes = new Byte[_bytesInHeader];
+            headerBytes[0] = _identifier; // write dBase ID
+            headerBytes[1] = (Byte)(_lastUpdate.Year - 1900); // write last update time
+            headerBytes[2] = (Byte)_lastUpdate.Month;
+            headerBytes[3] = (Byte)_lastUpdate.Day;
+            headerBytes[headerBytes.Length - 1] = FieldTerminator;
 
-            // write last update time
-            stream.WriteByte((Byte)(_lastUpdate.Year - 1900));
-            stream.WriteByte((Byte)_lastUpdate.Month);
-            stream.WriteByte((Byte)_lastUpdate.Day);
+            EndianBitConverter.CopyBytes(_numOfRecords, headerBytes, 4, ByteOrder.LittleEndian);
+            EndianBitConverter.CopyBytes(_bytesInHeader, headerBytes, 8, ByteOrder.LittleEndian);
+            EndianBitConverter.CopyBytes(_bytesInRecord, headerBytes, 10, ByteOrder.LittleEndian);
 
-            // write number of records (at this time we do not know how many records will we have, so it is 0)
-            stream.Write(EndianBitConverter.GetBytes(_numOfRecords, ByteOrder.LittleEndian), 0, 4);
-
-            // write number of bytes in the header and in one record
-            stream.Write(EndianBitConverter.GetBytes(_bytesInHeader, ByteOrder.LittleEndian), 0, 2);
-            stream.Write(EndianBitConverter.GetBytes(_bytesInRecord, ByteOrder.LittleEndian), 0, 2);
-
-            // write the reserved bytes
-            stream.Write(new Byte[20], 0, 20);
-
-            // write the field descriptor array
+            Int32 headerIndex = 32;
             foreach (DBaseField field in _fields)
-                stream.Write(field.ToByteArray(), 0, 32);
-            
-            // write the field terminator
-            stream.WriteByte(FieldTerminator);
+            {
+                Array.Copy(field.ToByteArray(), 0, headerBytes, headerIndex, 32);
+                headerIndex += 32;
+            }
+
+            stream.Write(headerBytes, 0, headerBytes.Length);
         }
 
         /// <summary>

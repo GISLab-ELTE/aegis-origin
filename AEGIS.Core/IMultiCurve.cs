@@ -26,7 +26,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets a value indicating whether the multicurve is closed.
         /// </summary>
-        /// <value><c>true</c> if all curves within the multicure are closed; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all curves within the multicurve are closed; otherwise, <c>false</c>.</value>
         Boolean IsClosed { get; }
         /// <summary>
         /// Gets the length of the multicurve.

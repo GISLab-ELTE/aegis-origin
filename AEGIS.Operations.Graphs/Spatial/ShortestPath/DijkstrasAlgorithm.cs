@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
     [OperationMethodImplementation("AEGIS::221610", "Dijkstra's algorithm")]
     public class DijkstrasAlgorithm : ShortestPathTreeAlgorithm
     {
-        #region Private fileds
+        #region Private fields
 
         /// <summary>
         /// The priority queue used for ordering vertices.

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Coordinate.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -508,7 +508,7 @@ namespace ELTE.AEGIS
         /// <param name="origin">The coordinate of origin.</param>
         /// <param name="first">The first coordinate.</param>
         /// <param name="second">The second coordinate.</param>
-        /// <returns>The angle betwwen first and second <see cref="Coordinate" /> with respect to origin.</returns>
+        /// <returns>The angle between first and second <see cref="Coordinate" /> with respect to origin.</returns>
         public static Double Angle(Coordinate origin, Coordinate first, Coordinate second)
         {
             Double distanceOriginFirst = Distance(origin, first);

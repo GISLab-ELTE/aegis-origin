@@ -50,7 +50,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         private DBaseHeader _header;
 
         /// <summary>
-        /// A value indicating whether this instance is diposed.
+        /// A value indicating whether this instance is disposed.
         /// </summary>
         private Boolean _disposed;
 

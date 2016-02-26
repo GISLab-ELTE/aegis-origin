@@ -46,7 +46,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         MultiPoint = 8,
 
         /// <summary>
-        /// 3D pont.
+        /// 3D point.
         /// </summary>
         PointZ = 11,
 

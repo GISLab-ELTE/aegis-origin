@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -98,7 +98,7 @@ namespace ELTE.AEGIS.Geometry
             /// Advances the enumerator to the next element of the collection.
             /// </summary>
             /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; <c>false</c> if the enumerator has passed the end of the collection.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
             public Boolean MoveNext()
             {
@@ -141,7 +141,7 @@ namespace ELTE.AEGIS.Geometry
             /// <summary>
             /// Sets the enumerator to its initial position, which is before the first element in the collection.
             /// </summary>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
             public void Reset()
             {
@@ -271,7 +271,7 @@ namespace ELTE.AEGIS.Geometry
             /// Advances the enumerator to the next element of the collection.
             /// </summary>
             /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; <c>false</c> if the enumerator has passed the end of the collection.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
             
             public Boolean MoveNext()
@@ -316,7 +316,7 @@ namespace ELTE.AEGIS.Geometry
             /// <summary>
             /// Sets the enumerator to its initial position, which is before the first element in the collection.
             /// </summary>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             /// <exception cref="System.InvalidOperationException">The collection was modified after the enumerator was created.</exception>
             public void Reset()
             {
@@ -1124,7 +1124,7 @@ namespace ELTE.AEGIS.Geometry
         /// Removes the edge from the graph.
         /// </summary>
         /// <param name="edge">The edge.</param>
-        /// <returns><c>true</c> if the edgee was located and removed from the graph; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the edge was located and removed from the graph; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The edge is null.</exception>
         public virtual Boolean RemoveEdge(IGraphEdge edge)
         {

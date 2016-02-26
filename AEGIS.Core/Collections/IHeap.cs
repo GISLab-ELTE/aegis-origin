@@ -76,7 +76,7 @@ namespace ELTE.AEGIS.Collections
         /// Determines whether the heap contains the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the heap.</param>
-        /// <returns><c>true</c> if the the heap contains an element with the specified key; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the heap contains an element with the specified key; otherwise, <c>false</c>.</returns>
         Boolean Contains(TKey key);
 
         /// <summary>

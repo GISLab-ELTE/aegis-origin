@@ -50,12 +50,12 @@ namespace ELTE.AEGIS.IO.Shapefile
         private DBaseHeader _header;
 
         /// <summary>
-        /// A value indicating whether this instance is diposed.
+        /// A value indicating whether this instance is disposed.
         /// </summary>
         private Boolean _disposed;
 
         /// <summary>
-        /// A value indicating whether the the file header is written to stream.
+        /// A value indicating whether the file header is written to stream.
         /// </summary>
         private Boolean _headerWritten;
 
@@ -243,6 +243,10 @@ namespace ELTE.AEGIS.IO.Shapefile
                 _header.Write(_stream, new Dictionary<String, Object>());
                 _headerWritten = true;
             }
+            else
+            {
+                _header.WriteRecordCount(_stream, _numberOfRecords);
+            }
 
             _stream.Flush();
 
@@ -275,9 +279,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             foreach (DBaseField field in _header.Fields)
             {
                 Byte[] fieldInBytes = new Byte[field.FieldLength];
-                for (int i = 0; i < field.FieldLength; i++)
-                    fieldInBytes[i] = (Byte)' ';
-
+                
                 switch(field.FieldType)
                 {
                     case 'C':

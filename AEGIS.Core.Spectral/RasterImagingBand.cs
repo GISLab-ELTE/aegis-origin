@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterBandImaging.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -18,7 +18,7 @@ using System;
 namespace ELTE.AEGIS
 {
     /// <summary>
-    /// Represents a type containg imaging data of a raster band.
+    /// Represents a type contains imaging data of a raster band.
     /// </summary>
     public class RasterImagingBand
     {
@@ -51,7 +51,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets the spectral domain of the band.
         /// </summary>
-        /// <value>Tje spectral domain of the band.</value>
+        /// <value>The spectral domain of the band.</value>
         public SpectralDomain SpectralDomain { get; private set; }
 
         /// <summary>
@@ -74,13 +74,13 @@ namespace ELTE.AEGIS
         /// <param name="spectralDomain">The spectral domain of the band.</param>
         /// <param name="spectralRange">The spectral range of the band.</param>
         /// <exception cref="System.ArgumentNullException">The description is null.</exception>
-        /// <exception cref="System.ArgumentException">The description is empty, or consists of only shitespace characters.</exception>
+        /// <exception cref="System.ArgumentException">The description is empty, or consists of only whitespace characters.</exception>
         public RasterImagingBand(String description, Double physicalGain, Double physicalBias, Double solarIrradiance, SpectralDomain spectralDomain, SpectralRange spectralRange)
         {
             if (description == null)
                 throw new ArgumentNullException("description", "The description is null.");
             if (String.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("The description is empty, or consists of only shitespace characters.", "description");
+                throw new ArgumentException("The description is empty, or consists of only whitespace characters.", "description");
 
             Description = description;
             PhysicalGain = physicalGain;

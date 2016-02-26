@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BernsenLocalTresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -25,9 +25,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// </summary>
     /// <remarks>
     /// In Bernsen local thresholding, if the local contrast is above or equal to the user provided contrast threshold, the threshold 
-    /// is set at the local midgrey value (the mean of the minimum and maximum grey values in the local window). 
-    /// If the local contrast is below the contrast threshold the neighbourhood is considered to consist only of one class and the pixel 
-    /// is set to object or background depending on the value of the midgrey.
+    /// is set at the local midgray value (the mean of the minimum and maximum gray values in the local window). 
+    /// If the local contrast is below the contrast threshold the neighborhood is considered to consist only of one class and the pixel 
+    /// is set to object or background depending on the value of the midgray.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253302", "Bernsen local thresholding")]
     public class BernsenLocalThresholdingClassification : PerBandSpectralTransformation
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         #region Private methods
 
         /// <summary>
-        /// Count the minimum value of the neighbour pixel's float value.
+        /// Count the minimum value of the neighbor pixel's float value.
         /// </summary>
         /// <param name="rowIndex">The row index.</param>
         /// <param name="columnIndex">The column index.</param>
@@ -151,7 +151,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         }
 
         /// <summary>
-        /// Count the maximum value of the neighbour pixel's float value.
+        /// Count the maximum value of the neighbor pixel's float value.
         /// </summary>
         /// <param name="rowIndex">The row index.</param>
         /// <param name="columnIndex">The column index.</param>

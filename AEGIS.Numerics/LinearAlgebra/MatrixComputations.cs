@@ -1,5 +1,5 @@
 ﻿/// <copyright file="MatrixComputations.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         #region Matrix properties
 
         /// <summary>
-        /// Determines whether the specified matrix is a nullmatrix.
+        /// Determines whether the specified matrix is a null matrix.
         /// </summary>
         /// <param name="matrix">The matrix.</param>
         /// <returns><c>true</c> if all values of the matrix are zeros; otherwise, <c>false</c>.</returns>
@@ -129,10 +129,10 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         #region Matrix transformations
 
         /// <summary>
-        /// Transpones the specified matrix.
+        /// Transposes the specified matrix.
         /// </summary>
         /// <param name="matrix">The matrix.</param>
-        /// <returns>The transponed matrix.</returns>
+        /// <returns>The transposed matrix.</returns>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public static Matrix Transpone(this Matrix matrix)
         {

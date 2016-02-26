@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         private Mock<IRaster> _rasterMock;
 
         /// <summary>
-        /// The histogram values for earch band of the raster.
+        /// The histogram values for each band of the raster.
         /// </summary>
         private Int32[][] _histogramValues;
 

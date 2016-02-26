@@ -24,7 +24,7 @@ using System.Linq;
 namespace ELTE.AEGIS.IO.Shapefile
 {
     /// <summary>
-    /// Represens a shapefile format writer.
+    /// Represents a shapefile format writer.
     /// </summary>
     [IdentifiedObjectInstance("AEGIS::610101", "Esri shapefile")]
     public class ShapefileWriter : GeometryStreamWriter
@@ -32,7 +32,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         #region Private types
 
         /// <summary>
-        /// Contains information abount a shape record.
+        /// Contains information about a shape record.
         /// </summary>
         private struct ShapeRecordInfo
         {
@@ -154,7 +154,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             _shapeIndex = new List<ShapeRecordInfo>();
 
             _geometryModel = GeometryModel.None;
-            _envelope = Envelope.Undefined;
+            _envelope = null;
 
             try
             {
@@ -287,11 +287,16 @@ namespace ELTE.AEGIS.IO.Shapefile
         public ShapefileWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, GeometryStreamFormats.Shapefile, parameters)
         {
-            _baseStream.Seek(100, SeekOrigin.Begin);
+            _fileSystem = FileSystem.GetFileSystemForPath(path);
 
             _basePath = _fileSystem.GetDirectory(path.AbsolutePath);
             _baseFileName = _fileSystem.GetFileNameWithoutExtension(path.AbsolutePath);
+
             _shapeType = ShapeType.Null;
+            _shapeIndex = new List<ShapeRecordInfo>();
+
+            _geometryModel = GeometryModel.None;
+            _envelope = null;
 
             try
             {
@@ -315,7 +320,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <exception cref="System.ArgumentException">
         /// The model of the specified geometry is not supported.;geometry
         /// or
-        /// The specified geometry does not match the the type of the shapefile.;geometry
+        /// The specified geometry does not match the type of the shapefile.;geometry
         /// </exception>
         protected override void ApplyWriteGeometry(IGeometry geometry)
         {
@@ -346,7 +351,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             }
             else if (_shapeType != shape.Type)
             {
-                throw new ArgumentException("The specified geometry does not match the the type of the shapefile.", "geometry");
+                throw new ArgumentException("The specified geometry does not match the type of the shapefile.", "geometry");
             }
 
             // check the reference system
@@ -361,12 +366,12 @@ namespace ELTE.AEGIS.IO.Shapefile
             else if (!_envelope.Contains(geometry.Envelope))
                 _envelope = Envelope.FromEnvelopes(_envelope, geometry.Envelope);
 
-            Byte[] byteArray = shape.ToRecord(_shapeIndex.Count);
+            Byte[] byteArray = shape.ToRecord(_shapeIndex.Count + 1);
 
-            _shapeIndex.Add(new ShapeRecordInfo { Offset = (Int32)_baseStream.Position, Length = byteArray.Length });
-
-            IDictionary<String, Object> metadata = geometry.Metadata;
-            _metadataWriter.Write(metadata ?? new Dictionary<String, Object>());
+            _shapeIndex.Add(new ShapeRecordInfo { Offset = (Int32)_baseStream.Position / 2, Length = byteArray.Length / 2 - 4 });
+            
+            if (geometry.Metadata != null)
+                _metadataWriter.Write(geometry.Metadata);
 
             _baseStream.Write(byteArray, 0, byteArray.Length);
         }
@@ -404,7 +409,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             // header identifiers
             EndianBitConverter.CopyBytes(9994, headerBytes, 0, ByteOrder.BigEndian);
-            EndianBitConverter.CopyBytes((100 + _shapeIndex.Sum(recordInfo => recordInfo.Length)) / 2, headerBytes, 24, ByteOrder.BigEndian);
+            EndianBitConverter.CopyBytes(50 + _shapeIndex.Sum(recordInfo => recordInfo.Length + 4), headerBytes, 24, ByteOrder.BigEndian);
             EndianBitConverter.CopyBytes(1000, headerBytes, 28, ByteOrder.LittleEndian);
             EndianBitConverter.CopyBytes((Int32)_shapeType, headerBytes, 32, ByteOrder.LittleEndian);
 
@@ -432,8 +437,8 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             // header identifiers
             EndianBitConverter.CopyBytes(9994, byteArray, 0, ByteOrder.BigEndian);
-            EndianBitConverter.CopyBytes(byteArray.Length / 2, byteArray, 24, ByteOrder.BigEndian);
-            EndianBitConverter.CopyBytes(1000, byteArray, 28, ByteOrder.BigEndian);
+            EndianBitConverter.CopyBytes(50 + _shapeIndex.Count * 4, byteArray, 24, ByteOrder.BigEndian);
+            EndianBitConverter.CopyBytes(1000, byteArray, 28, ByteOrder.LittleEndian);
             EndianBitConverter.CopyBytes((Int32)_shapeType, byteArray, 32, ByteOrder.LittleEndian);
 
             // envelope
@@ -450,8 +455,8 @@ namespace ELTE.AEGIS.IO.Shapefile
             // indices
             for (Int32 i = 0; i < _shapeIndex.Count; i++)
             {
-                EndianBitConverter.CopyBytes(_shapeIndex[i].Offset / 2, byteArray, 100 + 8 * i, ByteOrder.BigEndian);
-                EndianBitConverter.CopyBytes(_shapeIndex[i].Length / 2, byteArray, 104 + 8 * i, ByteOrder.BigEndian);
+                EndianBitConverter.CopyBytes(_shapeIndex[i].Offset, byteArray, 100 + 8 * i, ByteOrder.BigEndian);
+                EndianBitConverter.CopyBytes(_shapeIndex[i].Length, byteArray, 104 + 8 * i, ByteOrder.BigEndian);
             }
 
             // write bytes to stream

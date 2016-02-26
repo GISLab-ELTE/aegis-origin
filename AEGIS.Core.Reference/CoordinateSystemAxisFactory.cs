@@ -187,21 +187,21 @@ namespace ELTE.AEGIS.Reference
         public static CoordinateSystemAxis Southing(UnitOfMeasurement unit) { return new CoordinateSystemAxis("EPSG::9909", "Southing", AxisDirection.South, unit); }
 
         /// <summary>
-        /// Creates a new coordinate system axis for geocentic X direction.
+        /// Creates a new coordinate system axis for geocentric X direction.
         /// </summary>
         /// <param name="unit">The unit of measurement.</param>
         /// <returns>The coordinate system axis with the specified unit of measurement.</returns>
         public static CoordinateSystemAxis GeocentricX(UnitOfMeasurement unit) { return new CoordinateSystemAxis("EPSG::9910", "Geocentric X", AxisDirection.GeocentricX, unit); }
 
         /// <summary>
-        /// Creates a new coordinate system axis for geocentic Y direction.
+        /// Creates a new coordinate system axis for geocentric Y direction.
         /// </summary>
         /// <param name="unit">The unit of measurement.</param>
         /// <returns>The coordinate system axis with the specified unit of measurement.</returns>
         public static CoordinateSystemAxis GeocentricY(UnitOfMeasurement unit) { return new CoordinateSystemAxis("EPSG::9911", "Geocentric Y", AxisDirection.GeocentricY, unit); }
 
         /// <summary>
-        /// Creates a new coordinate system axis for geocentic Z direction.
+        /// Creates a new coordinate system axis for geocentric Z direction.
         /// </summary>
         /// <param name="unit">The unit of measurement.</param>
         /// <returns>The coordinate system axis with the specified unit of measurement.</returns>

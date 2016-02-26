@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationParameters.Filtering.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -68,7 +68,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _filterKernel ?? (_filterKernel =
                     OperationParameter.CreateRequiredParameter<Matrix>("AEGIS::350500", "Filter kernel",
-                                                                       "The odd sized matrix used by filters for multipling neightbour values.", null,
+                                                                       "The odd sized matrix used by filters for multipling neighbor values.", null,
                                                                        value => (value is Matrix) && (value as Matrix).NumberOfColumns == (value as Matrix).NumberOfRows && (value as Matrix).NumberOfRows % 2 == 1)
                     );
             }
@@ -128,7 +128,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _filterRadius ?? (_filterRadius =
                     OperationParameter.CreateOptionalParameter<Int32>("AEGIS::350505", "Filter radius",
-                                                                      "The radius of the filter determining the number of neighbouring pixels to be convoluted by the filter. The radius must be a positive number.", null,
+                                                                      "The radius of the filter determining the number of neighboring pixels to be convoluted by the filter. The radius must be a positive number.", null,
                                                                       1,
                                                                       Conditions.IsPositive())
                     );

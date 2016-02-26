@@ -81,7 +81,7 @@ namespace ELTE.AEGIS.Temporal.Reference
         /// <param name="begin">The beginning date.</param>
         /// <param name="end">The ending date.</param>
         /// <exception cref="System.ArgumentException">
-        /// The begining date has a different reference system to the eras.
+        /// The beginning date has a different reference system to the eras.
         /// or
         /// The ending date has a different reference system to the eras.
         /// </exception>
@@ -91,7 +91,7 @@ namespace ELTE.AEGIS.Temporal.Reference
                 _beginEndReferenceSystem = begin.ReferenceSystem;
 
             if (!_beginEndReferenceSystem.Equals(begin.ReferenceSystem))
-                throw new ArgumentException("The begining date has a different reference system to the eras.", "begin");
+                throw new ArgumentException("The beginning date has a different reference system to the eras.", "begin");
             if (!_beginEndReferenceSystem.Equals(end.ReferenceSystem))
                 throw new ArgumentException("The ending date has a different reference system to the eras.", "end");
 

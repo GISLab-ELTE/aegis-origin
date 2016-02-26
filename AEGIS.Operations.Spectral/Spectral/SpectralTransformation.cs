@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -35,7 +35,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             #region Private constant fields
 
             /// <summary>
-            /// Tha maximal number of values that can be read. This field is constant.
+            /// The maximal number of values that can be read. This field is constant.
             /// </summary>
             private const Int32 MaximumNumberOfValues = 2 << 20;
 
@@ -353,7 +353,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// or
             /// The start index is equal to or greater than the number of values.
             /// or
-            /// The number of valies is less than 0.
+            /// The number of values is less than 0.
             /// </exception>
             public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues)
             {

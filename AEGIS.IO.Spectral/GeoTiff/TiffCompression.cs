@@ -1,5 +1,5 @@
 ﻿/// <copyright file="TiffCompression.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -31,12 +31,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         CCITTModifiedHuffman = 2,
 
         /// <summary>
-        /// CCITT T4 two level comptression.
+        /// CCITT T4 two level compression.
         /// </summary>
         CCITTT4 = 3,
 
         /// <summary>
-        /// CCITT T6 two level comptression.
+        /// CCITT T6 two level compression.
         /// </summary>
         CCITTT6 = 4,
 

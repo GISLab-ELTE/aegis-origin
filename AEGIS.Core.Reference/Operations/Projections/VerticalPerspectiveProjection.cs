@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <param name="parameters">The parameters of the operation.</param>
         /// <param name="ellipsoid">The ellipsoid.</param>
         /// <exception cref="System.ArgumentNullException">
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// or
         /// The ellipsoid is null.
         /// </exception>

@@ -30,10 +30,10 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     [OperationMethodImplementation("AEGIS::225502", "Kruskal's algorithm")]
     public class KruskalsAlgorithm : MinimumSpanningTreeAlgorithm
     {
-        #region Private fileds
+        #region Private fields
 
         /// <summary>
-        /// The dijoint-set forest to track the components
+        /// The disjoint-set forest to track the components
         /// </summary>
         private DisjointSetForest<IGraphVertex> _forest; 
 

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="FactoryRegistry.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -117,7 +117,7 @@ namespace ELTE.AEGIS
             /// </summary>
             /// <param name="factoryContract">The factory contract.</param>
             /// <returns>The default instance for the factory or <c>null</c> if the factory is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             public IFactory GetFactory(Type factoryContract)
             {
                 if (_disposed)
@@ -146,7 +146,7 @@ namespace ELTE.AEGIS
             /// <param name="factoryContract">The factory contract.</param>
             /// <param name="parameters">The parameters.</param>
             /// <returns>The factory instance with the specified parameters or <c>null</c> if the factory is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             public IFactory GetFactory(Type factoryContract, params Object[] parameters)
             {
                 if (_disposed)
@@ -167,7 +167,7 @@ namespace ELTE.AEGIS
             /// </summary>
             /// <param name="productType">The type of the product.</param>
             /// <returns>The default factory instance for the factory or <c>null</c> if the product is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             public IFactory GetFactoryFor(Type productType)
             {
                 if (_disposed)
@@ -192,7 +192,7 @@ namespace ELTE.AEGIS
             /// <param name="productType">The type of the product.</param>
             /// <param name="parameters">The parameters.</param>
             /// <returns>The factory instance with the specified parameters or <c>null</c> if the product is unresolvable.</returns>
-            /// <exception cref="System.ObjectDisposedException">The object is diposed.</exception>
+            /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
             public IFactory GetFactoryFor(Type productType, params Object[] parameters)
             {
                 if (_disposed)
@@ -476,7 +476,7 @@ namespace ELTE.AEGIS
         /// Returns the contract of the specified factory.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <returns>The contract of the specfied factory.</returns>
+        /// <returns>The contract of the specified factory.</returns>
         /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
         public static Type GetContract(IFactory factory)
         {
@@ -490,7 +490,7 @@ namespace ELTE.AEGIS
         /// Returns the contract of the specified factory behavior.
         /// </summary>
         /// <param name="factoryBehavior">The factory behavior.</param>
-        /// <returns>The contract of the specfied factory behavior.</returns>
+        /// <returns>The contract of the specified factory behavior.</returns>
         /// <exception cref="System.ArgumentNullException">The factory behavior is null.</exception>
         public static Type GetContract(Type factoryBehavior)
         {

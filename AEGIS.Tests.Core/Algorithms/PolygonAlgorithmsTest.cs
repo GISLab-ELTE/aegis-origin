@@ -337,7 +337,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
             polygon = new BasicPolygon(shell, null);
             Assert.IsTrue(PolygonAlgorithms.IsValid(polygon));
 
-            // simple convace polygon in clockwise orientation
+            // simple concave polygon in clockwise orientation
             shell = new List<Coordinate>
             {
                 new Coordinate(2, 2), new Coordinate(2, 5),

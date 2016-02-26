@@ -41,7 +41,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         protected readonly Func<IGraphEdge, Int32> _capacityMetric;
 
         /// <summary>
-        /// The dictionary containing the used capacity fot he edges.
+        /// The dictionary containing the used capacity for he edges.
         /// </summary>
         protected Dictionary<IGraphEdge, Int32> _usedCapacity;
 
@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         protected Int32 _maximumFlow;
 
         /// <summary>
-        /// A value indicating whethet the target vertex is reached.
+        /// A value indicating whether the target vertex is reached.
         /// </summary>
         protected Boolean _isTargetReached;
 

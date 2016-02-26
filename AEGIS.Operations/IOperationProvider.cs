@@ -31,7 +31,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Gets the uniform resource identifier (URI) of the provider.
         /// </summary>
-        /// <value>The unifrom resource identifier of the provider.</value>
+        /// <value>The uniform resource identifier of the provider.</value>
         Uri Uri { get; }
 
         /// <summary>

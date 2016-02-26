@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LanczosResamplingAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -20,7 +20,7 @@ using System;
 namespace ELTE.AEGIS.Algorithms.Resampling
 {
     /// <summary>
-    /// Represents a type performing resapling of raster images using Lanczos interpolation.
+    /// Represents a type performing resampling of raster images using Lanczos interpolation.
     /// </summary>
     public class LanczosResamplingAlgorithm : RasterResamplingAlgorithm
     {
@@ -29,7 +29,7 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <summary>
         /// Gets the radius of values.
         /// </summary>
-        /// <value>The radius of values around the coordinate. The raius is usually between 2 and 5.</value>
+        /// <value>The radius of values around the coordinate. The radius is usually between 2 and 5.</value>
         public Int32 Radius { get; private set; }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Conditions.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -144,11 +144,11 @@ namespace ELTE.AEGIS.Management
         }
 
         /// <summary>
-        /// Requires that the value is strickly between the specified lower and upper boundaries.
+        /// Requires that the value is strictly between the specified lower and upper boundaries.
         /// </summary>
         /// <param name="lowerBoundary">The lower boundary.</param>
         /// <param name="upperBoundary">The upper boundary.</param>
-        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is strickly between the specified lower and upper boundaries.</returns>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is strictly between the specified lower and upper boundaries.</returns>
         public static Predicate<Object> IsStricklyBetween(Double lowerBoundary, Double upperBoundary)
         {
             return (value => (value is IConvertible) && lowerBoundary < Convert.ToDouble(value) && Convert.ToDouble(value) < upperBoundary);

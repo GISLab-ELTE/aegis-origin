@@ -90,7 +90,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             // integer values
 
             IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.RasterResamplingAlgorithmType, typeof(NearestNeighbourResamplingAlgorithm));
+            parameters.Add(SpectralOperationParameters.RasterResamplingAlgorithmType, typeof(NearestNeighborResamplingAlgorithm));
             parameters.Add(SpectralOperationParameters.NumberOfRows, 20);
             parameters.Add(SpectralOperationParameters.NumberOfColumns, 10);
 
@@ -106,7 +106,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
             Assert.AreEqual(RasterFormat.Integer, result.Raster.Format);
 
-            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
+            NearestNeighborResamplingAlgorithm strategy = new NearestNeighborResamplingAlgorithm(_rasterMock.Object);
 
             for (Int32 bandIndex = 0; bandIndex < result.Raster.NumberOfBands; bandIndex++)
                 for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)

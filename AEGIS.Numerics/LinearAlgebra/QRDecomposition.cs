@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <summary>
         /// Initializes a new instance of the <see cref="QRDecomposition" /> class.
         /// </summary>
-        /// <param name="matrix">The matrix of which the decompomposition is computed.</param>
+        /// <param name="matrix">The matrix of which the decomposition is computed.</param>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         public QRDecomposition(Matrix matrix)
         {

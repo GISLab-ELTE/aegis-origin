@@ -1,5 +1,5 @@
 ﻿/// <copyright file="DouglasPeuckerAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -104,7 +104,7 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="DouglasPeuckerAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
-        /// <param name="delta">The tolarance.</param>
+        /// <param name="delta">The tolerance.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
         public DouglasPeuckerAlgorithm(IList<Coordinate> source, Double delta)
@@ -123,7 +123,7 @@ namespace ELTE.AEGIS.Algorithms
         /// Initializes a new instance of the <see cref="DouglasPeuckerAlgorithm" /> class.
         /// </summary>
         /// <param name="source">The coordinates of the line string.</param>
-        /// <param name="delta">The tolarance.</param>
+        /// <param name="delta">The tolerance.</param>
         /// <param name="precisionModel">The precision model.</param>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">The delta is less than or equal to 0.</exception>
@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <summary>
         /// Simplifies a segment of the line string.
         /// </summary>
-        /// <param name="startIndex">The strating index of the segment.</param>
+        /// <param name="startIndex">The starting index of the segment.</param>
         /// <param name="endIndex">The ending index of the segment.</param>
         protected void SimplifySegment(Int32 startIndex, Int32 endIndex)
         {
@@ -188,7 +188,7 @@ namespace ELTE.AEGIS.Algorithms
             Double maxDistance = 0;
             Int32 maxIndex = startIndex;
 
-            // find the the most distant coordinate from the line between the starting and ending coordinates
+            // find the most distant coordinate from the line between the starting and ending coordinates
             for (Int32 coordinateIndex = startIndex + 1; coordinateIndex < endIndex; coordinateIndex++)
             {
                 Double distance = LineAlgorithms.Distance(_source[startIndex], _source[endIndex], _source[coordinateIndex], PrecisionModel);

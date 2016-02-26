@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         private readonly Int32 _indexOfNearInfraredBand;
 
         /// <summary>
-        /// The index of theshort-wavelength infrared band.
+        /// The index of the short-wavelength infrared band.
         /// </summary>
         private readonly Int32 _indexOfShortWavelengthInfraredBand;
 

@@ -21,7 +21,7 @@ namespace ELTE.AEGIS.IO.Storage
     public enum FileSystemAuthenticationType
     {
         /// <summary>
-        /// Indicates that the authenticaion is anonymous.
+        /// Indicates that the authentication is anonymous.
         /// </summary>
         Anonymous,
 

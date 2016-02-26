@@ -121,14 +121,14 @@ namespace ELTE.AEGIS.Reference
         }
 
         /// <summary>
-        /// Cartesian CS (Earth centred, earth fixed, righthanded 3D coordinate system, consisting of 3 orthogonal axes with X and Y axes in the equatorial plane, positive Z-axis parallel to mean earth rotation axis and pointing towards North Pole. UoM: m.). 
+        /// Cartesian CS (Earth centred, earth fixed, right handed 3D coordinate system, consisting of 3 orthogonal axes with X and Y axes in the equatorial plane, positive Z-axis parallel to mean earth rotation axis and pointing towards North Pole. UoM: m.). 
         /// </summary>
         public static CoordinateSystem CartesianGeocentric
         {
             get
             {
                 return _cartesianGeocentric ?? (_cartesianGeocentric =
-                    new CoordinateSystem("EPSG::6500", "Cartesian CS (Earth centred, earth fixed, righthanded 3D coordinate system, consisting of 3 orthogonal axes with X and Y axes in the equatorial plane, positive Z-axis parallel to mean earth rotation axis and pointing towards North Pole. UoM: m.)", CoordinateSystemType.Cartesian,
+                    new CoordinateSystem("EPSG::6500", "Cartesian CS (Earth centred, earth fixed, right handed 3D coordinate system, consisting of 3 orthogonal axes with X and Y axes in the equatorial plane, positive Z-axis parallel to mean earth rotation axis and pointing towards North Pole. UoM: m.)", CoordinateSystemType.Cartesian,
                                          CoordinateSystemAxisFactory.GeocentricX(UnitsOfMeasurement.Metre),
                                          CoordinateSystemAxisFactory.GeocentricY(UnitsOfMeasurement.Metre),
                                          CoordinateSystemAxisFactory.GeocentricZ(UnitsOfMeasurement.Metre)));

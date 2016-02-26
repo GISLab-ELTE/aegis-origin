@@ -44,7 +44,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// or
         /// The method is null.
         /// or
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The parameters do not contain a required parameter value.
@@ -53,7 +53,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// or
         /// The parameter is not a length value as required by the method.
         /// or
-        /// The parameter is not a double percision floating-point number as required by the method.
+        /// The parameter is not a double precision floating-point number as required by the method.
         /// </exception>
         protected CoordinateConversion(String identifier, String name, CoordinateOperationMethod method, IDictionary<CoordinateOperationParameter, Object> parameters)
             : base(identifier, name, method, parameters)

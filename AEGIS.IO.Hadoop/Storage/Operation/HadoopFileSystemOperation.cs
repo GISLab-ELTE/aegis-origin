@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HadoopFileSystemOperation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// <summary>
         /// Gets the complete request of the operation.
         /// </summary>
-        /// <value>The complete request indluding the path, operation and authentication.</value>
+        /// <value>The complete request including the path, operation and authentication.</value>
         protected String CompleteRequest
         {
             get
@@ -349,7 +349,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         #region Private methods
 
         /// <summary>
-        /// Creates the remote exeption for the specified content asynchronously.
+        /// Creates the remote exception for the specified content asynchronously.
         /// </summary>
         /// <param name="content">The HTTP content.</param>
         /// <returns>The produced remote exception.</returns>

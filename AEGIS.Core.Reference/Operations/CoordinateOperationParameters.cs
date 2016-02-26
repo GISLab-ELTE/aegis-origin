@@ -1292,7 +1292,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _scalingFactorForSourceCoordinateDifferences ?? (_scalingFactorForSourceCoordinateDifferences =
                     new CoordinateOperationParameter("EPSG::8694", "Scaling factor for source CRS coord differences", UnitQuantityType.Scale,
-                                                     "Used in general polynomial transformations to normalise coordinate differences to an acceptable numerical range."));
+                                                     "Used in general polynomial transformations to normalize coordinate differences to an acceptable numerical range."));
             }
         }
 
@@ -1305,7 +1305,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _scalingFactorForTargetCoordinateDifferences ?? (_scalingFactorForTargetCoordinateDifferences =
                     new CoordinateOperationParameter("EPSG::8694", "Scaling factor for target CRS coord differences", UnitQuantityType.Scale,
-                                                     "Used in general polynomial transformations to normalise coordinate differences to an acceptable numerical range."));
+                                                     "Used in general polynomial transformations to normalize coordinate differences to an acceptable numerical range."));
             }
         }
 
@@ -1318,7 +1318,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _scalingFactorForCoordinateDifferences ?? (_scalingFactorForCoordinateDifferences =
                     new CoordinateOperationParameter("EPSG::8696", "Scaling factor for coord differences", UnitQuantityType.Scale,
-                                                     "Used in reversible polynomial transformations to normalise coordinate differences to an acceptable numerical range. For the reverse transformation the forward target CRS becomes the reverse source CRS and forward source CRS becomes the reverse target CRS."));
+                                                     "Used in reversible polynomial transformations to normalize coordinate differences to an acceptable numerical range. For the reverse transformation the forward target CRS becomes the reverse source CRS and forward source CRS becomes the reverse target CRS."));
             }
         }
 
@@ -2388,7 +2388,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _binGridOriginI ?? (_binGridOriginI =
                     new CoordinateOperationParameter("EPSG::8733", "Bin grid origin I", UnitQuantityType.Scale,
-                                                     "The value of the I-axis coordinate at the bin grid defininition point. The I-axis is rotated 90 degrees clockwise from the J-axis."));
+                                                     "The value of the I-axis coordinate at the bin grid definition point. The I-axis is rotated 90 degrees clockwise from the J-axis."));
             }
         }
 
@@ -2401,7 +2401,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _binGridOriginJ ?? (_binGridOriginJ =
                     new CoordinateOperationParameter("EPSG::8734", "Bin grid origin J", UnitQuantityType.Scale,
-                                                     "The value of the J-axis coordinate at the bin grid defininition point."));
+                                                     "The value of the J-axis coordinate at the bin grid definition point."));
             }
         }
 
@@ -2414,7 +2414,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _binGridOriginEasting ?? (_binGridOriginEasting =
                     new CoordinateOperationParameter("EPSG::8735", "Bin grid origin Easting", UnitQuantityType.Length,
-                                                     "The value of the map grid Easting at the bin grid defininition point."));
+                                                     "The value of the map grid Easting at the bin grid definition point."));
             }
         }
 
@@ -2427,7 +2427,7 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 return _binGridOriginNorthing ?? (_binGridOriginNorthing =
                     new CoordinateOperationParameter("EPSG::8736", "Bin grid origin Northing", UnitQuantityType.Length,
-                                                     "The value of the map grid Northing at the bin grid defininition point."));
+                                                     "The value of the map grid Northing at the bin grid definition point."));
             }
         }
 

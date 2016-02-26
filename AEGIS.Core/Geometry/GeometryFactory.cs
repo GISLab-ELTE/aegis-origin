@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -287,7 +287,7 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Creates a line.
         /// </summary>
-        /// <param name="start">The startint coordinate.</param>
+        /// <param name="start">The starting coordinate.</param>
         /// <param name="end">The ending coordinate.</param>
         /// <returns>A line containing the specified coordinates.</returns>
         public virtual ILine CreateLine(Coordinate start, Coordinate end)
@@ -298,7 +298,7 @@ namespace ELTE.AEGIS.Geometry
         /// <summary>
         /// Creates a line.
         /// </summary>
-        /// <param name="start">The startint coordinate.</param>
+        /// <param name="start">The starting coordinate.</param>
         /// <param name="end">The ending coordinate.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A line containing the specified coordinates.</returns>

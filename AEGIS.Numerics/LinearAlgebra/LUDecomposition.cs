@@ -19,7 +19,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Numerics.LinearAlgebra
 {
     /// <summary>
-    /// Represents a type perfoming the LU decomposition of <see cref="Matrix" /> instances.
+    /// Represents a type performing the LU decomposition of <see cref="Matrix" /> instances.
     /// </summary>
     public class LUDecomposition
     {
@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         private Int32 _numberOfColumns; // the number of columns in the original matrix
         private Double? _determinant; // the determinant of the original matrix
         private Int32[] _permutationArray; // the permutation array for generating the pivot matrix 
-        private Int32 _numberOfPermutations; // permutációk száma a determináns számításához
+        private Int32 _numberOfPermutations; // the number of permutations
         private Matrix _p; // the generation pivot permutation matrix
         private Matrix _l; // the generated L matrix
         private Matrix _u; // the generated U matrix
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <summary>
         /// Initializes a new instance of the <see cref="LUDecomposition" /> class.
         /// </summary>
-        /// <param name="matrix">The matrix of which the decompomposition is computed.</param>
+        /// <param name="matrix">The matrix of which the decomposition is computed.</param>
         /// <exception cref="System.ArgumentNullException">The matrix is null.</exception>
         /// <exception cref="System.ArgumentException">The matrix is not square.</exception>
         public LUDecomposition(Matrix matrix)
@@ -214,7 +214,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
             if (_permutationArray != null)
                 return;
 
-            // first we assume that all rows are in corrent order
+            // first we assume that all rows are in current order
             _permutationArray = Enumerable.Range(0, _numberOfRows).ToArray();
             _numberOfPermutations = 0;
 
@@ -359,7 +359,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
         /// <exception cref="System.ArgumentException">
         /// The matrix is not square.
         /// or
-        /// The size of the matrix dow not match the size fo the vector.
+        /// The size of the matrix does not match the size of the vector.
         /// </exception>
         public static Vector SolveEquation(Matrix a, Vector b)
         {
@@ -370,7 +370,7 @@ namespace ELTE.AEGIS.Numerics.LinearAlgebra
             if (!a.IsSquare)
                 throw new ArgumentException("The matrix is not square.", "a");
             if (a.NumberOfRows != b.Size)
-                throw new ArgumentException("The size of the matrix dow not match the size fo the vector.", "b");
+                throw new ArgumentException("The size of the matrix does not match the size of the vector.", "b");
 
             LUDecomposition luDecomposition = new LUDecomposition(a);
             luDecomposition.Compute();

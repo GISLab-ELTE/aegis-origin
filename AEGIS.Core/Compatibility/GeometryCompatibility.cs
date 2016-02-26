@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryCompatibility.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -29,10 +29,10 @@ namespace ELTE.AEGIS.Compatibility
         #region IGeometry
 
         /// <summary>
-        /// Returns the name of the instatiable subtype of geometry.
+        /// Returns the name of the instantiable subtype of geometry.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns>The name of the instatiable subtype of geometry.</returns>
+        /// <returns>The name of the instantiable subtype of geometry.</returns>
         public static String GeometryType(this IGeometry geometry)
         {
             return geometry.Name;
@@ -49,7 +49,7 @@ namespace ELTE.AEGIS.Compatibility
         }
 
         /// <summary>
-        /// Returns whether the <see cref="IGeometry" /> has Z coordainate values.
+        /// Returns whether the <see cref="IGeometry" /> has Z coordinate values.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns><c>true</c> if the geometry has Z coordinate values; otherwise, <c>false</c>.</returns>
@@ -59,7 +59,7 @@ namespace ELTE.AEGIS.Compatibility
         }
 
         /// <summary>
-        /// Returns whether the <see cref="IGeometry" /> has M coordainate values.
+        /// Returns whether the <see cref="IGeometry" /> has M coordinate values.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns><c>true</c> if the geometry has M coordinate values; otherwise, <c>false</c>.</returns>

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralDataOrder.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -29,17 +29,17 @@ namespace ELTE.AEGIS
         Unspecified = 0,
 
         /// <summary>
-        /// Represents a service with multiple bands of the same pixel following eachother (a.k.a. band sequential).
+        /// Represents a service with multiple bands of the same pixel following each other (a.k.a. band sequential).
         /// </summary>
         RowColumnBand = 1,
 
         /// <summary>
-        /// Represents a service with the bands of the raster following eachother (a.k.a. band interleaved by pixel).
+        /// Represents a service with the bands of the raster following each other (a.k.a. band interleaved by pixel).
         /// </summary>
         BandRowColumn = 2,
 
         /// <summary>
-        /// Represents a service with multiple bands of the same row following eachother (a.k.a. band interleaved by line).
+        /// Represents a service with multiple bands of the same row following each other (a.k.a. band interleaved by line).
         /// </summary>
         RowBandColumn = 3
     }

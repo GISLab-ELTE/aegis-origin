@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LandsatMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -205,12 +205,12 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             {
                 case 7:
                     numberOfBands = 8;
-                    // solar irrandiance is constant for Landsat 7, see: http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat_Calibration_Summary_RSE.pdf
+                    // solar irradiance is constant for Landsat 7, see: http://landsathandbook.gsfc.nasa.gov/pdfs/Landsat_Calibration_Summary_RSE.pdf
                     solarIrradiance =  new Double[] { 1997, 1812, 1533, 1039, 230.8, Double.NaN, 84.9, 1362 };
                     break;
                 case 8:
                     numberOfBands = 11;
-                    // solar irrance is not provided for Landsat 8, see: http://landsat.usgs.gov/ESUN.php
+                    // solar irradiance is not provided for Landsat 8, see: http://landsat.usgs.gov/ESUN.php
                     solarIrradiance = Enumerable.Repeat(Double.NaN, 11).ToArray();
                     break;
             }

@@ -28,13 +28,13 @@ namespace ELTE.AEGIS.Temporal.Reference
         /// <summary>
         /// Gets the daylight saving identifier.
         /// </summary>
-        /// <value>An identifier used suring daylight saving time.</value>
+        /// <value>An identifier used during daylight saving time.</value>
         public String DaylightIdentifier { get; private set; }
 
         /// <summary>
         /// Gets the daylight saving name.
         /// </summary>
-        /// <value>The primary name used suring daylight saving time.</value>
+        /// <value>The primary name used during daylight saving time.</value>
         public String DaylightName { get; private set; }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Temporal.Reference
         /// <summary>
         /// Gets the daylight saving offset from the UTC time zone.
         /// </summary>
-        /// <value>The offset from the UTC time zone furing daylight saving time.</value>
+        /// <value>The offset from the UTC time zone during daylight saving time.</value>
         public Duration DaylightOffset { get; private set; }
 
         #endregion

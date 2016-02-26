@@ -57,7 +57,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         protected HashSet<IGraphVertex> _finished;
 
         /// <summary>
-        /// A value indicating whethet the target vertex is reached.
+        /// A value indicating whether the target vertex is reached.
         /// </summary>
         protected Boolean _isTargetReached;
 

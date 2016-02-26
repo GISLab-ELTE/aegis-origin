@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ImagingDevice.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -121,9 +121,9 @@ namespace ELTE.AEGIS
         /// No bands are specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The mission is empty, or consists of only shitespace characters.
+        /// The mission is empty, or consists of only whitespace characters.
         /// or
-        /// The sensor is empty, or consists of only shitespace characters.
+        /// The sensor is empty, or consists of only whitespace characters.
         /// </exception>
         public ImagingDevice(String identifier, String mission, String sensor, String orbit, Length altitude, TimeSpan temporalResolution, Length swath, params ImagingDeviceBand[] bands)
             : this(identifier, mission, 0, sensor, null, null, orbit, altitude, temporalResolution, swath, bands)
@@ -154,9 +154,9 @@ namespace ELTE.AEGIS
         /// No bands are specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// The mission is empty, or consists of only shitespace characters.
+        /// The mission is empty, or consists of only whitespace characters.
         /// or
-        /// The sensor is empty, or consists of only shitespace characters.
+        /// The sensor is empty, or consists of only whitespace characters.
         /// </exception>
         public ImagingDevice(String identifier, String mission, Int32 missionNumber, String sensor, String remarks, String[] aliases, String orbit, Length altitude, TimeSpan temporalResolution, Length swath, params ImagingDeviceBand[] bands)
             : base(identifier, null, remarks, aliases)
@@ -169,9 +169,9 @@ namespace ELTE.AEGIS
                 throw new ArgumentNullException("bands", "No bands are specified.");
 
             if (String.IsNullOrWhiteSpace(mission))
-                throw new ArgumentException("The mission is empty, or consists of only shitespace characters.", "mission");
+                throw new ArgumentException("The mission is empty, or consists of only whitespace characters.", "mission");
             if (String.IsNullOrWhiteSpace(sensor))
-                throw new ArgumentException("The sensor is empty, or consists of only shitespace characters.", "sensor");
+                throw new ArgumentException("The sensor is empty, or consists of only whitespace characters.", "sensor");
 
             Name = mission + missionNumber + " " + sensor;
             Mission = mission;

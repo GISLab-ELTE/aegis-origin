@@ -469,7 +469,7 @@ namespace ELTE.AEGIS.Reference
         /// Retrieves a world zone.
         /// </summary>
         /// <param name="zoneNumber">The zone number.</param>
-        /// <param name="hemisphere">The ellpisoid hemisphere.</param>
+        /// <param name="hemisphere">The ellipsoid hemisphere.</param>
         /// <returns>The world zone for the specified number and hemisphere</returns>
         /// <exception cref="System.ArgumentException">
         /// The zone number is not valid.;zoneNumber
@@ -504,7 +504,7 @@ namespace ELTE.AEGIS.Reference
         /// Retrieves a world zone.
         /// </summary>
         /// <param name="longitude">The longitude.</param>
-        /// <param name="hemisphere">The ellpisoid hemisphere.</param>
+        /// <param name="hemisphere">The ellipsoid hemisphere.</param>
         /// <returns>The world zone for the specified number and hemisphere</returns>
         /// <exception cref="System.ArgumentException">
         /// The longitude is not valid.;longitude
@@ -516,7 +516,7 @@ namespace ELTE.AEGIS.Reference
             if (longitude.BaseValue < -Constants.PI || longitude.BaseValue > Constants.PI)
                 throw new ArgumentException("The longitude is not valid.", "longitude");
             if (hemisphere == EllipsoidHemisphere.Equador)
-                throw new ArgumentException("The menisphere must be north or south.", "hemisphere");
+                throw new ArgumentException("The hemisphere must be north or south.", "hemisphere");
 
             Double zoneWidth = Constants.PI / 30;
 

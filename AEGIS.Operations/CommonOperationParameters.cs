@@ -119,7 +119,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _metadataPreservation ?? (_metadataPreservation =
                     OperationParameter.CreateOptionalParameter<Boolean>("AEGIS::301005", "Metadata preservation",
-                                                                        "Indicates whether the metadata should be perserved suring transformation.", null,
+                                                                        "Indicates whether the metadata should be preserved during transformation.", null,
                                                                         false
                     ));
             }
@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Operations
             {
                 return _overlapMargin ?? (_overlapMargin =
                     OperationParameter.CreateOptionalParameter<Double>("AEGIS::301575", "Overlap margin",
-                                                                       "The margin by which the individual parts should overlap after partitiining.", null,
+                                                                       "The margin by which the individual parts should overlap after partitioning.", null,
                                                                        0,
                                                                        Conditions.IsNotNegative()
                     ));

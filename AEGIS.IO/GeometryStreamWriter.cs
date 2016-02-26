@@ -166,7 +166,7 @@ namespace ELTE.AEGIS.IO
         public Uri Path { get; private set; }
         
         /// <summary>
-        /// Gets the undelying stream.
+        /// Gets the underlying stream.
         /// </summary>
         /// <value>The underlying stream.</value>
         public Stream BaseStream { get { return _baseStream; } }

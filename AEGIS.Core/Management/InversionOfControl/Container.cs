@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Container.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         #region Private constant fields
 
         /// <summary>
-        /// Exception message in case the cotnract is null. This field is constant.
+        /// Exception message in case the contract is null. This field is constant.
         /// </summary>
         private const String MessageContractIsNull = "The contract is null.";
 
@@ -1294,7 +1294,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
             if (!_typeMapping.ContainsKey(name))
                 return false;
 
-            // invoke the specified service using the default contructor
+            // invoke the specified service using the default constructor
             ConstructorInfo constructor = _typeMapping[name].Behavior.GetConstructors()[0];
 
             try

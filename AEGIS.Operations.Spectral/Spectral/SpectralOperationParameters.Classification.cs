@@ -159,7 +159,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _densitySlicingThresholds ?? (_densitySlicingThresholds =
                     OperationParameter.CreateOptionalParameter<Double[]>("AEGIS::354920", "Density slicing thresholds",
-                                                                         "The array of threshold values used for dencity slicing.", null,
+                                                                         "The array of threshold values used for density slicing.", null,
                                                                          (Double[])null)
                     );
             }

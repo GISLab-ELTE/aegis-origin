@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _greyWorldNormalization ?? (_greyWorldNormalization =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250285", "Grey world normalization",
-                                                                         "The grey world normalization is a color normalization technique which applies constant factors to the individual bands.", null, "1.0.0",
+                                                                         "The gray world normalization is a color normalization technique which applies constant factors to the individual bands.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));
@@ -247,7 +247,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _logarithmicTransformation ?? (_logarithmicTransformation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250108", "Logarithmic spectral transformation",
-                                                                         "Logarithmical spectral transformation.", null, "1.0.0",
+                                                                         "Logarithmic spectral transformation.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.BandIndex,
                                                                          SpectralOperationParameters.BandIndices));

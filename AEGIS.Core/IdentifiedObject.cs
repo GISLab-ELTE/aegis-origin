@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IdentifiedObject.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -75,7 +75,7 @@ namespace ELTE.AEGIS
         public String Remarks { get; protected set; }
 
         /// <summary>
-        /// Gets the aliasas that can also be used for naming purposes.
+        /// Gets the aliases that can also be used for naming purposes.
         /// </summary>
         /// <value>The read-only list containing alternative names by which this object is identified.</value>
         public IList<String> Aliases { get { return _aliases == null ? null : _aliases.AsReadOnly(); } }

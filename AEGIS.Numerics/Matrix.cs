@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Matrix.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -33,14 +33,14 @@ namespace ELTE.AEGIS.Numerics
         /// Enumerates the elements of a matrix.
         /// </summary>
         /// <remarks>
-        /// The enumerator performes a level order traversal of the specified matrix.
+        /// The enumerator performs a level order traversal of the specified matrix.
         /// </remarks>
         public class Enumerator : IEnumerator<Double>
         {
             #region Private fields
 
             /// <summary>
-            /// The matrix that is enumrated.
+            /// The matrix that is enumerated.
             /// </summary>
             private Matrix _localMatrix;
 
@@ -652,7 +652,7 @@ namespace ELTE.AEGIS.Numerics
         #region Public static methods
 
         /// <summary>
-        /// Determines whether the specified matrix is a nullmatrix.
+        /// Determines whether the specified matrix is a null matrix.
         /// </summary>
         /// <param name="matrix">The matrix.</param>
         /// <returns><c>true</c> if all values of the matrix are zeros; otherwise, <c>false</c>.</returns>
@@ -713,7 +713,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="first">The first matrix.</param>
         /// <param name="second">The second matrix.</param>
-        /// <returns><c>true</c> if the matrixes are the same size, and all values are equal; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the matrices are the same size, and all values are equal; otherwise, <c>false</c>.</returns>
         public static Boolean AreEqual(Matrix first, Matrix second)
         {
             if (ReferenceEquals(first, null) && ReferenceEquals(second, null))

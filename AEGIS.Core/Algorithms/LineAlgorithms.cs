@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LineAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -332,7 +332,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="firstLineEnd">The ending coordinate of the first line.</param>
         /// <param name="secondLineStart">The starting coordinate of the second line.</param>
         /// <param name="secondLineEnd">The ending coordinate of the second line.</param>
-        /// <param name="precision">The precisio model.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns>The distance of the two lines.</returns>
         public static Double Distance(Coordinate firstLineStart, Coordinate firstLineEnd, Coordinate secondLineStart, Coordinate secondLineEnd, PrecisionModel precision)
         {
@@ -995,7 +995,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="secondCoordinate">The coordinate of the second line.</param>
         /// <param name="secondVector">The direction vector of the second line.</param>
         /// <param name="intersection">The coordinate of intersection.</param>
-        /// <param name="precision">Thge precision model.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns><c>true</c> if the two lines intersect; otherwise, <c>false</c>.</returns>
         private static Boolean ComputeIntersection(Coordinate firstCoordinate, CoordinateVector firstVector, Coordinate secondCoordinate, CoordinateVector secondVector, PrecisionModel precision, out Coordinate intersection)
         {

@@ -334,7 +334,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Deletes the filesystem entry located at the specified path.
+        /// Deletes the file system entry located at the specified path.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -412,7 +412,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Moves a filesystem entry and its contents to a new location.
+        /// Moves a file system entry and its contents to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -488,7 +488,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Copies an existing filesystem entry to a new location.
+        /// Copies an existing file system entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>

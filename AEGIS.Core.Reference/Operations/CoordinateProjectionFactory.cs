@@ -1,5 +1,5 @@
 ﻿/// <copyright file="CoordinateProjection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -534,14 +534,14 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <exception cref="System.ArgumentException">
         /// The zone number is not valid.;longitude
         /// or
-        /// The menisphere must be north or south.;hemisphere
+        /// The hemisphere must be north or south.;hemisphere
         /// </exception>
         public static CoordinateProjection UniversalTransverseMercatorZone(Ellipsoid ellipsoid, Int32 zoneNumber, EllipsoidHemisphere hemisphere)
         {
             if (zoneNumber < 1 || zoneNumber > 60)
                 throw new ArgumentException("The zone number is not valid.", "longitude");
             if (hemisphere == EllipsoidHemisphere.Equador)
-                throw new ArgumentException("The menisphere must be north or south.", "hemisphere");
+                throw new ArgumentException("The hemisphere must be north or south.", "hemisphere");
 
             Double zoneWidth = Constants.PI / 30;
             Double zoneCenter = (zoneNumber - 1) * zoneWidth + zoneWidth / 2 - Constants.PI;
@@ -569,14 +569,14 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <exception cref="System.ArgumentException">
         /// The longitude is invalid.;longitude
         /// or
-        /// The menisphere must be north or south.;hemisphere
+        /// The hemisphere must be north or south.;hemisphere
         /// </exception>
         public static CoordinateProjection UniversalTransverseMercatorZone(Ellipsoid ellipsoid, Angle longitude, EllipsoidHemisphere hemisphere)
         {
             if (longitude.BaseValue < -Constants.PI || longitude.BaseValue > Constants.PI)
                 throw new ArgumentException("The longitude is invalid.", "longitude");
             if (hemisphere == EllipsoidHemisphere.Equador)
-                throw new ArgumentException("The menisphere must be north or south.", "hemisphere");
+                throw new ArgumentException("The hemisphere must be north or south.", "hemisphere");
 
             Double zoneWidth = Constants.PI / 30;
 

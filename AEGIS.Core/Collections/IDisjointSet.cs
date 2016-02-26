@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Collections
     /// <typeparam name="TElement">The type of the elements in the sets.</typeparam>
     /// <remarks>
     /// In computing, a disjoint-set data structure, also called a union–find data structure or merge–find set,
-    /// is a data structure that keeps track of a set of elements partitioned into a number of disjoint (nonoverlapping) subsets.
+    /// is a data structure that keeps track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets.
     /// </remarks>
     public interface IDisjointSet<TElement> : IEnumerable<TElement>, IEnumerable
     {

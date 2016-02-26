@@ -18,7 +18,7 @@ using System.IO;
 namespace ELTE.AEGIS.IO.Storage.Operation
 {
     /// <summary>
-    /// Represent a file system result contaning a stream.
+    /// Represent a file system result containing a stream.
     /// </summary>
     public class StreamOperationResult : FileSystemOperationResult
     {

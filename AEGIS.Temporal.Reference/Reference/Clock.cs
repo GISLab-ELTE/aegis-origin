@@ -204,7 +204,7 @@ namespace ELTE.AEGIS.Temporal.Reference
         /// <param name="hours">The hours.</param>
         /// <param name="minutes">The minutes.</param>
         /// <param name="seconds">The seconds.</param>
-        /// <returns>The instant represetnting the specified time.</returns>
+        /// <returns>The instant representing the specified time.</returns>
         public Instant GetInstant(Int32 hours, Int32 minutes, Int32 seconds)
         {
             return GetInstant(hours, minutes, seconds, 0);
@@ -217,7 +217,7 @@ namespace ELTE.AEGIS.Temporal.Reference
         /// <param name="minutes">The minutes.</param>
         /// <param name="seconds">The seconds.</param>
         /// <param name="milliseconds">The milliseconds.</param>
-        /// <returns>The instant represetnting the specified time.</returns>
+        /// <returns>The instant representing the specified time.</returns>
         public Instant GetInstant(Int32 hours, Int32 minutes, Int32 seconds, Int32 milliseconds)
         {
             return new Instant(hours * TicksPerHour + minutes * TicksPerMinute + seconds * TicksPerSecond + milliseconds * TicksPerMillisecond); 

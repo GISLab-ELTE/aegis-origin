@@ -1318,7 +1318,7 @@ namespace ELTE.AEGIS.IO
 
         #endregion
 
-        #region Public static methods for converting to exising byte array
+        #region Public static methods for converting to existing byte array
 
         /// <summary>
         /// Copies the specified 16-bit signed integer value to the specified array.
@@ -1873,7 +1873,7 @@ namespace ELTE.AEGIS.IO
             Array.Copy(valueArray, 0, array, startIndex + sizeof(Int32), valueArray.Length);
         }
         /// <summary>
-        /// Copies the specified unicode character value to the specified array.
+        /// Copies the specified Unicode character value to the specified array.
         /// </summary>
         /// <param name="value">The number to convert.</param>
         /// <param name="array">The destination array.</param>
@@ -1901,7 +1901,7 @@ namespace ELTE.AEGIS.IO
             Array.Copy(valueArray, 0, array, startIndex, valueArray.Length);
         }
         /// <summary>
-        /// Copies the specified unicode character value to the specified array.
+        /// Copies the specified Unicode character value to the specified array.
         /// </summary>
         /// <param name="value">The number to convert.</param>
         /// <param name="array">The destination array.</param>
@@ -1933,7 +1933,7 @@ namespace ELTE.AEGIS.IO
             Array.Copy(valueArray, 0, array, startIndex, valueArray.Length);
         }
         /// <summary>
-        /// Copies the specified unicode string value to the specified array.
+        /// Copies the specified Unicode string value to the specified array.
         /// </summary>
         /// <param name="value">The number to convert.</param>
         /// <param name="array">The destination array.</param>
@@ -1963,7 +1963,7 @@ namespace ELTE.AEGIS.IO
             }
         }
         /// <summary>
-        /// Copies the specified unicode string value to the specified array.
+        /// Copies the specified Unicode string value to the specified array.
         /// </summary>
         /// <param name="value">The number to convert.</param>
         /// <param name="array">The destination array.</param>

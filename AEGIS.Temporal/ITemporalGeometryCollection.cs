@@ -18,7 +18,7 @@ namespace ELTE.AEGIS.Temporal
     /// <summary>
     /// Defines a general collection for temporal geometry objects.
     /// </summary>
-    /// <typeparam name="T">The type of the gometry.</typeparam>
+    /// <typeparam name="T">The type of the geometry.</typeparam>
     interface ITemporalGeometryCollection<T> : IGeometryCollection<T>, ITemporalObject where T : ITemporalGeometry
     {
         IGeometryCollection<T> this[Instant position] { get; }

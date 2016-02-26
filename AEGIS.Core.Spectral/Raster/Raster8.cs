@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Raster8.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -144,7 +144,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValue">The spectral value.</param>
         protected override void ApplySetValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32 spectralValue)
         {
-            // modify the histrogram values if they are already calculated
+            // modify the histogram values if they are already calculated
             if (_histogramValues[bandIndex] != null)
             {
                 _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Raster
         {
             for (Int32 k = 0; k < spectralValues.Length; k++)
             {
-                // modify the histrogram values if they are already calculated
+                // modify the histogram values if they are already calculated
                 if (_histogramValues[k] != null)
                 {
                     _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;
@@ -184,7 +184,7 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValue">The spectral value.</param>
         protected override void ApplySetFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Double spectralValue)
         {
-            // modify the histrogram values if they are already calculated
+            // modify the histogram values if they are already calculated
             if (_histogramValues[bandIndex] != null)
             {
                 _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
@@ -204,7 +204,7 @@ namespace ELTE.AEGIS.Raster
         {
             for (Int32 k = 0; k < spectralValues.Length; k++)
             {
-                // modify the histrogram values if they are already calculated
+                // modify the histogram values if they are already calculated
                 if (_histogramValues[k] != null)
                 {
                     _histogramValues[k][_values[k][rowIndex * NumberOfRows + columnIndex]]--;

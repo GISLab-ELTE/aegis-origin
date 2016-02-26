@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Heap.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Collections
         /// Enumerates the elements of a heap.
         /// </summary>
         /// <remarks>
-        /// The enumerator performes a level order traversal of the specified heap.
+        /// The enumerator performs a level order traversal of the specified heap.
         /// </remarks>
         [Serializable]
         public class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>, IEnumerator, IDisposable
@@ -401,7 +401,7 @@ namespace ELTE.AEGIS.Collections
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Heap{TKey, TValue}" /> class class that is empty, has the specified initial capacity, and uses the specified <see cref="IComparer{T}" />.
+        /// Initializes a new instance of the <see cref="Heap{TKey, TValue}" /> class that is empty, has the specified initial capacity, and uses the specified <see cref="IComparer{T}" />.
         /// </summary>
         /// <param name="capacity">The initial number of elements that the <see cref="Heap{TKey, TValue}" /> can contain.</param>
         /// <param name="comparer">The <see cref="IComparer{T}" /> implementation to use when comparing keys, or null to use the default <see cref="Comparer{TKey}" /> for the type of the key.</param>
@@ -495,7 +495,7 @@ namespace ELTE.AEGIS.Collections
         /// Determines whether the heap contains the specified key.
         /// </summary>
         /// <param name="key">The key to locate in the heap.</param>
-        /// <returns><c>true</c> if the the heap contains an element with the specified key; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the heap contains an element with the specified key; otherwise, <c>false</c>.</returns>
         public Boolean Contains(TKey key)
         {
             for (Int32 i = 0; i < _size; i++)

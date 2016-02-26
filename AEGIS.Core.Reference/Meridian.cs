@@ -19,7 +19,7 @@ using System;
 namespace ELTE.AEGIS.Reference
 {
     /// <summary>
-    /// Prepresents a meridian.
+    /// Represents a meridian.
     /// </summary>
     public class Meridian : IdentifiedObject
     {

@@ -40,7 +40,7 @@ namespace ELTE.AEGIS.Reference
         public AreaOfUse AreaOfUse { get { return _areaOfUse; } }
 
         /// <summary>
-        /// Gets the compontents of the reference system.
+        /// Gets the components of the reference system.
         /// </summary>
         /// <value>The components of the compound reference system.</value>
         public IList<ReferenceSystem> Components { get { return Array.AsReadOnly(_components); } }

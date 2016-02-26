@@ -1,5 +1,5 @@
 ﻿/// <copyright file="EquidistantCylindricalSphericalProjection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.Reference.Operations
             Int32 zone2Column = Convert.ToInt32(Math.Floor(longitude % 15));
             Int32 zone2Row = Convert.ToInt32(Math.Floor(latitude % 15));
 
-            // mninutes
+            // minutes
             Int32 minutesEasting = Convert.ToInt32(Math.Floor((longitude - Math.Floor(longitude)) * 6000));
             Int32 minutesNorthing = Convert.ToInt32(Math.Floor((latitude - Math.Floor(latitude)) * 6000));
 
@@ -123,7 +123,7 @@ namespace ELTE.AEGIS.Reference.Operations
                     latitude = Double.Parse(coordinate.Substring(7, 3)) / 6000;
                     goto case 4;
                 case 12:
-                    // one hundreth of minutes
+                    // one hundredth of minutes
                     longitude = Double.Parse(coordinate.Substring(4, 4)) / 6000;
                     latitude = Double.Parse(coordinate.Substring(8, 4)) / 6000;
                     goto case 4;

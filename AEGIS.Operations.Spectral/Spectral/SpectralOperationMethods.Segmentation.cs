@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _bestMergeBasedSegmentation ?? (_bestMergeBasedSegmentation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254101", "Best merge segmentation",
-                                                                         "Best merge segmentation chooses any two neighboring segments over the image if their contraction is optimal with respect to the threshold. The algorithm performs multiple iterations, until no merge can be performed, or until the interation number is reached.", null, "1.0.0",
+                                                                         "Best merge segmentation chooses any two neighboring segments over the image if their contraction is optimal with respect to the threshold. The algorithm performs multiple iterations, until no merge can be performed, or until the integration number is reached.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
                                                                          CommonOperationParameters.NumberOfIterations,
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _isodataClustering ?? (_isodataClustering =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254210", "ISODATA clustering",
-                                                                         "ISODATA clustering performes classification of spectral vectors in different clusters, by randomly initializing cluster centers, and then aligning these centers based on multispectral space properties. The initial number of cluster centers, and the distance thresdhold can be specified.", null, "1.0.0",
+                                                                         "ISODATA clustering performs classification of spectral vectors in different clusters, by randomly initializing cluster centers, and then aligning these centers based on multispectral space properties. The initial number of cluster centers, and the distance threshold can be specified.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Global,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.SegmentCollection,
@@ -139,7 +139,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _sequentialCouplingSegmentation ?? (_sequentialCouplingSegmentation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::254120", "Sequential coupling segmentation",
-                                                                         "Sequential linking deals with the statistical homogeneity of segments using an iteration of merging neighbouring cells in row-major order.", null, "1.0.0",
+                                                                         "Sequential linking deals with the statistical homogeneity of segments using an iteration of merging neighboring cells in row-major order.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Zonal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.SegmentHomogeneityThreshold,

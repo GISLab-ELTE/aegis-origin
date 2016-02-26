@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Envelope.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -395,7 +395,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Determines whether the envelope contains the specified coordinate.
         /// </summary>
-        /// <param name="first">The first coordiante of the envelope.</param>
+        /// <param name="first">The first coordinate of the envelope.</param>
         /// <param name="second">The second coordinate of the envelope.</param>
         /// <param name="coordinate">The examined coordinate.</param>
         /// <returns><c>true</c> if the envelope defined by <paramref name="first"/> and <paramref name="second"/> contains <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>

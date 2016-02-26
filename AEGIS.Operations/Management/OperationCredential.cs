@@ -1,5 +1,5 @@
 ﻿/// <copyright file="OperationCredential.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -22,19 +22,19 @@ namespace ELTE.AEGIS.Operations.Management
     /// Represents a credential containing information about the implementation of an operation method.
     /// </summary>
     /// <remarks>
-    /// The credential contains validation methods on conditions reguarding the engine, the source and target object and the parameters of the operation.
-    /// The operation can only be executed if the all verifications pass. If not, the operation will definately raise exception during runtime.
+    /// The credential contains validation methods on conditions regarding the engine, the source and target object and the parameters of the operation.
+    /// The operation can only be executed if the all verifications pass. If not, the operation will definitely raise exception during runtime.
     /// The credential contains a priority indicator. In case multiple operations satisfy the conditions, the operation with the highest priority should be chosen for execution.
-    /// The credential also indicates whether the operation is performed elementwise for an input collection.
+    /// The credential also indicates whether the operation is performed element-wise for an input collection.
     /// </remarks>
     public class OperationCredential
     {
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether the operation is performed elemetwise for an input collection.
+        /// Gets a value indicating whether the operation is performed elementwise for an input collection.
         /// </summary>
-        /// <value><c>true</c> if the operation is performed elemetwise for an input collection; otherwise <c>false</c>.</value>
+        /// <value><c>true</c> if the operation is performed elementwise for an input collection; otherwise <c>false</c>.</value>
         public virtual Boolean IsElementWise { get { return false; } }
 
         /// <summary>

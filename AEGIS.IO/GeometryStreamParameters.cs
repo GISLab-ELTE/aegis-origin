@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.IO
             {
                 return _geometryFactoryType ?? (_geometryFactoryType =
                     GeometryStreamParameter.CreateOptionalParameter<Type>("AEGIS::620001", "Geometry factory type",
-                                                                          "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used witk the reference system provided by the source.",
+                                                                          "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used with the reference system provided by the source.",
                                                                           Conditions.Implements<IGeometryFactory>()));
             }
         }

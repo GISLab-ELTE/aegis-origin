@@ -31,7 +31,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     [OperationMethodImplementation("AEGIS::225501", "Prim's algorithm")]
     public class PrimsAlgorithm : MinimumSpanningTreeAlgorithm
     {
-        #region Private fileds
+        #region Private fields
 
         /// <summary>
         /// The source vertex. This field is read-only.

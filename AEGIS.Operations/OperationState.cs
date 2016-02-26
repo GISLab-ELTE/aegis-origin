@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations
         Initialized,
 
         /// <summary>
-        /// The operations is initailizing the resulting object.
+        /// The operations is initializing the resulting object.
         /// </summary>
         Preparing,
 

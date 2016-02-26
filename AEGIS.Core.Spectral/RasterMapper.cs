@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterMapper.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -153,7 +153,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Initializes a new instance of the <see cref="RasterMapper" /> class.
         /// </summary>
-        /// <param name="mode">The rster mapping mode.</param>
+        /// <param name="mode">The raster mapping mode.</param>
         /// <param name="transformation">The transformation from raster space to geometry space.</param>
         /// <exception cref="System.ArgumentNullException">The transformation is null.</exception>
         /// <exception cref="System.ArgumentException">

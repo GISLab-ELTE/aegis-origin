@@ -293,7 +293,7 @@ namespace ELTE.AEGIS.IO.WellKnown
         /// <param name="referenceSystem">The reference system.</param>
         /// <returns>The WKT representation of the reference system.</returns>
         /// <exception cref="System.ArgumentNullException">The reference system is null.</exception>
-        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified refeence system type.</exception>
+        /// <exception cref="System.ArgumentException">Conversion is not supported with the specified reference system type.</exception>
         public static String ToWellKnownText(IReferenceSystem referenceSystem)
         {
             if (referenceSystem == null)
@@ -304,7 +304,7 @@ namespace ELTE.AEGIS.IO.WellKnown
             if (referenceSystem is GeographicCoordinateReferenceSystem)
                 return ComputeText(referenceSystem as GeographicCoordinateReferenceSystem);
 
-            throw new ArgumentException("Conversion is not supported with the specified refeence system type.", "referenceSystem");
+            throw new ArgumentException("Conversion is not supported with the specified reference system type.", "referenceSystem");
         }
 
         #endregion
@@ -1229,7 +1229,7 @@ namespace ELTE.AEGIS.IO.WellKnown
 
                 String datumName = Regex.Replace(text.Substring(nameStartIndex, nameEndIndex - nameStartIndex), "_", " ");
 
-                // seach for known geodetic datum
+                // search for known geodetic datum
                 if (!String.IsNullOrWhiteSpace(datumName))
                 {
                     GeodeticDatum datum = GeodeticDatums.FromName(datumName).FirstOrDefault();

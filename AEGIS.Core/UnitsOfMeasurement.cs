@@ -1,5 +1,5 @@
 ﻿///<copyright file="UnitsOfMeasurement.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -570,7 +570,7 @@ namespace ELTE.AEGIS
             get
             {
                 return _britishFoot1936 ?? (_britishFoot1936 = new UnitOfMeasurement("EPSG::9095", "British foot (1936)",
-                                                                                     "For the 1936 retriangulation OSGB defines the relationship of 10 feet of 1796 to the International metre through the logarithmic relationship (10^0.48401603 exactly). 1 ft = 0.3048007491…m. Also used for metric conversions in Ireland.",
+                                                                                     "For the 1936 re-triangulation OSGB defines the relationship of 10 feet of 1796 to the International metre through the logarithmic relationship (10^0.48401603 exactly). 1 ft = 0.3048007491…m. Also used for metric conversions in Ireland.",
                                                                                      new String[] {"foot", "ftBr(36)"},
                                                                                      "ft", 0.3048007491, UnitQuantityType.Length));
             }

@@ -99,7 +99,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <summary>
         /// Converts the dBase field to its binary representation.
         /// </summary>
-        /// <returns>The byte array containt the field.</returns>
+        /// <returns>The byte array contained the field.</returns>
         public Byte[] ToByteArray()
         {
             Byte[] result = new Byte[32];
@@ -173,12 +173,12 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <exception cref="System.ArgumentNullException">
         /// The name is null.
         /// or
-        /// The valus is null.
+        /// The value is null.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The name is empty or consists only of white-space characters.
         /// or
-        /// The length os the name is more than the maximum supported by the field (10).
+        /// The length of the name is more than the maximum supported by the field (10).
         /// or
         /// The value is null.
         /// </exception>
@@ -189,7 +189,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             if (String.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("The name is empty or consists only of white-space characters.", "name");
             if (name.Length > 10)
-                throw new ArgumentException("The length os the name is more than the maximum supported by the field (10).", "name");
+                throw new ArgumentException("The length of the name is more than the maximum supported by the field (10).", "name");
             if (value == null)
                 throw new ArgumentNullException("value", "The value is null.");
 

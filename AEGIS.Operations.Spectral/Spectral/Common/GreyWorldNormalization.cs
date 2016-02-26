@@ -22,11 +22,11 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Common
 {
     /// <summary>
-    /// Represent an operation performing grey world normalization.
+    /// Represent an operation performing gray world normalization.
     /// </summary>
     /// <remarks>
-    /// The grey world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be 
-    /// modelled by constant factors applied to the different bands.
+    /// The gray world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be 
+    /// modeled by constant factors applied to the different bands.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::250285", "Grey world normalization")]
     public class GreyWorldNormalization : PerBandSpectralTransformation

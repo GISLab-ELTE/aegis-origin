@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BTree.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Collections.SearchTree
         /// Enumerates the elements of a <see cref="BTree{TKey, TValue}" />.
         /// </summary>
         /// <remarks>
-        /// The enumerator performes a level order traversal of the B-tree.
+        /// The enumerator performs a level order traversal of the B-tree.
         /// </remarks>
         [Serializable]
         public sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
@@ -535,7 +535,7 @@ namespace ELTE.AEGIS.Collections.SearchTree
 
         #endregion
 
-        #region Public properies
+        #region Public properties
 
         /// <summary>
         /// Gets the <see cref="IComparer{T}" /> that is used to determine order of keys for the tree. 

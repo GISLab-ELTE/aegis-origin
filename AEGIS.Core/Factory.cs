@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Factory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -46,7 +46,7 @@ namespace ELTE.AEGIS
         private const String MessageFactoryContractIsNull = "The factory contract is null.";
 
         /// <summary>
-        /// Exception message in case the factory contract is alread ensured. This field is constant.
+        /// Exception message in case the factory contract is already ensured. This field is constant.
         /// </summary>
         private const String MessageFactoryIsEnsured = "The factory contract is already ensured.";
 
@@ -215,7 +215,7 @@ namespace ELTE.AEGIS
             if (_contractDictionary.ContainsKey(factoryContract))
                 return _contractDictionary[factoryContract];
 
-            // recursively process all undelying factories
+            // recursively process all underlying factories
             foreach (IFactory factory in _contractDictionary.Values)
             {
                 if (factory.ContainsFactory(factoryContract))
@@ -278,7 +278,7 @@ namespace ELTE.AEGIS
 
             examinedFactories.Add(this);
 
-            // recursively process all undelying factories
+            // recursively process all underlying factories
             foreach (IFactory factory in _contractDictionary.Values)
             {
                 if (examinedFactories.Contains(factory))

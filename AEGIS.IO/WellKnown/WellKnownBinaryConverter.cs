@@ -276,7 +276,7 @@ namespace ELTE.AEGIS.IO.WellKnown
             if (byteOrder == ByteOrder.LittleEndian)
                 geometryBytes[0] = 1;
 
-            if (geometryModel == GeometryModel.Spatial3D) // típus
+            if (geometryModel == GeometryModel.Spatial3D) // type
                 EndianBitConverter.CopyBytes((Int32)WellKnownBinaryTypes.PointZ, geometryBytes, 1, byteOrder);
             else
                 EndianBitConverter.CopyBytes((Int32)WellKnownBinaryTypes.Point, geometryBytes, 1, byteOrder);

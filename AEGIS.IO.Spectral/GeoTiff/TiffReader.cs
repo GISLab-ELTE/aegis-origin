@@ -1,5 +1,5 @@
 ﻿/// <copyright file="TiffReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -1345,7 +1345,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (value is Int32)
                 return TiffTagType.SLong;
             if (value is Rational)
-                return TiffTagType.SRational; // missing comparision for Rational
+                return TiffTagType.SRational; // missing comparison for Rational
             if (value is Single)
                 return TiffTagType.Float;
             if (value is Double)

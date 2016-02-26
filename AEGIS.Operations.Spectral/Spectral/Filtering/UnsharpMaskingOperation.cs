@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents an Unsharp madking filter operation.
+    /// Represents an Unsharp masking filter operation.
     /// </summary>
     /// <remarks>
     /// Unsharp masking (USM) is an image sharpening technique. 

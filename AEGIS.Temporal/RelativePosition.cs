@@ -21,7 +21,7 @@ namespace ELTE.AEGIS.Temporal
     /// <remarks>
     /// Relative positioning is defined according to James F. Allen. 1983. Maintaining knowledge about 
     /// temporal intervals. Commun. ACM 26, 11 (November 1983), 832-843.
-    /// Besides noted positions and undefined value is available for indeterminent situatians.
+    /// Besides noted positions and undefined value is available for indeterminate situations.
     /// </remarks>
     public enum RelativePosition
     {

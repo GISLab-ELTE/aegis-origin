@@ -104,7 +104,7 @@ namespace ELTE.AEGIS.IO
         #region Public methods
 
         /// <summary>
-        /// Returns whether the specified file name mathes the format.
+        /// Returns whether the specified file name matches the format.
         /// </summary>
         /// <param name="fileName">The file name.</param>
         /// <returns><c>true</c> if the file name matches the format; otherwise, <c>false</c>.</returns>

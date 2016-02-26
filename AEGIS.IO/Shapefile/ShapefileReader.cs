@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.IO.Shapefile
     /// </summary>    
     /// <remarks>
     /// The shapefile format is an interchange format for simple vector data.
-    /// The format consinst of multiple files within the same directory. The main file are the vector file (shp), sptial index file (shx) and attribute dBase table (dbf).
+    /// The format consist of multiple files within the same directory. The main file are the vector file (shp), spatial index file (shx) and attribute dBase table (dbf).
     /// </remarks>
     [IdentifiedObjectInstance("AEGIS::610101", "Esri shapefile")]
     public class ShapefileReader : GeometryStreamReader
@@ -36,7 +36,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         #region Private types
 
         /// <summary>
-        /// Contains information abount a shape record.
+        /// Contains information about a shape record.
         /// </summary>
         private struct ShapeRecordInfo
         {
@@ -299,7 +299,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             Int32 recordNumber, recordLength;
             Byte[] recordHeaderBytes = new Byte[8];
             Byte[] recordBytes;
-            Dictionary<String, Object> metadata = null;
+            IDictionary<String, Object> metadata = null;
 
             // read record header
             _baseStream.Read(recordHeaderBytes, 0, recordHeaderBytes.Length);
@@ -313,7 +313,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             // read metadata
             if (_fileSystem.Exists(MetadataFilePath))
-                metadata = new Dictionary<String, Object>(_metadataReader.Read()) ?? new Dictionary<String, Object>();
+                metadata = _metadataReader.Read();
 
             // convert shape
 
@@ -345,7 +345,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         #region Private methods
 
         /// <summary>
-        /// Readsthe file header.
+        /// Reads the file header.
         /// </summary>
         /// <exception cref="System.IO.InvalidDataException">Stream content is in an invalid format.</exception>
         private void ReadHeader()

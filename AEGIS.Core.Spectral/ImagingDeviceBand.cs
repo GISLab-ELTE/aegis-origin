@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ImagingDeviceBand.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -57,7 +57,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets the spectral domain of the band.
         /// </summary>
-        /// <value>Tje spectral domain of the band.</value>
+        /// <value>The spectral domain of the band.</value>
         public SpectralDomain SpectralDomain { get; private set; }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="number">The number.</param>
         /// <param name="description">The description.</param>
-        /// <param name="rangeResultion">The range resoltion.</param>
+        /// <param name="rangeResultion">The range resolution.</param>
         /// <param name="azimuthResolution">The azimuth resolution.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="spectralDomain">The spectral domain of the band.</param>

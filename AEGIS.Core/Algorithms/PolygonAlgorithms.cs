@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -308,7 +308,7 @@ namespace ELTE.AEGIS.Algorithms
                             LineAlgorithms.Contains(shell[shell.Count - 1], shell[shell.Count - 2], shell[1], precision))
                             return false;
                     }
-                    else if (secondEdgeIndex == firstEdgeIndex + 1) // for neighbour edges containement must be examined
+                    else if (secondEdgeIndex == firstEdgeIndex + 1) // for neighbor edges containment must be examined
                     {
                         if (LineAlgorithms.Contains(shell[firstEdgeIndex], shell[firstEdgeIndex + 1], shell[secondEdgeIndex + 1], precision) ||
                             LineAlgorithms.Contains(shell[secondEdgeIndex], shell[secondEdgeIndex + 1], shell[firstEdgeIndex], precision))
@@ -1004,7 +1004,7 @@ namespace ELTE.AEGIS.Algorithms
 
         #endregion
 
-        #region Private location compitation methods
+        #region Private location computation methods
 
         /// <summary>
         /// Computes the location of the specified coordinate within a polygon.

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ProxyRaster.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -20,14 +20,14 @@ using System.Linq;
 namespace ELTE.AEGIS.Raster
 {
     /// <summary>
-    /// Represents a raster image managing values in a entity containg integer values.
+    /// Represents a raster image managing values in a entity contains integer values.
     /// </summary>
     public class ProxyRaster : Raster
     {
         #region Private fields
 
         /// <summary>
-        /// The underlying rraster service.
+        /// The underlying raster service.
         /// </summary>
         private readonly IRasterService _service;
 

@@ -44,7 +44,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <exception cref="System.ArgumentNullException">
         /// The ellipsoid is null.
         /// or
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The parameters do not contain a required parameter value.

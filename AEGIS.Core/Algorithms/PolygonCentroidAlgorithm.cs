@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PolygonCentroidAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -332,7 +332,7 @@ namespace ELTE.AEGIS.Algorithms
         /// Compute the centroid of the polygon.
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
-        /// <param name="holes">The collection of coordinates representing the poolygon holes.</param>
+        /// <param name="holes">The collection of coordinates representing the polygon holes.</param>
         /// <returns>The centroid of the polygon.</returns>
         public static Coordinate ComputeCentroid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes)
         {
@@ -344,7 +344,7 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="shell">The coordinates of the polygon shell.</param>
         /// <param name="precisionModel">The precision model.</param>
-        /// <param name="holes">The collection of coordinates representing the poolygon holes.</param>
+        /// <param name="holes">The collection of coordinates representing the polygon holes.</param>
         /// <returns>The centroid of the polygon.</returns>
         public static Coordinate ComputeCentroid(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, PrecisionModel precisionModel)
         {

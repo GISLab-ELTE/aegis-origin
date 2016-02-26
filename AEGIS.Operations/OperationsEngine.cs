@@ -346,7 +346,7 @@ namespace ELTE.AEGIS.Operations
         #region Private methods
 
         /// <summary>
-        /// Loads the operations from the specified assemly.
+        /// Loads the operations from the specified assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         private void LoadOperations(Assembly assembly)

@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.Temporal.Positioning
         /// <summary>
         /// Gets the ordinal position.
         /// </summary>
-        /// <value>The oprdinal era of the position.</value>
+        /// <value>The ordinal era of the position.</value>
         public OrdinalEra Position { get { return (ReferenceSystem as OrdinalReferenceSystem).GetEra(_instant); } }
 
         /// <summary>

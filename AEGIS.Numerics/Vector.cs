@@ -153,9 +153,9 @@ namespace ELTE.AEGIS.Numerics
         #region Public methods
 
         /// <summary>
-        /// Transpone the vector.
+        /// Transpose the vector.
         /// </summary>
-        /// <returns>The transponed vector as a <see cref="Matrix" />.</returns>
+        /// <returns>The transposed vector as a <see cref="Matrix" />.</returns>
         public Matrix Transpone()
         {
             Matrix matrix = new Matrix(1, Size);
@@ -496,7 +496,7 @@ namespace ELTE.AEGIS.Numerics
         #region Public static methods
 
         /// <summary>
-        /// Determines whether the specified vector is a nullvector.
+        /// Determines whether the specified vector is a null vector.
         /// </summary>
         /// <param name="vector">The vector.</param>
         /// <returns><c>true</c> if all values of the vector are zeros; otherwise false.</returns>

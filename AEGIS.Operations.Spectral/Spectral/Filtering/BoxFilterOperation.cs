@@ -20,10 +20,10 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represnts a box filter operation.
+    /// Represents a box filter operation.
     /// </summary>
     /// <remarks>
-    /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighbouring values under the kernel.
+    /// The box filter (also known as box blur) is a simple image blur filter, resulting in the average of the neighboring values under the kernel.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::251101", "Box filter")]
     public class BoxFilterOperation : GradientFilterOperation

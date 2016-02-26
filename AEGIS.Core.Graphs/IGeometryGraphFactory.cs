@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IGeometryGraphFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -61,14 +61,14 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a graph.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <returns>A graph containing the specified coordinates as vertices.</returns>
         IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates);
 
         /// <summary>
         /// Creates a graph.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <param name="vertexEqualityComparer">The vertex comparer.</param>
         /// <param name="edgeEqualityComparer">The edge comparer.</param>
         /// <returns>A graph containing the specified coordinates as vertices using the specified comparers.</returns>
@@ -77,7 +77,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a graph.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <param name="vertexEqualityComparer">The vertex comparer.</param>
         /// <param name="edgeEqualityComparer">The edge comparer.</param>
         /// <param name="metadata">The metadata.</param>
@@ -87,7 +87,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a graph.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A graph containing the specified coordinates as vertices and the metadata.</returns>
         IGeometryGraph CreateGraph(IEnumerable<Coordinate> coordinates, IDictionary<String, Object> metadata);
@@ -162,14 +162,14 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Creates a network.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <returns>A network containing the specified coordinates as vertices.</returns>
         IGeometryGraph CreateNetwork(IEnumerable<Coordinate> coordinates);
 
         /// <summary>
         /// Creates a network.
         /// </summary>
-        /// <param name="coordinates">The sequence of coodinates.</param>
+        /// <param name="coordinates">The sequence of coordinates.</param>
         /// <param name="metadata">The metadata.</param>
         /// <returns>A network containing the specified coordinates as vertices and the specified metadata.</returns>
         IGeometryGraph CreateNetwork(IEnumerable<Coordinate> coordinates, IDictionary<String, Object> metadata);

@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Algorithms.Distances
 
         #endregion
 
-        #region Proctected SpectralDistance methods
+        #region Protected SpectralDistance methods
 
         /// <summary>
         /// Computes the spectral distance between spectral vectors.

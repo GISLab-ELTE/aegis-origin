@@ -28,11 +28,11 @@ namespace ELTE.AEGIS.Operations.Spatial.Strategy
         #region Public static factory methods
 
         /// <summary>
-        /// Creates a transfrormation strategy between reference systems.
+        /// Creates a transformation strategy between reference systems.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
-        /// <returns>The produced transformation strtategy.</returns>
+        /// <returns>The produced transformation strategy.</returns>
         /// <exception cref="System.NotSupportedException">Conversion is not supported between the specified coordinate reference systems.</exception>
         public static ITransformationStrategy CreateStrategy(ReferenceSystem source, ReferenceSystem target)
         {

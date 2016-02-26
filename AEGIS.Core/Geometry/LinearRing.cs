@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LinearRing.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -162,7 +162,7 @@ namespace ELTE.AEGIS.Geometry
         }
 
         /// <summary>
-        /// Removes the first occurence of the specified coordinate from the linear ring.
+        /// Removes the first occurrence of the specified coordinate from the linear ring.
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns><c>true</c> if the coordinate was removed; otherwise, <c>false</c>.</returns>

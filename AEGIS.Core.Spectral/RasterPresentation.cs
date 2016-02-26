@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterPresentation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -33,7 +33,7 @@ namespace ELTE.AEGIS
         private RasterColorSpaceBand[] _bands;
 
         /// <summary>
-        /// The color map used in pseuso-color and density slicing modes.
+        /// The color map used in pseudo-color and density slicing modes.
         /// </summary>
         private IDictionary<Int32, UInt32[]> _colorMap;
 
@@ -50,7 +50,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// The color map.
         /// </summary>
-        /// <value>The read-only color map used in pseuso-color and density slicing modes.</value>
+        /// <value>The read-only color map used in pseudo-color and density slicing modes.</value>
         public IDictionary<Int32, UInt32[]> ColorMap { get { return _colorMap == null ? null : _colorMap.IsReadOnly ? _colorMap : _colorMap.AsReadOnly(); } }
         
         /// <summary>

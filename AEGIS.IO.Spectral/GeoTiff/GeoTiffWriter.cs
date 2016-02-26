@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 imageFileDirectory.Add(33550, new Object[] { geometry.Raster.Mapper.ColumnSize, geometry.Raster.Mapper.RowSize, 1.0 }); // ModelPixelScaleTag 
             }
 
-            if (referenceSystem != null) // if reference system is avaible (and supported)
+            if (referenceSystem != null) // if reference system is available (and supported)
             {
                 switch (referenceSystem.Type)
                 {

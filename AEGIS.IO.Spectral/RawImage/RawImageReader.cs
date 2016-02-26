@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.IO.RawImage
     /// Represents a general raw image format reader.
     /// </summary>
     /// <remarks>
-    /// Raw image formats are not in themselfs image format, but are schemes for storing the actual pixel values of an image in a file. 
+    /// Raw image formats are not in themselves image formats, but are schemes for storing the actual pixel values of an image in a file. 
     /// Band interleaved by line (BIL), band interleaved by pixel (BIP), and band sequential (BSQ) are common methods of organizing image data for multiband images. 
     /// Therefore, no image metadata (width, height, radiometric resolution, etc.) is actually stored in the file, hence these values must be supplied as parameters. 
     /// Also, raw images do not contain reference system information, this must be supplied in addition.

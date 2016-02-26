@@ -272,7 +272,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Checks the result object.
         /// </summary>
-        /// <rereturns><c>true</c> if the result is valid; otherwise <c>false</c>.</rereturns>
+        /// <returns><c>true</c> if the result is valid; otherwise <c>false</c>.</returns>
         protected virtual Boolean CheckResult() { return !ReferenceEquals(_result, default(ResultType)); }
 
         /// <summary>
@@ -284,7 +284,6 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Resolves the specified parameter.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter.</typeparam>
         /// <param name="parameter">The parameter.</param>
         /// <returns>The specified parameter value or the default value if none specified.</returns>
         protected Object ResolveParameter(OperationParameter parameter)
@@ -325,7 +324,7 @@ namespace ELTE.AEGIS.Operations
         }
 
         /// <summary>
-        /// Determines whether the specified parameter is porovided.
+        /// Determines whether the specified parameter is provided.
         /// </summary>
         /// <param name="parameter">The parameter.</param>
         /// <returns><c>true</c> if the parameter is provided; otherwise, <c>false</c>.</returns>

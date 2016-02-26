@@ -117,7 +117,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <summary>
         /// Generates the indices of the segment.
         /// </summary>
-        /// <param name="parentMortonCode">The morton code of the parent segment.</param>
+        /// <param name="parentMortonCode">The Morton code of the parent segment.</param>
         /// <param name="startRowIndex">Start row index.</param>
         /// <param name="endRowIndex">End row index.</param>
         /// <param name="startColumnIndex">Start column index.</param>

@@ -34,7 +34,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.ArgumentException">
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is geater than 32.
+        /// The radiometric resolution is greater than 32.
         /// </exception>
         public static UInt32 RadiometricResolutionMax(Int32 radiometricResolution)
         {
@@ -92,7 +92,7 @@ namespace ELTE.AEGIS.Algorithms
         /// Compute the Otsu threshold.
         /// </summary>
         /// <param name="histogramValues">The histogram values of the image.</param>
-        /// <returns>The Otsu threshold computed from the histrogram values.</returns>
+        /// <returns>The Otsu threshold computed from the histogram values.</returns>
         /// <exception cref="System.ArgumentNullException">The list of histogram values is null.</exception>
         /// <exception cref="System.ArgumentException">The list of histogram values is empty.</exception>
         public static Double ComputeOtsuThreshold(IList<Int32> histogramValues)
@@ -102,7 +102,7 @@ namespace ELTE.AEGIS.Algorithms
             if (histogramValues.Count == 0)
                 throw new ArgumentException("The list of histogram values is empty.", "histogramValues");
 
-            // sum the pixel values according to histrogram values with relation to intensity
+            // sum the pixel values according to histogram values with relation to intensity
             Double sum = 0; 
             Int32 valueCount = 0;
             for (Int32 i = 0; i < histogramValues.Count; i++)

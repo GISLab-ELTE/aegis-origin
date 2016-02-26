@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RTree.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -189,7 +189,7 @@ namespace ELTE.AEGIS.Indices.RTrees
             /// <summary>
             /// Corrects the node's minimum bounding envelope.
             /// </summary>
-            /// <param name="enlargingEnvelope">The envelope the node needs to be extended with, or <c>null</c>, if the envelope needs to be shrinked.</param>
+            /// <param name="enlargingEnvelope">The envelope the node needs to be extended with, or <c>null</c>, if the envelope needs to be shrunk.</param>
             public void CorrectBounding(Envelope enlargingEnvelope = null)
             {
                 if (enlargingEnvelope == null) //possible element removing from the children
@@ -404,7 +404,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// Removes the specified geometry from the index.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns><c>true</c> if the geometry is indexed; ortherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if the geometry is indexed; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         public virtual Boolean Remove(IGeometry geometry)
         {
@@ -582,8 +582,8 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// Adjusts the tree after insertion, and corrects the bounding envelope of the nodes.
         /// </summary>
         /// <param name="node">The node where the adjustment starts.</param>
-        /// <param name="splitted">The second part of the node if the original node was splitted.</param>
-        /// <param name="nodeToRemove">The original node which should be removed if the original node was splitted.</param>
+        /// <param name="splitted">The second part of the node if the original node was split.</param>
+        /// <param name="nodeToRemove">The original node which should be removed if the original node was split.</param>
         protected void AdjustTree(RTreeNode node, RTreeNode splitted = null, RTreeNode nodeToRemove = null)
         {
             RTreeNode n = node;
@@ -623,7 +623,7 @@ namespace ELTE.AEGIS.Indices.RTrees
                 }
             }
 
-            // create new root node if the root is splitted
+            // create new root node if the root is split
             if (nn != null)
             {
                 _root = new RTreeNode(n.MaxChildren);
@@ -774,7 +774,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         }
 
         /// <summary>
-        /// Chooses the next node for uploading the splitted nodes with the original node's children.
+        /// Chooses the next node for uploading the split nodes with the original node's children.
         /// </summary>
         /// <param name="nodes">The children of the original node.</param>
         /// <returns>The chosen next node.</returns>

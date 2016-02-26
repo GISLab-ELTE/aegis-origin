@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -26,7 +26,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets the directly underlying factories.
         /// </summary>
-        /// <value>The read-only list of direcly underlying factories.</value>
+        /// <value>The read-only list of directly underlying factories.</value>
         IReadOnlyList<IFactory> Factories { get; }
 
         /// <summary>

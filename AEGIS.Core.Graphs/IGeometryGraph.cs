@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IGeometryGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -256,7 +256,7 @@ namespace ELTE.AEGIS
         /// Removes the edge from the graph.
         /// </summary>
         /// <param name="edge">The edge.</param>
-        /// <returns><c>true</c> if the edgee was located and removed from the graph; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the edge was located and removed from the graph; otherwise, <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The edge is null.</exception>
         Boolean RemoveEdge(IGraphEdge edge);
 

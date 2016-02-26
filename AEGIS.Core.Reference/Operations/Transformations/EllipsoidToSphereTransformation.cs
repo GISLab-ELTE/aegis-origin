@@ -59,7 +59,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <param name="parameters">The parameters of the operation.</param>
         /// <param name="ellipsoid">The ellipsoid.</param>
         /// <exception cref="System.ArgumentNullException">
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// or
         /// The ellipsoid is null.
         /// </exception>
@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// or
         /// The parameter is not a length value as required by the method.
         /// or
-        /// The parameter is not a double percision floating-point number as required by the method.
+        /// The parameter is not a double precision floating-point number as required by the method.
         /// or
         /// The parameter does not have the same measurement unit as the ellipsoid.
         /// </exception>

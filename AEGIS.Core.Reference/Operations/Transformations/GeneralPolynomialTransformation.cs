@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeneralPolynomialTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -44,17 +44,17 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <summary>
         /// Initializes a new instance of the <see cref="GeneralPolynomialTransformation" /> class.
         /// </summary>
-        /// <param name="degree">The degree of the polynom.</param>
+        /// <param name="degree">The degree of the polynomial.</param>
         /// <param name="parameters">The parameters of the operation.</param>
         /// <exception cref="System.ArgumentNullException">
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// No general polynomial transformation is available for the given degree.
         /// or
         /// The parameters do not contain a required parameter value.
         /// or
-        /// The parameter is not a double percision floating-point number as required by the method.
+        /// The parameter is not a double precision floating-point number as required by the method.
         /// </exception>
         public GeneralPolynomialTransformation(Int32 degree, Dictionary<CoordinateOperationParameter, Object> parameters)
             : base(GetMethod(degree).Identifier, GetMethod(degree).Name, GetMethod(degree), parameters)
@@ -128,7 +128,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <summary>
         /// Gets the coordinate operation method.
         /// </summary>
-        /// <param name="degree">The degree of the polynom.</param>
+        /// <param name="degree">The degree of the polynomial.</param>
         /// <returns>The coordinate operation method for <see cref="degree" />.</returns>
         /// <exception cref="System.ArgumentException">No general polynomial transformation is available for the given degree.</exception>
         private static CoordinateOperationMethod GetMethod(Int32 degree)

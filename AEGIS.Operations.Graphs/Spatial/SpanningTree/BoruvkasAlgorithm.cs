@@ -31,10 +31,10 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
     [OperationMethodImplementation("AEGIS::225508", "Borůvka's algorithm")]
     public class BoruvkasAlgorithm : MinimumSpanningTreeAlgorithm
     {
-        #region Private fileds
+        #region Private fields
 
         /// <summary>
-        /// The dijoint-set forest to track the components.
+        /// The disjoint-set forest to track the components.
         /// </summary>
         private DisjointSetForest<IGraphVertex> _forest;
 

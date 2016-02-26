@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IRasterService.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -112,7 +112,7 @@ namespace ELTE.AEGIS
         /// or
         /// The start index is equal to or greater than the number of values.
         /// or
-        /// The number of valies is less than 0.
+        /// The number of values is less than 0.
         /// </exception>
         UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues);
 
@@ -233,7 +233,7 @@ namespace ELTE.AEGIS
         /// or
         /// The start index is equal to or greater than the number of values.
         /// or
-        /// The number of valies is less than 0.
+        /// The number of values is less than 0.
         /// </exception>
         Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues);
 

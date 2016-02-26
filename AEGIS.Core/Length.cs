@@ -867,7 +867,7 @@ namespace ELTE.AEGIS
         /// Determines the maximum of the specified <see cref="Length" /> instances.
         /// </summary>
         /// <param name="angles">The length values.</param>
-        /// <returns>The maximum of the speficied <see cref="Length" /> instances.</returns>
+        /// <returns>The maximum of the specified <see cref="Length" /> instances.</returns>
         /// <exception cref="System.ArgumentException">There are no length values specified.</exception>
         public static Length Max(params Length[] lengths)
         {
@@ -881,7 +881,7 @@ namespace ELTE.AEGIS
         /// Determines the minimum of the specified <see cref="Length" /> instances.
         /// </summary>
         /// <param name="lengths">The lengths.</param>
-        /// <returns>The minimum of the speficied <see cref="Length" /> instances.</returns>
+        /// <returns>The minimum of the specified <see cref="Length" /> instances.</returns>
         /// <exception cref="System.ArgumentException">There are no length values specified.</exception>
         public static Length Min(params Length[] lengths)
         {

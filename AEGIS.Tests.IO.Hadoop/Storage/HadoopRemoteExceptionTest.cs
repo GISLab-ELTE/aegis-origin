@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HadoopRemoteExceptionTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -47,7 +47,7 @@ namespace ELTE.AEGIS.Tests.IO.Storage
             Assert.AreEqual(exception.ExceptionName, null);
             Assert.AreEqual(exception.JavaClassName, null);
 
-            // test ccase 3: message, name and class parameters
+            // test case 3: message, name and class parameters
 
             exception = new HadoopRemoteException("Exception message.", "Exception name.", "Class name.");
 

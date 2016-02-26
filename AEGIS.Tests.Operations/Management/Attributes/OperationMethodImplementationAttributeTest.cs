@@ -36,7 +36,7 @@ namespace ELTE.AEGIS.Tests.Operations.Management
         {
             OperationMethodImplementationAttribute attribute;
 
-            // test case 1: inproper parameters
+            // test case 1: improper parameters
 
             Assert.Throws<ArgumentNullException>(() => attribute = new OperationMethodImplementationAttribute(null, null));
             Assert.Throws<ArgumentNullException>(() => attribute = new OperationMethodImplementationAttribute(IdentifiedObject.UserDefinedIdentifier, null));

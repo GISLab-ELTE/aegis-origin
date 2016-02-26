@@ -13,7 +13,6 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
@@ -21,7 +20,7 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Conversion
 {
     /// <summary>
-    /// Represents an operation for converting geometry to graph represetation.
+    /// Represents an operation for converting geometry to graph representation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::220100", "Geometry to graph conversion", "1.0")]
     public class GeometryToGraphConversion : Operation<IGeometry, IGeometryGraph>

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="TiffWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -73,7 +73,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         private Int64 _currentImageStartPosition;
 
         /// <summary>
-        /// Indicates whether the contnet should be written in BigTIFF format.
+        /// Indicates whether the content should be written in BigTIFF format.
         /// </summary>
         private Boolean _isBigTiffFormat;
 
@@ -718,7 +718,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Writes the specified unsigned interger value to the array.
+        /// Writes the specified unsigned integer value to the array.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="radiometricResolution">The radiometric resolution of the value.</param>
@@ -814,7 +814,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (value is Int32)
                 return TiffTagType.SLong;
             if (value is Rational)
-                return TiffTagType.SRational; // missing comparision for Rational
+                return TiffTagType.SRational; // missing comparison for Rational
             if (value is Single)
                 return TiffTagType.Float;
             if (value is Double)

@@ -698,7 +698,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public RawImageWriter(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GenericRawImage, parameters)
         {
@@ -728,7 +728,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// or
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream opening.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream opening.</exception>
         public RawImageWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GenericRawImage, parameters)
         {
@@ -786,9 +786,9 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         protected RawImageWriter(String path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, format, parameters)
@@ -822,9 +822,9 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         protected RawImageWriter(Uri path, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, format, parameters)
@@ -853,7 +853,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// or
         /// The type of a parameter value does not match the type specified by the format.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Exception occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Exception occurred during stream reading.</exception>
         protected RawImageWriter(Stream stream, GeometryStreamFormat format, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream, format, parameters)
         {
@@ -1139,7 +1139,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         #region Protected methods
 
         /// <summary>
-        /// Writes the referencíe system of the raster geometry.
+        /// Writes the reference system of the raster geometry.
         /// </summary>
         protected virtual void WriteGeometryReferenceSystem(IReferenceSystem referenceSystem)
         {
@@ -1214,7 +1214,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         /// Writes a sequence of spectral values to the stream in the default order.
         /// </summary>
         /// <param name="rowIndex">The zero-based row index.</param>
-        /// <param name="columnIndex">Thezero-based column index.</param>
+        /// <param name="columnIndex">The zero-based column index.</param>
         /// <param name="bandIndex">The zero-based band index.</param>
         /// <param name="spectralValues">The spectral values.</param>
         protected void WriteValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, UInt32[] spectralValues)

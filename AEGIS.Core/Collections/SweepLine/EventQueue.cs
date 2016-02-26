@@ -67,7 +67,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
             /// Determines whether the <see cref="EventHeap"/> contains any event element with the given coordinate.
             /// </summary>
             /// <param name="position">The coordinate position to locate in the <see cref="EventHeap"/>.</param>
-            /// <returns><c>true</c> if the the <see cref="EventHeap"/> contains an event element with the specified position; otherwise <c>false</c>.</returns>
+            /// <returns><c>true</c> if the <see cref="EventHeap"/> contains an event element with the specified position; otherwise <c>false</c>.</returns>
             public Boolean Contains(Coordinate position)
             {
                 return this.Any(item => _coordinateComparer.Compare(item.Key.Vertex, position) == 0);
@@ -200,7 +200,7 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// Adds an intersection event to the queue.
         /// </summary>
         /// <param name="intersectionEvent">The intersection event.</param>
-        /// <exception cref="System.ArgumentNullException">The instersection event is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The intersection event is null.</exception>
         public void Add(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)
@@ -224,11 +224,11 @@ namespace ELTE.AEGIS.Collections.SweepLine
         /// </summary>
         /// <param name="intersectionEvent">The intersection event.</param>
         /// <returns><c>true</c> if the queue contains the <paramref name="intersectionEvent"/>; otherwise <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">The instersection event is null.</exception>
+        /// <exception cref="System.ArgumentNullException">The intersection event is null.</exception>
         public Boolean Contains(IntersectionEvent intersectionEvent)
         {
             if (intersectionEvent == null)
-                throw new ArgumentNullException("intersectionEvent", "The instersection event is null.");
+                throw new ArgumentNullException("intersectionEvent", "The intersection event is null.");
 
             return _eventHeap.Contains(intersectionEvent);
         }

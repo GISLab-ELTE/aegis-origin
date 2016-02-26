@@ -323,7 +323,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial.Conversion
             Assert.IsTrue((result as IMultiPolygon).Count == 3);
 
 
-            // arbitary shape polygon
+            // arbitrary shape polygon
 
             coordinates = new Coordinate[7];
             coordinates[0] = new Coordinate(10, 10);

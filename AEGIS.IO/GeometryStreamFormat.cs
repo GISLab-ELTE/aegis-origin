@@ -115,7 +115,7 @@ namespace ELTE.AEGIS.IO
         /// <summary>
         /// Determines whether the specified geometry is supported by the format.
         /// </summary>
-        /// <param name="geometry">The goemetry.</param>
+        /// <param name="geometry">The geometry.</param>
         /// <returns><c>true</c> if the specified geometry is supported by the format; otherwise, <c>false</c>.</returns>
         public Boolean Supports(IGeometry geometry)
         {

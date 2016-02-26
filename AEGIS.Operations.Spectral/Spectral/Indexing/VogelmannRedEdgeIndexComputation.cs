@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         private readonly Int32 _indexOf734nmBand;
 
         /// <summary>
-        /// The index ofthe 740nm band.
+        /// The index of the 740nm band.
         /// </summary>
         private readonly Int32 _indexOf740nmBand;
 

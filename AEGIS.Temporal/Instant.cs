@@ -358,11 +358,11 @@ namespace ELTE.AEGIS.Temporal
         }
 
         /// <summary>
-        /// Determines whether an instant is geater than or equal to another instant.
+        /// Determines whether an instant is greater than or equal to another instant.
         /// </summary>
         /// <param name="firstInstant">The first instant.</param>
         /// <param name="secondInstant">The second instant.</param>
-        /// <returns><c>true</c> if the first instant is geater than or equal to the second instant; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the first instant is greater than or equal to the second instant; otherwise, <c>false</c>.</returns>
         public static Boolean operator >=(Instant firstInstant, Instant secondInstant)
         {
             return firstInstant._ticks >= secondInstant._ticks;
@@ -380,11 +380,11 @@ namespace ELTE.AEGIS.Temporal
         }
 
         /// <summary>
-        /// Determines whether an instant is geater than another instant.
+        /// Determines whether an instant is greater than another instant.
         /// </summary>
         /// <param name="firstInstant">The first instant.</param>
         /// <param name="secondInstant">The second instant.</param>
-        /// <returns><c>true</c> if the first instant is geater than the second instant; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the first instant is greater than the second instant; otherwise, <c>false</c>.</returns>
         public static Boolean operator >(Instant firstInstant, Instant secondInstant)
         {
             return firstInstant._ticks > secondInstant._ticks;
@@ -398,7 +398,7 @@ namespace ELTE.AEGIS.Temporal
         /// Converts the specified <see cref="Instant" /> instance to <see cref="System.Int64" />.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>The <see cref="System.Int64" /> representation of the the specified <see cref="Instant" /> instance.</returns>
+        /// <returns>The <see cref="System.Int64" /> representation of the specified <see cref="Instant" /> instance.</returns>
         public static explicit operator Int64(Instant value)
         {
             return value._ticks;
@@ -408,7 +408,7 @@ namespace ELTE.AEGIS.Temporal
         /// Converts the specified <see cref="System.Int64" /> instance to <see cref="Instant" />.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>The <see cref="Instant" /> representation of the the specified <see cref="System.Int64" /> instance.</returns>
+        /// <returns>The <see cref="Instant" /> representation of the specified <see cref="System.Int64" /> instance.</returns>
         public static explicit operator Instant(Int64 value)
         {
             return new Instant(value);

@@ -226,7 +226,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _otsuThresholdingClassification ?? (_otsuThresholdingClassification =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253205", "Otsu thresholding",
-                                                                         "Performes shape-based raster thresholding using Otsu's method.", null, "1.0.0",
+                                                                         "Performs shape-based raster thresholding using Otsu's method.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandGlobal,
                                                                          RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex,
@@ -258,7 +258,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _randomColorClassification ?? (_randomColorClassification =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253402", "Random color classification",
-                                                                         "This classification method relies on using random RGB colors for creating the classified image based on a collection of segments and/or clusters. The method garantees that each individual class will have a different color.", null, "1.0.0",
+                                                                         "This classification method relies on using random RGB colors for creating the classified image based on a collection of segments and/or clusters. The method guarantees that each individual class will have a different color.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Local,
                                                                          RasterFormat.Integer));
             }
@@ -290,7 +290,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _sauvolaLocalThresholdingClassification ?? (_sauvolaLocalThresholdingClassification =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::253312", "Sauvola local thresholding",
-                                                                         "Local adaptive thresholding based on The Niblack algroithm.", null, "1.0.0",
+                                                                         "Local adaptive thresholding based on The Niblack algorithm.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          RasterFormat.Integer,
                                                                          SpectralOperationParameters.BandIndex,

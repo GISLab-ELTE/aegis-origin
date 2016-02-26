@@ -34,7 +34,7 @@ namespace ELTE.AEGIS.Collections.SearchTree
         /// Enumerates the elements of a search tree.
         /// </summary>
         /// <remarks>
-        /// The enumerator performes an inorder traversal of the search tree thereby resulting in key/values pairs ordered according to the specified comparator of the search tree.
+        /// The enumerator performs an inorder traversal of the search tree thereby resulting in key/values pairs ordered according to the specified comparator of the search tree.
         /// </remarks>
         [Serializable]
         public sealed class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>, IEnumerator, IDisposable
@@ -76,7 +76,7 @@ namespace ELTE.AEGIS.Collections.SearchTree
 
             #endregion
 
-            #region Constructor and destuctor
+            #region Constructor and destructor
 
             /// <summary>
             /// Initializes a new instance of the <see cref="BinarySearchTree{TKey, TValue}.Enumerator" /> class.

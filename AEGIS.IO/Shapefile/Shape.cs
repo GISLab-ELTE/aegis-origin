@@ -43,7 +43,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <summary>
         /// Gets the shape identifier.
         /// </summary>
-        /// <value>A unique indentifier for the shape.</value>
+        /// <value>A unique identifier for the shape.</value>
         public Int32 Id { get { return _id; } }
         /// <summary>
         /// Gets the envelope of the shape.
@@ -246,8 +246,11 @@ namespace ELTE.AEGIS.IO.Shapefile
 
                 _type = geometry.SpatialDimension == 3 ? ShapeType.PolygonZ : ShapeType.Polygon;
 
-                List<Coordinate> coordinates = new List<Coordinate>(sourcePolygon.Shell.Coordinates);
-                List<Int32> parts = new List<Int32>() { 0 };
+                List<Coordinate> coordinates = new List<Coordinate>();                
+                List<Int32> parts = new List<Int32>() { };
+
+                parts.Add(coordinates.Count);
+                coordinates.AddRange(sourcePolygon.Shell.Coordinates);
 
                 foreach (ILinearRing linearRing in sourcePolygon.Holes)
                 {
@@ -262,7 +265,67 @@ namespace ELTE.AEGIS.IO.Shapefile
             {
                 _type = geometry.CoordinateDimension == 3 ? ShapeType.MultiPointZ : ShapeType.MultiPoint;
                 _coordinates = (geometry as IMultiPoint).Select(point => point.Centroid).ToArray();
+
             }
+            else if (geometry is IMultiPolygon)
+            {
+                IMultiPolygon sourceMultiPolygon = geometry as IMultiPolygon;
+
+                _type = geometry.SpatialDimension == 3 ? ShapeType.PolygonZ : ShapeType.Polygon;
+
+                List<Coordinate> coordinates = new List<Coordinate>();                
+                List<Int32> parts = new List<Int32>() { };
+
+                foreach (IPolygon polygon in sourceMultiPolygon)
+                {
+                    parts.Add(coordinates.Count);
+                    coordinates.AddRange(polygon.Shell.Coordinates);
+
+                    foreach (ILinearRing linearRing in polygon.Holes)
+                    {
+                        parts.Add(coordinates.Count);
+                        coordinates.AddRange(linearRing.Coordinates);
+                    }
+                }
+
+                _coordinates = coordinates.ToArray();
+                _parts = parts.ToArray();
+
+                /*
+                _type = ShapeType.MultiPatch;
+
+                IMultiPolygon multiPolygon = geometry as IMultiPolygon;
+                _parts = new Int32[multiPolygon.Sum(polygon => polygon.HoleCount + 1)];
+                _partTypes = new ShapePartType[multiPolygon.Sum(polygon => polygon.HoleCount + 1)];
+
+                Int32 partIndex = 0;
+                Int32 coordinateIndex = 0;
+                List<Coordinate> coordinateList = new List<Coordinate>(multiPolygon.Sum(polygon => polygon.Shell.Count + polygon.Holes.Sum(hole => hole.Count)));
+
+                foreach (IPolygon polygon in multiPolygon)
+                {
+                    _parts[partIndex] = coordinateIndex;
+                    _partTypes[partIndex] = ShapePartType.OuterRing;
+                    coordinateList.AddRange(polygon.Shell.Coordinates);
+
+                    partIndex++;
+                    coordinateIndex += polygon.Shell.Count;
+
+                    foreach (ILinearRing hole in polygon.Holes)
+                    {
+                        _parts[partIndex] = coordinateIndex;
+                        _partTypes[partIndex] = ShapePartType.InnerRing;
+                        coordinateList.AddRange(hole.Coordinates);
+
+                        partIndex++;
+                        coordinateIndex += hole.Count;
+                    }
+                }
+
+                _coordinates = coordinateList.ToArray();
+                */
+            }
+
             else
             {
                 throw new ArgumentException(String.Format("Geometry type {0} is not supported by stream.", geometry.Name), "geometry");
@@ -282,6 +345,9 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <exception cref="System.NotSupportedException">Multipatch conversion is not supported.</exception>
         public IGeometry ToGeometry()
         {
+            Coordinate[] partCoordinates = null;
+            List<IPolygon> polygons = null;
+
             switch (Type)
             {
                 case ShapeType.Point:
@@ -301,7 +367,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                             Array.Copy(_coordinates, _parts[i], lines[i], 0, _parts[i + 1] - _parts[i]);
                         }
                         lines[_parts.Length - 1] = new Coordinate[_coordinates.Length - _parts[_parts.Length - 1]];
-                        Array.Copy(_coordinates, Parts[_parts.Length - 1], lines[_parts.Length - 1], 0, _coordinates.Length - _parts[_parts.Length - 1]);
+                        Array.Copy(_coordinates, _parts[_parts.Length - 1], lines[_parts.Length - 1], 0, _coordinates.Length - _parts[_parts.Length - 1]);
 
                         List<ILineString> lineStringList = new List<ILineString>();
                         foreach (Coordinate[] line in lines)
@@ -321,16 +387,16 @@ namespace ELTE.AEGIS.IO.Shapefile
                 case ShapeType.PolygonZ:
                     if (PartCount > 1) // if there are more parts (interior rings or multiple polygons are added)
                     {
-                        Coordinate[] partCoordinates = null;
-                        List<IPolygon> polygons = new List<IPolygon>();
+                        partCoordinates = null;
+                        polygons = new List<IPolygon>();
 
                         // all parts except final
                         for (Int32 i = 0; i < PartCount - 1; i++)
                         {
-                            if (Parts[i + 1] == Parts[i]) // in case the part is empty (should never happen) 
+                            if (_parts[i + 1] == _parts[i]) // in case the part is empty (should never happen) 
                                 continue;
 
-                            partCoordinates = new Coordinate[Parts[i + 1] - Parts[i]];
+                            partCoordinates = new Coordinate[_parts[i + 1] - _parts[i]];
                             Array.Copy(_coordinates, _parts[i], partCoordinates, 0, _parts[i + 1] - _parts[i]);
 
                             // check whether the current part is an outer or inner ring
@@ -381,7 +447,39 @@ namespace ELTE.AEGIS.IO.Shapefile
                 case ShapeType.MultiPointZ:
                     return _factory.CreateMultiPoint(_coordinates, _metadata);
                 case ShapeType.MultiPatch:
-                    throw new NotSupportedException("Multipatch conversion is not supported.");
+                    Int32 partIndex = 0;
+                    polygons = new List<IPolygon>();
+
+                    while (partIndex < _parts.Length)
+                    {
+                        if (partIndex == _parts.Length - 1)
+                            partCoordinates = new Coordinate[_coordinates.Length - _parts[partIndex]];
+                        else
+                            partCoordinates = new Coordinate[_parts[partIndex + 1] - _parts[partIndex]];
+                        Array.Copy(_coordinates, _parts[_parts.Length - 1], partCoordinates, 0, _coordinates.Length - _parts[_parts.Length - 1]);
+
+                        switch (PartTypes[partIndex])
+                        {
+                            case ShapePartType.OuterRing:
+                                polygons.Add(_factory.CreatePolygon(partCoordinates));
+                                break;
+                            case ShapePartType.InnerRing:
+                                if (polygons.Count == 0)
+                                    continue;
+
+                                polygons[polygons.Count - 1].AddHole(_factory.CreateLinearRing(partCoordinates));
+                                break;
+
+                            default:
+                                throw new InvalidOperationException("Multipatch conversion is not supported.");
+                        }
+                    }
+
+                    if (polygons.Count == 1)
+                        return polygons[0];
+                    else
+                        return _factory.CreateMultiPolygon(polygons, _metadata);
+
                 default:
                     return null;
             }
@@ -399,30 +497,31 @@ namespace ELTE.AEGIS.IO.Shapefile
             switch (Type) // compute the size of the array according to the type
             { 
                 case ShapeType.Point:
-                    shapeBytes = new Byte[28];
-                    break;
                 case ShapeType.PointM:
-                    shapeBytes = new Byte[36];
+                    shapeBytes = new Byte[28];
                     break;
                 case ShapeType.PointZ:
                     shapeBytes = new Byte[44];
                     break;
                 case ShapeType.MultiPoint:
-                    shapeBytes = new Byte[48 + CoordinateCount * 16];
-                    break;
                 case ShapeType.MultiPointM:
-                    shapeBytes = new Byte[64 + CoordinateCount * 24];
+                    shapeBytes = new Byte[48 + CoordinateCount * 16];
                     break;
                 case ShapeType.MultiPointZ:
                     shapeBytes = new Byte[80 + CoordinateCount * 32];
                     break;
                 case ShapeType.PolyLine:
+                case ShapeType.PolyLineM:
                 case ShapeType.Polygon:
+                case ShapeType.PolygonM:
                     shapeBytes = new Byte[52 + PartCount * 4 + CoordinateCount * 16];
                     break;
-                case ShapeType.PolyLineM:
-                case ShapeType.PolygonM:
-                    shapeBytes = new Byte[68 + PartCount * 4 + CoordinateCount * 24];
+                case ShapeType.PolyLineZ:
+                case ShapeType.PolygonZ:
+                    shapeBytes = new Byte[84 + PartCount * 4 + CoordinateCount * 32];
+                    break;
+                case ShapeType.MultiPatch:
+                    shapeBytes = new Byte[84 + PartCount * 8 + CoordinateCount * 32];
                     break;
                 default:
                     shapeBytes = new Byte[12];
@@ -433,7 +532,7 @@ namespace ELTE.AEGIS.IO.Shapefile
             EndianBitConverter.CopyBytes(shapeBytes.Length / 2 - 4, shapeBytes, 4, ByteOrder.BigEndian);
             EndianBitConverter.CopyBytes((Int32)_type, shapeBytes, 8, ByteOrder.LittleEndian);
 
-            // compute envelope coordanates and shape coordinates
+            // compute envelope coordinates and shape coordinates
             switch (Type)
             {
                 case ShapeType.Point:
@@ -478,7 +577,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                     EndianBitConverter.GetBytes(CoordinateCount, ByteOrder.LittleEndian).CopyTo(shapeBytes, 48);
                     for (Int32 i = 0; i < PartCount; i++)
                     {
-                        EndianBitConverter.GetBytes(Parts[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + i * 16);
+                        EndianBitConverter.GetBytes(_parts[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + i * 4);
                     }
                     for(Int32 i = 0; i < CoordinateCount; i++)
                     {
@@ -493,7 +592,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                     EndianBitConverter.GetBytes(CoordinateCount, ByteOrder.LittleEndian).CopyTo(shapeBytes, 48);
                     for (Int32 i = 0; i < PartCount; i++)
                     {
-                        EndianBitConverter.GetBytes(Parts[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + i * 16);
+                        EndianBitConverter.GetBytes(_parts[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + i * 4);
                     }
                     for(Int32 i = 0; i < CoordinateCount; i++)
                     {
@@ -504,6 +603,30 @@ namespace ELTE.AEGIS.IO.Shapefile
                     for (Int32 i = 0; i < CoordinateCount; i++)
                     {
                         EndianBitConverter.GetBytes(Coordinates[i].Z, ByteOrder.LittleEndian).CopyTo(shapeBytes, 68 + PartCount * 4 + CoordinateCount * 16 + i * 8);
+                    }
+                    break;
+                case ShapeType.MultiPatch:
+                    EndianBitConverter.GetBytes(Envelope.Minimum, 3, ByteOrder.LittleEndian).CopyTo(shapeBytes, 12);
+                    EndianBitConverter.GetBytes(Envelope.Maximum, 3, ByteOrder.LittleEndian).CopyTo(shapeBytes, 28);
+                    EndianBitConverter.GetBytes(PartCount, ByteOrder.LittleEndian).CopyTo(shapeBytes, 44);
+                    EndianBitConverter.GetBytes(CoordinateCount, ByteOrder.LittleEndian).CopyTo(shapeBytes, 48);
+                    for (Int32 i = 0; i < PartCount; i++)
+                    {
+                        EndianBitConverter.GetBytes(_parts[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + i * 4);
+                    }
+                    for (Int32 i = 0; i < PartCount; i++)
+                    {
+                        EndianBitConverter.GetBytes((Int32)PartTypes[i], ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + PartCount * 4 + i * 4);
+                    }
+                    for(Int32 i = 0; i < CoordinateCount; i++)
+                    {
+                        EndianBitConverter.GetBytes(Coordinates[i], 2, ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + PartCount * 8 + i * 16);
+                    }
+                    EndianBitConverter.GetBytes(Envelope.Minimum.Z, ByteOrder.LittleEndian).CopyTo(shapeBytes, 52 + PartCount * 8 + CoordinateCount * 16);
+                    EndianBitConverter.GetBytes(Envelope.Maximum.Z, ByteOrder.LittleEndian).CopyTo(shapeBytes, 60 + PartCount * 8 + CoordinateCount * 16);
+                    for (Int32 i = 0; i < CoordinateCount; i++)
+                    {
+                        EndianBitConverter.GetBytes(Coordinates[i].Z, ByteOrder.LittleEndian).CopyTo(shapeBytes, 68 + PartCount * 8 + CoordinateCount * 16 + i * 8);
                     }
                     break;
             }
@@ -623,7 +746,7 @@ namespace ELTE.AEGIS.IO.Shapefile
         /// <returns>The shape created from the record data.</returns>
         /// <exception cref="System.ArgumentNullException">record;The record is null.</exception>
         /// <exception cref="System.ArgumentException">
-        /// Record length is less tahn 12 bytes.;record
+        /// Record length is less than 12 bytes.;record
         /// or
         /// Record content is invalid.;record
         /// </exception>
@@ -633,7 +756,7 @@ namespace ELTE.AEGIS.IO.Shapefile
                 throw new ArgumentNullException("record", "The record is null.");
 
             if (record.Length < 12)
-                throw new ArgumentException("Record length is less tahn 12 bytes.", "record");
+                throw new ArgumentException("Record length is less than 12 bytes.", "record");
 
             Int32 recordNumber = EndianBitConverter.ToInt32(record, 0, ByteOrder.BigEndian);
             Int32 contentLength = EndianBitConverter.ToInt32(record, 4, ByteOrder.BigEndian);

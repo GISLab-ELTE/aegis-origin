@@ -31,7 +31,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         #region Private fields
 
         /// <summary>
-        /// The index ofthe 510nm band.
+        /// The index of the 510nm band.
         /// </summary>
         private readonly Int32 _indexOf510nmBand;
 

@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations
         BandLocal,
 
         /// <summary>
-        /// Operates on distinct spectral values by using neightbour values within the raster band.
+        /// Operates on distinct spectral values by using neighbor values within the raster band.
         /// </summary>
         BandFocal,
 
@@ -46,7 +46,7 @@ namespace ELTE.AEGIS.Operations
         Local,
 
         /// <summary>
-        /// Operates on distinct spectral values by using neightbour values within the raster.
+        /// Operates on distinct spectral values by using neighbor values within the raster.
         /// </summary>
         Focal,
 

@@ -193,7 +193,7 @@ namespace ELTE.AEGIS.Reference
             {
                 if (_ETRS89 == null)
                     _ETRS89 = new GeodeticDatum("EPSG::6258", "European Terrestrial System 1989 (ETRS89)",
-                                                "The distinction in usage between ETRF89 and ETRS89 is confused: although in principle conceptually different in practice both are used for the realisation.",
+                                                "The distinction in usage between ETRF89 and ETRS89 is confused: although in principle conceptually different in practice both are used for the realization.",
                                                 new String[] { "European Terrestrial Reference Frame 1989 (ETRF89)" },
                                                 "Fixed to the stable part of the Eurasian continental plate and consistent with ITRS at the epoch 1989.0.", 
                                                 "1989", "Geodetic survey.",
@@ -319,7 +319,7 @@ namespace ELTE.AEGIS.Reference
             {
                 if (_PD83 == null)
                     _PD83 = new GeodeticDatum("EPSG::6746", "Potsdam Datum 1983 (PD83)",
-                                              "PD83 is the realisation of DHDN in Thuringen. It is the resultant of applying a transformation derived at 13 points on the border between East and West Germany to Pulkovo 1942/83 points in Thuringen.",
+                                              "PD83 is the realization of DHDN in Thuringen. It is the resultant of applying a transformation derived at 13 points on the border between East and West Germany to Pulkovo 1942/83 points in Thuringen.",
                                               null,
                                               "Fundamental point: Rauenberg. Latitude: 52°27'12.021\"N, longitude: 13°22'04.928\"E (of Greenwich). This station was destroyed in 1910 and the station at Potsdam substituted as the fundamental point.",
                                               "1990", "Geodetic survey, cadastre, topographic mapping, engineering survey.", 

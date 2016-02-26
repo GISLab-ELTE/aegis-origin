@@ -42,7 +42,7 @@ namespace ELTE.AEGIS.Reference
         /// <summary>
         /// Gets the scope of the reference system.
         /// </summary>
-        /// <value>Description of usage, or limitations of usage, for whichh this reference system is valid.</value>
+        /// <value>Description of usage, or limitations of usage, for which this reference system is valid.</value>
         public String Scope { get { return _scope; } }
 
         /// <summary>

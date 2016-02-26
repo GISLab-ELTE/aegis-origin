@@ -68,12 +68,12 @@ namespace ELTE.AEGIS.IO.Utilities
         private Int64 _maximumPosition;
 
         /// <summary>
-        /// The position in the stream where Flush occured.
+        /// The position in the stream where Flush occurred.
         /// </summary>
         private Int64 _flushPosition;
 
         /// <summary>
-        /// The index of the storage unit where Flush occured.
+        /// The index of the storage unit where Flush occurred.
         /// </summary>
         private Int64 _flushIndex;
 
@@ -112,7 +112,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <param name="underlyingStream">The underlying stream.</param>
         /// <param name="singleUse">Defines whether the stream can be read/ written multiple times or not.</param>
         /// <param name="forced">A value indicating whether proxy mode is forced.</param>
-        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlysing stream.</param>
+        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlying stream.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
         public ProxyStream(Stream underlyingStream, Boolean singleUse = true, Boolean forced = false, Boolean disposeUnderlyingStream = true)
@@ -429,7 +429,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// </summary>
         /// <param name="offset">The offset.</param>
         /// <param name="position">The position depending on the seek origin.</param>
-        /// <exception cref="System.IO.IOException">Error occured during stream reading.</exception>
+        /// <exception cref="System.IO.IOException">Error occurred during stream reading.</exception>
         private void ReadFromUnderlyingStream(Int64 offset, Int64 position)
         {
             _currentPosition = offset + position;
@@ -445,7 +445,7 @@ namespace ELTE.AEGIS.IO.Utilities
                 }
                 catch (Exception ex)
                 {
-                    throw new IOException("Error occured during stream reading.", ex);
+                    throw new IOException("Error occurred during stream reading.", ex);
                 }
 
                 for (Int64 byteNumber = 0; byteNumber < numberOfBytes; byteNumber++)
@@ -517,7 +517,7 @@ namespace ELTE.AEGIS.IO.Utilities
                     Int32 count = (Int32)((index + 1) * StorageSize < position ? StorageSize : position - index * StorageSize);
                     Int32 offset = 0;
 
-                    // if a Flush occured previously, the bytes at the beginning of the last byte array have to be skipped
+                    // if a Flush occurred previously, the bytes at the beginning of the last byte array have to be skipped
                     if (index == _flushPosition / StorageSize)
                     {
                         count -= (Int32)(_flushPosition % StorageSize);
@@ -543,7 +543,7 @@ namespace ELTE.AEGIS.IO.Utilities
                 }
                 catch (Exception ex)
                 {
-                    throw new IOException("Error occured during writing into the stream.", ex);
+                    throw new IOException("Error occurred during writing into the stream.", ex);
                 }
             }
             _flushIndex = position / StorageSize - 1;

@@ -52,7 +52,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _boxFilter ?? (_boxFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251101", "Box filter",
-                                                                         "Returns the mean of the neighbouring values, thus smothening the image.", null, "1.0.0",
+                                                                         "Returns the mean of the neighboring values, thus smoothening the image.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _customFilter ?? (_customFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251100", "Custom filter",
-                                                                         "Returns a linear combination of the neighbouring values based on kernel, factor and offset values.", null, "1.0.0",
+                                                                         "Returns a linear combination of the neighboring values based on kernel, factor and offset values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterKernel,
@@ -165,7 +165,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _maximumFilter ?? (_maximumFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251141", "Maximum filter",
-                                                                         "Returns the maximum of the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the maximum of the neighboring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -183,7 +183,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _minimumFilter ?? (_minimumFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251142", "Minimum filter",
-                                                                         "Returns the minimum of the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the minimum of the neighboring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -201,7 +201,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _meanRemovalFilter ?? (_meanRemovalFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251301", "Mean removal filter",
-                                                                         "Removes the mean of the neighbouring values from the central value. This filter has an opposite effect as the box filter, thus helping image sharpening.", null, "1.0.0",
+                                                                         "Removes the mean of the neighboring values from the central value. This filter has an opposite effect as the box filter, thus helping image sharpening.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterWeight,
@@ -219,7 +219,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _medianFilter ?? (_medianFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251108", "Median filter",
-                                                                         "Returns the median of the the neighbouring values.", null, "1.0.0",
+                                                                         "Returns the median of the neighboring values.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.FilterRadius,
@@ -324,7 +324,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _weightedMedianFilter ?? (_weightedMedianFilter =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251109", "Weighted median filter",
-                                                                        "Returns the median of the the neighbouring values multiplied by the weight kernel.", null, "1.0.0",
+                                                                        "Returns the median of the neighboring values multiplied by the weight kernel.", null, "1.0.0",
                                                                         false, SpectralOperationDomain.BandFocal,
                                                                         ExecutionMode.OutPlace,
                                                                         SpectralOperationParameters.FilterKernel,

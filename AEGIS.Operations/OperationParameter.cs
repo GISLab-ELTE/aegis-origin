@@ -56,7 +56,7 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Gets the conditions the parameter value must satisfy.
         /// </summary>
-        /// <value>The conditions the parameter value must satify.</value>
+        /// <value>The conditions the parameter value must satisfy.</value>
         public IList<Predicate<Object>> Conditions { get { return Array.AsReadOnly(_conditions); } }
 
         #endregion

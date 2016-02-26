@@ -20,7 +20,7 @@ using ELTE.AEGIS.Numerics;
 namespace ELTE.AEGIS.Reference
 {
     /// <summary>
-    /// Represents an ellipsoid used in planetery surface modeling.
+    /// Represents an ellipsoid used in planetary surface modeling.
     /// </summary>
     public sealed class Ellipsoid : IdentifiedObject
     {
@@ -275,7 +275,7 @@ namespace ELTE.AEGIS.Reference
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         /// <exception cref="System.ArgumentException">The semi-minor axis must be measured in the same measurement unit as the semi-major axis.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The semi-minor axis is less than than the semi-major axis.
+        /// The semi-minor axis is less than the semi-major axis.
         /// or
         /// The semi-minor axis is less than or equal to 0.
         /// </exception>
@@ -284,7 +284,7 @@ namespace ELTE.AEGIS.Reference
             if (semiMajorAxis.Unit != semiMinorAxis.Unit)
                 throw new ArgumentException("The semi-minor axis must be measured in the same measurement unit as the semi-major axis.", "semiMinorAxis");
             if (semiMajorAxis < semiMinorAxis)
-                throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than than the semi-major axis.");
+                throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than the semi-major axis.");
             if (semiMinorAxis.Value <= 0)
                 throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than or equal to 0.");
 
@@ -303,14 +303,14 @@ namespace ELTE.AEGIS.Reference
         /// <returns>A new instance of the <see cref="Ellipsoid" /> class based on the semi-minor axis.</returns>
         /// <exception cref="System.ArgumentNullException">The identifier is null.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The semi-minor axis is less than than the semi-major axis.
+        /// The semi-minor axis is less than the semi-major axis.
         /// or
         /// The semi-minor axis is less than or equal to 0.
         /// </exception>
         public static Ellipsoid FromSemiMinorAxis(String identifier, String name, Double semiMajorAxis, Double semiMinorAxis)
         {
             if (semiMajorAxis < semiMinorAxis)
-                throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than than the semi-major axis.");
+                throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than the semi-major axis.");
             if (semiMinorAxis <= 0)
                 throw new ArgumentOutOfRangeException("semiMinorAxis", "The semi-minor axis is less than or equal to 0.");
 

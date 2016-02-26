@@ -110,21 +110,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         }
 
         /// <summary>
-        /// Creates a gaussian filter.
+        /// Creates a Gaussian filter.
         /// </summary>
         /// <param name="radius">The radius of the filter.</param>
-        /// <returns>The produced gaussian filter.</returns>
+        /// <returns>The produced Gaussian filter.</returns>
         public static Filter CreateGaussianFilter(Int32 radius)
         {
             return CreateGaussianFilter(radius, 1);
         }
 
         /// <summary>
-        /// Creates a gaussian filter.
+        /// Creates a Gaussian filter.
         /// </summary>
         /// <param name="radius">The radius of the filter.</param>
         /// <param name="sigma">The standard deviation of the Gaussian distribution.</param>
-        /// <returns>The produced gaussian filter.</returns>
+        /// <returns>The produced Gaussian filter.</returns>
         public static Filter CreateGaussianFilter(Int32 radius, Double sigma)
         {
             // source: http://en.wikipedia.org/wiki/Gaussian_blur
@@ -311,9 +311,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         }
 
         /// <summary>
-        /// Calculate the gaussian function component of the convolution.
+        /// Calculate the Gaussian function component of the convolution.
         /// </summary>
-        /// <returns>The produced gaussian function.</returns>
+        /// <returns>The produced Gaussian function.</returns>
         private static Double CalculateGaussianFunction(Double xTheta, Double waveLength, Double phaseOffset)
         {
             return 2 * Math.PI * (xTheta / waveLength) + phaseOffset;

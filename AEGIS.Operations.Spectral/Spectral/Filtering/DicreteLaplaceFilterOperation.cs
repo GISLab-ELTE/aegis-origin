@@ -20,12 +20,12 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
     /// <summary>
-    /// Represents a Discreate Leplace Filter.
+    /// Represents a Discrete Laplace Filter.
     /// </summary>
     /// <remarks>
     /// Discrete Laplace operator is often used in image processing e.g. in edge detection and motion estimation applications. 
     /// The discrete Laplacian is defined as the sum of the second derivatives Laplace operator and calculated as sum of differences 
-    /// over the nearest neighbours of the central pixel.
+    /// over the nearest neighbors of the central pixel.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::251205", "Discrete Laplace filter")]
     public class DiscreteLaplaceFilterOperation : GradientFilterOperation

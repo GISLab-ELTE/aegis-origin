@@ -1261,7 +1261,7 @@ namespace ELTE.AEGIS.Numerics
         }
 
         /// <summary>
-        /// Returnes the normalized cardinal sine of a value.
+        /// Returns the normalized cardinal sine of a value.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The normalized cardinal sine of the value.</returns>

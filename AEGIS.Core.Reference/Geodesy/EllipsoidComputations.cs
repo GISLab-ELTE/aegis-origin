@@ -215,7 +215,7 @@ namespace ELTE.AEGIS.Reference.Geodesy
         /// <param name="latitude">The latitude.</param>
         /// <param name="startingLongitude">The starting longitude.</param>
         /// <param name="endingLongitude">The ending longitude.</param>
-        /// <returns>The length of parallel curvature between the specified longtudes at the specified latitude.</returns>
+        /// <returns>The length of parallel curvature between the specified longitudes at the specified latitude.</returns>
         /// <exception cref="System.ArgumentNullException">The ellipsoid is null.</exception>
         public static Length LengthOfParalellCurvature(this Ellipsoid ellipsoid, Angle latitude, Angle startingLongitude, Angle endingLongitude)
         {
@@ -372,7 +372,7 @@ namespace ELTE.AEGIS.Reference.Geodesy
         }
 
         /// <summary>
-        /// Determines a geodetic vectorbetween source and destination coordinates.
+        /// Determines a geodetic vector between source and destination coordinates.
         /// </summary>
         /// <param name="ellipsoid">The ellipsoid.</param>
         /// <param name="source">The source coordinate.</param>

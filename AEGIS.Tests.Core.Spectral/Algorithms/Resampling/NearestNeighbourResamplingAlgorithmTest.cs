@@ -22,7 +22,7 @@ using System.Linq;
 namespace ELTE.AEGIS.Tests.Algorithms.Resampling
 {
     /// <summary>
-    /// Test fixture for the <see cref="NearestNeighbourResamplingAlgorithm" /> class.
+    /// Test fixture for the <see cref="NearestNeighborResamplingAlgorithm" /> class.
     /// </summary>
     [TestFixture]
     public class NearestNeighbourResamplingAlgorithmTest
@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Tests.Algorithms.Resampling
         [Test]
         public void NearestNeighbourResamplingAlgorithmComputeTest()
         {
-            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
+            NearestNeighborResamplingAlgorithm strategy = new NearestNeighborResamplingAlgorithm(_rasterMock.Object);
 
             for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.1)
                 for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.1)
@@ -99,7 +99,7 @@ namespace ELTE.AEGIS.Tests.Algorithms.Resampling
         [Test]
         public void NearestNeighbourResamplingAlgorithmComputeFloatTest()
         {
-            NearestNeighbourResamplingAlgorithm strategy = new NearestNeighbourResamplingAlgorithm(_rasterMock.Object);
+            NearestNeighborResamplingAlgorithm strategy = new NearestNeighborResamplingAlgorithm(_rasterMock.Object);
 
             for (Double rowIndex = 0; rowIndex < _rasterMock.Object.NumberOfRows; rowIndex += 0.1)
                 for (Double columnIndex = 0; columnIndex < _rasterMock.Object.NumberOfColumns; columnIndex += 0.1)

@@ -87,7 +87,7 @@ namespace ELTE.AEGIS.Reference.Operations
         /// or
         /// The method is null.
         /// or
-        /// The method requires parameteres which are not specified.
+        /// The method requires parameters which are not specified.
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// The parameters do not contain a required parameter value.
@@ -104,13 +104,13 @@ namespace ELTE.AEGIS.Reference.Operations
                 throw new ArgumentNullException("method", "The method is null.");
 
             if (parameters == null && method.Parameters != null && method.Parameters.Count > 0)
-                throw new ArgumentNullException("parameters", "The method requires parameteres which are not specified.");
+                throw new ArgumentNullException("parameters", "The method requires parameters which are not specified.");
 
             if (parameters != null && method.Parameters != null)
             {
                 foreach (CoordinateOperationParameter parameter in method.Parameters)
                 {
-                    // check for parameter existance
+                    // check for parameter existence
                     if (!parameters.ContainsKey(parameter) || parameters[parameter] == null) 
                         throw new ArgumentException("The parameters do not contain a required parameter value (" + parameter.Name + ").", "parameters");
 

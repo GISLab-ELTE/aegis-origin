@@ -1,5 +1,5 @@
 ﻿/// <copyright file="MilitaryGridProjection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.Reference.Operations
                 }
             }
 
-            // compute the latitude and longitue for the main zone
+            // compute the latitude and longitude for the main zone
             Double longitudeBase = (xZoneNumber - 1) * _zoneWidth - Constants.PI; 
             Double latitudeBase = (yZoneNumber - 2) * _zoneHeight - 80 * Constants.DegreeToRadian;
 

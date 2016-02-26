@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralOperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -225,7 +225,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _histogramMatchValues ?? (_histogramMatchValues =
                     OperationParameter.CreateRequiredParameter<IList<Int32>>("AEGIS::354124", "Histogram match values.",
-                                                                             "The histrogram values which are matched against the current raster historgam.", null)
+                                                                             "The histogram values which are matched against the current raster histogram.", null)
                     );
             }
         }
@@ -917,7 +917,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _rasterResamplingAlgorithm ?? (_rasterResamplingAlgorithm =
                     OperationParameter.CreateOptionalParameter<RasterResamplingAlgorithm>("AEGIS::350382", "Raster resampling algorithm",
-                                                                                          "The algroithm that performs the resampling of the raster.", null,
+                                                                                          "The algorithm that performs the resampling of the raster.", null,
                                                                                           (RasterResamplingAlgorithm)null)
                 );
             }

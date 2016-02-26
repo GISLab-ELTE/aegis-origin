@@ -27,7 +27,7 @@ using System.Text.RegularExpressions;
 namespace ELTE.AEGIS.IO.Storage
 {
     /// <summary>
-    /// Represents FTP filesystem
+    /// Represents FTP file system
     /// </summary>
     public class FtpFileSystem : FileSystem
     {
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// Initializes a new instance of the <see cref="FtpFileSystem" /> class.
         /// </summary>
         /// <param name="location">The URI of the file system location.</param>
-        /// <param name="username">The username.</param>
+        /// <param name="username">The user name.</param>
         /// <param name="password">The password.</param>
         public FtpFileSystem(Uri location, String username, String password)
             : base(location, new UsernamePasswordFileSystemAuthentication(username, password))
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.IO.Storage
         /// Initializes a new instance of the <see cref="FtpFileSystem" /> class.
         /// </summary>
         /// <param name="location">The URI of the file system location.</param>
-        /// <param name="username">The username.</param>
+        /// <param name="username">The user name.</param>
         /// <param name="password">The password.</param>
         public FtpFileSystem(Uri location, String username, SecureString password)
             : base(location, new UsernamePasswordFileSystemAuthentication(username, password))
@@ -449,7 +449,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Deletes the filesystem entry located at the specified path.
+        /// Deletes the file system entry located at the specified path.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -503,7 +503,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Deletes the filesystem entry located at the specified path.
+        /// Deletes the file system entry located at the specified path.
         /// </summary>
         /// <param name="path">The path of the entry to delete.</param>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
@@ -557,7 +557,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Moves a filesystem entry and its contents to a new location.
+        /// Moves a file system entry and its contents to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -631,7 +631,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Moves a filesystem entry and its contents to a new location.
+        /// Moves a file system entry and its contents to a new location.
         /// </summary>
         /// <param name="sourcePath">The path of the file or directory to move.</param>
         /// <param name="destinationPath">The path to the new location for the entry.</param>
@@ -705,7 +705,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Copies an existing filesystem entry to a new location.
+        /// Copies an existing file system entry to a new location.
         /// </summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
@@ -752,7 +752,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
         
         /// <summary>
-        /// Asyncronously determines whether the specified path exists.
+        /// Asynchronously determines whether the specified path exists.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, otherwise, <c>false</c>.</returns>
@@ -808,7 +808,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
 
         /// <summary>
-        /// Asyncronously determines whether the specified path is an existing directory.
+        /// Asynchronously determines whether the specified path is an existing directory.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, and is a directory, otherwise, <c>false</c>.</returns>
@@ -840,7 +840,7 @@ namespace ELTE.AEGIS.IO.Storage
         }
         
         /// <summary>
-        /// Asyncronously determines whether the specified path is an existing file.
+        /// Asynchronously determines whether the specified path is an existing file.
         /// </summary>
         /// <param name="path">The path to check.</param>
         /// <returns><c>true</c> if the path exists, and is a file, otherwise, <c>false</c>.</returns>

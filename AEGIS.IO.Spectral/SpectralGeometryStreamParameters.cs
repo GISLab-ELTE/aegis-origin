@@ -210,7 +210,7 @@ namespace ELTE.AEGIS.IO
             {
                 return _geometryFactoryType ?? (_geometryFactoryType =
                     GeometryStreamParameter.CreateOptionalParameter<Type>("AEGIS::620001", "Geometry factory type",
-                                                                          "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used witk the reference system provided by the source.",
+                                                                          "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used with the reference system provided by the source.",
                                                                           Conditions.Implements<IGeometryFactory>()));
             }
         }
@@ -265,7 +265,7 @@ namespace ELTE.AEGIS.IO
             {
                 return _radiometricResolution ?? (_radiometricResolution =
                     GeometryStreamParameter.CreateRequiredParameter<Int32>("AEGIS::625015", "Radiometric resolution",
-                                                                           "The number of bits specifiing a sinlge spectral value in the image.", new String[] { "Bits per sample", "Number of bits" },
+                                                                           "The number of bits specifying a single spectral value in the image.", new String[] { "Bits per sample", "Number of bits" },
                                                                            8,
                                                                            Conditions.IsPositive()));
             }
@@ -309,7 +309,7 @@ namespace ELTE.AEGIS.IO
             {
                 return _tieCoordinate ?? (_tieCoordinate =
                     GeometryStreamParameter.CreateOptionalParameter<Coordinate>("AEGIS::625025", "Tie coordinate.",
-                                                                                "The sptial coordinate of the upper left pixel.", new String[] { "Upper left coordinate", "Tie point" }));
+                                                                                "The spatial coordinate of the upper left pixel.", new String[] { "Upper left coordinate", "Tie point" }));
             }
         }
 

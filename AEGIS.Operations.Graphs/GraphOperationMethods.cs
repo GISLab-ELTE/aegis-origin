@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GraphOperationParameters.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -173,7 +173,7 @@ namespace ELTE.AEGIS.Operations
                 return _breathFirstSearch ?? (_breathFirstSearch =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::221301", "Breath-first search",
-                        "Tranverses the graph by beginning at the root vertex and exploring all the neighboring vertices. Then for each of those nearest vertices, it explores their unexplored neighbor vertices, and so on.",
+                        "Traverses the graph by beginning at the root vertex and exploring all the neighboring vertices. Then for each of those nearest vertices, it explores their unexplored neighbor vertices, and so on.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex
                     ));
@@ -190,7 +190,7 @@ namespace ELTE.AEGIS.Operations
                 return _depthFirstSearch ?? (_depthFirstSearch =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::221302", "Depth-first search",
-                        "Tranverses the graph by exploring as far as possible along each branch before backtracking.",
+                        "Traverses the graph by exploring as far as possible along each branch before backtracking.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex
                     ));
@@ -225,7 +225,7 @@ namespace ELTE.AEGIS.Operations
                 return _dijkstrasSinglePathAlgorithm ?? (_dijkstrasSinglePathAlgorithm =
                     OperationMethod.CreateMethod<IGeometryGraph, IGeometryGraph>(
                         "AEGIS::221611", "Dijkstra's algorithm (single path)",
-                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree. This version of the algorithm computes the shortest single path between two verices.",
+                        "Dijkstra's algorithm is a graph search algorithm that solves the single-source shortest path problem for a graph to non-negative edge path costs, producing a shortest path tree. This version of the algorithm computes the shortest single path between two vertices.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         GraphOperationParameters.SourceVertex,
                         GraphOperationParameters.TargetVertex,
@@ -296,7 +296,7 @@ namespace ELTE.AEGIS.Operations
                 return _geometryPolygonization ?? (_geometryPolygonization =
                     OperationMethod.CreateMethod<IGeometry, IGeometryGraph>(
                         "AEGIS::220205", "Geometry polygonization",
-                        "Converts geometries of any kind to polygonial representation.",
+                        "Converts geometries of any kind to polygonal representation.",
                         false, GeometryModel.SpatialOrSpatioTemporal, ExecutionMode.OutPlace,
                         CommonOperationParameters.GeometryFactory,
                         CommonOperationParameters.MetadataPreservation

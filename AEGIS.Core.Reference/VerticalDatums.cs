@@ -169,7 +169,7 @@ namespace ELTE.AEGIS.Reference
             {
                 return _EVRF2000 ?? (_EVRF2000 = 
                     new VerticalDatum("EPSG::5129", "European Vertical Reference Frame 2000 (EVRF2000)",
-                                      "Height at Normaal Amsterdams Peil (NAP) is zero, defined through height at UELN bench mark 13600 (52°22'53\"N 4°54'34\"E) of 0.71599m. Datum at NAP is mean high tide in 1684.", "2000",
+                                      "Height at Normal Amsterdams Peil (NAP) is zero, defined through height at UELN bench mark 13600 (52°22'53\"N 4°54'34\"E) of 0.71599m. Datum at NAP is mean high tide in 1684.", "2000",
                                       AreasOfUse.EuropeEVRF2000));
             }
         }

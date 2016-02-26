@@ -201,7 +201,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             }
 
 
-            // the weigths of the upper tiles and the left tiles:
+            // the weights of the upper tiles and the left tiles:
 
             Double upperWeight = ((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - rowIndex) /
                                     (Double)((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - (upperLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2));

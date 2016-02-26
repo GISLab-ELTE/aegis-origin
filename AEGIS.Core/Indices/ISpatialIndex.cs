@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ISpatialIndex.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -63,14 +63,14 @@ namespace ELTE.AEGIS.Indices
         /// Determines whether the specified geometry is indexed.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns><c>true</c> if the specified geometry is indexed; otherwisem <c>false</c>.</returns>
+        /// <returns><c>true</c> if the specified geometry is indexed; otherwise <c>false</c>.</returns>
         Boolean Contains(IGeometry geometry);
 
         /// <summary>
         /// Removes the specified geometry from the index.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns><c>true</c> if the geometry is indexed; ortherwise <c>false</c>.</returns>
+        /// <returns><c>true</c> if the geometry is indexed; otherwise <c>false</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The geometry is null.</exception>
         /// <exception cref="System.InvalidOperationException">The index is read-only.</exception>
         Boolean Remove(IGeometry geometry);

@@ -56,7 +56,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _morphologicalDilationOperation ?? (_morphologicalDilationOperation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251602", "Morphological dilation operation",
-                                                                         "Dilation is one of two fundamental operations (the other being erosion) in morphological image processing. In dilation, the value of the output pixel is the minimum value of all the pixels in the input pixel's neighbourhood.", null, "1.0.0",
+                                                                         "Dilation is one of two fundamental operations (the other being erosion) in morphological image processing. In dilation, the value of the output pixel is the minimum value of all the pixels in the input pixel's neighborhood.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.MorphologicalStructuringElement));
@@ -72,7 +72,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 return _morphologicalErosionOperation ?? (_morphologicalErosionOperation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::251601", "Morphological erosion operation",
-                                                                         "In erosion, the value of the output pixel is the maximum value of all the pixels in the input pixel's neighbourhood.", null, "1.0.0",
+                                                                         "In erosion, the value of the output pixel is the maximum value of all the pixels in the input pixel's neighborhood.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandFocal,
                                                                          ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.MorphologicalStructuringElement));

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="CoordinateVector.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -80,7 +80,7 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Gets the length of the <see cref="CoordinateVector" />.
         /// </summary>
-        /// <value>The eucledian length of the vector.</value>
+        /// <value>The euclidean length of the vector.</value>
         public Double Length { get { return Math.Sqrt(Calculator.Pow(_x, 2) + Calculator.Pow(_y, 2) + Calculator.Pow(_z, 2)); } }
 
         #endregion
@@ -303,7 +303,7 @@ namespace ELTE.AEGIS
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
-        /// <param name="precision">The precision modell.</param>
+        /// <param name="precision">The precision model.</param>
         /// <returns><c>true</c> if the two <see cref="CoordinateVector" /> instances are parallel; otherwise <c>false</c>.</returns>
         public static Boolean IsParallel(CoordinateVector first, CoordinateVector second, PrecisionModel precision)
         {

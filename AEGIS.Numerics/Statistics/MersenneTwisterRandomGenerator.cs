@@ -109,7 +109,7 @@ namespace ELTE.AEGIS.Numerics.Statistics
         private UInt32[] _MT;
 
         /// <summary>
-        /// The indey of the generated numbers.
+        /// The index of the generated numbers.
         /// </summary>
         private Int16 _index;
 
