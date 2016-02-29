@@ -123,31 +123,38 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             foreach (Segment segment in segmentList)
             {
                 Int32 numberOfDigits = Convert.ToInt32(Math.Floor(Math.Log10(segment.MortonCode) + 1));
-                for (Int32 i = 0; i < maxNumberOfDigits - numberOfDigits; i++)
+                for (Int32 digit = 0; digit < maxNumberOfDigits - numberOfDigits; digit++)
                     segment.MortonCode = segment.MortonCode * 10 + 1;
             }
 
-            // merge the appropriate segments
-            for (Int32 i = 0; i < segmentList.Count - 1; i++)
+            do
             {
-                // determine the category of the segment
-                Double firstDigit1 = Math.Abs(segmentList[i].MortonCode);
-                Double firstDigit2 = Math.Abs(segmentList[i + 1].MortonCode);
+                isHomogeneous = true;
 
-                while (firstDigit1 >= 10)
+                // merge the appropriate segments
+                for (Int32 segmentIndex = 0; segmentIndex < segmentList.Count - 1; segmentIndex++)
                 {
-                    firstDigit1 /= 10;
-                    firstDigit2 /= 10;
-                }
+                    // determine the category of the segment
+                    Double firstDigit1 = Math.Abs(segmentList[segmentIndex].MortonCode);
+                    Double firstDigit2 = Math.Abs(segmentList[segmentIndex + 1].MortonCode);
 
-                // merge if possible
-                if (Convert.ToInt32(firstDigit1) != Convert.ToInt32(firstDigit2) && segmentList[i].IsMergeHomogenous(segmentList[i + 1], _mergeHomogeneityThreshold))
-                {
-                    result.MergeSegments(segmentList[i], segmentList[i + 1]);
-                    segmentList = result.GetSegments().ToList();
-                    segmentList = segmentList.OrderBy(x => x.MortonCode).ToList();
+                    while (firstDigit1 >= 10)
+                    {
+                        firstDigit1 /= 10;
+                        firstDigit2 /= 10;
+                    }
+
+                    // merge if possible
+                    if (Convert.ToInt32(firstDigit1) != Convert.ToInt32(firstDigit2) && segmentList[segmentIndex].IsMergeHomogenous(segmentList[segmentIndex + 1], _mergeHomogeneityThreshold))
+                    {
+                        isHomogeneous = false;
+                        
+                        Segment mergedSegment = result.MergeSegments(segmentList[segmentIndex], segmentList[segmentIndex + 1]);
+
+                        segmentList.RemoveAt(mergedSegment == segmentList[segmentIndex] ? segmentIndex + 1 : segmentIndex);
+                    }
                 }
-            }
+            } while (!isHomogeneous);
         }
 
         #endregion

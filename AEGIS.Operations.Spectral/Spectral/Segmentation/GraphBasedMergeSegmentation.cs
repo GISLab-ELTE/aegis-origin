@@ -46,7 +46,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             /// <summary>
             /// The weight of the edge.
             /// </summary>
-            public Double Weight { get; private set; }
+            public Single Weight { get; private set; }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="SimpleGraphEdge"/> class.
@@ -54,7 +54,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             /// <param name="source">The source.</param>
             /// <param name="destination">The destination.</param>
             /// <param name="weight">The weight.</param>
-            public SimpleGraphEdge(Int32 source, Int32 destination, Double weight)
+            public SimpleGraphEdge(Int32 source, Int32 destination, Single weight)
             {
                 Source = source;
                 Destination = destination;
@@ -74,7 +74,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// The dictionary of inner difference values.
         /// </summary>
-        private Dictionary<Segment, Double> _innerDiffences; 
+        private Dictionary<Segment, Single> _innerDiffences; 
 
         #endregion  
 
@@ -155,7 +155,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             // source: Felzenszwalb, Huttenlocher: Efficient Graph-Based Image Segmentation
 
             List<SimpleGraphEdge> edges = GenerateEdgeList();
-            _innerDiffences = new Dictionary<Segment, Double>();
+            _innerDiffences = new Dictionary<Segment, Single>();
             
             // remove the edges and merge segments
             while (edges.Count > 0)
@@ -176,20 +176,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (internalDifference > edge.Weight)
                 {
                     // the segments should be merged
-                    _result.MergeSegments(firstSegment, secondSegment);
+                    Segment mergedSegment = _result.MergeSegments(firstSegment, secondSegment);
+                    Segment otherSegment = mergedSegment == firstSegment ? firstSegment : secondSegment;
 
                     // modify internal difference
-                    Double weight = edge.Weight;
-                    if (_innerDiffences.ContainsKey(secondSegment))
+                    Single weight = edge.Weight;
+                    if (_innerDiffences.ContainsKey(otherSegment))
                     {
-                        weight = Math.Max(_innerDiffences[secondSegment], edge.Weight);
-                        _innerDiffences.Remove(secondSegment);
+                        weight = Math.Max(_innerDiffences[otherSegment], edge.Weight);
+                        _innerDiffences.Remove(otherSegment);
                     }
 
-                    if (!_innerDiffences.ContainsKey(firstSegment))
-                        _innerDiffences.Add(firstSegment, edge.Weight);
+                    if (!_innerDiffences.ContainsKey(mergedSegment))
+                        _innerDiffences.Add(mergedSegment, (Single)edge.Weight);
                     else
-                        _innerDiffences[firstSegment] = Math.Max(_innerDiffences[firstSegment], weight);
+                        _innerDiffences[mergedSegment] = Math.Max(_innerDiffences[mergedSegment], weight);
                 }
             }
         }
@@ -212,57 +213,57 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
                 {
                     Int32 index = rowIndex * _source.Raster.NumberOfColumns + columnIndex;
-                    Double weight;
+                    Single weight;
 
                     switch (Source.Raster.Format)
                     { 
                         case RasterFormat.Integer:                            
                             if (columnIndex < _source.Raster.NumberOfColumns - 1)
                             {
-                                weight = _distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex + 1));
+                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex + 1));
                                 edges.Add(new SimpleGraphEdge(index, index + 1, weight));
                             }
 
                             if (columnIndex > 0)
                             {
-                                weight = _distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex - 1));
+                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex - 1));
                                 edges.Add(new SimpleGraphEdge(index, index - 1, weight));
                             }
 
                             if (rowIndex > 0)
                             {
-                                weight = _distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex - 1, columnIndex));
+                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex - 1, columnIndex));
                                 edges.Add(new SimpleGraphEdge(index, index - _source.Raster.NumberOfColumns, weight));
                             }
 
                             if (rowIndex < _source.Raster.NumberOfRows - 1)
                             {
-                                weight = _distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex + 1, columnIndex));
+                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex + 1, columnIndex));
                                 edges.Add(new SimpleGraphEdge(index, index + _source.Raster.NumberOfColumns, weight));
                             }
                             break;
                         case RasterFormat.Floating:
                             if (columnIndex < _source.Raster.NumberOfColumns - 1)
                             {
-                                weight = _distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex + 1));
+                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex + 1));
                                 edges.Add(new SimpleGraphEdge(index, index + 1, weight));
                             }
 
                             if (columnIndex > 0)
                             {
-                                weight = _distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex - 1));
+                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex - 1));
                                 edges.Add(new SimpleGraphEdge(index, index - 1, weight));
                             }
 
                             if (rowIndex > 0)
                             {
-                                weight = _distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex - 1, columnIndex));
+                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex - 1, columnIndex));
                                 edges.Add(new SimpleGraphEdge(index, index - _source.Raster.NumberOfColumns, weight));
                             }
 
                             if (rowIndex < _source.Raster.NumberOfRows - 1)
                             {
-                                weight = _distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex + 1, columnIndex));
+                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex + 1, columnIndex));
                                 edges.Add(new SimpleGraphEdge(index, index + _source.Raster.NumberOfColumns, weight));
                             }
                             break;
@@ -293,9 +294,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         /// <param name="segment">The segment.</param>
         /// <returns>The internal difference of <paramref name="segment" />.</returns>
-        private Double InternalDifference(Segment segment)
+        private Single InternalDifference(Segment segment)
         {
-            Double value;
+            Single value;
             if (!_innerDiffences.TryGetValue(segment, out value))
                 return 0;
 

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SequentialCouplingSegmentation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -183,14 +183,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         // right 1
                         if (CanMergeSegments(rowIndex - 2, columnIndex + 2, rowIndex, columnIndex + 2))
                         {
-                            Segment upperSegment = _result[rowIndex - 2, columnIndex + 2];
-                            Segment lowerSegment = _result[rowIndex, columnIndex + 2];
+                            Segment mergedSegment = _result.MergeSegments(_result[rowIndex - 2, columnIndex + 2], _result[rowIndex, columnIndex + 2]);
 
-                            _result.MergeSegments(upperSegment, lowerSegment);
-
-                            if (CanMergeSegments(upperSegment, currentSegment))
+                            if (CanMergeSegments(mergedSegment, currentSegment))
                             {
-                                Double distance = _distance.Distance(upperSegment, currentSegment);
+                                Double distance = _distance.Distance(mergedSegment, currentSegment);
                                 if (distance < currentDistance)
                                     direction = SegmentMergeDirection.Right1;                                
                             }
