@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SegmentCollection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -429,7 +429,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The second segment is not within the collection.
         /// </exception>
-        public void MergeSegments(Segment first, Segment second)
+        public Segment MergeSegments(Segment first, Segment second)
         {
             if (first == null)
                 throw new ArgumentNullException("first", "The first segment is null.");
@@ -441,12 +441,18 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 throw new ArgumentException("The second segment is not within the collection.", "second");
 
             if (first == second)
-                return;
+                return first;
 
             if (first.Count > second.Count)
+            {
                 ApplyMergeSegments(first, second);
+                return first;
+            }
             else
+            {
                 ApplyMergeSegments(second, first);
+                return second;
+            }
         }
 
         /// <summary>
