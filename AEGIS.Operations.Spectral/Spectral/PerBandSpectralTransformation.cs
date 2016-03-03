@@ -75,15 +75,29 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
             else if (IsProvidedParameter(SpectralOperationParameters.BandIndices))
             {
-                SourceBandIndices = ResolveParameter<Int32[]>(SpectralOperationParameters.BandIndices);
+                SourceBandIndices = ResolveParameter<IEnumerable<Int32>>(SpectralOperationParameters.BandIndices).ToArray();
 
                 if (SourceBandIndices.Any(index => index < 0 || index >= Source.Raster.NumberOfBands))
                     throw new ArgumentException("parameters", "A parameter value does not satisfy the conditions of the parameter.", new ArgumentOutOfRangeException("BandIndices", "One or more values within BandIndices is not within the range 0.." + (Source.Raster.NumberOfBands - 1) + "."));
             }
-            else
+            else if (IsProvidedParameter(SpectralOperationParameters.BandName) && Source.Imaging != null)
             {
-                SourceBandIndices = Enumerable.Range(0, Source.Raster.NumberOfBands).ToArray();
+                SpectralDomain domain;
+                if (Enum.TryParse<SpectralDomain>(ResolveParameter<String>(SpectralOperationParameters.BandName), out domain) && source.Imaging.Bands.Any(band => band.SpectralDomain == domain))
+                    SourceBandIndices = new Int32[] { source.Imaging.Bands.FindIndex(band => band.SpectralDomain == domain) };
             }
+            else if (IsProvidedParameter(SpectralOperationParameters.BandNames) && Source.Imaging != null)
+            {
+                SpectralDomain domain;
+                SourceBandIndices = ResolveParameter<IEnumerable<String>>(SpectralOperationParameters.BandNames).Select(name =>
+                {
+                    Enum.TryParse<SpectralDomain>(name, true, out domain);
+                    return source.Imaging.Bands.FindIndex(band => band.SpectralDomain == domain);
+                }).Where(index => index >= 0).ToArray();
+            }
+
+            if (SourceBandIndices == null)
+                SourceBandIndices = Enumerable.Range(0, Source.Raster.NumberOfBands).ToArray();
         }
 
         #endregion

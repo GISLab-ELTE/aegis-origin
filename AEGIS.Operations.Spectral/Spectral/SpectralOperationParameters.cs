@@ -91,6 +91,8 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         private static OperationParameter _bandIndices;
         private static OperationParameter _bandIndex;
+        private static OperationParameter _bandName;
+        private static OperationParameter _bandNames;
         private static OperationParameter _gammaValue;
         private static OperationParameter _histogramMatchFunction;
         private static OperationParameter _histogramMatchValues;
@@ -165,9 +167,9 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _bandIndices ?? (_bandIndices =
-                    OperationParameter.CreateOptionalParameter<Int32[]>("AEGIS::350102", "Band indices",
-                                                                        "The array of zero-based index of the band the operation should be executed on.", null,
-                                                                        (Int32[])null)
+                    OperationParameter.CreateOptionalParameter<IEnumerable<Int32>>("AEGIS::350102", "Band indices",
+                                                                                   "The collection of zero-based indices of the bands the operation should be executed on.", null,
+                                                                                   (IEnumerable<Int32>)null)
                     );
             }
         }
@@ -184,6 +186,36 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                       "The zero-based index of the band the operation should be executed on.", null,
                                                                       Int32.MaxValue,
                                                                       Conditions.IsNotNegative())
+                    );
+            }
+        }
+
+        /// <summary>
+        /// Band name.
+        /// </summary>
+        public static OperationParameter BandName
+        {
+            get
+            {
+                return _bandName ?? (_bandName =
+                    OperationParameter.CreateOptionalParameter<String>("AEGIS::350108", "Band name",
+                                                                       "The  name of the band the operation should be executed on.", null,
+                                                                       (String)null)
+                    );
+            }
+        }
+
+        /// <summary>
+        /// Band names.
+        /// </summary>
+        public static OperationParameter BandNames
+        {
+            get
+            {
+                return _bandNames ?? (_bandNames =
+                    OperationParameter.CreateOptionalParameter<IEnumerable<String>>("AEGIS::350109", "Band names",
+                                                                                    "The collection of band names the operation should be executed on.", null,
+                                                                                    (IEnumerable<String>)null)
                     );
             }
         }
