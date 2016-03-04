@@ -121,15 +121,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         protected override void ComputeResult()
         {
             CreateInitialClusters();
-
-            // merge spectral values into the clusters
-            if (_result.Count < Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns) // in case the initial segments have been provided
+            
+            if (_initialSegmentsProvided)
                 MergeSegmentsToClusters();
-            else // if no segments have been provided
+            else
                 MergeValuesToClusters();
-
-            // eliminate small clusters
-            EliminateClusters();
+            
+            EliminateSmallClusters();
 
             MergeClusters();
         }
@@ -174,9 +172,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 Double[] randomNumbers = new Double[_source.Raster.NumberOfBands];
 
                 for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
-                {
                     randomNumbers[bandIndex] = randomGenerator.NextDouble(median[bandIndex], standardDeviation[bandIndex]);
-                }
 
                 _clusterCenters[clusterIndex] = randomNumbers;
             }
@@ -188,34 +184,23 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private void MergeValuesToClusters()
         {
             Segment[] clusters = new Segment[_numberOfClusters];
-
-            Double minimalDistance;
+            
             Int32 minimalIndex = 0;
 
             for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
             {
                 for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
                 {
-                    minimalDistance = Double.MaxValue;
-
-                    for (Int32 clusterIndex = 0; clusterIndex < _clusterCenters.Length; clusterIndex++)
+                    switch (Source.Raster.Format)
                     {
-                        Double distance = 0;
-                        switch(Source.Raster.Format)
-                        {
-                            case RasterFormat.Integer:
-                                distance = _distance.Distance(_clusterCenters[clusterIndex], _source.Raster.GetValues(rowIndex, columnIndex));
-                                break;
-                            case RasterFormat.Floating:
-                                distance = _distance.Distance(_clusterCenters[clusterIndex], _source.Raster.GetFloatValues(rowIndex, columnIndex));
-                                break;
-                        }
-
-                        if (distance < minimalDistance)
-                        {
-                            minimalDistance = distance;
-                            minimalIndex = clusterIndex;
-                        }
+                        case RasterFormat.Integer:
+                            UInt32[] values = _source.Raster.GetValues(rowIndex, columnIndex);
+                            minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, values));
+                            break;
+                        case RasterFormat.Floating:
+                            Double[] floatValues = _source.Raster.GetFloatValues(rowIndex, columnIndex);
+                            minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, floatValues));
+                            break;
                     }
 
                     if (clusters[minimalIndex] == null)
@@ -232,8 +217,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private void MergeSegmentsToClusters()
         {
             Segment[] clusters = new Segment[_numberOfClusters];
-
-            Double minimalDistance;
+            
             Int32 minimalIndex = 0;
 
             Segment[] segments = _result.GetSegments().ToArray();
@@ -243,19 +227,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (!_result.Contains(segment))
                     continue;
 
-                minimalDistance = Double.MaxValue;
-
-                for (Int32 clusterIndex = 0; clusterIndex < _clusterCenters.Length; clusterIndex++)
-                {
-                    Double distance = _distance.Distance(segment, _clusterCenters[clusterIndex]);
-
-                    if (distance < minimalDistance)
-                    {
-                        minimalDistance = distance;
-                        minimalIndex = clusterIndex;
-                    }
-                }
-
+                minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(segment, center));
+                
                 if (clusters[minimalIndex] == null)
                     clusters[minimalIndex] = segment;
                 else
@@ -263,7 +236,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             }
         }
 
-        private void EliminateClusters()
+        /// <summary>
+        /// Eliminates small clusters.
+        /// </summary>
+        private void EliminateSmallClusters()
         {
             _clusterCenters = null;
 
@@ -272,9 +248,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             foreach (Segment segment in segments)
             {
                 if (segment.Count < _clusterSizeThreshold)
-                {
                     _result.SplitSegment(segment);
-                }
             }
         }
 

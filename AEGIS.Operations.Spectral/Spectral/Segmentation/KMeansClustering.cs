@@ -139,9 +139,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             CreateRandomCentroids();
 
-            if (_result.Count < Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns) // in case the initial segments have been provided
+            if (_initialSegmentsProvided)
                 MergeSegmentsToClusters();
-            else // if no segments have been provided
+            else
                 MergeValuesToClusters();
         }
 

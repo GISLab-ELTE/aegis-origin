@@ -32,6 +32,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         protected readonly SpectralDistance _clusterDistance;
 
+        /// <summary>
+        /// A value inidcating whether the initial segments were provided.
+        /// </summary>
+        protected Boolean _initialSegmentsProvided;
+
         #endregion
 
         #region Private fields
@@ -105,6 +110,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             {
                 _result = new SegmentCollection(_initialSegments);
                 _initialSegments = null;
+                _initialSegmentsProvided = true;
             }
             else
             {
