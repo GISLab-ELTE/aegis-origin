@@ -137,6 +137,80 @@ namespace ELTE.AEGIS
             return indices;
         }
 
+        /// <summary>
+        /// Returns the index of the smallest item within the collection specified by the selector.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="selector">The selector function.</param>
+        /// <returns>The index of the smallest item within the collection specified by the selector</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        /// <exception cref="ArgumentException">The collection is empty.</exception>
+        public static Int32 MaxIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            IEnumerator<TSource> enumerator = collection.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                throw new ArgumentException("collection", "The collection is empty.");
+
+            Int32 index = 0, maxIndex = 0;
+            TResult max = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                TResult currentResult = selector(enumerator.Current);
+                if (max.CompareTo(currentResult) > 0)
+                {
+                    max = currentResult;
+                    maxIndex = index;
+                }
+                index++;
+            }
+
+            return maxIndex;
+        }
+
+        /// <summary>
+        /// Returns the index of the smallest item within the collection specified by the selector.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="selector">The selector function.</param>
+        /// <returns>The index of the smallest item within the collection specified by the selector</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        /// <exception cref="ArgumentException">The collection is empty.</exception>
+        public static Int32 MinIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            IEnumerator<TSource> enumerator = collection.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                throw new ArgumentException("collection", "The collection is empty.");
+
+            Int32 index = 0, minIndex = 0;
+            TResult min = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                TResult currentResult = selector(enumerator.Current);
+                if (min.CompareTo(currentResult) < 0)
+                {
+                    min = currentResult;
+                    minIndex = index;
+                }
+                index++;
+            }
+
+            return minIndex;
+        }
+
         #endregion
     }
 }
