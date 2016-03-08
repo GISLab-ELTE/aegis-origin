@@ -90,28 +90,68 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="other">The other segment collection.</param>
         /// <exception cref="System.ArgumentNullException">The other segment collection is null.</exception>
         public SegmentCollection(SegmentCollection other)
+            : this(other, SpectralStatistics.None)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SegmentCollection" /> class.
+        /// </summary>
+        /// <param name="other">The other segment collection.</param>
+        /// <param name="statistics">The spectral statistics.</param>
+        /// <exception cref="System.ArgumentNullException">The other segment collection is null.</exception>
+        public SegmentCollection(SegmentCollection other, SpectralStatistics statistics)
         {
             if (other == null)
                 throw new ArgumentNullException("other", "The other segment collection is null.");
 
             Raster = other.Raster;
             Count = other.Count;
-            Statistics = other.Statistics;
+            Statistics = other.Statistics | statistics;
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
 
             foreach (Segment otherSegment in other._segmentToIndexDictionary.Keys)
             {
                 List<Int32> otherIndices = other._segmentToIndexDictionary[otherSegment];
-
-                Int32 rowIndex = otherIndices[0] / Raster.NumberOfColumns;
-                Int32 columnIndex = otherIndices[0] % Raster.NumberOfColumns;
-
-                Segment segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex), Statistics);
-
-                for (Int32 i = 0; i < other._segmentToIndexDictionary[otherSegment].Count; i++)
+                
+                Segment segment;
+                if (Statistics == other.Statistics)
                 {
-                    _indexToSegmentDictionary.Add(otherIndices[i], segment);
+                    segment = new Segment(otherSegment);
+                }
+                else
+                {
+                    Int32 rowIndex = otherIndices[0] / Raster.NumberOfColumns;
+                    Int32 columnIndex = otherIndices[0] % Raster.NumberOfColumns;
+
+                    if (Raster.Format == RasterFormat.Integer)
+                    {
+                        segment = new Segment(Raster.GetValues(rowIndex, columnIndex), Statistics);
+
+                        for (Int32 i = 0; i < other._segmentToIndexDictionary[otherSegment].Count; i++)
+                        {
+                            _indexToSegmentDictionary.Add(otherIndices[i], segment);
+                            rowIndex = otherIndices[i] / Raster.NumberOfColumns;
+                            columnIndex = otherIndices[i] % Raster.NumberOfColumns;
+
+                            segment.AddValues(Raster.GetValues(rowIndex, columnIndex));
+                        }
+                    }
+                    else
+                    {
+                        segment = new Segment(Raster.GetFloatValues(rowIndex, columnIndex), Statistics);
+
+                        for (Int32 i = 0; i < other._segmentToIndexDictionary[otherSegment].Count; i++)
+                        {
+                            _indexToSegmentDictionary.Add(otherIndices[i], segment);
+                            rowIndex = otherIndices[i] / Raster.NumberOfColumns;
+                            columnIndex = otherIndices[i] % Raster.NumberOfColumns;
+
+                            segment.AddFloatValues(Raster.GetFloatValues(rowIndex, columnIndex));
+                        }
+                    }
                 }
 
                 _segmentToIndexDictionary.Add(segment, new List<Int32>(otherIndices));

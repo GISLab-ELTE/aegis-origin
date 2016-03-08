@@ -16,6 +16,7 @@
 using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Collections.Segmentation
 {
@@ -216,6 +217,37 @@ namespace ELTE.AEGIS.Collections.Segmentation
                                 Covariance[bandIndex, otherBandIndex] += (_mean[bandIndex] - raster.GetFloatValue(rowIndex, columnIndex, bandIndex)) * (_mean[otherBandIndex] - raster.GetFloatValue(rowIndex, columnIndex, otherBandIndex));
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Segment" /> class.
+        /// </summary>
+        /// <param name="source">The source segment.</param>
+        /// <exception cref="System.ArgumentNullException">The source segment is null.</exception>
+        public Segment(Segment source)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source", "The source segment is null.");
+
+            Count = source.Count;
+            _mean = new Double[source._mean.Length];
+            Array.Copy(source._mean, _mean, source._mean.Length);
+
+            if (source._comoment != null)
+            {
+                _comoment = new Double[source.NumberOfBands, source.NumberOfBands];
+                Array.Copy(source._comoment, _comoment, source._comoment.Length);
+            }
+            if (source._variance != null)
+            {
+                _variance = new Double[source._variance.Length];
+                Array.Copy(source._variance, _variance, source._variance.Length);
+            }
+            if (source.Covariance != null)
+            {
+                Covariance = new Double[source.NumberOfBands, source.NumberOfBands];
+                Array.Copy(source.Covariance, Covariance, source.Covariance.Length);
             }
         }
 
