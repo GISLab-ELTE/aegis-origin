@@ -14,7 +14,6 @@
 /// <author>Roberto Giachetta</author>
 
 using ELTE.AEGIS.Collections.Segmentation;
-using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Numerics.Statistics;
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -142,25 +141,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private void CreateInitialClusters()
         {            
             // compute median and std. deviation
-            Double[] median = new Double[_source.Raster.NumberOfBands];
+            Double[] mean = new Double[_source.Raster.NumberOfBands];
             Double[] standardDeviation = new Double[_source.Raster.NumberOfBands];
 
             for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
             {
-                median[bandIndex] = 0;
+                mean[bandIndex] = 0;
                 standardDeviation[bandIndex] = 0;
 
                 for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
                     for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                        median[bandIndex] += _source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
+                        mean[bandIndex] += Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
 
-                median[bandIndex] /= (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
+                mean[bandIndex] /= (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
 
                 for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
                     for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                        standardDeviation[bandIndex] += Calculator.Pow(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex) - median[bandIndex], 2);
+                        standardDeviation[bandIndex] += Math.Pow(_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - mean[bandIndex], 2);
 
-                standardDeviation[bandIndex] = Math.Sqrt(standardDeviation[bandIndex] / (_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns));
+                standardDeviation[bandIndex] = Math.Sqrt(standardDeviation[bandIndex] / (_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns - 1));
             }
 
             // generate the initial clusters
@@ -172,7 +171,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 Double[] randomNumbers = new Double[_source.Raster.NumberOfBands];
 
                 for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
-                    randomNumbers[bandIndex] = randomGenerator.NextDouble(median[bandIndex], standardDeviation[bandIndex]);
+                    randomNumbers[bandIndex] = randomGenerator.NextDouble(mean[bandIndex], standardDeviation[bandIndex]);
 
                 _clusterCenters[clusterIndex] = randomNumbers;
             }

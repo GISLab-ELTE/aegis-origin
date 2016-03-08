@@ -108,13 +108,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             // if the initial segments are specified, they should be copied to the result
             if (_initialSegments != null)
             {
-                _result = new SegmentCollection(_initialSegments);
+                _result = new SegmentCollection(_initialSegments, _distance.Statistics | _clusterDistance.Statistics);
                 _initialSegments = null;
                 _initialSegmentsProvided = true;
             }
             else
             {
-                _result = new SegmentCollection(Source.Raster, _distance.Statistics);
+                _result = new SegmentCollection(Source.Raster, _distance.Statistics | _clusterDistance.Statistics);
             }
         }
 
