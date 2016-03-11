@@ -132,7 +132,7 @@ namespace ELTE.AEGIS.Raster
             // modify the histogram values if they are already calculated
             if (_histogramValues[bandIndex] != null)
             {
-                _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfRows + columnIndex]]--;
+                _histogramValues[bandIndex][_values[bandIndex][rowIndex * NumberOfColumns + columnIndex]]--;
                 _histogramValues[bandIndex][(Byte)spectralValue]++;
             }
 
