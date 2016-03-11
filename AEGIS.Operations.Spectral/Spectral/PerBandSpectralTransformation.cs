@@ -109,11 +109,6 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void PrepareResult()
         {
-            Int32[] radiometricResolutions = new Int32[SourceBandIndices.Length];
-
-            for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
-                radiometricResolutions[bandIndex] = _source.Raster.RadiometricResolutions[SourceBandIndices[bandIndex]];
-
             _result = _source.Factory.CreateSpectralGeometry(_source,
                                                              PrepareRasterResult(_source.Raster.Format,
                                                                                  SourceBandIndices.Length,
