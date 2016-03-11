@@ -99,8 +99,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                     return 0;
             }
 
-            if (_validationGeometry.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex) == _source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex))
-                return 1;
+            if (_validationGeometry.Raster.GetValue(rowIndex, columnIndex, bandIndex) == _source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex))
+                return 255;
             else
                 return 0;
         }
@@ -117,6 +117,26 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
             return (Double)Compute(rowIndex, columnIndex, bandIndex);
+        }
+
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        protected override void PrepareResult()
+        {
+            _result = _source.Factory.CreateSpectralGeometry(_validationGeometry,
+                                                             PrepareRasterResult(RasterFormat.Integer,
+                                                                                 1,
+                                                                                 _validationGeometry.Raster.NumberOfRows,
+                                                                                 _validationGeometry.Raster.NumberOfColumns,
+                                                                                 8,
+                                                                                 _validationGeometry.Raster.Mapper),
+                                                             RasterPresentation.CreateGrayscalePresentation(), 
+                                                             null);
         }
 
         #endregion
