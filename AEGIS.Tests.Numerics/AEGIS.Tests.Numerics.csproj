@@ -68,6 +68,7 @@
     <Compile Include="LinearAlgebra\QRDecompositionTest.cs" />
     <Compile Include="MatrixTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Statistics\GaussianRandomGeneratorTest.cs" />
     <Compile Include="Statistics\MersenneTwisterRandomGeneratorTest.cs" />
   </ItemGroup>
   <ItemGroup>

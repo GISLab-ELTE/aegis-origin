@@ -11,7 +11,7 @@
 ///     or implied. See the License for the specific language governing
 ///     permissions and limitations under the License.
 /// </copyright>
-/// <author>István Tiboldi</author>
+/// <author>Roberto Giachetta</author>
 
 using System;
 
@@ -71,23 +71,50 @@ namespace ELTE.AEGIS.Numerics.Statistics
 
         #region Public Random methods
 
+        /// <summary>
+        /// Returns a non-negative random integer.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is greater than or equal to 0 and less than <see cref="Int32.MaxValue"/>.</returns>
         public override Int32 Next()
         {
             return (Int32)(Sample() * ((Int64)Int32.MaxValue + 1));
         }
-        
+
+        /// <summary>
+        /// Returns a random integer that is within a specified range.
+        /// </summary>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">The exclusive upper bound of the random number returned.</param>
+        /// <returns>
+        /// A 32-bit signed integer greater than or equal to <paramref name="minValue" /> and less than <paramref name="maxValue" />; that is, the range of return values includes <paramref name="minValue" /> but not <paramref name="maxValue" />. If <paramref name="minValue" /> equals <paramref name="maxValue" />, <paramref name="minValue" /> is returned.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">minValue is greater than maxValue.</exception>
         public override Int32 Next(Int32 minValue, Int32 maxValue)
         {
+            if (maxValue < minValue)
+                throw new ArgumentOutOfRangeException("maxValue", "minValue is greater than maxValue.");
+
+            if (maxValue == minValue)
+                return minValue;
+
             Int64 range = (Int64)(maxValue - minValue) / 2;
 
-            return (Int32)(Sample() * range + minValue + range);
+            return (Int32)(Sample() * range + minValue);
         }
 
+        /// <summary>
+        /// Fills the elements of a specified array of bytes with random numbers.
+        /// </summary>
+        /// <param name="buffer">An array of bytes to contain random numbers.</param>
+        /// <exception cref="System.ArgumentNullException">buffer is null.</exception>
         public override void NextBytes(Byte[] buffer)
         {
+            if (buffer == null)
+                throw new ArgumentNullException("buffer", "buffer is null.");
+
             for (Int32 i = 0; i < buffer.Length; i++)
             {
-                buffer[i] = (Byte)(Sample() * 128);
+                buffer[i] = (Byte)(Sample() * (Byte.MaxValue + 1));
             }
         }
 
@@ -103,7 +130,7 @@ namespace ELTE.AEGIS.Numerics.Statistics
         /// <returns>The generated number.</returns>
         public Double NextDouble(Double median, Double standardDeviation)
         {
-            return median + standardDeviation * NextDouble();
+            return median + standardDeviation * InternalSample();
         }
 
         /// <summary>
@@ -113,14 +140,37 @@ namespace ELTE.AEGIS.Numerics.Statistics
         /// <returns>The generated number.</returns>
         public Double NextDouble(Double standardDeviation)
         {
-            return standardDeviation * NextDouble();
+            return standardDeviation * InternalSample();
         }
 
         #endregion
 
         #region Protected Random methods
 
-        protected override double Sample()
+        /// <summary>
+        /// Returns a random floating-point number between 0.0 and 1.0.
+        /// </summary>
+        /// <returns>A double-precision floating point number that is greater than or equal to 0.0, and less than 1.0.</returns>
+        protected override Double Sample()
+        {
+            Double sample;
+            do
+            {
+                sample = (InternalSample() + Math.PI / 2) / Math.PI;
+            } while (sample < 0 || sample >= 1);
+
+            return sample;
+        }
+
+        #endregion
+
+        #region Private methods
+        
+        /// <summary>
+        /// Returns a random floating-point number between -1.0 and 1.0.
+        /// </summary>
+        /// <returns>A double-precision floating point number that is greater than or equal to -1.0, and less than 1.0.</returns>
+        private Double InternalSample()
         {
             if (_available)
             {
@@ -145,6 +195,7 @@ namespace ELTE.AEGIS.Numerics.Statistics
 
             return u * s;
         }
+
 
         #endregion
 
