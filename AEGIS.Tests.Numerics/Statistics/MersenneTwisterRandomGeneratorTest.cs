@@ -27,7 +27,7 @@ namespace ELTE.AEGIS.Tests.Numerics.Statistics
     {
         #region Private fields
 
-        private MersenneTwisterRandomGenerator _mtrgDouble;
+        private MersenneTwisterRandomGenerator _generator;
         private Int32 _numberOfGeneratedNumbers;
         private Int32 _numberOfIntervals;
         private Double _allowedError;
@@ -42,7 +42,7 @@ namespace ELTE.AEGIS.Tests.Numerics.Statistics
         [SetUp]
         public void Setup()
         {
-            _mtrgDouble = new MersenneTwisterRandomGenerator(5);
+            _generator = new MersenneTwisterRandomGenerator(5);
             _numberOfGeneratedNumbers = 1000000;
             _numberOfIntervals = 100;
             _allowedError = 0.03;
@@ -58,20 +58,20 @@ namespace ELTE.AEGIS.Tests.Numerics.Statistics
         [Test]
         public void MersenneTwisterRandomGeneratorNextDoubleTest()
         {
-            Int64[] Counter = new Int64[_numberOfIntervals];
-            Int32 NumbersPerInterval = _numberOfGeneratedNumbers / _numberOfIntervals;        
-            Int32 LowerBound = (Int32)(NumbersPerInterval * (1 - _allowedError));
-            Int32 UpperBound = (Int32)(NumbersPerInterval * (1 + _allowedError));
+            Int64[] counter = new Int64[_numberOfIntervals];
+            Int32 numbersPerInterval = _numberOfGeneratedNumbers / _numberOfIntervals;        
+            Int32 lowerBound = (Int32)(numbersPerInterval * (1 - _allowedError));
+            Int32 upperBound = (Int32)(numbersPerInterval * (1 + _allowedError));
 
             for (Int32 i = 0; i < _numberOfGeneratedNumbers; ++i)
             {
-                Double ActualGeneratedNumber = _mtrgDouble.NextDouble();
+                Double actualGeneratedNumber = _generator.NextDouble();
 
                 for (Int32 j = 1; j <= _numberOfIntervals; ++j)
                 {
-                    if (ActualGeneratedNumber < (Double)j / _numberOfIntervals)
+                    if (actualGeneratedNumber < (Double)j / _numberOfIntervals)
                     {
-                        ++Counter[j - 1];
+                        ++counter[j - 1];
                         break;
                     }                
                 }
@@ -79,7 +79,7 @@ namespace ELTE.AEGIS.Tests.Numerics.Statistics
 
             for (Int32 i = 0; i < _numberOfIntervals; ++i)
             {
-                Assert.IsTrue(Counter[i] >= LowerBound && Counter[i] <= UpperBound);
+                Assert.IsTrue(counter[i] >= lowerBound && counter[i] <= upperBound);
             }
         }
 
