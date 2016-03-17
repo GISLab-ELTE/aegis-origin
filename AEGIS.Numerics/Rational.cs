@@ -227,7 +227,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The rational equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Rational(Int32 value)
+        public static explicit operator Rational(Int32 value)
         {
             return new Rational(value);
         }
@@ -237,7 +237,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The rational equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Rational(Single value)
+        public static explicit operator Rational(Single value)
         {
             return new Rational((Int32)(value * (1 << 20)), (1 << 20));
         }
@@ -247,7 +247,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The rational equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Rational(Double value)
+        public static explicit operator Rational(Double value)
         {
             return new Rational((Int32)(value * (1 << 20)), (1 << 20));
         }
@@ -257,7 +257,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="rational">The value.</param>
         /// <returns>The 32 bit signed integer equivalent of <paramref name="rational" />.</returns>
-        static public explicit operator Int32(Rational value)
+        public static explicit operator Int32(Rational value)
         {
             return value._numerator / value._denominator;
         }
@@ -267,7 +267,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The 64 bit signed integer equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Int64(Rational value)
+        public static explicit operator Int64(Rational value)
         {
             return value._numerator / value._denominator;
         }
@@ -277,7 +277,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The single precision floating point number equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Single(Rational value)
+        public static explicit operator Single(Rational value)
         {
             return (Single)value._numerator / value._denominator;
         }
@@ -287,7 +287,7 @@ namespace ELTE.AEGIS.Numerics
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The double precision floating point number equivalent of <paramref name="value" />.</returns>
-        static public explicit operator Double(Rational value)
+        public static explicit operator Double(Rational value)
         {
             return (Double)value._numerator / value._denominator;
         }
