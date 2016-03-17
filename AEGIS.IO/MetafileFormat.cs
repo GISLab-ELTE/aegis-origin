@@ -110,10 +110,16 @@ namespace ELTE.AEGIS.IO
         /// <returns><c>true</c> if the file name matches the format; otherwise, <c>false</c>.</returns>
         public Boolean IsMatchingName(String fileName)
         {
+            Func<String, String> wildcardToRegex = x => "^" + Regex.Escape(x)
+                                                                   .Replace(@"\*", ".*")
+                                                                   .Replace(@"\?", ".")
+                                                                   + "$";
+
+
             if (HasDefaultFileName)
                 return fileName.Contains(DefaultFileName);
             if (HasDefaultNamingPattern)
-                return Regex.IsMatch(fileName, DefaultNamingPattern);
+                return Regex.IsMatch(fileName, wildcardToRegex(DefaultNamingPattern));
 
             return fileName.EndsWith(DefaultExtension);
         }
