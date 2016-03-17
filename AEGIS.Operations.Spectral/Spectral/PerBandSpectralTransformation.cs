@@ -109,6 +109,14 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void PrepareResult()
         {
+            RasterPresentation presentation = null;
+            if (SourceBandIndices.SequenceEqual(Enumerable.Range(0, _source.Raster.NumberOfBands)))
+                presentation = _source.Presentation;
+            else if (SourceBandIndices.Length == 3)
+                presentation = RasterPresentation.CreateTrueColorPresentation();
+            else
+                presentation = RasterPresentation.CreateGrayscalePresentation();
+
             _result = _source.Factory.CreateSpectralGeometry(_source,
                                                              PrepareRasterResult(_source.Raster.Format,
                                                                                  SourceBandIndices.Length,
@@ -116,7 +124,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                                  _source.Raster.NumberOfColumns,
                                                                                  SourceBandIndices.Select(index => _source.Raster.RadiometricResolutions[index]).ToArray(),
                                                                                  _source.Raster.Mapper),
-                                                             _source.Presentation,
+                                                             presentation,
                                                              _source.Imaging);
         }
 
