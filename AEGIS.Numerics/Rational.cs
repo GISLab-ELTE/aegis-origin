@@ -236,20 +236,35 @@ namespace ELTE.AEGIS.Numerics
         /// Converts the specified value to a rational number.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>The rational equivalent of <paramref name="value" />.</returns>
+        /// <returns>
+        /// The rational equivalent of <paramref name="value" />.
+        /// </returns>
+        /// <exception cref="System.ArithmeticException">The value is too big to be stored as Rational</exception>
         public static explicit operator Rational(Single value)
         {
-            return new Rational((Int32)(value * (1 << 20)), (1 << 20));
+            return (Rational) (Double) value;
         }
 
         /// <summary>
         /// Converts the specified value to a rational number.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <returns>The rational equivalent of <paramref name="value" />.</returns>
+        /// <returns>
+        /// The rational equivalent of <paramref name="value" />.
+        /// </returns>
+        /// <exception cref="System.ArithmeticException">The value is too big to be stored as Rational</exception>
         public static explicit operator Rational(Double value)
         {
-            return new Rational((Int32)(value * (1 << 20)), (1 << 20));
+            if (value > Int32.MaxValue)
+                throw new OverflowException("The value is too big to be stored as Rational");
+
+            Int32 accuracy = 20;
+            if (value >= (1 << 11))
+                accuracy = 10;
+            if (value >= (1 << 21))
+                accuracy = 0;
+
+            return new Rational((Int32)(value * (1 << accuracy)), (1 << accuracy));
         }
 
         /// <summary>
