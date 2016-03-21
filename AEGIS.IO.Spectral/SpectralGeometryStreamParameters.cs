@@ -95,6 +95,7 @@ namespace ELTE.AEGIS.IO
         private static GeometryStreamParameter _columnDimension;
         private static GeometryStreamParameter _geometryFactory;
         private static GeometryStreamParameter _geometryFactoryType;
+        private static GeometryStreamParameter _includeMetadata;
         private static GeometryStreamParameter _layout;
         private static GeometryStreamParameter _numberOfColumns;
         private static GeometryStreamParameter _numberOfRows;
@@ -212,6 +213,19 @@ namespace ELTE.AEGIS.IO
                     GeometryStreamParameter.CreateOptionalParameter<Type>("AEGIS::620001", "Geometry factory type",
                                                                           "The type of the geometry factory used to produce the instances read from the specified format. If geometry factory type is specified, an instance of this type will be used with the reference system provided by the source.",
                                                                           Conditions.Implements<IGeometryFactory>()));
+            }
+        }
+
+        /// <summary>
+        /// Image layout.
+        /// </summary>
+        public static GeometryStreamParameter IncludeMetadata
+        {
+            get
+            {
+                return _includeMetadata ?? (_includeMetadata =
+                    GeometryStreamParameter.CreateOptionalParameter<Boolean>("AEGIS::000000", "Include metadata",
+                                                                             "A value indicating whether the file metadata should be included.", true));
             }
         }
 

@@ -27,8 +27,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
     {
         #region Private fields
 
+        /// <summary>
+        /// The maximum number of bands. This field is constant.
+        /// </summary>
         private const Int32 MaxBandCount = 50;
+
+        /// <summary>
+        /// The list of file paths.
+        /// </summary>
         private List<String> _filePaths;
+        
+        /// <summary>
+        /// The GeoTIFF metafile reader.
+        /// </summary>
         private GeoTiffMetafileReader _metafileReader;
 
         #endregion
@@ -58,6 +69,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (basePath == null)
                 throw new ArgumentNullException("basePath", "The base path is null.");
 
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
             FileSystem fileSystem = FileSystem.GetFileSystemForPath(basePath);
             
             _filePaths = new List<String>();
@@ -65,11 +78,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // the base path is a directory
             if (fileSystem.IsDirectory(basePath))
             {
-                try
+                if (includeMetadata)
                 {
                     _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(basePath, GeoTiffMetafilePathOption.IsDirectoryPath);
                 }
-                catch { }
 
                 if (_metafileReader != null)
                 {
@@ -77,7 +89,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 }
                 else
                 {
-                    _filePaths = fileSystem.GetFiles(basePath, "*.tif", false).ToList();
+                    _filePaths = fileSystem.GetFiles(basePath, "*.tif", false).Union(fileSystem.GetFiles(basePath, "*.TIF", false)).ToList();
                 }
             }
             else
@@ -86,11 +98,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 String fileNameBase = fileSystem.GetFileNameWithoutExtension(basePath);
                 String extension = fileSystem.GetExtension(basePath);
 
-                try
+                if (includeMetadata)
                 {
                     _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(fileSystem.Combine(directoryPath, fileNameBase + "*"), GeoTiffMetafilePathOption.IsSearchPattern);
                 }
-                catch { }
 
                 if (_metafileReader != null)
                 {
@@ -117,16 +128,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             _filePaths = filePaths.Where(filePath => filePath.ToLower().EndsWith(".tif")).ToList();
 
-            foreach (String path in filePaths.Where(filePath => !filePath.ToLower().EndsWith(".tif")))
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
+            if (includeMetadata)
             {
-                try
+                foreach (String path in filePaths.Where(filePath => !filePath.ToLower().EndsWith(".tif")))
                 {
                     _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsMetafilePath);
-                }
-                catch { }
 
-                if (_metafileReader != null)
-                    break;
+                    if (_metafileReader != null)
+                        break;
+                }
             }
         }
 
@@ -158,11 +170,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // read files
             List<ISpectralPolygon> polygons = new List<ISpectralPolygon>();
 
+            Dictionary<GeometryStreamParameter, Object> parameters = new Dictionary<GeometryStreamParameter, Object>(Parameters);
+            parameters[SpectralGeometryStreamParameters.IncludeMetadata] = false;
+
             foreach (String filePath in _filePaths)
             {
                 try
                 {
-                    using (GeoTiffReader reader = new GeoTiffReader(filePath, Parameters))
+                    using (GeoTiffReader reader = new GeoTiffReader(filePath, parameters))
                     {
                         polygons.Add(reader.Read() as ISpectralPolygon);
                     }

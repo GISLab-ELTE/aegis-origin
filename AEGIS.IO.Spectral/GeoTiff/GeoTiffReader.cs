@@ -106,11 +106,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public GeoTiffReader(String path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
         {
-            try
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
+            if (includeMetadata)
             {
                 _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
             }
-            catch { }
         }
 
         /// <summary>
@@ -135,11 +136,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public GeoTiffReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
-            try
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
+            if (includeMetadata)
             {
                 _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
             }
-            catch { }
         }
 
         /// <summary>
@@ -160,11 +162,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public GeoTiffReader(Uri path)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, null)
         {
-            try
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
+            if (includeMetadata)
             {
                 _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
             }
-            catch { }
         }
 
         /// <summary>
@@ -182,18 +185,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// The parameter value does not satisfy the conditions of the parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">
-        /// Exception occured during stream opening.
+        /// Exception occurred during stream opening.
         /// or
-        /// Exception occured during stream reading.
+        /// Exception occurred during stream reading.
         /// </exception>
         public GeoTiffReader(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GeoTiff, parameters)
         {
-            try
+            Boolean includeMetadata = ResolveParameter<Boolean>(SpectralGeometryStreamParameters.IncludeMetadata);
+
+            if (includeMetadata)
             {
                 _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(path, GeoTiffMetafilePathOption.IsGeoTiffFilePath);
             }
-            catch { }
         }
 
         /// <summary>
@@ -416,7 +420,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // compute with model tie points
             if (modelTiePointsArray != null && (modelTiePointsArray.Length > 6 || (modelTiePointsArray.Length == 6 && modelPixelScaleArray.Length == 3)))
             {
-                if (modelTiePointsArray.Length > 6) // transformation is specified by tiepoints
+                if (modelTiePointsArray.Length > 6) // transformation is specified by tie points
                 {
                     RasterCoordinate[] coordinates = new RasterCoordinate[modelTiePointsArray.Length / 6];
 
@@ -427,7 +431,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                     return RasterMapper.FromCoordinates(mode, coordinates);
                 }
-                else // transformation is specified by single tiepoint and scale
+                else // transformation is specified by single tie point and scale
                 {
                     Coordinate rasterSpaceCoordinate = new Coordinate(modelTiePointsArray[0], modelTiePointsArray[1], modelTiePointsArray[2]);
                     Coordinate modelSpaceCoordinate = new Coordinate(modelTiePointsArray[3], modelTiePointsArray[4], modelTiePointsArray[5]);
@@ -480,10 +484,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
                             case ReferenceSystemType.Geographic:
                                 return ComputeGeographicCoordinateReferenceSystem();
                             case ReferenceSystemType.Geocentric:
-                                // currenty not used
+                                // currently not used
                                 return null;
                             case ReferenceSystemType.UserDefined:
-                                // currenty not used
+                                // currently not used
                                 return null;
                         }
                     }
@@ -509,14 +513,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
         #region Private methods
 
         /// <summary>
-        /// Computes the geo keys for the current raster.
+        /// Computes the geokeys for the current raster.
         /// </summary>
         /// <exception cref="System.IO.InvalidDataException">Geo key data is in an invalid format.</exception>
         private void ComputeGeoKeys()
         {
             _currentGeoKeys = new Dictionary<Int16, Object>();
 
-            // there are no geo keys in the file
+            // there are no geokeys in the file
             if (!_imageFileDirectories[_currentImageIndex].ContainsKey(34735))
             {
                 return;
