@@ -18,6 +18,7 @@ using ELTE.AEGIS.IO.Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
@@ -53,7 +54,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="device">The imaging device.</param>
         /// <param name="path">The path of the metafile.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The path is null.
         /// or
@@ -87,7 +88,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="device">The imaging device.</param>
         /// <param name="path">The path of the metafile.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The path is null.
         /// or
@@ -125,7 +126,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case "Landsat":
                     return new LandsatMetafileReader(path);
                 default:
-                    throw new NotSupportedException("The specified device is not supported.");
+                    return null;
             }
         }
 
@@ -134,7 +135,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="stream">The stream of the metafile.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.NotSupportedException">The specified device is not supported.</exception>
         public static GeoTiffMetafileReader CreateReader(ImagingDevice device, Stream stream)
@@ -149,7 +150,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case "Landsat":
                     return new LandsatMetafileReader(stream);
                 default:
-                    throw new NotSupportedException("The specified device is not supported.");
+                    return null;
             }
         }
 
@@ -161,7 +162,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Creates a metafile reader for the specified metafile path.
         /// </summary>
         /// <param name="path">The path of the metafile.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -189,7 +190,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="option">The path option.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -212,141 +213,26 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (path == null)
                 throw new ArgumentNullException("path", "The path is null.");
 
-            // try every possible device
-
-            FileSystem fileSystem = FileSystem.GetFileSystemForPath(path);
-            String directory = fileSystem.GetDirectory(path);
-            String[] filePaths;
-
             switch (option)
             {
                 case GeoTiffMetafilePathOption.IsMetafilePath:
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        try
-                        {
-                            return Activator.CreateInstance(_readers[format], path) as GeoTiffMetafileReader;
-                        }
-                        catch { }
-                    }
-                    break;
+                    return GetReader(path);
+                case GeoTiffMetafilePathOption.IsDirectoryPath:
+                    return GetReaderInDirectory(path);
                 case GeoTiffMetafilePathOption.IsGeoTiffFilePath:
-
-                    // search the extension
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        filePaths = new String[]
-                        {
-                            directory + fileSystem.DirectorySeparator + fileSystem.GetFileNameWithoutExtension(path) + "." + format.DefaultExtension,
-                            directory + fileSystem.DirectorySeparator + fileSystem.GetFileNameWithoutExtension(path) + "." + format.DefaultExtension.ToLower(),
-                            directory + fileSystem.DirectorySeparator + fileSystem.GetFileNameWithoutExtension(path) + "." + format.DefaultExtension.ToUpper(),
-                        };
-
-                        foreach (String filePath in filePaths)
-                        {
-                            if (!fileSystem.Exists(filePath))
-                                continue;
-
-                            try
-                            {
-                                return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-
-                    // search default name
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        if (!format.HasDefaultFileName)
-                            continue;
-
-                        if (!fileSystem.Exists(directory + fileSystem.DirectorySeparator + format.DefaultFileName))
-                            continue;
-
-                        try
-                        {
-                            return Activator.CreateInstance(_readers[format], directory + fileSystem.DirectorySeparator + format.DefaultFileName) as GeoTiffMetafileReader;
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    // search default pattern
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        if (!format.HasDefaultNamingPattern)
-                            continue;
-
-                        filePaths = fileSystem.GetFiles(directory, format.DefaultNamingPattern, false);
-
-                        foreach (String filePath in filePaths)
-                        {
-                            try
-                            {
-                                return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-
-
-                    break;
+                    return GetReaderFromGeoTiffFileName(path);
                 case GeoTiffMetafilePathOption.IsSearchPattern:
-                    String pattern = path.Replace(directory + fileSystem.DirectorySeparator, String.Empty);
-                    filePaths = fileSystem.GetFiles(directory, pattern, false);
-
-                    // check for matching paths
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        foreach (String filePath in filePaths)
-                        {
-                            if (!format.IsMatchingName(filePath))
-                                continue;
-
-                            try
-                            {
-                                return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-
-                    // check for all paths
-                    foreach (MetafileFormat format in _readers.Keys)
-                    {
-                        foreach (String filePath in filePaths)
-                        {
-                            if (!fileSystem.Exists(filePath))
-                                continue;
-
-                            try
-                            {
-                                return Activator.CreateInstance(_readers[format], filePath) as GeoTiffMetafileReader;
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-                    break;
+                    return GetReaderFromSearchPattern(path);
             }
 
-            throw new NotSupportedException("The metafile format is not supported.");
+            return null;
         }
 
         /// <summary>
         /// Creates a metafile reader for the specified metafile path.
         /// </summary>
         /// <param name="path">The path of the metafile.</param>
-        /// <returns>The produced metafile reader.</returns>
+        /// <returns>The valid metafile reader for the path if any; otherwise, <c>null</c>.</returns>
         /// <exception cref="System.ArgumentNullException">The path is null.</exception>
         /// <exception cref="System.ArgumentException">
         /// The path is empty.
@@ -395,6 +281,163 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public static GeoTiffMetafileReader CreateReader(Uri path, GeoTiffMetafilePathOption option)
         {
             return CreateReader(path.IsAbsoluteUri ? path.AbsolutePath : path.OriginalString, option);
+        }
+
+        #endregion
+
+        #region Private static methods
+
+        /// <summary>
+        /// Returns the metafile reader located at the specified path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="format">The format of the reader.</param>
+        /// <returns>The metafile reader located at the specified path if available; otherwise, <c>null</c>.</returns>
+        private static GeoTiffMetafileReader GetReader(String path, MetafileFormat format)
+        {
+            try
+            {
+                return Activator.CreateInstance(_readers[format], path) as GeoTiffMetafileReader;
+            }
+            catch { }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the metafile reader located at the specified path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>The metafile reader located at the specified path if available; otherwise, <c>null</c>.</returns>
+        private static GeoTiffMetafileReader GetReader(String path)
+        {
+            GeoTiffMetafileReader reader = null;
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                if ((reader = GetReader(path, format)) != null)
+                    return reader;
+            }
+
+            return reader;
+        }
+
+        /// <summary>
+        /// Returns the metafile reader located at the specified directory.
+        /// </summary>
+        /// <param name="path">The path of the directory.</param>
+        /// <returns>The metafile reader located at the specified path if available; otherwise, <c>null</c>.</returns>
+        private static GeoTiffMetafileReader GetReaderInDirectory(String path)
+        {
+            GeoTiffMetafileReader reader = null;
+            FileSystem fileSystem = FileSystem.GetFileSystemForPath(path);
+
+            // try the default file name
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                if (format.HasDefaultFileName)
+                {
+                    String filePath = fileSystem.Combine(path, format.DefaultFileName);
+                    
+                    if (fileSystem.Exists(filePath) && (reader = GetReader(filePath, format)) != null)
+                        return reader;
+                }
+            }
+
+            // try the default naming pattern and extension
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                if (format.HasDefaultNamingPattern)
+                {
+                    foreach (String filePath in fileSystem.GetFiles(path, format.DefaultNamingPattern, false))
+                    {
+                        if ((reader = GetReader(filePath, format)) != null)
+                            return reader;
+                    }
+                }
+            }
+
+            // try the default extension
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                if (format.HasDefaultNamingPattern)
+                {
+                    foreach (String filePath in fileSystem.GetFiles(path, format.DefaultExtension.ToLower(), false).
+                                                Concat(fileSystem.GetFiles(path, format.DefaultExtension.ToUpper(), false)))
+                    {
+                        if ((reader = GetReader(filePath, format)) != null)
+                            return reader;
+                    }
+                }
+            }
+            
+            return reader;
+        }
+
+        /// <summary>
+        /// Returns the metafile reader located based on the GeoTIFF path.
+        /// </summary>
+        /// <param name="path">The path of the GeoTIFF file.</param>
+        /// <returns>The metafile reader located at the specified path if available; otherwise, <c>null</c>.</returns>
+        private static GeoTiffMetafileReader GetReaderFromGeoTiffFileName(String path)
+        {
+            GeoTiffMetafileReader reader = null;
+            FileSystem fileSystem = FileSystem.GetFileSystemForPath(path);
+            String directory = fileSystem.GetDirectory(path);
+
+            // search the extension
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                String[] filePaths = new String[]
+                {
+                    fileSystem.Combine(directory, fileSystem.GetFileNameWithoutExtension(path) + "." + format.DefaultExtension.ToLower()),
+                    fileSystem.Combine(directory, fileSystem.GetFileNameWithoutExtension(path) + "." + format.DefaultExtension.ToUpper())
+                };
+
+                foreach (String filePath in filePaths)
+                {
+                    if (fileSystem.Exists(filePath) && (reader = GetReader(filePath, format)) != null)
+                        return reader;
+                }
+            }
+
+            // search the directory
+            return GetReaderInDirectory(directory);
+        }
+
+        /// <summary>
+        /// Returns the metafile reader located based on the naming pattern.
+        /// </summary>
+        /// <param name="path">The path including the naming pattern.</param>
+        /// <returns>The metafile reader located at the specified path if available; otherwise, <c>null</c>.</returns>
+        private static GeoTiffMetafileReader GetReaderFromSearchPattern(String path)
+        {
+            GeoTiffMetafileReader reader = null;
+            FileSystem fileSystem = FileSystem.GetFileSystemForPath(path);
+            String fileNamePattern = fileSystem.GetFileName(path);
+            String directory = fileSystem.GetDirectory(path);
+            String[] filePaths = fileSystem.GetFiles(directory, fileNamePattern, false);
+
+            // check for matching paths
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                foreach (String filePath in filePaths)
+                {
+                    if (format.IsMatchingName(filePath) && (reader = GetReader(filePath, format)) != null)
+                        return reader;
+                }
+            }
+
+            // check for all paths
+            foreach (MetafileFormat format in _readers.Keys)
+            {
+                foreach (String filePath in filePaths)
+                {
+                    if ((reader = GetReader(filePath, format)) != null)
+                        return reader;
+                }
+            }
+
+            return reader;
         }
 
         #endregion
