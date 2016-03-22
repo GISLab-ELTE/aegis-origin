@@ -313,7 +313,7 @@ namespace ELTE.AEGIS.IO.Storage
             }
             catch (UnauthorizedAccessException ex)
             {
-                if (Directory.Exists(path))
+                if (!Directory.Exists(path))
                     throw new ArgumentException(MessagePathIsDirectory, "path", ex);
 
                 if (mode == FileMode.Create || mode == FileMode.CreateNew)
