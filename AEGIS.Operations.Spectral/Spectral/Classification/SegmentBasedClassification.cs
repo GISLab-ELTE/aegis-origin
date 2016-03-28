@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// </summary>
         protected override void PrepareResult()
         {
-            Int32 radiometricResolution = _segmentCollection.Count > 65536 ? 32 : (_segmentCollection.Count > 256 ? 16 : 8);
+            Int32 radiometricResolution = _segmentCollection.Count > Int16.MaxValue ? 32 : (_segmentCollection.Count > Byte.MaxValue ? 16 : 8);
 
             _result = Source.Factory.CreateSpectralGeometry(_source,
                                                       PrepareRasterResult(RasterFormat.Integer,
