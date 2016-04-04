@@ -138,13 +138,26 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Returns the index of the smallest item within the collection specified by the selector.
+        /// Returns the index of the largest item within the collection.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The index of the largest item within the collection.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        /// <exception cref="ArgumentException">The collection is empty.</exception>
+        public static Int32 MaxIndex<T>(this IEnumerable<T> collection) where T : IComparable<T>
+        {
+            return MaxIndex(collection, value => value);
+        }
+
+        /// <summary>
+        /// Returns the index of the largest item within the collection specified by the selector.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="selector">The selector function.</param>
-        /// <returns>The index of the smallest item within the collection specified by the selector</returns>
+        /// <returns>The index of the largest item within the collection specified by the selector.</returns>
         /// <exception cref="ArgumentNullException">The collection is null.</exception>
         /// <exception cref="ArgumentException">The collection is empty.</exception>
         public static Int32 MaxIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
@@ -163,7 +176,7 @@ namespace ELTE.AEGIS
             while (enumerator.MoveNext())
             {
                 TResult currentResult = selector(enumerator.Current);
-                if (max.CompareTo(currentResult) > 0)
+                if (max.CompareTo(currentResult) < 0)
                 {
                     max = currentResult;
                     maxIndex = index;
@@ -175,13 +188,26 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
+        /// Returns the index of the smallest item within the collection.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The index of the smallest item within the collection.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        /// <exception cref="ArgumentException">The collection is empty.</exception>
+        public static Int32 MinIndex<T>(this IEnumerable<T> collection) where T : IComparable<T>
+        {
+            return MinIndex(collection, value => value);
+        }
+
+        /// <summary>
         /// Returns the index of the smallest item within the collection specified by the selector.
         /// </summary>
         /// <typeparam name="TSource">The type of the source.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="selector">The selector function.</param>
-        /// <returns>The index of the smallest item within the collection specified by the selector</returns>
+        /// <returns>The index of the smallest item within the collection specified by the selector.</returns>
         /// <exception cref="ArgumentNullException">The collection is null.</exception>
         /// <exception cref="ArgumentException">The collection is empty.</exception>
         public static Int32 MinIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
@@ -200,7 +226,7 @@ namespace ELTE.AEGIS
             while (enumerator.MoveNext())
             {
                 TResult currentResult = selector(enumerator.Current);
-                if (min.CompareTo(currentResult) < 0)
+                if (min.CompareTo(currentResult) > 0)
                 {
                     min = currentResult;
                     minIndex = index;
@@ -209,6 +235,92 @@ namespace ELTE.AEGIS
             }
 
             return minIndex;
+        }
+
+        /// <summary>
+        /// Returns the largest item within the collection or the default value if the collection is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The largest item within the collection or the default value if the collection is empty.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        public static T MaxOrDefault<T>(this IEnumerable<T> collection) where T : IComparable<T>
+        {
+            return MaxOrDefault(collection, value => value);
+        }
+
+        /// <summary>
+        /// Returns the largest item within the collection specified by the selector or the default value if the collection is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The largest item within the collection specified by the selector or the default value if the collection is empty.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            IEnumerator<TSource> enumerator = collection.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                return default(TResult);
+
+            TResult max = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                TResult currentResult = selector(enumerator.Current);
+                if (max.CompareTo(currentResult) < 0)
+                {
+                    max = currentResult;
+                }
+            }
+
+            return max;
+        }
+
+        /// <summary>
+        /// Returns the smallest item within the collection or the default value if the collection is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The smallest item within the collection or the default value if the collection is empty.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        public static T MinOrDefault<T>(this IEnumerable<T> collection) where T : IComparable<T>
+        {
+            return MinOrDefault(collection, value => value);
+        }
+
+        /// <summary>
+        /// Returns the smallest item within the collection specified by the selector or the default value if the collection is empty.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the collection.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <returns>The smallest item within the collection specified by the selector or the default value if the collection is empty.</returns>
+        /// <exception cref="ArgumentNullException">The collection is null.</exception>
+        public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection", "The collection is null.");
+
+            IEnumerator<TSource> enumerator = collection.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                return default(TResult);
+            
+            TResult min = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                TResult currentResult = selector(enumerator.Current);
+                if (min.CompareTo(currentResult) > 0)
+                {
+                    min = currentResult;
+                }
+            }
+
+            return min;
         }
 
         #endregion
