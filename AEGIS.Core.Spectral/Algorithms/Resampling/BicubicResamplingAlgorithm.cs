@@ -51,6 +51,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public override Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
+            if (rowIndex < -2 || rowIndex > _raster.NumberOfRows + 2 ||
+                columnIndex < -2 || columnIndex > _raster.NumberOfColumns)
+                return 0;
+
             Int32 columnFloor = (Int32)Math.Floor(columnIndex);
             Int32 rowFloor = (Int32)Math.Floor(rowIndex);
 
@@ -81,11 +85,12 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         public override Double[] ComputeFloat(Double rowIndex, Double columnIndex)
         {
-            Double[] results = new Double[_raster.NumberOfBands];
+            Double[] values = new Double[_raster.NumberOfBands];
+            
             for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
-                results[bandIndex] = ComputeFloat(rowIndex, columnIndex, bandIndex);
+                values[bandIndex] = ComputeFloat(rowIndex, columnIndex, bandIndex);
 
-            return results;
+            return values;
         }
 
         #endregion

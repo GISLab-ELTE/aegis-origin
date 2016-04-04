@@ -46,6 +46,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public override UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return 0;
+
             return _raster.GetNearestValue((Int32)Math.Floor(rowIndex + 0.5), (Int32)Math.Floor(columnIndex + 0.5), bandIndex);
         }
 
@@ -57,6 +61,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         public override UInt32[] Compute(Double rowIndex, Double columnIndex)
         {
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return new UInt32[_raster.NumberOfBands];
+
             return _raster.GetNearestValues((Int32)Math.Floor(rowIndex + 0.5), (Int32)Math.Floor(columnIndex + 0.5));
         }
 
@@ -69,6 +77,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public override Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return 0;
+
             return _raster.GetNearestFloatValue((Int32)Math.Floor(rowIndex + 0.5), (Int32)Math.Floor(columnIndex + 0.5), bandIndex);
         }
 
@@ -80,6 +92,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         public override Double[] ComputeFloat(Double rowIndex, Double columnIndex)
         {
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return new Double[_raster.NumberOfBands];
+
             return _raster.GetNearestFloatValues((Int32)Math.Floor(rowIndex + 0.5), (Int32)Math.Floor(columnIndex + 0.5));
         }
 

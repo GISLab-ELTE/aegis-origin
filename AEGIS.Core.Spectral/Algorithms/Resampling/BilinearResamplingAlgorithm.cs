@@ -15,6 +15,7 @@
 
 using ELTE.AEGIS.Algorithms;
 using System;
+using System.Linq;
 
 namespace ELTE.AEGIS.Algorithms.Resampling
 {
@@ -47,6 +48,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public override Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return 0;
+
             Int32 columnFloor = (Int32)Math.Floor(columnIndex);
             Int32 rowFloor = (Int32)Math.Floor(rowIndex);
 
@@ -64,21 +69,26 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         public override Double[] ComputeFloat(Double rowIndex, Double columnIndex)
         {
+            Double[] values = new Double[_raster.NumberOfBands];
+
+            if (rowIndex < -1 || rowIndex > _raster.NumberOfRows ||
+                columnIndex < -1 || columnIndex > _raster.NumberOfColumns)
+                return values;
+
             Int32 columnFloor = (Int32)Math.Floor(columnIndex);
             Int32 rowFloor = (Int32)Math.Floor(rowIndex);
 
             Double firstColumnValue, secondColumnValue;
 
-            Double[] result = new Double[_raster.NumberOfBands];
             for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
             {
                 firstColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor, bandIndex);
                 secondColumnValue = (1 - rowIndex + rowFloor) * _raster.GetBoxedFloatValue(rowFloor, columnFloor + 1, bandIndex) + (rowIndex - rowFloor) * _raster.GetBoxedFloatValue(rowFloor + 1, columnFloor + 1, bandIndex);
 
-                result[bandIndex] = (1 - columnIndex + columnFloor) * firstColumnValue + (columnIndex - columnFloor) * secondColumnValue;
+                values[bandIndex] = (1 - columnIndex + columnFloor) * firstColumnValue + (columnIndex - columnFloor) * secondColumnValue;
             }
 
-            return result;
+            return values;
         }
 
         #endregion

@@ -75,6 +75,10 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public override Double ComputeFloat(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
+            if (rowIndex < -Radius || rowIndex > _raster.NumberOfRows + Radius ||
+                columnIndex < -Radius || columnIndex > _raster.NumberOfColumns + Radius)
+                return 0;
+
             Double value = 0;
             Double weight = 0;
 
@@ -100,6 +104,11 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         public override Double[] ComputeFloat(Double rowIndex, Double columnIndex)
         {
             Double[] values = new Double[_raster.NumberOfBands];
+
+            if (rowIndex < -Radius || rowIndex > _raster.NumberOfRows + Radius ||
+                columnIndex < -Radius || columnIndex > _raster.NumberOfColumns + Radius)
+                return values;
+
             Double weight = 0;
 
             for (Int32 i = -Radius + 1; i <= Radius; i++)
