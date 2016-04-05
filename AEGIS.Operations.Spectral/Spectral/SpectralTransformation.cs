@@ -300,7 +300,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 { 
                     // read the specified pixel
                     UInt32[] currentValues = _operation.Compute(rowIndex, columnIndex);
-                    Array.Copy(currentValues, bandIndex, values, columnIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
+                    Array.Copy(currentValues, bandIndex, values, currentIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
 
                     // change indices for the next pixel
                     bandIndex = 0;
@@ -465,7 +465,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 {
                     // read the specified pixel
                     Double[] currentValues = _operation.ComputeFloat(rowIndex, columnIndex);
-                    Array.Copy(currentValues, bandIndex, values, columnIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
+                    Array.Copy(currentValues, bandIndex, values, currentIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
 
                     // change indices for the next pixel
                     bandIndex = 0;
