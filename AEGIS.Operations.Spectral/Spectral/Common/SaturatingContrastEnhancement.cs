@@ -87,8 +87,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SaturatingContrastEnhancement(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SaturatingContrastEnhancement, parameters)
         {
-            _offset = new Int32[] { SourceBandIndices.Length };
-            _factor = new Double[] { SourceBandIndices.Length };
+            _offset = new Int32[SourceBandIndices.Length];
+            _factor = new Double[SourceBandIndices.Length];
 
             for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
             {
