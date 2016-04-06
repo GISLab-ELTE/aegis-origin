@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HalfedgeGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -53,7 +53,12 @@ namespace ELTE.AEGIS.Topology
         private List<Face> _faces = new List<Face>();
 
         /// <summary>
-        /// Stores the precision model
+        /// Stores the geometry iodentifier provider.
+        /// </summary>
+        private readonly IIdentifierProvider _identifierProvider;
+
+        /// <summary>
+        /// Stores the precision model.
         /// </summary>
         private readonly PrecisionModel _precisionModel;
 
@@ -172,17 +177,22 @@ namespace ELTE.AEGIS.Topology
         /// Adds an (isolated) vertex to the graph.
         /// </summary>
         /// <param name="position">The position of the vertex.</param>
+        /// <param name="identifiers">The identifiers of the vertex.</param>
         /// <returns>The vertex created by this method.</returns>
         /// <remarks>When a vertex already exists at the given position, it will be returned instead of creating a new one.</remarks>
-        public IVertex AddVertex(Coordinate position)
+        public IVertex AddVertex(Coordinate position, ISet<Int32> identifiers = null)
         {
-            return GetVertex(position);
+            Vertex vertex = GetVertex(position);
+            if (identifiers != null)
+                vertex.Identifiers.UnionWith(identifiers);
+            return vertex;
         }
 
         /// <summary>
         /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -194,9 +204,9 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
-        public IFace AddFace(IBasicPolygon polygon)
+        public IFace AddFace(IBasicPolygon polygon, ISet<Int32> identifiers = null)
         {
-            return AddFace(polygon.Shell, polygon.Holes);
+            return AddFace(polygon.Shell, polygon.Holes, identifiers);
         }
 
         /// <summary>
@@ -204,6 +214,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -216,9 +227,9 @@ namespace ELTE.AEGIS.Topology
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        public IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
+        public IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null, ISet<Int32> identifiers = null)
         {
-            return AddFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates).ToList());
+            return AddFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates).ToList(), identifiers);
         }
 
         /// <summary>
@@ -226,6 +237,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -238,7 +250,7 @@ namespace ELTE.AEGIS.Topology
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        public IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes = null)
+        public IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes = null, ISet<Int32> identifiers = null)
         {
             // Shell validation
             if (shell == null)
@@ -263,11 +275,17 @@ namespace ELTE.AEGIS.Topology
             }
 
             Face shellFace = GetFace(shell, FaceType.Shell);
+            if(identifiers != null)
+                foreach (Vertex vertex in shellFace.Vertices)
+                    vertex.Identifiers.UnionWith(identifiers);
             if (holes != null)
             {
                 foreach (IList<Coordinate> hole in holes)
                 {
                     Face holeFace = GetFace(hole.Reverse(), FaceType.Hole);
+                    if (identifiers != null)
+                        foreach (Vertex vertex in holeFace.Vertices)
+                            vertex.Identifiers.UnionWith(identifiers);
                     shellFace.Holes.Add(holeFace);
                 }
             }
@@ -311,6 +329,7 @@ namespace ELTE.AEGIS.Topology
         /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -326,9 +345,9 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
-        public ICollection<IFace> MergeFace(IBasicPolygon polygon)
+        public ICollection<IFace> MergeFace(IBasicPolygon polygon, ISet<Int32> identifiers = null)
         {
-            return MergeFace(polygon.Shell, polygon.Holes);
+            return MergeFace(polygon.Shell, polygon.Holes, identifiers);
         }
 
         /// <summary>
@@ -336,6 +355,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -352,9 +372,9 @@ namespace ELTE.AEGIS.Topology
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        public ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null)
+        public ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null, ISet<Int32> identifiers = null)
         {
-            return MergeFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates));
+            return MergeFace(shell.Coordinates, holes == null ? null : holes.Select(hole => hole.Coordinates), identifiers);
         }
 
         /// <summary>
@@ -362,6 +382,7 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -378,9 +399,9 @@ namespace ELTE.AEGIS.Topology
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        public ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null)
+        public ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null, ISet<Int32> identifiers = null)
         {
-            return MergeFace(shell, holes, Tag.None);
+            return MergeFace(shell, holes, identifiers, null);
         }
 
         /// <summary>
@@ -392,9 +413,6 @@ namespace ELTE.AEGIS.Topology
         {
             if (other == null)
                 throw new ArgumentNullException("other", "The other graph is null.");
-
-            foreach (Vertex vertex in _vertices.Values)
-                vertex.Tag = Tag.First;
 
             foreach (IFace oFace in other.Faces)
             {
@@ -410,7 +428,7 @@ namespace ELTE.AEGIS.Topology
                     positions.Reverse();
                 }
 
-                MergeFace(shellPositions, holesPositions, Tag.Second);
+                MergeFace(shellPositions, holesPositions, oFace.Identifiers);
             }
         }
 
@@ -454,7 +472,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The vertex created by this method.</returns>
         public IVertex AddPoint(IPoint point)
         {
-            return AddVertex(point.Coordinate);
+            return AddVertex(point.Coordinate, _identifierProvider.GetIdentifiers(point));
         }
 
         /// <summary>
@@ -464,7 +482,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The face created by this method.</returns>
         public IFace AddLinearRing(ILinearRing linearRing)
         {
-            return AddFace(linearRing);
+            return AddFace(linearRing, null, _identifierProvider.GetIdentifiers(linearRing));
         }
 
         /// <summary>
@@ -474,7 +492,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The face created by this method.</returns>
         public IFace AddPolygon(IPolygon polygon)
         {
-            return AddFace(polygon);
+            return AddFace(polygon, _identifierProvider.GetIdentifiers(polygon));
         }
 
         /// <summary>
@@ -504,7 +522,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a (supported type of) geometry into the graph, resolving geometry overlapping.
+        /// Merges a (supported type of) geometry into the graph, resolving geomtry overlapping.
         /// </summary>
         /// <param name="geometry">The geometry to merge.</param>
         /// <exception cref="System.ArgumentException">The specified geometry type is not supported.</exception>
@@ -535,7 +553,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The new faces created by this method.</returns>
         public ICollection<IFace> MergeLinearRing(ILinearRing linearRing)
         {
-            return MergeFace(linearRing);
+            return MergeFace(linearRing, null, _identifierProvider.GetIdentifiers(linearRing));
         }
 
         /// <summary>
@@ -545,7 +563,7 @@ namespace ELTE.AEGIS.Topology
         /// <returns>The new faces created by this method.</returns>
         public ICollection<IFace> MergePolygon(IPolygon polygon)
         {
-            return MergeFace(polygon);
+            return MergeFace(polygon, _identifierProvider.GetIdentifiers(polygon));
         }
 
         /// <summary>
@@ -591,9 +609,35 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Initializes a new instance of the <see cref="HalfedgeGraph"/> class.
         /// </summary>
+        public HalfedgeGraph()
+            : this(null, null)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGraph"/> class.
+        /// </summary>
         /// <param name="precisionModel">The precision model.</param>
-        public HalfedgeGraph(PrecisionModel precisionModel = null)
+        public HalfedgeGraph(PrecisionModel precisionModel)
+            : this(null, precisionModel)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGraph"/> class.
+        /// </summary>
+        /// <param name="identifierProvider">The geometry identifier provider.</param>
+        public HalfedgeGraph(IIdentifierProvider identifierProvider)
+            : this(identifierProvider, null)
+        { }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HalfedgeGraph"/> class.
+        /// </summary>
+        /// <param name="identifierProvider">The geometry identifier provider.</param>
+        /// <param name="precisionModel">The precision model.</param>
+        public HalfedgeGraph(IIdentifierProvider identifierProvider, PrecisionModel precisionModel)
         {
+            _identifierProvider = identifierProvider ?? new NullIdentifierProvider();
             _precisionModel = precisionModel ?? PrecisionModel.Default;
         }
 
@@ -795,7 +839,7 @@ namespace ELTE.AEGIS.Topology
         /// <exception cref="InvalidOperationException">Thrown when cannot form a valid face with the given vertices and the existing topology.</exception>
         private Face CreateFace(Vertex[] vertices, FaceType addType)
         {
-            #region Initialization
+            #region Initalization
 
             Int32 n = vertices.Length;
 
@@ -1058,7 +1102,8 @@ namespace ELTE.AEGIS.Topology
         /// </summary>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
-        /// <param name="tag">The tag to use for the new face.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
+        /// <param name="excluded">Faces to exclude from further collision detection.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -1075,7 +1120,7 @@ namespace ELTE.AEGIS.Topology
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
         /// <remarks>Please note, that for this method the vertices of the shell must be given in counter-clockwise order, while the vertices of the holes in clockwise order.</remarks>
-        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Tag tag, List<IFace> excluded = null)
+        private ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, ISet<Int32> identifiers, List<IFace> excluded)
         {
             // Shell validation
             if (shell == null)
@@ -1131,7 +1176,7 @@ namespace ELTE.AEGIS.Topology
             Face collisionFace = collisionFaces.FirstOrDefault();
             if (collisionFace != null)
             {
-                // Calculate the internal and external clips with the colliding the faces.
+                // Calculate the the internal and external clips with the colliding the faces.
                 IList<Coordinate> collisionShellPositions = otherPositions[collisionFace.Index];
                 IList<List<Coordinate>> collisionHolesPositions =
                     collisionFace.Holes.Select(face => face.Vertices.Select(vertex => vertex.Position).ToList()).ToList();
@@ -1147,8 +1192,8 @@ namespace ELTE.AEGIS.Topology
                 algorithm.Compute();
 
                 // Determine the tag of the collided and the parameter face.
-                Tag oldTag = collisionFace.Tag;
-                Tag newTag = tag;
+                ISet<Int32> oldIds = collisionFace.Identifiers;
+                ISet<Int32> newIds = identifiers ?? new HashSet<Int32>();
 
                 // Remove the collided face from the graph, because the new clips will be added.
                 switch (collisionFace.Type)
@@ -1166,17 +1211,17 @@ namespace ELTE.AEGIS.Topology
 
                 // Internal clips (requiring re-process).
                 foreach (IBasicPolygon polygon in algorithm.InternalPolygons)
-                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), oldTag | newTag, excluded));
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), new HashSet<Int32>(oldIds.Union(newIds)), excluded));
 
                 // External clips of the parameter face that are required to be re-processed.
                 foreach (IBasicPolygon polygon in algorithm.ExternalSecondPolygons)
-                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), newTag, excluded));
+                    result.AddRange(MergeFace(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), newIds, excluded));
 
                 // External clips of the already existing topology graph.
                 foreach (Face face in algorithm.ExternalFirstPolygons.Select(polygon => (Face)AddFace(polygon)))
                 {
                     foreach (Vertex vertex in face.Vertices)
-                        vertex.Tag |= oldTag;
+                        vertex.Identifiers.UnionWith(oldIds);
                     result.Add(face);
                 }
 
@@ -1185,8 +1230,9 @@ namespace ELTE.AEGIS.Topology
             {
                 // If there were none colliding faces, the whole face can be added to the graph.
                 Face face = (Face)AddFace(new BasicPolygon(shell, holes));
-                foreach (Vertex vertex in face.Vertices)
-                    vertex.Tag |= tag;
+                if(identifiers != null)
+                    foreach (Vertex vertex in face.Vertices)
+                        vertex.Identifiers.UnionWith(identifiers);
                 result.Add(face);
                 excluded.Add(face);
             }

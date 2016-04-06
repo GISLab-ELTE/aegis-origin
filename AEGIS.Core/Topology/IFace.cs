@@ -34,9 +34,9 @@ namespace ELTE.AEGIS.Topology
         IHalfedgeGraph Graph { get; }
 
         /// <summary>
-        /// Gets the tag of the face.
+        /// Gets the identifiers of the face.
         /// </summary>
-        Tag Tag { get; }
+        ISet<Int32> Identifiers { get; }
 
         /// <summary>
         /// Gets a value indicating whether the edge is on the boundary of the graph.

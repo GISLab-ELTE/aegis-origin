@@ -14,6 +14,7 @@
 /// <author>Máté Cserép</author>
 
 using System;
+using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Topology
 {
@@ -96,6 +97,20 @@ namespace ELTE.AEGIS.Topology
             #region IEdge properties
 
             /// <summary>
+            /// Gets the identifiers of the edge.
+            /// </summary>
+            /// <remarks>The identifiers of the edge are the intersection of identifiers of the edge's endpoint vertices.</remarks>
+            public ISet<Int32> Identifiers
+            {
+                get
+                {
+                    ISet<Int32> result = new HashSet<Int32>(VertexA.Identifiers);
+                    result.IntersectWith(VertexB.Identifiers);
+                    return result;
+                }
+            }
+
+            /// <summary>
             /// Gets a value indicating whether the edge is on the boundary of the graph.
             /// </summary>
             /// <value>
@@ -104,15 +119,6 @@ namespace ELTE.AEGIS.Topology
             public Boolean OnBoundary
             {
                 get { return HalfedgeA.OnBoundary || HalfedgeA.Opposite.OnBoundary; }
-            }
-
-            /// <summary>
-            /// Gets the tag of the edge.
-            /// </summary>
-            /// <remarks>The tag of the edge is the common part of the tags of the edge's endpoint vertices.</remarks>
-            public Tag Tag
-            {
-                get { return VertexA.Tag & VertexB.Tag; }
             }
 
             #endregion

@@ -46,11 +46,6 @@ namespace ELTE.AEGIS.Topology
             /// </summary>
             public Int32 Index { get; set; }
 
-            /// <summary>
-            /// Gets or sets the tag of the vertex.
-            /// </summary>
-            public Tag Tag { get; set; }
-
             #endregion
 
             #region Public iterators
@@ -104,9 +99,25 @@ namespace ELTE.AEGIS.Topology
 
             #region Constructors
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Vertex"/> class.
+            /// </summary>
+            /// <param name="position">The position of the vertex.</param>
             public Vertex(Coordinate position)
             {
                 Position = position;
+                Identifiers = new HashSet<Int32>();
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Vertex"/> class.
+            /// </summary>
+            /// <param name="position">The position.</param>
+            /// <param name="identifiers">The identifiers of the vertex.</param>
+            public Vertex(Coordinate position, ISet<Int32> identifiers)
+            {
+                Position = position;
+                Identifiers = new HashSet<Int32>(identifiers);
             }
 
             #endregion
@@ -229,7 +240,12 @@ namespace ELTE.AEGIS.Topology
 
             #endregion
 
-            #region IVertex implicit implementation
+            #region IVertex properties
+
+            /// <summary>
+            /// Gets or sets the identifiers of the vertex.
+            /// </summary>
+            public ISet<Int32> Identifiers { get; set; }
 
             /// <summary>
             /// Gets or sets the position of the vertex.
@@ -253,7 +269,7 @@ namespace ELTE.AEGIS.Topology
 
             #endregion
 
-            #region IVertex explicit implementation
+            #region IVertex properties (explicit)
 
             /// <summary>
             /// A halfedge that originates from the vertex.

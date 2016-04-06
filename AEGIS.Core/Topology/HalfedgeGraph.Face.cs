@@ -50,11 +50,6 @@ namespace ELTE.AEGIS.Topology
             public IList<Face> Holes { get; set; }
 
             /// <summary>
-            /// Gets or sets the index of this edge in the internal face list of the graph.
-            /// </summary>
-            public Int32 Index { get; set; }
-
-            /// <summary>
             /// Gets the collection of the bounding halfedges.
             /// </summary>
             public IEnumerable<Halfedge> Halfedges
@@ -103,9 +98,33 @@ namespace ELTE.AEGIS.Topology
             /// </remarks>
             public FaceType Type { get; set; }
 
+            /// <summary>
+            /// Gets or sets the index of this edge in the internal face list of the graph.
+            /// </summary>
+            public Int32 Index { get; set; }
+
             #endregion
 
             #region IFace properties
+
+            /// <summary>
+            /// Gets the identifiers of the face.
+            /// </summary>
+            /// <remarks>
+            /// The identifiers of the face is the intersection of identifiers of the face's vertices.
+            /// </remarks>
+            public ISet<Int32> Identifiers
+            {
+                get
+                {
+                    return Vertices.Skip(1).Aggregate(Vertices.First().Identifiers, (current, vertex) =>
+                    {
+                        ISet<Int32> result = new HashSet<Int32>(current);
+                        result.IntersectWith(vertex.Identifiers);
+                        return result;
+                    });
+                }
+            }
 
             /// <summary>
             /// Checks whether the face is on the boundary of the graph.
@@ -116,24 +135,10 @@ namespace ELTE.AEGIS.Topology
             }
 
             /// <summary>
-            /// Gets the tag of the face.
-            /// </summary>
-            /// <remarks>
-            /// The tag of the face is the common part of the tags of the face's vertices.
-            /// </remarks>
-            public Tag Tag
-            {
-                get
-                {
-                    return Vertices.Aggregate(Tag.Both, (current, vertex) => current & vertex.Tag);
-                }
-            }
-
-            /// <summary>
             /// Determines whether two faces are adjacent.
             /// </summary>
             /// <param name="face">The other face to test.</param>
-            /// <returns><c>true</c> if <paramref name="face"/> and this are adjacent; otherwise, <c>false</c>.</returns>
+            /// <returns><c>true</c> if <paramref name="face" /> and this are adjacent; otherwise, <c>false</c>.</returns>
             public Boolean IsAdjacent(IFace face)
             {
                 return Faces.Contains(face);
@@ -201,8 +206,11 @@ namespace ELTE.AEGIS.Topology
 
             #endregion
 
-            #region Constructor
+            #region Constructors
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Face"/> class.
+            /// </summary>
             public Face()
             {
                 Holes = new List<Face>();

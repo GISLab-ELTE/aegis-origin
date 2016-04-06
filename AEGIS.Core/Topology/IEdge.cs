@@ -14,6 +14,7 @@
 /// <author>Máté Cserép</author>
 
 using System;
+using System.Collections.Generic;
 
 namespace ELTE.AEGIS.Topology
 {
@@ -60,9 +61,9 @@ namespace ELTE.AEGIS.Topology
         IHalfedgeGraph Graph { get; }
 
         /// <summary>
-        /// Gets the tag of the edge.
+        /// Gets the identifiers of the edge.
         /// </summary>
-        Tag Tag { get; }
+        ISet<Int32> Identifiers { get; }
 
         /// <summary>
         /// Gets a value indicating whether the edge is on the boundary of the graph.

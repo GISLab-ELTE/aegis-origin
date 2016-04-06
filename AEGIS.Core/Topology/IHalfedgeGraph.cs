@@ -80,13 +80,15 @@ namespace ELTE.AEGIS.Topology
         /// When a vertex already exists at the given position, it will be returned instead of creating a new one.
         /// </remarks>
         /// <param name="position">The position of the vertex.</param>
+        /// <param name="identifiers">The identifiers of the vertex.</param>
         /// <returns>The vertex created by this method.</returns>
-        IVertex AddVertex(Coordinate position);
+        IVertex AddVertex(Coordinate position, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
         /// </summary>
         /// <param name="polygon">The polygon.</param>
+        /// <param name="identifiers">The identifiers of the polygon.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -98,7 +100,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
-        IFace AddFace(IBasicPolygon polygon);
+        IFace AddFace(IBasicPolygon polygon, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
@@ -108,6 +110,7 @@ namespace ELTE.AEGIS.Topology
         /// </remarks>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -119,7 +122,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
-        IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes);
+        IFace AddFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Adds a face to the graph. The new face must appropriately fit to the existing topology graph without any overlap.
@@ -129,6 +132,7 @@ namespace ELTE.AEGIS.Topology
         /// </remarks>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The face created by this method.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -140,7 +144,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// A hole does not contain at least 3 different coordinates.
         /// </exception>
-        IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes);
+        IFace AddFace(IList<Coordinate> shell, IList<IList<Coordinate>> holes = null, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Removes a vertex from the graph.
@@ -166,7 +170,8 @@ namespace ELTE.AEGIS.Topology
         /// <summary>
         /// Merges a face into the graph, resolving face overlapping.
         /// </summary>
-        /// /// <param name="polygon">The polygon.</param>
+        /// <param name="polygon">The polygon.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -182,7 +187,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
-        ICollection<IFace> MergeFace(IBasicPolygon polygon);
+        ICollection<IFace> MergeFace(IBasicPolygon polygon, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Merges a face into the graph, resolving face overlapping.
@@ -192,6 +197,7 @@ namespace ELTE.AEGIS.Topology
         /// </remarks>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -207,7 +213,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
-        ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null);
+        ICollection<IFace> MergeFace(IBasicLineString shell, IEnumerable<IBasicLineString> holes = null, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Merges a face into the graph, resolving face overlapping.
@@ -217,6 +223,7 @@ namespace ELTE.AEGIS.Topology
         /// </remarks>
         /// <param name="shell">The vertices of the shell in counter-clockwise order.</param>
         /// <param name="holes">The vertices of the holes in clockwise order.</param>
+        /// <param name="identifiers">The identifiers of the face.</param>
         /// <returns>The collection of faces created by the merge operation.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The shell is null.
@@ -232,7 +239,7 @@ namespace ELTE.AEGIS.Topology
         /// or
         /// The first and the last coordinates of a hole are not equal.
         /// </exception>
-        ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null);
+        ICollection<IFace> MergeFace(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes = null, ISet<Int32> identifiers = null);
 
         /// <summary>
         /// Merges another graph into the current instance.

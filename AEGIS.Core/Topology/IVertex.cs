@@ -34,9 +34,9 @@ namespace ELTE.AEGIS.Topology
         IHalfedgeGraph Graph { get; }
 
         /// <summary>
-        /// Gets the tag of the vertex.
+        /// Gets the identifiers of the vertex.
         /// </summary>
-        Tag Tag { get; }
+        ISet<Int32> Identifiers { get; }
 
         /// <summary>
         /// Gets the position of the vertex.

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HalfedgeGraphTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -254,7 +254,7 @@ namespace ELTE.AEGIS.Tests.Topology
             _graph.VerifyTopology();
         
 
-            // adding and removing polygon vertices
+            // adding and removing removing polygon vertices
 
             IPolygon[] polygons = new IPolygon[]
             {
@@ -690,7 +690,6 @@ namespace ELTE.AEGIS.Tests.Topology
             Assert.AreEqual(1, _graph.Faces.Count(face => face.Vertices.Count() == 6 && face.Edges.Count() == 6));
             Assert.AreEqual(1, _graph.Faces.Count(face => face.Vertices.Count() == 5 && face.Edges.Count() == 5));
             Assert.AreEqual(2, _graph.Faces.Count(face => face.Vertices.Count() == 4 && face.Edges.Count() == 4));
-
         }
 
         /// <summary>

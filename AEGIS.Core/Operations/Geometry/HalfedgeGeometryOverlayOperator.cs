@@ -14,10 +14,10 @@
 /// <author>Roberto Giachetta</author>
 /// <author>Máté Cserép</author>
 
-using ELTE.AEGIS.Topology;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ELTE.AEGIS.Topology;
 
 namespace ELTE.AEGIS.Operations.Geometry
 {
@@ -34,6 +34,16 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// The geometry factory.
         /// </summary>
         private readonly IGeometryFactory _geometryFactory;
+
+        /// <summary>
+        /// Identifiers in the first operand.
+        /// </summary>
+        private ISet<Int32> _aIdentifiers;
+
+        /// <summary>
+        /// Identifiers in the second operand.
+        /// </summary>
+        private ISet<Int32> _bIdentifiers;
 
         #endregion
 
@@ -73,7 +83,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.First);
+                return CreateResult(geometry, otherGeometry, face => face.Identifiers.All(id => !_bIdentifiers.Contains(id)));
             }
             catch (NotSupportedException) 
             {
@@ -106,7 +116,9 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.Both);
+                return CreateResult(geometry, otherGeometry, face => 
+                    face.Identifiers.Any(id => _aIdentifiers.Contains(id)) &&
+                    face.Identifiers.Any(id => _bIdentifiers.Contains(id)));
             }
             catch (NotSupportedException)
             {
@@ -135,7 +147,9 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => face.Tag == Tag.First || face.Tag == Tag.Second);
+                return CreateResult(geometry, otherGeometry, 
+                    face => face.Identifiers.All(id => _aIdentifiers.Contains(id) && !_bIdentifiers.Contains(id)) ||
+                            face.Identifiers.All(id => !_aIdentifiers.Contains(id) && _bIdentifiers.Contains(id)));
             }
             catch (NotSupportedException)
             {
@@ -196,11 +210,13 @@ namespace ELTE.AEGIS.Operations.Geometry
         private IGeometry CreateResult(IGeometry geometry, IGeometry otherGeometry, Func<IFace, Boolean> predicate)
         {
             // merge the geometries into a single graph
-            HalfedgeGraph graph = new HalfedgeGraph();
+            HalfedgeGraph graph = new HalfedgeGraph(new HalfedgeGraph.FixedIdentifierProvider(1));
             graph.MergeGeometry(geometry);
+            _aIdentifiers = new HashSet<Int32>(graph.Vertices.SelectMany(v => v.Identifiers));
 
-            HalfedgeGraph otherGraph = new HalfedgeGraph();
+            HalfedgeGraph otherGraph = new HalfedgeGraph(new HalfedgeGraph.FixedIdentifierProvider(2));
             otherGraph.MergeGeometry(otherGeometry);
+            _bIdentifiers = new HashSet<Int32>(otherGraph.Vertices.SelectMany(v => v.Identifiers));
 
             graph.MergeGraph(otherGraph);
 

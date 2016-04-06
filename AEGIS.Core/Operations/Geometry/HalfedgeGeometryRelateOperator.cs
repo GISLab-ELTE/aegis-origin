@@ -16,6 +16,7 @@
 
 using ELTE.AEGIS.Topology;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Geometry
@@ -26,7 +27,26 @@ namespace ELTE.AEGIS.Operations.Geometry
     public class HalfedgeGeometryRelateOperator : IGeometryRelateOperator
     {
         // Source: http://edndoc.esri.com/arcsde/9.0/general_topics/understand_spatial_relations.htm
-        
+
+        #region Private fields
+
+        /// <summary>
+        /// The halfedge graph to operate on.
+        /// </summary>
+        private IHalfedgeGraph _graph;
+
+        /// <summary>
+        /// Identifiers present in the first operand.
+        /// </summary>
+        private ISet<Int32> _aIdentifiers;
+
+        /// <summary>
+        /// Identifiers present in the second operand.
+        /// </summary>
+        private ISet<Int32> _bIdentifiers;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -89,15 +109,15 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Faces.Any(face => face.Tag == Tag.Both))
+                Merge(geometry, otherGeometry);
+                if (_graph.Faces.Any(face => IsBoth(face.Identifiers)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                if (_graph.Edges.Any(edge => IsBoth(edge.Identifiers)))
                     return false;
-                if (graph.Vertices.All(vertex => vertex.Tag == Tag.None || vertex.Tag == Tag.Both))
+                if (_graph.Vertices.All(vertex => IsNone(vertex.Identifiers) || IsBoth(vertex.Identifiers)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First) && graph.Vertices.Any(vertex => vertex.Tag == Tag.Second))
+                if (_graph.Vertices.Any(vertex => IsFirst(vertex.Identifiers)) && 
+                    _graph.Vertices.Any(vertex => IsSecond(vertex.Identifiers)))
                     return true;
 
                 return false;
@@ -133,13 +153,12 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Faces.Any(face => face.Tag == Tag.Both))
+                Merge(geometry, otherGeometry);
+                if (_graph.Faces.Any(face => IsBoth(face.Identifiers)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                if (_graph.Edges.Any(edge => IsBoth(edge.Identifiers)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.Both))
+                if (_graph.Vertices.Any(vertex => IsBoth(vertex.Identifiers)))
                     return false;
                 return true;
             }
@@ -174,13 +193,12 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Faces.Any(face => face.Tag != Tag.Both))
+                Merge(geometry, otherGeometry);
+                if (_graph.Faces.Any(face => !IsBoth(face.Identifiers)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag != Tag.Both))
+                if (_graph.Edges.Any(edge => !IsBoth(edge.Identifiers)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag != Tag.Both))
+                if (_graph.Vertices.Any(vertex => !IsBoth(vertex.Identifiers)))
                     return false;
                 return true;
             }
@@ -241,16 +259,16 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Vertices.All(vertex => vertex.Tag == Tag.None || vertex.Tag == Tag.Both))
+                Merge(geometry, otherGeometry);
+                if (_graph.Vertices.All(vertex => IsNone(vertex.Identifiers) || IsBoth(vertex.Identifiers)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First) && graph.Vertices.Any(vertex => vertex.Tag == Tag.Second))
+                if (_graph.Vertices.Any(vertex => IsFirst(vertex.Identifiers)) && 
+                    _graph.Vertices.Any(vertex => IsSecond(vertex.Identifiers)))
                 {
                     // the dimension of the intersecting part must match the dimension of the geometries
-                    if (graph.Faces.Any(face => face.Tag == Tag.Both))
+                    if (_graph.Faces.Any(face => IsBoth(face.Identifiers)))
                         return geometry.Dimension == 2;
-                    if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                    if (_graph.Edges.Any(edge => IsBoth(edge.Identifiers)))
                         return geometry.Dimension == 1;
 
                    return geometry.Dimension == 0;
@@ -293,13 +311,12 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Faces.Any(face => face.Tag == Tag.Both))
+                Merge(geometry, otherGeometry);
+                if (_graph.Faces.Any(face => IsBoth(face.Identifiers)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag == Tag.Both))
+                if (_graph.Edges.Any(edge => IsBoth(edge.Identifiers)))
                     return true;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.Both))
+                if (_graph.Vertices.Any(vertex => IsBoth(vertex.Identifiers)))
                     return true;
                 return false;
             }
@@ -334,15 +351,14 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                HalfedgeGraph graph = Merge(geometry, otherGeometry);
-
-                if (graph.Faces.Any(face => face.Tag == Tag.First))
+                Merge(geometry, otherGeometry);
+                if (_graph.Faces.Any(face => IsFirst(face.Identifiers)))
                     return false;
-                if (graph.Edges.Any(edge => edge.Tag == Tag.First))
+                if (_graph.Edges.Any(edge => IsFirst(edge.Identifiers)))
                     return false;
-                if (graph.Vertices.Any(vertex => vertex.Tag == Tag.First))
+                if (_graph.Vertices.Any(vertex => IsFirst(vertex.Identifiers)))
                     return false;
-                if (graph.Faces.Any(face => face.Tag == Tag.Second))
+                if (_graph.Faces.Any(face => IsSecond(face.Identifiers)))
                     return true;
 
                 return false;
@@ -372,17 +388,58 @@ namespace ELTE.AEGIS.Operations.Geometry
         /// <param name="geometry">The geometry.</param>
         /// <param name="otherGeometry">The other geometry.</param>
         /// <returns>The halfedge graph containing the geometries.</returns>
-        private static HalfedgeGraph Merge(IGeometry geometry, IGeometry otherGeometry)
+        private void Merge(IGeometry geometry, IGeometry otherGeometry)
         {
-            HalfedgeGraph graph = new HalfedgeGraph();
-            graph.MergeGeometry(geometry);
+            _graph = new HalfedgeGraph(new HalfedgeGraph.FixedIdentifierProvider(1));
+            _graph.MergeGeometry(geometry);
+            _aIdentifiers = new HashSet<Int32>(_graph.Vertices.SelectMany(v => v.Identifiers));
 
-            HalfedgeGraph otherGraph = new HalfedgeGraph();
+            HalfedgeGraph otherGraph = new HalfedgeGraph(new HalfedgeGraph.FixedIdentifierProvider(2));
             otherGraph.MergeGeometry(otherGeometry);
+            _bIdentifiers = new HashSet<Int32>(otherGraph.Vertices.SelectMany(v => v.Identifiers));
 
-            graph.MergeGraph(otherGraph);
+            _graph.MergeGraph(otherGraph);
+        }
 
-            return graph;
+        /// <summary>
+        /// Determines whether a set of identifiers are present in none of the operands.
+        /// </summary>
+        /// <param name="identifiers"></param>
+        /// <returns><c>true</c> if none of the <paramref name="identifiers"/> are present in either of the operands; <c>false</c> otherwise.</returns>
+        private Boolean IsNone(ISet<Int32> identifiers)
+        {
+            return identifiers.All(id => !_aIdentifiers.Contains(id) && !_bIdentifiers.Contains(id));
+        }
+
+        /// <summary>
+        /// Determines whether a set of identifiers are present in both operands.
+        /// </summary>
+        /// <param name="identifiers">The identifiers to match.</param>
+        /// <returns><c>true</c> if all of the <paramref name="identifiers"/> are present in both of the operands; <c>false</c> otherwise.</returns>
+        private Boolean IsBoth(ISet<Int32> identifiers)
+        {
+            return identifiers.Any(id => _aIdentifiers.Contains(id)) &&
+                   identifiers.Any(id => _bIdentifiers.Contains(id));
+        }
+
+        /// <summary>
+        /// Determines whether a set of identifiers are present in only the first operand.
+        /// </summary>
+        /// <param name="identifiers">The identifiers to match.</param>
+        /// <returns><c>true</c> if all of the <paramref name="identifiers"/> are present in only the first operand; <c>false</c> otherwise.</returns>
+        private Boolean IsFirst(ISet<Int32> identifiers)
+        {
+            return identifiers.All(id => _aIdentifiers.Contains(id) && !_bIdentifiers.Contains(id));
+        }
+
+        /// <summary>
+        /// Determines whether a set of identiers are present in only the second operand.
+        /// </summary>
+        /// <param name="identifiers">The identifiers to match.</param>
+        /// <returns><c>true</c> if all of the <paramref name="identifiers"/> are present in only the second operand; <c>false</c> otherwise.</returns>
+        private Boolean IsSecond(ISet<Int32> identifiers)
+        {
+            return identifiers.All(id => !_aIdentifiers.Contains(id) && _bIdentifiers.Contains(id));
         }
 
         #endregion
