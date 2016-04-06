@@ -12,7 +12,7 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Máté Cserép</author>
-/// 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
