@@ -1,4 +1,6 @@
-﻿/// <copyright file="SpectralGeometryStreamParameters.cs" company="Eötvös Loránd University (ELTE)">
+﻿
+using ELTE.AEGIS.IO.GeoTiff;
+/// <copyright file="SpectralGeometryStreamParameters.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -12,7 +14,6 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
-
 using ELTE.AEGIS.IO.RawImage;
 using ELTE.AEGIS.Management;
 using System;
@@ -87,6 +88,7 @@ namespace ELTE.AEGIS.IO
 
         #region Private static fields
 
+        private static GeometryStreamParameter _allowMultipleImages;
         private static GeometryStreamParameter _byteOrder;
         private static GeometryStreamParameter _bytesGapPerBand;
         private static GeometryStreamParameter _bytesPerBandRow;
@@ -97,16 +99,32 @@ namespace ELTE.AEGIS.IO
         private static GeometryStreamParameter _geometryFactoryType;
         private static GeometryStreamParameter _includeMetadata;
         private static GeometryStreamParameter _layout;
+        private static GeometryStreamParameter _maxNumberOfRasters;
         private static GeometryStreamParameter _numberOfColumns;
         private static GeometryStreamParameter _numberOfRows;
         private static GeometryStreamParameter _radiometricResolution;
         private static GeometryStreamParameter _rowDimension;
         private static GeometryStreamParameter _spectralResolution;
         private static GeometryStreamParameter _tieCoordinate;
+        private static GeometryStreamParameter _tiffStructure;
 
         #endregion
 
         #region Public static fields
+
+        /// <summary>
+        /// Multiple image allowance.
+        /// </summary>
+        public static GeometryStreamParameter AllowMultipleImages
+        {
+            get
+            {
+                return _allowMultipleImages ?? (_allowMultipleImages =
+                    GeometryStreamParameter.CreateOptionalParameter<Boolean>("AEGIS::620004", "Multiple image allowance",
+                                                                             "Indicates whether multiple images are allowed for writing.", 
+                                                                             false));
+            }
+        }
 
         /// <summary>
         /// Byte order.
@@ -243,6 +261,20 @@ namespace ELTE.AEGIS.IO
         }
 
         /// <summary>
+        /// Maximum number of rasters.
+        /// </summary>
+        public static GeometryStreamParameter MaxNumberOfRasers
+        {
+            get
+            {
+                return _maxNumberOfRasters ?? (_maxNumberOfRasters =
+                    GeometryStreamParameter.CreateOptionalParameter<Int32>("AEGIS::620008", "Maximum number of rasters",
+                                                                           "The maximum number of rasters that can be written into the stream.",
+                                                                           1));
+            }
+        }
+
+        /// <summary>
         /// Number of columns.
         /// </summary>
         public static GeometryStreamParameter NumberOfColumns
@@ -322,8 +354,22 @@ namespace ELTE.AEGIS.IO
             get
             {
                 return _tieCoordinate ?? (_tieCoordinate =
-                    GeometryStreamParameter.CreateOptionalParameter<Coordinate>("AEGIS::625025", "Tie coordinate.",
+                    GeometryStreamParameter.CreateOptionalParameter<Coordinate>("AEGIS::625025", "Tie coordinate",
                                                                                 "The spatial coordinate of the upper left pixel.", new String[] { "Upper left coordinate", "Tie point" }));
+            }
+        }
+
+        /// <summary>
+        /// TIFF struture.
+        /// </summary>
+        public static GeometryStreamParameter TiffStructure
+        {
+            get
+            {
+                return _tiffStructure ?? (_tiffStructure =
+                    GeometryStreamParameter.CreateOptionalParameter<TiffStructure>("AEGIS::625025", "TIFF structure",
+                                                                                   "The TIFF structure determining whether the stream should have regular or BigTIFF format.", 
+                                                                                   GeoTiff.TiffStructure.Undefined));
             }
         }
 

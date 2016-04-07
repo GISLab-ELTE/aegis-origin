@@ -7,7 +7,7 @@
     <ProjectGuid>{10B2784A-3A36-4987-8FC7-FCE2F73E97D2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ELTE.AEGIS.IO.Spectral</RootNamespace>
+    <RootNamespace>ELTE.AEGIS.IO</RootNamespace>
     <AssemblyName>AEGIS.IO.Spectral</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,6 +54,8 @@
     <Compile Include="GeoTiff\Metafile\DimapMetafileReader.cs" />
     <Compile Include="GeoTiff\Metafile\LandsatMetafileReader.cs" />
     <Compile Include="GeoTiff\Metafile\XElementExtensions.cs" />
+    <Compile Include="GeoTiff\TiffStructure.cs" />
+    <Compile Include="GeoTiff\TiffTag.cs" />
     <Compile Include="RawImage\EsriRawImageWriter.cs" />
     <Compile Include="RawImage\RawImageWriter.cs" />
     <Compile Include="SpectralGeometryStreamFormats.cs" />
