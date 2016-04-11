@@ -1,9 +1,22 @@
-﻿using System;
+﻿/// <copyright file="ProxyStream.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
+///     Educational Community License, Version 2.0 (the "License"); you may
+///     not use this file except in compliance with the License. You may
+///     obtain a copy of the License at
+///     http://opensource.org/licenses/ECL-2.0
+///
+///     Unless required by applicable law or agreed to in writing,
+///     software distributed under the License is distributed on an "AS IS"
+///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+///     or implied. See the License for the specific language governing
+///     permissions and limitations under the License.
+/// </copyright>
+/// <author>Roberto Giachetta</author>
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ELTE.AEGIS.IO.Utilities
 {
@@ -15,23 +28,53 @@ namespace ELTE.AEGIS.IO.Utilities
         #region Constant fields
 
         /// <summary>
-        /// The size of the storage units used for cashing.
+        /// The size of the buffer arrays used to cache data. This field is constant.
         /// </summary>
-        private const Int32 StorageSize = 10000; // the size of the byte arrays used (10 kB)
+        private const Int32 DefaultBufferSize = 1 << 16; // (64 KB)
+
+        private readonly Byte[] EmptyBuffer;
 
         #endregion
 
         #region Private types
 
         /// <summary>
-        /// Represents the possible access types of the stream.
+        /// Defines the access types of the stream.
         /// </summary>
+        [Flags]
         private enum StreamAccessType
         {
-            Readable,
-            Writable,
-            Undefined
+            /// <summary>
+            /// Indicates that the access type is not defined.
+            /// </summary>
+            Undefined = 0,
+
+            /// <summary>
+            /// Indicates that the stream is readable.
+            /// </summary>
+            Readable = 1,
+
+            /// <summary>
+            /// Indicates that the stream is writable.
+            /// </summary>
+            Writable = 2
         };
+
+        /// <summary>
+        /// Defines the modes for updating data flags.
+        /// </summary>
+        private enum UpdateMode
+        {
+            /// <summary>
+            /// Indicates that the flags should be added.
+            /// </summary>
+            Add,
+
+            /// <summary>
+            /// Indicates that the flags should be removed.
+            /// </summary>
+            Remove
+        }
 
         #endregion
 
@@ -40,12 +83,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <summary>
         /// The underlying stream.
         /// </summary>
-        private Stream _underlyingStream;
-
-        /// <summary>
-        /// Defines whether the stream can be read/ written multiple times or not. 
-        /// </summary>
-        private Boolean _singleUse;
+        private Stream _baseStream;
 
         /// <summary>
         /// Defines whether the instances has been disposed or not. 
@@ -53,35 +91,25 @@ namespace ELTE.AEGIS.IO.Utilities
         private Boolean _disposed;
 
         /// <summary>
-        /// Defines whether proxy mode is forced.
+        /// A value indicating whether the bytes can be read or written multiple times or not. 
         /// </summary>
-        private Boolean _forced;
+        private Boolean _isSingleAccess;
 
+        /// <summary>
+        /// A value indicating whether proxy mode is forced.
+        /// </summary>
+        private Boolean _isProxyModeForced;
+        
         /// <summary>
         /// The current position in the stream.
         /// </summary>
-        private Int64 _currentPosition;
+        private Int64 _position;
 
         /// <summary>
-        /// The maximum position reached in the stream.
+        /// The length of the stream.
         /// </summary>
-        private Int64 _maximumPosition;
-
-        /// <summary>
-        /// The position in the stream where Flush occurred.
-        /// </summary>
-        private Int64 _flushPosition;
-
-        /// <summary>
-        /// The index of the storage unit where Flush occurred.
-        /// </summary>
-        private Int64 _flushIndex;
-
-        /// <summary>
-        /// The size of the bit flag arrays.
-        /// </summary>
-        private Int32 _bitFlagSize;
-
+        private Int64 _length;
+        
         /// <summary>
         /// The access type of the stream.
         /// </summary>
@@ -90,17 +118,22 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <summary>
         /// The bit flag arrays.
         /// </summary>
-        private Dictionary<Int64, Byte[]> _bitFlagArrays;
+        private Dictionary<Int32, Byte[]> _bitFlags;
 
         /// <summary>
         /// The data containing arrays.
         /// </summary>
-        private Dictionary<Int64, Byte[]> _byteArrays;
+        private Dictionary<Int32, Byte[]> _buffers;
 
         /// <summary>
         /// A value indicating whether to dispose the underlying stream.
         /// </summary>
-        private Boolean _disposeUnderlyingStream;
+        private Boolean _disposeBaseStream;
+
+        /// <summary>
+        /// The number of bytes stored in the buffers.
+        /// </summary>
+        private Int32 _bufferSize;
 
         #endregion
 
@@ -110,12 +143,51 @@ namespace ELTE.AEGIS.IO.Utilities
         /// Initializes a new instance of the <see cref="ProxyStream" /> class.
         /// </summary>
         /// <param name="underlyingStream">The underlying stream.</param>
-        /// <param name="singleUse">Defines whether the stream can be read/ written multiple times or not.</param>
-        /// <param name="forced">A value indicating whether proxy mode is forced.</param>
-        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlying stream.</param>
+        /// <param name="options">The proxy stream options.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
-        public ProxyStream(Stream underlyingStream, Boolean singleUse = true, Boolean forced = false, Boolean disposeUnderlyingStream = true)
+        public ProxyStream(Stream stream)
+            : this(stream, false, ProxyStreamOptions.Default, DefaultBufferSize)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProxyStream" /> class.
+        /// </summary>
+        /// <param name="underlyingStream">The underlying stream.</param>
+        /// <param name="options">The proxy stream options.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
+        public ProxyStream(Stream stream, ProxyStreamOptions options)
+            : this(stream, false, options, DefaultBufferSize)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProxyStream" /> class.
+        /// </summary>
+        /// <param name="underlyingStream">The underlying stream.</param>
+        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlying stream.</param>
+        /// <param name="options">The proxy stream options.</param>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
+        public ProxyStream(Stream stream, Boolean disposeStream, ProxyStreamOptions options)
+            : this(stream, disposeStream, options, DefaultBufferSize)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProxyStream" /> class.
+        /// </summary>
+        /// <param name="underlyingStream">The underlying stream.</param>
+        /// <param name="disposeUnderlyingStream">A value indicating whether to dispose the underlying stream.</param>
+        /// <param name="options">The proxy stream options.</param>
+        /// <param name="bufferSize">Size of the buffer.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">The buffer size is less than 1.</exception>
+        /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
+        /// <exception cref="System.NotSupportedException">The stream does not support reading and writing.</exception>
+        public ProxyStream(Stream underlyingStream, Boolean disposeUnderlyingStream, ProxyStreamOptions options, Int32 bufferSize)
         {
             if (underlyingStream == null)
                 throw new ArgumentNullException("stream", "The stream is null.");
@@ -123,28 +195,23 @@ namespace ELTE.AEGIS.IO.Utilities
             if (!underlyingStream.CanRead && !underlyingStream.CanWrite)
                 throw new NotSupportedException("The stream does not support reading and writing.");
 
-            _underlyingStream = underlyingStream;
-            _singleUse = singleUse;
+            if (bufferSize < 1)
+                throw new ArgumentOutOfRangeException("bufferSize", "The buffer size is less than 1.");
+        
+            _baseStream = underlyingStream;
+            _isSingleAccess = options.HasFlag(ProxyStreamOptions.SingleAccess);
+            _isProxyModeForced = options.HasFlag(ProxyStreamOptions.ForceProxy);
+            _bufferSize = bufferSize;
+
+            if (_baseStream.CanWrite && !_baseStream.CanRead)
+                InitializeStream(StreamAccessType.Writable);
+            else if (!_baseStream.CanWrite && _baseStream.CanRead)
+                InitializeStream(StreamAccessType.Readable);
+
             _disposed = false;
-            _forced = forced;
-            _currentPosition = 0;
-            _maximumPosition = 0;
-            _flushPosition = 0;
-            _flushIndex = -1;
-            _bitFlagSize = Convert.ToInt32(Math.Ceiling((Double)(StorageSize) / 8.0));
+            _disposeBaseStream = disposeUnderlyingStream;
 
-            if (_underlyingStream.CanWrite && _underlyingStream.CanRead)
-                _accessType = StreamAccessType.Undefined;
-            else if (_underlyingStream.CanWrite && !_underlyingStream.CanRead)
-                _accessType = StreamAccessType.Writable;
-            else if (!_underlyingStream.CanWrite && _underlyingStream.CanRead)
-                _accessType = StreamAccessType.Readable;
-
-            _byteArrays = new Dictionary<Int64, Byte[]>();
-
-            _bitFlagArrays = new Dictionary<Int64, Byte[]>();
-
-            _disposeUnderlyingStream = disposeUnderlyingStream;
+            EmptyBuffer = new Byte[_bufferSize];
         }
 
         #endregion
@@ -158,13 +225,13 @@ namespace ELTE.AEGIS.IO.Utilities
         {
             get
             {
-                return _currentPosition;
+                return _position;
             }
             set
             {
-                if (_currentPosition != value)
+                if (_position != value)
                 {
-                    Seek(_currentPosition, SeekOrigin.Begin);
+                    Seek(_position, SeekOrigin.Begin);
                 }
             }
         }
@@ -172,10 +239,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <summary>
         /// Gets the length in bytes of the stream.
         /// </summary>
-        public override Int64 Length
-        {
-            get { return _underlyingStream.Length; }
-        }
+        public override Int64 Length { get { return _length; } }
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports seeking.
@@ -220,43 +284,23 @@ namespace ELTE.AEGIS.IO.Utilities
             if (_disposed)
                 throw new ObjectDisposedException("Method was called after the stream was closed.");
 
-            if (!_forced && _underlyingStream.CanSeek)
-                return _underlyingStream.Seek(offset, origin);
-
-            switch (_accessType)
+            if (!_isProxyModeForced && _baseStream.CanSeek)
+                return _baseStream.Seek(offset, origin);
+            
+            switch (origin)
             {
-                case StreamAccessType.Readable:
-                    switch (origin)
-                    {
-                        case SeekOrigin.Begin:
-                            ReadFromUnderlyingStream(offset, 0);
-                            break;
-                        case SeekOrigin.Current:
-                            ReadFromUnderlyingStream(offset, _currentPosition);
-                            break;
-                        case SeekOrigin.End:
-                            ReadFromUnderlyingStream(offset, _underlyingStream.Length);
-                            break;
-                    }
+                case SeekOrigin.Begin:
+                    _position = offset;
                     break;
-                case StreamAccessType.Writable:
-                case StreamAccessType.Undefined:
-                    switch (origin)
-                    {
-                        case SeekOrigin.Begin:
-                            _currentPosition = offset;
-                            break;
-                        case SeekOrigin.Current:
-                            _currentPosition += offset;
-                            break;
-                        case SeekOrigin.End:
-                            _currentPosition = offset + _underlyingStream.Length;
-                            break;
-                    }
+                case SeekOrigin.Current:
+                    _position += offset;
+                    break;
+                case SeekOrigin.End:
+                    _position = offset + _baseStream.Length;
                     break;
             }
 
-            return _currentPosition;
+            return _position;
         }
 
         /// <summary>
@@ -265,9 +309,7 @@ namespace ELTE.AEGIS.IO.Utilities
         /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset" /> and (<paramref name="offset" /> + <paramref name="count" /> - 1) replaced by the bytes read from the current source.</param>
         /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin storing the data read from the current stream.</param>
         /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
-        /// <returns>
-        /// The total number of bytes read into the buffer.
-        /// </returns>
+        /// <returns>The total number of bytes read into the buffer.</returns>
         /// <exception cref="System.ObjectDisposedException">Method was called after the stream was closed.</exception>
         /// <exception cref="System.ArgumentNullException">The buffer is null.</exception>
         /// <exception cref="System.ArgumentException">The sum of offset and count is larger than the buffer length.</exception>
@@ -278,9 +320,6 @@ namespace ELTE.AEGIS.IO.Utilities
             if (_disposed)
                 throw new ObjectDisposedException("Method was called after the stream was closed.");
 
-            if (!_forced && _underlyingStream.CanSeek && _underlyingStream.CanRead)
-                return _underlyingStream.Read(buffer, offset, count);
-
             if (buffer == null)
                 throw new ArgumentNullException("The buffer is null.");
 
@@ -290,42 +329,38 @@ namespace ELTE.AEGIS.IO.Utilities
             if (offset < 0 || count < 0)
                 throw new ArgumentOutOfRangeException("The offset or count is negative.");
 
-            if (_accessType == StreamAccessType.Undefined)
-                _accessType = StreamAccessType.Readable;
+            // check whether data can be directly read
+            if (!_isProxyModeForced && _baseStream.CanSeek && _baseStream.CanRead)
+            {
+                // read the data from the source stream
+                return _baseStream.Read(buffer, offset, count);
+            }
+
+            InitializeStream(StreamAccessType.Readable);
 
             if (_accessType != StreamAccessType.Readable)
                 throw new NotSupportedException("The stream does not support reading.");
 
-            if (_currentPosition >= _underlyingStream.Length)
+            if (_position >= _length)
                 return 0;
 
-            Int32 bytesToRead = (_currentPosition + count > _underlyingStream.Length) ? (Int32)(_underlyingStream.Length - _currentPosition) : count;
+            if (!IsBufferAvailable(_position, Math.Min(count, _baseStream.Position - _position)))
+                throw new InvalidOperationException("The specified data was already read.");
 
-            ReadFromUnderlyingStream(_currentPosition, bytesToRead);
-            _currentPosition -= bytesToRead;
-
-            if (_singleUse)
-                CheckIfSet(bytesToRead);
-
-            HashSet<Int64> indexesToCheck = new HashSet<Int64>();
-
-            for (Int32 bufferIndex = 0; bufferIndex < bytesToRead; bufferIndex++)
+            // check whether data needs to be read from the underlying stream
+            if (_position + count > _baseStream.Position)
             {
-                Int64 index = _currentPosition / StorageSize;
-                buffer[bufferIndex + offset] = _byteArrays[index][_currentPosition % StorageSize];
-
-                indexesToCheck.Add(index);
-
-                if (_singleUse)
-                    SetBitFlag(index);
-
-                _currentPosition++;
+                try
+                {
+                    ReadDataFromStream(_position + count - _baseStream.Position);
+                }
+                catch (Exception ex)
+                {
+                    throw new IOException("Error occurred during underlying stream reading.", ex);
+                }
             }
 
-            if (_singleUse)
-                RemoveCachedData(indexesToCheck);
-
-            return bytesToRead;
+            return ReadDataFromBuffer(buffer, offset, count);
         }
 
         /// <summary>
@@ -344,9 +379,9 @@ namespace ELTE.AEGIS.IO.Utilities
             if (_disposed)
                 throw new ObjectDisposedException("Method was called after the stream was closed.");
 
-            if (!_forced && _underlyingStream.CanSeek)
+            if (!_isProxyModeForced && _baseStream.CanSeek)
             {
-                _underlyingStream.Write(buffer, offset, count);
+                _baseStream.Write(buffer, offset, count);
                 return;
             }
 
@@ -359,32 +394,17 @@ namespace ELTE.AEGIS.IO.Utilities
             if (offset < 0 || count < 0)
                 throw new ArgumentOutOfRangeException("The offset or count is negative.");
 
-            if (_accessType == StreamAccessType.Undefined)
-                _accessType = StreamAccessType.Writable;
+            InitializeStream(StreamAccessType.Writable);
 
             if (_accessType != StreamAccessType.Writable)
                 throw new NotSupportedException("The stream does not support writing.");
 
-            CheckIfSet(count);
+            if (!IsBufferAvailable(_position, Math.Min(count, _baseStream.Position - _position)))
+                throw new InvalidOperationException("Data was already written at the specified position.");
 
-            for (Int32 bufferIndex = 0; bufferIndex < count; bufferIndex++)
-            {
-                Int64 index = _currentPosition / StorageSize;
-
-                if (!_byteArrays.ContainsKey(index))
-                    _byteArrays.Add(index, new Byte[StorageSize]);
-
-                _byteArrays[index][_currentPosition % StorageSize] = buffer[bufferIndex + offset];
-
-                SetBitFlag(index);
-
-                _currentPosition++;
-            }
-            if (_singleUse)
-                RemoveCachedData(null);
-
-            if (_currentPosition > _maximumPosition)
-                _maximumPosition = _currentPosition;
+            WriteDataIntoBuffer(buffer, offset, count);
+            
+            WriteDataIntoStream(false);
         }
 
         /// <summary>
@@ -398,26 +418,34 @@ namespace ELTE.AEGIS.IO.Utilities
             if (_disposed)
                 throw new ObjectDisposedException("Method was called after the stream was closed.");
 
-            if ((_accessType == StreamAccessType.Writable || _accessType == StreamAccessType.Undefined) && _underlyingStream.CanSeek)
-            {
+            if (_accessType == StreamAccessType.Readable)
+                throw new InvalidOperationException("The stream is not writable.");
+
+            if (_accessType == StreamAccessType.Undefined)
                 _accessType = StreamAccessType.Writable;
-                _underlyingStream.SetLength(value);
+
+            if (_length < value)
+            {
+                CreateBuffer(_length, value - _length);
             }
-            else
-                throw new InvalidOperationException("The stream is not writable or does not support seeking.");
+
+            if (_length > value)
+            {
+                RemoveBuffer(value, _length - value);
+            }
+
+            _length = value;
         }
 
         /// <summary>
         /// Clears all buffers for this stream and causes any buffered data to be written to the underlying stream.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">The stream is not writable.</exception>
         public override void Flush()
         {
-            if (_accessType == StreamAccessType.Writable || _accessType == StreamAccessType.Undefined)
-            {
-                _accessType = StreamAccessType.Writable;
-                FlushIntoUnderlyingStream();
-            }
+            if (_accessType != StreamAccessType.Writable)
+                return;
+
+            WriteDataIntoStream(true);
         }
 
         #endregion
@@ -425,214 +453,325 @@ namespace ELTE.AEGIS.IO.Utilities
         #region Private methods
 
         /// <summary>
-        /// Reads the necessary bytes from the underlying stream and stores them.
+        /// Gets a value indicating whether the buffers are available.
         /// </summary>
-        /// <param name="offset">The offset.</param>
-        /// <param name="position">The position depending on the seek origin.</param>
-        /// <exception cref="System.IO.IOException">Error occurred during stream reading.</exception>
-        private void ReadFromUnderlyingStream(Int64 offset, Int64 position)
-        {
-            _currentPosition = offset + position;
-
-            if (_currentPosition > _maximumPosition)
-            {
-                Int64 numberOfBytes = _currentPosition - _maximumPosition;
-
-                Byte[] bytesToCopy = new Byte[numberOfBytes];
-                try
-                {
-                    _underlyingStream.Read(bytesToCopy, 0, (Int32)numberOfBytes);
-                }
-                catch (Exception ex)
-                {
-                    throw new IOException("Error occurred during stream reading.", ex);
-                }
-
-                for (Int64 byteNumber = 0; byteNumber < numberOfBytes; byteNumber++)
-                {
-                    Int64 index = _maximumPosition / StorageSize;
-                    if (!_byteArrays.ContainsKey(index))
-                        _byteArrays.Add(index, new Byte[StorageSize]);
-
-                    Array.Copy(bytesToCopy, byteNumber, _byteArrays[index], (Int32)(_maximumPosition % StorageSize), 1);
-                    _maximumPosition++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sets the bit flag for the read data.
-        /// </summary>
-        /// <param name="index">The index of the data.</param>
-        private void SetBitFlag(Int64 index)
-        {
-            if (!_bitFlagArrays.ContainsKey(index))
-                _bitFlagArrays.Add(index, new Byte[_bitFlagSize]);
-
-            Byte actualByte = _bitFlagArrays[index][(_currentPosition % StorageSize) / 8];
-            _bitFlagArrays[index][(_currentPosition % StorageSize) / 8] = (Byte)(actualByte | (1 << (7 - (Int32)(_currentPosition % 8))));
-        }
-
-        /// <summary>
-        /// Checks if the data has already been read of written.
-        /// </summary>
+        /// <param name="offset">The offset of the first byte with respect to the start of the stream.</param>
         /// <param name="count">The number of bytes.</param>
-        /// <exception cref="System.InvalidOperationException">Since caching is used, reading or writing elements multiple times is forbidden.</exception>
-        private void CheckIfSet(Int64 count)
+        /// <returns><c>true</c> if the specified data is already disposed; otherwise, <c>false</c>.</returns>
+        private Boolean IsBufferAvailable(Int64 offset, Int64 count)
         {
-            Int64 actualPositionInStream = _currentPosition;
-            for (Int32 i = 0; i < count; i++)
+            Int32 bufferIndex = (Int32)(offset / _bufferSize);
+            while (count > 0)
             {
-                Int64 index = actualPositionInStream / StorageSize;
-                if ((_accessType == StreamAccessType.Readable && ((_bitFlagArrays.ContainsKey(index) &&
-                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)(actualPositionInStream % 8)))) != 0) ||
-                            !_byteArrays.ContainsKey(index))) ||
-                    (_accessType == StreamAccessType.Writable && (_singleUse && (_bitFlagArrays.ContainsKey(index) &&
-                        (_bitFlagArrays[index][(actualPositionInStream % StorageSize) / 8] & (1 << (7 - (Int32)(actualPositionInStream % 8)))) != 0) ||
-                             _flushIndex > index || _flushPosition > actualPositionInStream)))
-                {
-                    throw new InvalidOperationException("Since caching is used, reading or writing elements multiple times is forbidden.");
-                }
-                actualPositionInStream++;
+                if (!_buffers.ContainsKey(bufferIndex))
+                    return false;
+
+                count -= _bufferSize;
+                bufferIndex++;
+            }
+            
+            return true;
+        }
+
+        private Boolean IsBufferFilled(Int32 bufferIndex)
+        {
+            if (!_isSingleAccess)
+                return false;
+
+            return _bitFlags != null && _bitFlags.ContainsKey(bufferIndex) && _bitFlags[bufferIndex].All(value => value == Byte.MaxValue);
+        }
+
+        /// <summary>
+        /// Reads the necessary bytes from the underlying stream and stores them in the buffers.
+        /// </summary>
+        /// <param name="count">The number of bytes to read.</param>
+        private void ReadDataFromStream(Int64 count)
+        {           
+            Int32 bufferIndex = (Int32)(_baseStream.Position / _bufferSize);
+            
+            while (count > 0)
+            {
+                // read content
+                Byte[] bytes = new Byte[_bufferSize];
+
+                Int32 numberOfBytesRead = _baseStream.Read(bytes, 0, bytes.Length);
+
+                _buffers.Add(bufferIndex, bytes);
+                UpdateFlags(bufferIndex, 0, Math.Min(numberOfBytesRead, bytes.Length), UpdateMode.Add);
+
+                if (numberOfBytesRead < bytes.Length)
+                    return;
+
+                count -= numberOfBytesRead;
+
+                bufferIndex++;
             }
         }
 
         /// <summary>
-        /// Writes the stored data in the underlying stream in case of Flush or Dispose.
+        /// Reads the data from the buffers.
         /// </summary>
-        private void FlushIntoUnderlyingStream()
+        /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset" /> and (<paramref name="offset" /> + <paramref name="count" /> - 1) replaced by the bytes read from the current source.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin storing the data read from the current stream.</param>
+        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <returns>The total number of bytes read from the buffers.</returns>
+        private Int32 ReadDataFromBuffer(Byte[] buffer, Int32 offset, Int32 count)
         {
-            // Flush until the current position or the last position where data has been cached
-            Int64 position = 0;
-            if (_maximumPosition > _currentPosition)
-                position = _maximumPosition;
-            else
-                position = _currentPosition;
+            Int32 bufferIndex = (Int32)(_position / _bufferSize);
 
-            Int32 numberOfUnitsToWrite = Convert.ToInt32(Math.Ceiling((Double)position / StorageSize));
-            for (Int64 index = _flushIndex + 1; index < numberOfUnitsToWrite; index++)
+            Int32 numberOfBytesRead = 0;
+            Int32 readOffset = (Int32)(_position % _bufferSize);
+            Int32 readCount = Math.Min(count, _bufferSize - readOffset);
+
+            while (numberOfBytesRead < count)
             {
-                try
-                {
-                    Int32 count = (Int32)((index + 1) * StorageSize < position ? StorageSize : position - index * StorageSize);
-                    Int32 offset = 0;
+                if (!_buffers.ContainsKey(bufferIndex))
+                    return numberOfBytesRead;
 
-                    // if a Flush occurred previously, the bytes at the beginning of the last byte array have to be skipped
-                    if (index == _flushPosition / StorageSize)
-                    {
-                        count -= (Int32)(_flushPosition % StorageSize);
-                        offset = (Int32)(_flushPosition % StorageSize);
-                    }
+                Array.Copy(_buffers[bufferIndex], readOffset, buffer, offset, readCount);
 
-                    if (count < 0)
-                        count = 0;
+                UpdateFlags(bufferIndex, readOffset, readCount, UpdateMode.Remove);
+                RemoveBuffer(bufferIndex);
 
-                    if (_byteArrays.ContainsKey(index))
-                    {
-                        _underlyingStream.Write(_byteArrays[index], offset, count);
+                numberOfBytesRead += readCount;
+                offset += readCount;
+                readOffset = 0;
+                readCount = Math.Min(count - numberOfBytesRead, _bufferSize);
 
-                        // only the fully used byte arrays have to be removed
-                        if (count == StorageSize)
-                        {
-                            _byteArrays.Remove(index);
-                            _bitFlagArrays.Remove(index);
-                        }
-                    }
-                    else
-                        _underlyingStream.Write(new Byte[StorageSize], offset, count);
-                }
-                catch (Exception ex)
-                {
-                    throw new IOException("Error occurred during writing into the stream.", ex);
-                }
+                bufferIndex++;
             }
-            _flushIndex = position / StorageSize - 1;
-            _flushPosition = position;
+
+            _position += numberOfBytesRead;
+            return numberOfBytesRead;
         }
 
         /// <summary>
-        /// Removes the unnecessary data from the cache if needed.
+        /// Writes the data into the buffers.
         /// </summary>
-        /// <param name="keysToCheck">The keys to check.</param>
-        private void RemoveCachedData(HashSet<Int64> keysToCheck)
+        /// <param name="buffer">An array of bytes. This method copies <paramref name="count" /> bytes from <paramref name="buffer" /> to the current stream.</param>
+        /// <param name="offset">The zero-based byte offset in <paramref name="buffer" /> at which to begin copying bytes to the current stream.</param>
+        /// <param name="count">The number of bytes to be written to the current stream.</param>
+        private void WriteDataIntoBuffer(Byte[] buffer, Int32 offset, Int32 count)
         {
-            if (_accessType == StreamAccessType.Readable)
+            Int32 bufferIndex = (Int32)(_position / _bufferSize);
+
+            Int64 numberOfBytesWritten = 0;
+            Int32 writeOffset = (Int32)(_position % _bufferSize);
+            Int32 writeCount = Math.Min(count, _bufferSize - writeOffset);
+
+            while (numberOfBytesWritten < count)
             {
-                foreach (Int64 key in keysToCheck)
-                {
-                    if (Array.TrueForAll(_bitFlagArrays[key], value => value == 255))
-                    {
-                        _bitFlagArrays.Remove(key);
-                        _byteArrays.Remove(key);
-                    }
-                }
+                CreateBuffer(bufferIndex);
+
+                Array.Copy(buffer, offset, _buffers[bufferIndex], writeOffset, writeCount);
+
+                UpdateFlags(bufferIndex, writeOffset, writeCount, UpdateMode.Add);
+
+                numberOfBytesWritten += writeCount;
+                offset += writeCount;
+                writeOffset = 0;
+                writeCount = (Int32)Math.Min(count - numberOfBytesWritten, _bufferSize);
+
+                bufferIndex++;
             }
-            else if (_accessType == StreamAccessType.Writable)
-            {
-                List<Int64> keysToRemove = new List<Int64>();
-                keysToRemove = SelectKeysToRemove();
-                WriteCachedDataIntoUnderlyingStream(keysToRemove);
-            }
+
+            _position += numberOfBytesWritten;
+
+            if (_length < _position)
+                _length = _position;
         }
 
         /// <summary>
-        /// Selects the keys that have to be removed from the data container.
+        /// Writes the data into the stream.
         /// </summary>
-        /// <returns>The list of keys.</returns>
-        private List<Int64> SelectKeysToRemove()
+        /// <param name="forced">A value indicating whether the writing is forced.</param>
+        private void WriteDataIntoStream(Boolean forced)
         {
-            List<Int64> keysToRemove = new List<Int64>();
-            List<Int64> sortedKeys = _byteArrays.Keys.ToList();
-            sortedKeys.Sort();
+            if (!_isSingleAccess && !forced)
+                return;
 
-            foreach (Int64 index in sortedKeys)
+            Int32 bufferIndex = (Int32)(_baseStream.Position / _bufferSize);
+
+            Int64 numberOfBytesToWrite = _length - _baseStream.Position;
+            Int32 writeOffset = (Int32)(_baseStream.Position % _bufferSize);
+            Int32 writeCount = (Int32)Math.Min(numberOfBytesToWrite, _bufferSize - writeOffset);
+
+            while (numberOfBytesToWrite > 0)
             {
-                if (_flushPosition % StorageSize != 0 && index == _flushIndex + 1)
+                if (!_buffers.ContainsKey(bufferIndex))
                 {
-                    Boolean trueForAll = true;
-                    for (Int64 bitIndex = _flushPosition % StorageSize; bitIndex < StorageSize; bitIndex++)
-                    {
-                        if ((_bitFlagArrays[index][bitIndex / 8] & (1 << (7 - (Int32)bitIndex % 8))) == 0)
-                        {
-                            trueForAll = false;
-                            break;
-                        }
-                    }
-                    if (trueForAll)
-                        keysToRemove.Add(index);
-                    else
+                    if (!forced)
                         break;
+
+                    _baseStream.Write(EmptyBuffer, writeOffset, writeCount);
                 }
                 else
                 {
-                    if (Array.TrueForAll(_bitFlagArrays[index], value => value == 255))
-                        keysToRemove.Add(index);
-                    else
+                    if (!forced && !IsBufferFilled(bufferIndex))
                         break;
+
+                    _baseStream.Write(_buffers[bufferIndex], writeOffset, writeCount);
+
+                    UpdateFlags(bufferIndex, writeOffset, writeCount, UpdateMode.Remove);
+                    RemoveBuffer(bufferIndex);
                 }
+
+                numberOfBytesToWrite -= writeCount;
+                writeOffset = 0;
+                writeCount = (Int32)Math.Min(numberOfBytesToWrite, _bufferSize);
+
+                bufferIndex++;
             }
-            return keysToRemove;
         }
 
         /// <summary>
-        /// Writes the cached data into underlying stream.
+        /// Updates the data flags with the specified availability.
         /// </summary>
-        /// <param name="keysToRemove">The keys to remove.</param>
-        private void WriteCachedDataIntoUnderlyingStream(List<Int64> keysToRemove)
+        /// <param name="bufferIndex">The index of the buffer in which the update is performed.</param>
+        /// <param name="offset">The offset of the first byte within the specified buffer.</param>
+        /// <param name="count">The number of bytes within the buffer.</param>
+        /// <param name="mode">The flag update mode.</param>
+        private void UpdateFlags(Int32 bufferIndex, Int32 offset, Int32 count, UpdateMode mode)
         {
-            foreach (Int64 index in keysToRemove)
-            {
-                if (index == _flushIndex + 1)
-                    _underlyingStream.Write(_byteArrays[index], (Int32)(_flushPosition % StorageSize), StorageSize - (Int32)(_flushPosition % StorageSize));
-                else
-                    _underlyingStream.Write(_byteArrays[index], 0, StorageSize);
+            if (!_isSingleAccess)
+                return;
 
-                _byteArrays.Remove(index);
-                _bitFlagArrays.Remove(index);
+            if (!_bitFlags.ContainsKey(bufferIndex))
+            {
+                if (mode == UpdateMode.Add)
+                {
+                    _bitFlags.Add(bufferIndex, new Byte[_bufferSize / 8]);
+                }
+                else
+                {
+                    return;
+                }
             }
 
-            if (keysToRemove.Count != 0)
-                _flushIndex = keysToRemove.Max();
+            Int32 byteIndex = offset / 8;
+
+            Int32 numberOfBitsSet = 0;
+            Int32 bitOffset = offset % 8;
+            Int32 bitCount = Math.Min(count, 8 - bitOffset);
+
+            while (numberOfBitsSet < count)
+            {
+                switch (mode)
+                {
+                    case UpdateMode.Add:
+                        _bitFlags[bufferIndex][byteIndex] |= GetBitMask(bitOffset, bitCount);
+                        break;
+                    case UpdateMode.Remove:
+                        _bitFlags[bufferIndex][byteIndex] ^= GetBitMask(bitOffset, bitCount);
+                        break;
+                }
+
+                byteIndex++;
+                numberOfBitsSet += bitCount;
+
+                bitOffset = 0;
+                bitCount = Math.Min(count - numberOfBitsSet, 8);
+            }
+        }
+
+        /// <summary>
+        /// Returns the bit mask for the specified offset and count.
+        /// </summary>
+        /// <param name="offset">The offset of the first byte.</param>
+        /// <param name="count">The number of bytes.</param>
+        /// <returns>The bit mask used for updating the data flags.</returns>
+        private Byte GetBitMask(Int32 offset, Int32 count)
+        {
+            return (Byte)(256 - (1 << (8 - count)) >> offset);
+        }
+
+        /// <summary>
+        /// Creates buffer arrays.
+        /// </summary>
+        /// <param name="offset">The offset of the first byte.</param>
+        /// <param name="count">The number of bytes.</param>
+        private void CreateBuffer(Int64 offset, Int64 count)
+        {
+            Int32 startBufferIndex = (Int32)(offset / _bufferSize);
+            Int32 endBufferIndex = (Int32)((offset + count) / _bufferSize);
+
+            for (Int32 bufferIndex = startBufferIndex; bufferIndex <= endBufferIndex; bufferIndex++)
+            {
+                CreateBuffer(bufferIndex);
+            }
+        }
+
+        /// <summary>
+        /// Creates a buffer array.
+        /// </summary>
+        /// <param name="bufferIndex">The index of the buffer.</param>
+        private void CreateBuffer(Int32 bufferIndex)
+        {
+            if (_buffers.ContainsKey(bufferIndex))
+                return;
+
+            _buffers.Add(bufferIndex, new Byte[_bufferSize]);
+
+            if (_isSingleAccess)
+                _bitFlags.Add(bufferIndex, new Byte[_bufferSize / 8]);
+        }
+
+        /// <summary>
+        /// Removes buffer arrays.
+        /// </summary>
+        /// <param name="offset">The offset of the first byte.</param>
+        /// <param name="count">The number of bytes.</param>
+        private void RemoveBuffer(Int64 offset, Int64 count)
+        {
+            Int32 startBufferIndex = (Int32)(offset / _bufferSize) + 1;
+            Int32 endBufferIndex = (Int32)((offset + count) / _bufferSize);
+
+            for (Int32 bufferIndex = startBufferIndex; bufferIndex <= endBufferIndex; bufferIndex++)
+                RemoveBuffer(bufferIndex);
+        }
+
+        /// <summary>
+        /// Removes a buffer array.
+        /// </summary>
+        /// <param name="bufferIndex">The index of the buffer.</param>
+        private void RemoveBuffer(Int32 bufferIndex)
+        {
+            if (!_isSingleAccess || !_buffers.ContainsKey(bufferIndex))
+                return;
+            
+            if (_bitFlags[bufferIndex].All(value => value == 0))
+            {
+                _buffers.Remove(bufferIndex);
+                _bitFlags.Remove(bufferIndex);
+            }
+        }
+
+        /// <summary>
+        /// Initializes the stream.
+        /// </summary>
+        /// <param name="type">The access type.</param>
+        private void InitializeStream(StreamAccessType type)
+        {
+            if (_accessType != StreamAccessType.Undefined)
+                return;
+
+            switch (type)
+            {
+                case StreamAccessType.Readable:
+                    _accessType = StreamAccessType.Readable;
+                    _length = _baseStream.Length;
+                    break;
+                case StreamAccessType.Writable:
+                    _accessType = StreamAccessType.Writable;
+                    _length = 0;
+                    break;
+            }
+
+            _position = 0;
+            _buffers = new Dictionary<Int32, Byte[]>();
+
+            if (_isSingleAccess)
+                _bitFlags = new Dictionary<Int32, Byte[]>();
         }
 
         #endregion
@@ -650,10 +789,10 @@ namespace ELTE.AEGIS.IO.Utilities
             if (disposing)
             {
                 if (_accessType == StreamAccessType.Writable)
-                    FlushIntoUnderlyingStream();
+                    WriteDataIntoStream(true);
 
-                if (_disposeUnderlyingStream)
-                    _underlyingStream.Dispose();
+                if (_disposeBaseStream)
+                    _baseStream.Dispose();
             }
         }
 

@@ -287,7 +287,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    _baseStream = new ProxyStream(_sourceStream, true, true, false);
+                    _baseStream = new ProxyStream(stream, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                     break;
                 case BufferingMode.Maximal:
                     _baseStream = new MemoryBufferedStream(_sourceStream);
@@ -590,7 +590,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    return new ProxyStream(stream, true, true);
+                    return new ProxyStream(stream, true, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                 case BufferingMode.Maximal:
                     return new MemoryBufferedStream(stream, true);
                 default:
@@ -616,7 +616,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    return new ProxyStream(stream, true, true);
+                    return new ProxyStream(stream, true, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                 case BufferingMode.Maximal:
                     return new MemoryBufferedStream(stream, true);
                 default:

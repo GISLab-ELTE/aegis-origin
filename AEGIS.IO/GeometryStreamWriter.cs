@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryStreamWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -296,7 +296,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    _baseStream = new ProxyStream(_sourceStream, true, true, false);
+                    _baseStream = new ProxyStream(_sourceStream, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                     break;
                 case BufferingMode.Maximal:
                     _baseStream = new MemoryBufferedStream(_sourceStream);
@@ -444,9 +444,22 @@ namespace ELTE.AEGIS.IO
                         break;
                 }
 
-                if (_disposeSourceStream &&_sourceStream != null)
+                if (_disposeSourceStream && _sourceStream != null)
                     _sourceStream.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Resolves the specified parameter.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>The specified parameter value or the default value if none specified.</returns>
+        protected Object ResolveParameter(GeometryStreamParameter parameter)
+        {
+            if (_parameters != null && _parameters.ContainsKey(parameter))
+                return _parameters[parameter];
+
+            return parameter.DefaultValue;
         }
 
         /// <summary>
@@ -486,7 +499,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    return new ProxyStream(stream, true, true);
+                    return new ProxyStream(stream, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                 case BufferingMode.Maximal:
                     return new MemoryBufferedStream(stream, true);
                 default:
@@ -512,7 +525,7 @@ namespace ELTE.AEGIS.IO
             switch (_bufferingMode)
             {
                 case BufferingMode.Minimal:
-                    return new ProxyStream(stream, true, true);
+                    return new ProxyStream(stream, ProxyStreamOptions.ForceProxy | ProxyStreamOptions.SingleAccess);
                 case BufferingMode.Maximal:
                     return new MemoryBufferedStream(stream, true);
                 default:
