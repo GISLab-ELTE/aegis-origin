@@ -42,7 +42,7 @@ namespace ELTE.AEGIS.Operations.Providers
         /// <summary>
         /// Gets the uniform resource identifier (URI) of the provider.
         /// </summary>
-        /// <value>The unifrom resource identifier of the provider.</value>
+        /// <value>The uniform resource identifier of the provider.</value>
         public Uri Uri { get { return new Uri(_assembly.Location); } }
 
         #endregion

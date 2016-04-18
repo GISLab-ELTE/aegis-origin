@@ -39,7 +39,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         /// <summary>
         /// The radiometric resolution of the mock object.
         /// </summary>
-        private Int32 _radiometrixResolution;
+        private Int32 _radiometricResolution;
 
         #endregion
 
@@ -51,14 +51,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
         [SetUp]
         public void SetUp()
         {
-            _radiometrixResolution = 8;
+            _radiometricResolution = 8;
             _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
             _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
             _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
-            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { _radiometrixResolution, _radiometrixResolution, _radiometrixResolution });
+            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { _radiometricResolution, _radiometricResolution, _radiometricResolution });
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
@@ -102,7 +102,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
                     for (Int32 columnIndex = 0; columnIndex < operation.Result.Raster.NumberOfColumns; columnIndex++)
                     {
                         Assert.IsTrue(0 <= operation.Result.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
-                        Assert.IsTrue(Math.Pow(2,_radiometrixResolution) >= operation.Result.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
+                        Assert.IsTrue(Math.Pow(2,_radiometricResolution) >= operation.Result.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
                     }
                 }
             }                     

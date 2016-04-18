@@ -93,40 +93,40 @@ namespace ELTE.AEGIS.Management
         }
 
         /// <summary>
-        /// Requires that the value is greater than or equal to the specified bundary.
+        /// Requires that the value is greater than or equal to the specified boundary.
         /// </summary>
         /// <param name="boundary">The boundary.</param>
-        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is greater than or equal to the specified bundary.</returns>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is greater than or equal to the specified boundary.</returns>
         public static Predicate<Object> IsGreaterThanOrEqualTo(Double boundary)
         {
             return (value => (value is IConvertible) && boundary <= Convert.ToDouble(value));
         }
 
         /// <summary>
-        /// Requires that the value is greater than the specified bundary.
+        /// Requires that the value is greater than the specified boundary.
         /// </summary>
         /// <param name="boundary">The boundary.</param>
-        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is greater than the specified bundary.</returns>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is greater than the specified boundary.</returns>
         public static Predicate<Object> IsGreaterThan(Double boundary)
         {
             return (value => (value is IConvertible) && boundary < Convert.ToDouble(value));
         }
 
         /// <summary>
-        /// Requires that the value is less than or equal to the specified bundary.
+        /// Requires that the value is less than or equal to the specified boundary.
         /// </summary>
         /// <param name="boundary">The boundary.</param>
-        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is less than or equal to the specified bundary.</returns>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is less than or equal to the specified boundary.</returns>
         public static Predicate<Object> IsLessThanOrEqualTo(Double boundary)
         {
             return (value => (value is IConvertible) && boundary >= Convert.ToDouble(value));
         }
 
         /// <summary>
-        /// Requires that the value is less than the specified bundary.
+        /// Requires that the value is less than the specified boundary.
         /// </summary>
         /// <param name="boundary">The boundary.</param>
-        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is less than the specified bundary.</returns>
+        /// <returns>A <see cref="Predicate{Object}" /> that validates whether the value is less than the specified boundary.</returns>
         public static Predicate<Object> IsLessThan(Double boundary)
         {
             return (value => (value is IConvertible) && boundary > Convert.ToDouble(value));

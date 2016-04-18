@@ -53,7 +53,7 @@ namespace ELTE.AEGIS.Topology
         private List<Face> _faces = new List<Face>();
 
         /// <summary>
-        /// Stores the geometry iodentifier provider.
+        /// Stores the geometry identifier provider.
         /// </summary>
         private readonly IIdentifierProvider _identifierProvider;
 

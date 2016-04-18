@@ -29,10 +29,10 @@ namespace ELTE.AEGIS.Compatibility
         #region IGeometry
 
         /// <summary>
-        /// Returns the name of the instantiable subtype of geometry.
+        /// Returns the name of the instantiatable subtype of geometry.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
-        /// <returns>The name of the instantiable subtype of geometry.</returns>
+        /// <returns>The name of the instantiatable subtype of geometry.</returns>
         public static String GeometryType(this IGeometry geometry)
         {
             return geometry.Name;

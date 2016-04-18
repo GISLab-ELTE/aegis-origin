@@ -433,7 +433,7 @@ namespace ELTE.AEGIS.Operations.Geometry
         }
 
         /// <summary>
-        /// Determines whether a set of identiers are present in only the second operand.
+        /// Determines whether a set of identifiers are present in only the second operand.
         /// </summary>
         /// <param name="identifiers">The identifiers to match.</param>
         /// <returns><c>true</c> if all of the <paramref name="identifiers"/> are present in only the second operand; <c>false</c> otherwise.</returns>

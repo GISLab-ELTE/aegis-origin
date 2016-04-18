@@ -34,7 +34,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <typeparam name="BehaviorType">The behavior of the service.</typeparam>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <param name="overwrite">A value indicating whether to overwrite the registration if already present.</param>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -75,7 +75,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.ArgumentNullException">The name is null.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -95,7 +95,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -139,7 +139,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -163,7 +163,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>

@@ -916,7 +916,7 @@ namespace ELTE.AEGIS.Algorithms
             // check for parallel lines
             if (CoordinateVector.IsParallel(u, v, precision))
             {
-                // the starting or ending coordinate of the second line must be on the first line (or vica verssa)
+                // the starting or ending coordinate of the second line must be on the first line (or vice versa)
                 Double b1 = (secondLineStart - firstLineStart) * u / (u * u);
                 Double b2 = (firstLineStart - secondLineStart) * v / (v * v);
 

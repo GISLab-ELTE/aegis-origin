@@ -65,7 +65,7 @@ namespace ELTE.AEGIS.Reference
         public static Angle TropicOfCancer { get { return (_tropicOfCancer ?? (_tropicOfCancer = Angle.FromDegree(23.43777778))).Value; } }
 
         /// <summary>
-        /// The ropic of capricorn.
+        /// The tropic of Capricorn.
         /// </summary>
         public static Angle TropicOfCapricorn { get { return (_tropicOfCapricorn ?? (_tropicOfCapricorn = Angle.FromDegree(-23.43777778))).Value; } }
 

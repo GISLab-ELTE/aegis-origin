@@ -65,7 +65,7 @@ namespace ELTE.AEGIS
 
             #endregion
 
-            #region Constructors and finalizer
+            #region Constructors and destructor
 
             /// <summary>
             /// Initializes the <see cref="FactoryRegistryImplementation" /> class.

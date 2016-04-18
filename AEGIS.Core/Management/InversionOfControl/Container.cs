@@ -141,9 +141,9 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         private const String MessageBehaviorNotImplementing = "The behavior does not implement contract.";
 
         /// <summary>
-        /// Exception message in case the behavior is not instantiable. This field is constant.
+        /// Exception message in case the behavior is not instantiatable. This field is constant.
         /// </summary>
-        private const String MessageBehaviorNotInstantiable = "The behavior is not instantiable.";
+        private const String MessageBehaviorNotInstantiable = "The behavior is not instantiatable.";
 
         /// <summary>
         /// Exception message in case the instance is null. This field is constant.
@@ -212,7 +212,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
 
         #endregion
 
-        #region Constructors and finalizer
+        #region Constructors and destructor
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Container" /> class.
@@ -255,7 +255,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <typeparam name="BehaviorType">The behavior of the service.</typeparam>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -272,7 +272,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <param name="overwrite">A value indicating whether to overwrite the registration if already present.</param>
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -305,7 +305,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.ObjectDisposedException">The object is disposed.</exception>
         /// <exception cref="System.ArgumentNullException">The name is null.</exception>
         /// <exception cref="System.InvalidOperationException">
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -328,7 +328,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -357,7 +357,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -388,7 +388,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
@@ -415,7 +415,7 @@ namespace ELTE.AEGIS.Management.InversionOfControl
         /// <exception cref="System.InvalidOperationException">
         /// The behavior does not implement the contract.
         /// or
-        /// The behavior is not instantiable.
+        /// The behavior is not instantiatable.
         /// or
         /// The service is already registered.
         /// </exception>
