@@ -193,6 +193,8 @@ namespace ELTE.AEGIS.Algorithms
                 _area += _shell[i].X * _shell[i + 1].Y - _shell[i + 1].X * _shell[i].Y;
             }
 
+            _area /= 2;
+
             resultX /= (6 * _area);
             resultY /= (6 * _area);
 
