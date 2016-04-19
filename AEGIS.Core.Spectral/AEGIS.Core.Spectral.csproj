@@ -75,6 +75,7 @@
     <Compile Include="ImagingDevice.cs" />
     <Compile Include="ImagingDeviceBand.cs" />
     <Compile Include="ImagingDevices.cs" />
+    <Compile Include="RasterDimensions.cs" />
     <Compile Include="RasterImaging.cs" />
     <Compile Include="RasterImagingBand.cs" />
     <Compile Include="Indices\ISpectralIndex.cs" />
