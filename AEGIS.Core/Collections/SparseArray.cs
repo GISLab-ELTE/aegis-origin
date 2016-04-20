@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Collections
     /// An array in which there is a large number of zero elements is referred to as being sparse.
     /// </remarks>  
     [Serializable]
-    public class SparseArray<T> : IList<T>
+    public class SparseArray<T> : IList<T>, IReadOnlyList<T>
     {
         #region Public types
 
