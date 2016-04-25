@@ -26,9 +26,80 @@ namespace ELTE.AEGIS.Raster
     {
         #region Private fields
 
-        private IRaster[] _rasters;
-        private Dictionary<Int32, Int32> _rasterIndexDictionary;
-        private Dictionary<Int32, Int32> _rasterBandIndexDictionary;
+        /// <summary>
+        /// The array of rasters within the collection.
+        /// </summary>
+        private readonly IRaster[] _rasters;
+
+        /// <summary>
+        /// The array of raster bands within the collection.
+        /// </summary>
+        private readonly IRasterBand[] _rasterBands;
+
+        /// <summary>
+        /// The dictionary mapping indices to the rasters within the collection.
+        /// </summary>
+        private readonly Dictionary<Int32, Int32> _rasterIndexDictionary;
+
+        /// <summary>
+        /// The dictionary mapping band indices to the raster bands within the collection.
+        /// </summary>
+        private readonly Dictionary<Int32, Int32> _rasterBandIndexDictionary;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiRaster"/> class.
+        /// </summary>
+        /// <param name="rasters">The rasters.</param>
+        /// <exception cref="System.ArgumentNullException">No rasters are specified.</exception>
+        /// <exception cref="System.ArgumentException">
+        /// One or more rasters are null.
+        /// or
+        /// The rasters do not have the same dimension.
+        /// or
+        /// The rasters do not have the same format.
+        /// </exception>
+        public MultiRaster(params IRaster[] rasters)
+        {
+            if (rasters == null || rasters.Length == 0)
+                throw new ArgumentNullException(nameof(rasters), "No rasters are specified.");
+            if (rasters.Any(raster => raster == null))
+                throw new ArgumentException("One or more rasters are null.", nameof(rasters));
+            if (rasters.Any(raster => raster.Format != rasters[0].Format))
+                throw new ArgumentException("The rasters do not have the same format.", nameof(rasters));
+            if (rasters.Any(raster => raster.NumberOfRows != rasters[0].NumberOfRows) ||
+                rasters.Any(raster => raster.NumberOfColumns != rasters[0].NumberOfColumns) ||
+                rasters.Any(raster => raster.RadiometricResolution != rasters[0].RadiometricResolution))
+                throw new ArgumentException("The rasters do not have the same dimensions.", nameof(rasters));
+
+            Dimensions = new RasterDimensions(rasters.Sum(raster => raster.NumberOfBands), rasters[0].NumberOfRows, rasters[0].NumberOfColumns, rasters[0].RadiometricResolution);
+
+            _rasters = rasters.ToArray();
+            _rasterBands = new IRasterBand[NumberOfBands];
+            _rasterIndexDictionary = new Dictionary<Int32, Int32>(NumberOfBands);
+            _rasterBandIndexDictionary = new Dictionary<Int32, Int32>(NumberOfBands);
+
+            Int32 rasterIndex = 0;
+            Int32 rasterBandIndex = 0;
+
+            for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
+            {
+                _rasterBands[bandIndex] = _rasters[rasterIndex][rasterBandIndex];
+                _rasterBandIndexDictionary[bandIndex] = rasterBandIndex;
+                _rasterIndexDictionary[bandIndex] = rasterIndex;
+
+                rasterBandIndex++;
+
+                if (rasterBandIndex == _rasters[rasterIndex].NumberOfBands)
+                {
+                    rasterIndex++;
+                    rasterBandIndex = 0;
+                }
+            }
+        }
 
         #endregion
 
@@ -42,58 +113,48 @@ namespace ELTE.AEGIS.Raster
         {
             get { return _rasters[0].Factory; }
         }
-        
+
+        /// <summary>
+        /// Gets the dimensions of the raster.
+        /// </summary>
+        /// <value>
+        /// The dimensions of the raster.
+        /// </value>
+        public RasterDimensions Dimensions { get; private set; }
+
         /// <summary>
         /// Gets the number of spectral values in a row.
         /// </summary>
         /// <value>The number of spectral values contained in a row.</value>
-        public Int32 NumberOfColumns
-        {
-            get { return _rasters[0].NumberOfColumns; }
-        }
-        
+        public Int32 NumberOfColumns { get { return Dimensions.NumberOfColumns; } }
+
         /// <summary>
         /// Gets the number of spectral values in a column.
         /// </summary>
         /// <value>The number of spectral values contained in a column.</value>
-        public Int32 NumberOfRows
-        {
-            get { return _rasters[0].NumberOfRows; }
-        }
-        
+        public Int32 NumberOfRows { get { return Dimensions.NumberOfRows; } }
+
         /// <summary>
         /// Gets the number of bands in the raster.
         /// </summary>
         /// <value>The number of spectral bands contained in the raster.</value>
-        public Int32 NumberOfBands { get; private set; }
-        
+        public Int32 NumberOfBands { get { return Dimensions.NumberOfBands; } }
+
+        /// <summary>
+        /// Gets the radiometric resolution of the bands in the raster.
+        /// </summary>
+        /// <value>The radiometric resolution of the bands in the raster.</value>
+        public Int32 RadiometricResolution { get { return Dimensions.RadiometricResolution; } }
+
         /// <summary>
         /// Gets the spectral bands of the raster.
         /// </summary>
         /// <value>The read-only list containing the spectral bands in the raster.</value>
-        public IList<IRasterBand> Bands
+        public IReadOnlyList<IRasterBand> Bands
         {
             get 
             {
-                List<IRasterBand> bands = new List<IRasterBand>(NumberOfBands);
-                foreach (IRaster raster in _rasters)
-                    bands.AddRange(raster.Bands);
-                return bands.AsReadOnly();
-            }
-        }
-        
-        /// <summary>
-        /// Gets the radiometric resolutions of the bands in the raster.
-        /// </summary>
-        /// <value>The read-only list containing the radiometric resolution of each band in the raster.</value>
-        public IList<Int32> RadiometricResolutions
-        {
-            get
-            {
-                List<Int32> bands = new List<Int32>(NumberOfBands);
-                foreach (IRaster raster in _rasters)
-                    bands.AddRange(raster.RadiometricResolutions);
-                return bands.AsReadOnly();
+                return _rasterBands;
             }
         }
         
@@ -102,14 +163,14 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <value>The read-only list containing the histogram values of each band in the raster.</value>
         /// <exception cref="System.NotSupportedException">Histogram query is not supported.</exception>
-        public IList<IList<Int32>> HistogramValues
+        public IReadOnlyList<IReadOnlyList<Int32>> HistogramValues
         {
             get
             {
-                List<IList<Int32>> bands = new List<IList<Int32>>(NumberOfBands);
+                List<IReadOnlyList<Int32>> histogramValues = new List<IReadOnlyList<Int32>>(NumberOfBands);
                 foreach (IRaster raster in _rasters)
-                    bands.AddRange(raster.HistogramValues);
-                return bands.AsReadOnly();
+                    histogramValues.AddRange(raster.HistogramValues);
+                return histogramValues.AsReadOnly();
             }
         }
         
@@ -117,7 +178,7 @@ namespace ELTE.AEGIS.Raster
         /// Gets the bounding coordinates of the raster.
         /// </summary>
         /// <value>The read-only list containing the bounding coordinates of the raster in counterclockwise order.</value>
-        public IList<Coordinate> Coordinates
+        public IReadOnlyList<Coordinate> Coordinates
         {
             get { return _rasters[0].Coordinates; }
         }
@@ -441,57 +502,6 @@ namespace ELTE.AEGIS.Raster
 
         #endregion
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MultiRaster"/> class.
-        /// </summary>
-        /// <param name="rasters">The rasters.</param>
-        /// <exception cref="System.ArgumentNullException">No rasters are specified.</exception>
-        /// <exception cref="System.ArgumentException">
-        /// One or more rasters are null.
-        /// or
-        /// The rasters do not have the same dimension.
-        /// or
-        /// The rasters do not have the same format.
-        /// </exception>
-        public MultiRaster(params IRaster[] rasters)
-        {
-            if (rasters == null || rasters.Length == 0)
-                throw new ArgumentNullException("rasters", "No rasters are specified.");
-            if (rasters.Any(raster => raster == null))
-                throw new ArgumentException("One or more rasters are null.", "rasters");
-            if (rasters.Any(raster => raster.NumberOfRows != rasters[0].NumberOfRows) ||
-                rasters.Any(raster => raster.NumberOfBands != rasters[0].NumberOfBands))
-                throw new ArgumentException("The rasters do not have the same dimension.", "rasters");
-            if (rasters.Any(raster => raster.Format != rasters[0].Format))
-                throw new ArgumentException("The rasters do not have the same format.", "rasters");
-
-            NumberOfBands = rasters.Sum(raster => raster.NumberOfBands);
-
-            _rasters = rasters;
-            _rasterIndexDictionary = new Dictionary<Int32, Int32>(NumberOfBands);
-            _rasterBandIndexDictionary = new Dictionary<Int32, Int32>(NumberOfBands);
-
-            Int32 rasterIndex = 0;
-            Int32 rasterBandIndex = 0;
-            for (Int32 bandIndex = 0; bandIndex < NumberOfBands; bandIndex++)
-            {
-                _rasterBandIndexDictionary[bandIndex] = rasterBandIndex;
-                _rasterIndexDictionary[bandIndex] = rasterIndex;
-
-                rasterBandIndex++;
-
-                if (rasterBandIndex == _rasters[rasterIndex].NumberOfBands)
-                {
-                    rasterIndex++;
-                    rasterBandIndex = 0;
-                }
-            }
-        }
-
-        #endregion
-
         #region IRaster methods
 
         /// <summary>
@@ -508,9 +518,9 @@ namespace ELTE.AEGIS.Raster
         public IRasterBand GetBand(Int32 index)
         {
             if (index < 0)
-                throw new ArgumentOutOfRangeException("index", "The index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(index), "The index is less than 0.");
             if (index >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("index", "The index is equal to or greater than the number of bands in the raster.");
+                throw new ArgumentOutOfRangeException(nameof(index), "The index is equal to or greater than the number of bands in the raster.");
 
             return _rasters[_rasterIndexDictionary[index]].GetBand(_rasterBandIndexDictionary[index]);
         }
@@ -541,17 +551,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             ApplySetValue(rowIndex, columnIndex, bandIndex, spectralValue);
         }
@@ -580,9 +590,9 @@ namespace ELTE.AEGIS.Raster
             if (Mapper == null)
                 throw new NotSupportedException("The geometry of the raster is not defined.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             Int32 rowIndex, columnIndex;
             Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
@@ -616,17 +626,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
+                throw new ArgumentNullException(nameof(spectralValues), "The spectral values are not specified.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands in the raster.", "spectralValues");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             ApplySetValues(rowIndex, columnIndex, spectralValues);
         }
@@ -649,7 +659,7 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
+                throw new ArgumentNullException(nameof(spectralValues), "The spectral values are not specified.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands in the raster.", "spectralValues");
             if (Mapper == null)
@@ -690,17 +700,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             ApplySetFloatValue(rowIndex, columnIndex, bandIndex, spectralValue);
         }
@@ -728,9 +738,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
             if (Mapper == null)
                 throw new NotSupportedException("The geometry of the raster is not defined.");
 
@@ -766,17 +776,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
+                throw new ArgumentNullException(nameof(spectralValues), "The spectral values are not specified.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands in the raster.", "spectralValues");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             ApplySetFloatValues(rowIndex, columnIndex, spectralValues);
         }
@@ -799,7 +809,7 @@ namespace ELTE.AEGIS.Raster
             if (!IsWritable)
                 throw new NotSupportedException("The raster is not writable.");
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The spectral values are not specified.");
+                throw new ArgumentNullException(nameof(spectralValues), "The spectral values are not specified.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands in the raster.", "spectralValues");
             if (Mapper == null)
@@ -840,17 +850,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             return ApplyGetValue(rowIndex, columnIndex, bandIndex);
         }
@@ -878,9 +888,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
             if (Mapper == null)
                 throw new NotSupportedException("The geometry of the raster is not defined.");
 
@@ -914,13 +924,13 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             return ApplyGetValues(rowIndex, columnIndex);
         }
@@ -978,17 +988,17 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             return ApplyGetFloatValue(rowIndex, columnIndex, bandIndex);
         }
@@ -1016,9 +1026,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
             if (Mapper == null)
                 throw new NotSupportedException("The geometry of the raster is not defined.");
 
@@ -1052,13 +1062,13 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             return ApplyGetFloatValues(rowIndex, columnIndex);
         }
@@ -1109,9 +1119,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
             Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
@@ -1206,9 +1216,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = rowIndex >= NumberOfRows ? -(NumberOfRows - rowIndex) : Math.Abs(rowIndex);
             Int32 trueColumnIndex = columnIndex >= NumberOfColumns ? -(NumberOfColumns - columnIndex) : Math.Abs(columnIndex);     
@@ -1303,9 +1313,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), NumberOfRows - 1);
             Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), NumberOfColumns - 1);
@@ -1400,9 +1410,9 @@ namespace ELTE.AEGIS.Raster
             if (!IsReadable)
                 throw new NotSupportedException("The raster is not readable.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             Int32 trueRowIndex = Math.Min(Math.Max(rowIndex, 0), NumberOfRows - 1);
             Int32 trueColumnIndex = Math.Min(Math.Max(columnIndex, 0), NumberOfColumns - 1);
@@ -1490,15 +1500,15 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The band index is equal to or greater than the number of bands.
         /// </exception>
-        public IList<Int32> GetHistogramValues(Int32 bandIndex)
+        public IReadOnlyList<Int32> GetHistogramValues(Int32 bandIndex)
         {
             if (!IsReadable || Format == RasterFormat.Floating)
                 throw new NotSupportedException("Histogram query is not supported.");
 
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             return ApplyGetHistogramValues(bandIndex);
         }
@@ -1629,7 +1639,7 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="bandIndex">The zero-based index of the band.</param>
         /// <returns>The read-only list containing the histogram values for the specified band.<returns>
-        private IList<Int32> ApplyGetHistogramValues(Int32 bandIndex) 
+        private IReadOnlyList<Int32> ApplyGetHistogramValues(Int32 bandIndex) 
         { 
             return _rasters[_rasterIndexDictionary[bandIndex]].GetHistogramValues(_rasterBandIndexDictionary[bandIndex]); 
         }

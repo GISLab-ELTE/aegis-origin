@@ -24,9 +24,9 @@ namespace ELTE.AEGIS
     public enum RasterDataOrder
     {
         /// <summary>
-        /// Represents a service supporting all possible orders.
+        /// Represents a service not supporting any order.
         /// </summary>
-        Unspecified = 0,
+        None = 0,
 
         /// <summary>
         /// Represents a service with multiple bands of the same pixel following each other (a.k.a. band sequential).
@@ -41,6 +41,11 @@ namespace ELTE.AEGIS
         /// <summary>
         /// Represents a service with multiple bands of the same row following each other (a.k.a. band interleaved by line).
         /// </summary>
-        RowBandColumn = 3
+        RowBandColumn = 4,
+
+        /// <summary>
+        /// Represents a service supporting all possible orders.
+        /// </summary>
+        Unspecified = 7
     }
 }

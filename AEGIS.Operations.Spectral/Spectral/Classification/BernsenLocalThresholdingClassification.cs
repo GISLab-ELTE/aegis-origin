@@ -115,7 +115,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                                                                                  SourceBandIndices.Length,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 Enumerable.Repeat(8, SourceBandIndices.Length).ToArray(),
+                                                                                 8,
                                                                                  _source.Raster.Mapper),
                                                              RasterPresentation.CreateGrayscalePresentation(),
                                                              _source.Imaging);

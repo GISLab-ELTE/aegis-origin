@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ProxyRasterTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -52,12 +52,9 @@ namespace ELTE.AEGIS.Tests.Raster
             _service = new Mock<IRasterService>(MockBehavior.Strict);
             _service.Setup(entity => entity.IsReadable).Returns(true);
             _service.Setup(entity => entity.IsWritable).Returns(true);
-            _service.Setup(entity => entity.NumberOfColumns).Returns(15);
-            _service.Setup(entity => entity.NumberOfRows).Returns(20);
-            _service.Setup(entity => entity.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
+            _service.Setup(entity => entity.Dimensions).Returns(new RasterDimensions(3, 20, 15, 8));
             _service.Setup(entity => entity.Format).Returns(RasterFormat.Integer);
-            _service.Setup(entity => entity.NumberOfBands).Returns(3);
-            _service.Setup(entity => entity.SupportedOrders).Returns(new RasterDataOrder[] { RasterDataOrder.RowColumnBand });
+            _service.Setup(entity => entity.DataOrder).Returns(RasterDataOrder.RowColumnBand);
 
             _service.Setup(entity => entity.ReadValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>())).Throws<ArgumentOutOfRangeException>();
 
@@ -95,12 +92,10 @@ namespace ELTE.AEGIS.Tests.Raster
 
             Assert.AreEqual(_service.Object.IsReadable, raster.IsReadable);
             Assert.AreEqual(_service.Object.IsWritable, raster.IsWritable);
-            Assert.AreEqual(_service.Object.NumberOfColumns, raster.NumberOfColumns);
-            Assert.AreEqual(_service.Object.NumberOfRows, raster.NumberOfRows);
-            Assert.IsTrue(_service.Object.RadiometricResolutions.SequenceEqual(raster.RadiometricResolutions));
+            Assert.AreEqual(_service.Object.Dimensions, raster.Dimensions);
             Assert.AreEqual(_service.Object.Format, raster.Format);
-            Assert.AreEqual(_service.Object.NumberOfBands, raster.NumberOfBands);
-            Assert.AreEqual(_service.Object.NumberOfBands, raster.Bands.Count);
+            Assert.AreEqual(_service.Object.Dimensions.NumberOfBands, raster.NumberOfBands);
+            Assert.AreEqual(_service.Object.Dimensions.NumberOfBands, raster.Bands.Count);
             Assert.AreEqual(_factory.Object, raster.Factory);
 
             // successful construction with mapping
@@ -153,8 +148,8 @@ namespace ELTE.AEGIS.Tests.Raster
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
-            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.NumberOfColumns; x += 100)
-                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.NumberOfRows; y += 100)
+            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.Dimensions.NumberOfColumns; x += 100)
+                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.Dimensions.NumberOfRows; y += 100)
                 {
                     Assert.AreEqual(_service.Object.ReadValue((x - 1000) / 10, (y - 1000) / 10, 0), raster.GetValue(new Coordinate(x, y), 0));
                     Assert.AreEqual(_service.Object.ReadValue((x - 1000) / 10, (y - 1000) / 10, 0), raster[new Coordinate(x, y), 0]);
@@ -184,8 +179,8 @@ namespace ELTE.AEGIS.Tests.Raster
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
-            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.NumberOfColumns; x += 100)
-                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.NumberOfRows; y += 100)
+            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.Dimensions.NumberOfColumns; x += 100)
+                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.Dimensions.NumberOfRows; y += 100)
                 {
                     Assert.IsTrue(_service.Object.ReadValueSequence((x - 1000) / 10, (y - 1000) / 10, 0, 3).SequenceEqual(raster.GetValues(new Coordinate(x, y))));
                     Assert.IsTrue(_service.Object.ReadValueSequence((x - 1000) / 10, (y - 1000) / 10, 0, 3).SequenceEqual(raster[new Coordinate(x, y)]));
@@ -206,8 +201,8 @@ namespace ELTE.AEGIS.Tests.Raster
                 for (Int32 j = -1; j <= raster.NumberOfRows + 5; j += 5)
                     for (Int32 k = -1; k <= raster.NumberOfColumns + 5; k += 5)
                     {
-                        Assert.AreEqual(_service.Object.ReadValue(Math.Max(0, Math.Min(j, _service.Object.NumberOfRows - 1)),
-                                                                  Math.Max(0, Math.Min(j, _service.Object.NumberOfColumns - 1)), i),
+                        Assert.AreEqual(_service.Object.ReadValue(Math.Max(0, Math.Min(j, _service.Object.Dimensions.NumberOfRows - 1)),
+                                                                  Math.Max(0, Math.Min(j, _service.Object.Dimensions.NumberOfColumns - 1)), i),
                                         raster.GetNearestValue(j, k, i));
                     }
 
@@ -218,11 +213,11 @@ namespace ELTE.AEGIS.Tests.Raster
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
             for (Int32 i = 0; i < raster.NumberOfBands; i++)
-                for (Int32 x = 1000; x < 1000 + 10 * _service.Object.NumberOfColumns; x += 100)
-                    for (Int32 y = 1000; y < 1000 + 10 * _service.Object.NumberOfRows; y += 100)
+                for (Int32 x = 1000; x < 1000 + 10 * _service.Object.Dimensions.NumberOfColumns; x += 100)
+                    for (Int32 y = 1000; y < 1000 + 10 * _service.Object.Dimensions.NumberOfRows; y += 100)
                     {
-                        Assert.AreEqual(_service.Object.ReadValue(Math.Max(0, Math.Min((x - 1000) / 10, _service.Object.NumberOfRows - 1)),
-                                                                  Math.Max(0, Math.Min((y - 1000) / 10, _service.Object.NumberOfColumns - 1)), i),
+                        Assert.AreEqual(_service.Object.ReadValue(Math.Max(0, Math.Min((x - 1000) / 10, _service.Object.Dimensions.NumberOfRows - 1)),
+                                                                  Math.Max(0, Math.Min((y - 1000) / 10, _service.Object.Dimensions.NumberOfColumns - 1)), i),
                                         raster.GetNearestValue(new Coordinate(x, y), i));
                     }
         }
@@ -258,8 +253,8 @@ namespace ELTE.AEGIS.Tests.Raster
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
             for (Int32 i = 0; i < raster.NumberOfBands; i++)
-                for (Int32 x = 1000; x < 1000 + 10 * _service.Object.NumberOfColumns; x += 100)
-                    for (Int32 y = 1000; y < 1000 + 10 * _service.Object.NumberOfRows; y += 100)
+                for (Int32 x = 1000; x < 1000 + 10 * _service.Object.Dimensions.NumberOfColumns; x += 100)
+                    for (Int32 y = 1000; y < 1000 + 10 * _service.Object.Dimensions.NumberOfRows; y += 100)
                     {
                         raster.SetValue(new Coordinate(x, y), i, (UInt32)i);
                         raster[new Coordinate(x, y), i] = (UInt32)i;
@@ -293,8 +288,8 @@ namespace ELTE.AEGIS.Tests.Raster
 
             raster = new ProxyRaster(_factory.Object, _service.Object, mapper);
 
-            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.NumberOfColumns; x += 100)
-                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.NumberOfRows; y += 100)
+            for (Int32 x = 1000; x < 1000 + 10 * _service.Object.Dimensions.NumberOfColumns; x += 100)
+                for (Int32 y = 1000; y < 1000 + 10 * _service.Object.Dimensions.NumberOfRows; y += 100)
                 {
                     raster.SetValues(new Coordinate(x, y), new UInt32[] { 0, 1, 2 });
                     raster[new Coordinate(x, y)] = new UInt32[] { 0, 1, 2 };

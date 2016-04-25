@@ -61,7 +61,7 @@ namespace ELTE.AEGIS.Algorithms.Resampling
         /// <returns>The spectral value at the specified index.</returns>
         public virtual UInt32 Compute(Double rowIndex, Double columnIndex, Int32 bandIndex)
         {
-            return RasterAlgorithms.Restrict(ComputeFloat(rowIndex, columnIndex, bandIndex), _raster.RadiometricResolutions[bandIndex]);
+            return RasterAlgorithms.Restrict(ComputeFloat(rowIndex, columnIndex, bandIndex), _raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Algorithms.Resampling
             UInt32[] result = new UInt32[_raster.NumberOfBands];
             for (Int32 bandIndex = 0; bandIndex < _raster.NumberOfBands; bandIndex++)
             {
-                result[bandIndex] = RasterAlgorithms.Restrict(resultFloat[bandIndex], _raster.RadiometricResolutions[bandIndex]);
+                result[bandIndex] = RasterAlgorithms.Restrict(resultFloat[bandIndex], _raster.RadiometricResolution);
             }
             return result;
         }

@@ -26,28 +26,18 @@ namespace ELTE.AEGIS
         #region Properties
 
         /// <summary>
-        /// Gets the number of columns.
+        /// Gets the dimensions of the raster.
         /// </summary>
-        /// <value>The number of spectral values contained in a row.</value>
-        Int32 NumberOfColumns { get; }
+        /// <value>
+        /// The dimensions of the raster.
+        /// </value>
+        RasterDimensions Dimensions { get; }
 
         /// <summary>
-        /// Gets the number of rows.
+        /// Gets the format of the service.
         /// </summary>
-        /// <value>The number of spectral values contained in a column.</value>
-        Int32 NumberOfRows { get; }
-
-        /// <summary>
-        /// Gets the number of spectral bands.
-        /// </summary>
-        /// <value>The number of spectral bands contained in the raster.</value>
-        Int32 NumberOfBands { get; }
-
-        /// <summary>
-        /// Gets the radiometric resolutions of the bands in the raster.
-        /// </summary>
-        /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-        IList<Int32> RadiometricResolutions { get; }
+        /// <value>The format of the service.</value>
+        RasterFormat Format { get; }
 
         /// <summary>
         /// Gets a value indicating whether the service is readable.
@@ -62,16 +52,10 @@ namespace ELTE.AEGIS
         Boolean IsWritable { get; }
 
         /// <summary>
-        /// Gets the format of the service.
+        /// Gets the data order of the service.
         /// </summary>
-        /// <value>The format of the service.</value>
-        RasterFormat Format { get; }
-
-        /// <summary>
-        /// Gets the supported read/write orders.
-        /// </summary>
-        /// <value>The list of supported read/write orders.</value>
-        IList<RasterDataOrder> SupportedOrders { get; }
+        /// <value>The data order of the service.</value>
+        RasterDataOrder DataOrder { get; }
 
         #endregion
 

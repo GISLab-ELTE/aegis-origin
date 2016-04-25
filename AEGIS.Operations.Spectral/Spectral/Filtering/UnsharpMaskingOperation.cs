@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 }
             filteredValue = filteredValue / _unsharpFilter.Factor + _unsharpFilter.Offset;
 
-            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolutions[bandIndex]);
+            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 }
             filteredValue = filteredValue / _unsharpFilter.Factor + _unsharpFilter.Offset;
 
-            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolutions[bandIndex]);
+            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolution);
         }
 
         #endregion

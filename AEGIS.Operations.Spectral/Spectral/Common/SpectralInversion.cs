@@ -84,7 +84,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
                 _peeks = new UInt32[SourceBandIndices.Length];
                 for (Int32 k = 0; k < SourceBandIndices.Length; k++)
                 {
-                    _peeks[k] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[SourceBandIndices[k]]);
+                    _peeks[k] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
                 }
             }
             else
@@ -93,7 +93,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
                 for (Int32 i = 0; i < _peeks.Length; i++)
                 {
-                    _peeks[i] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[i]);
+                    _peeks[i] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
                 }
             }
         }

@@ -153,7 +153,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         {
             // source: http://en.wikipedia.org/wiki/Histogram_equalization
 
-            IList<Int32> histogram = _source.Raster.HistogramValues[bandIndex];
+            IReadOnlyList<Int32> histogram = _source.Raster.HistogramValues[bandIndex];
 
             _cumulativeDistributionValues[bandIndex] = new Double[histogram.Count];
 
@@ -187,10 +187,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             _cumulativeDistributionMaximums[bandIndex] = _cumulativeDistributionValues[bandIndex][maxIndex];
 
             // exponent
-            _radiometricResolutionExponents[bandIndex] = Calculator.Pow(2, _source.Raster.RadiometricResolutions[bandIndex]);
+            _radiometricResolutionExponents[bandIndex] = Calculator.Pow(2, _source.Raster.RadiometricResolution);
 
             // radiometric value limit
-            _radiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[bandIndex]);
+            _radiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
         }
 
         #endregion

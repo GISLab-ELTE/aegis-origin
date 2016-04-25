@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IRasterFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -60,33 +60,10 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper);
-
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced raster image.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        IRaster CreateRaster(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper);
-
+        
         /// <summary>
         /// Creates a raster image.
         /// </summary>
@@ -124,34 +101,10 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper);
-
-        /// <summary>
-        /// Creates a raster image.
-        /// </summary>
-        /// <param name="format">The format of the raster.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced raster image.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        IRaster CreateRaster(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper);
-
+        
         /// <summary>
         /// Creates a raster image.
         /// </summary>

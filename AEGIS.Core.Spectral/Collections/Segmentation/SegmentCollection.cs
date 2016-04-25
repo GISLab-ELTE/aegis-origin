@@ -222,13 +222,13 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public Segment GetSegment(Int32 rowIndex, Int32 columnIndex)
         {
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= Raster.NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= Raster.NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
 
@@ -313,9 +313,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (!_segmentToIndexDictionary.ContainsKey(segment))
                 throw new ArgumentException("The segment is not within the collection.", "segment");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= Raster.NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             foreach (Int32 index in _segmentToIndexDictionary[segment])
             {
@@ -369,9 +369,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (!_segmentToIndexDictionary.ContainsKey(segment))
                 throw new ArgumentException("The segment is not within the collection.", "segment");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= Raster.NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is equal to or greater than the number of bands.");
 
             foreach (Int32 index in _segmentToIndexDictionary[segment])
             {
@@ -427,13 +427,13 @@ namespace ELTE.AEGIS.Collections.Segmentation
             if (!_segmentToIndexDictionary.ContainsKey(segment))
                 throw new ArgumentException("The segment is not within the collection.", "segment");
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= Raster.NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= Raster.NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
 
             Int32 index = rowIndex * Raster.NumberOfColumns + columnIndex;
@@ -597,13 +597,13 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void SplitSegment(Int32 rowIndex, Int32 columnIndex)
         {
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
             if (rowIndex >= Raster.NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is equal to or greater than the number of rows.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is less than 0.");
             if (columnIndex >= Raster.NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The column index is equal to or greater than the number of columns.");
 
             ApplySplitSegment(_indexToSegmentDictionary[rowIndex * Raster.NumberOfColumns + columnIndex]);
         }

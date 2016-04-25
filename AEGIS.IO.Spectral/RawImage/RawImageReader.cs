@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RawImageReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -47,45 +47,48 @@ namespace ELTE.AEGIS.IO.RawImage
             /// The raw image format reader.
             /// </summary>
             private readonly RawImageReader _rawImageReader;
+            
+            #endregion
+
+            #region Constructor
 
             /// <summary>
-            /// The array of radiometric resolutions.
+            /// Initializes a new instance of the <see cref="RawImageReaderService" /> class.
             /// </summary>
-            private readonly Int32[] _radiometricResolutions;
+            /// <param name="rawImageReader">The raw image reader.</param>
+            public RawImageReaderService(RawImageReader rawImageReader)
+            {
+                _rawImageReader = rawImageReader;
 
-            /// <summary>
-            /// The array of supported data orders.
-            /// </summary>
-            private readonly RasterDataOrder[] _supportedOrders;
+                Dimensions = new RasterDimensions(_rawImageReader._numberOfBands, _rawImageReader._numberOfRows, rawImageReader._numberOfColumns, rawImageReader._radiometricResolution);
+                Format = _rawImageReader._format;
+
+                switch (rawImageReader._layout)
+                {
+                    case RawImageLayout.BandInterlevedByLine:
+                        DataOrder = RasterDataOrder.RowBandColumn;
+                        break;
+                    case RawImageLayout.BandInterlevedByPixel:
+                        DataOrder = RasterDataOrder.RowColumnBand;
+                        break;
+                    case RawImageLayout.BandSequential:
+                        DataOrder = RasterDataOrder.BandRowColumn;
+                        break;
+                }
+            }
 
             #endregion
 
             #region IRasterService properties
 
             /// <summary>
-            /// Gets the number of columns.
+            /// Gets the dimensions of the raster.
             /// </summary>
-            /// <value>The number of spectral values contained in a row.</value>
-            public Int32 NumberOfColumns { get; private set; }
-
-            /// <summary>
-            /// Gets the number of rows.
-            /// </summary>
-            /// <value>The number of spectral values contained in a column.</value>
-            public Int32 NumberOfRows { get; private set; }
-
-            /// <summary>
-            /// Gets the number of spectral bands.
-            /// </summary>
-            /// <value>The number of spectral bands contained in the raster.</value>
-            public Int32 NumberOfBands { get; private set; }
-
-            /// <summary>
-            /// Gets the radiometric resolutions of the bands in the raster.
-            /// </summary>
-            /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-            public IList<Int32> RadiometricResolutions { get { return Array.AsReadOnly(_radiometricResolutions); } }
-
+            /// <value>
+            /// The dimensions of the raster.
+            /// </value>
+            public RasterDimensions Dimensions { get; private set; }
+            
             /// <summary>
             /// Gets a value indicating whether the service is readable.
             /// </summary>
@@ -105,34 +108,10 @@ namespace ELTE.AEGIS.IO.RawImage
             public RasterFormat Format { get; private set; }
 
             /// <summary>
-            /// Gets the supported read/write orders.
+            /// Gets the supported read/write order.
             /// </summary>
-            /// <value>The list of supported read/write orders.</value>
-            public IList<RasterDataOrder> SupportedOrders { get { return Array.AsReadOnly(_supportedOrders); } }
-
-            #endregion
-
-            #region Constructor
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="RawImageReaderService" /> class.
-            /// </summary>
-            /// <param name="rawImageReader">The raw image format reader.</param>
-            /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-            /// <param name="representation">The representation.</param>
-            /// <param name="order">The raster data order.</param>
-            public RawImageReaderService(RawImageReader rawImageReader, IList<Int32> radiometricResolutions, RasterFormat format, RasterDataOrder order)
-            {
-                _rawImageReader = rawImageReader;
-                _radiometricResolutions = radiometricResolutions.ToArray();
-
-                NumberOfBands = rawImageReader._spectralResolution;
-                NumberOfColumns = rawImageReader._numberOfColumns;
-                NumberOfRows = rawImageReader._numberOfRows;
-                Format = format;
-
-                _supportedOrders = new RasterDataOrder[] { order }; 
-            }
+            /// <value>The list of supported read/write order.</value>
+            public RasterDataOrder DataOrder { get; private set; }
 
             #endregion
 
@@ -171,7 +150,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (readOrder != _supportedOrders[0])
+                if (readOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 return _rawImageReader.ReadValueSequence(startIndex, numberOfValues);
@@ -202,7 +181,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (readOrder != _supportedOrders[0])
+                if (readOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 return _rawImageReader.ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues);
@@ -246,7 +225,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
             public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (readOrder != _supportedOrders[0])
+                if (readOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 return _rawImageReader.ReadValueSequence(startIndex, numberOfValues).Cast<Double>().ToArray();
@@ -277,7 +256,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
             public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (readOrder != _supportedOrders[0])
+                if (readOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 return _rawImageReader.ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues).Cast<Double>().ToArray();
@@ -439,16 +418,64 @@ namespace ELTE.AEGIS.IO.RawImage
 
         #region Private fields
 
+        /// <summary>
+        /// The byte order of the file.
+        /// </summary>
         protected ByteOrder _byteOrder;
+
+        /// <summary>
+        /// The layout of the file.
+        /// </summary>
         protected RawImageLayout _layout;
+
+        /// <summary>
+        /// The raster format.
+        /// </summary>
+        protected RasterFormat _format;
+
+        /// <summary>
+        /// The number of bands.
+        /// </summary>
+        protected Int32 _numberOfBands;
+
+        /// <summary>
+        /// The number of rows.
+        /// </summary>
         protected Int32 _numberOfRows;
+
+        /// <summary>
+        /// The number of columns.
+        /// </summary>
         protected Int32 _numberOfColumns;
-        protected Int32 _spectralResolution;
+
+        /// <summary>
+        /// The radiometric resolution of the raster.
+        /// </summary>
         protected Int32 _radiometricResolution;
+
+        /// <summary>
+        /// The number of bytes gap per band.
+        /// </summary>
         protected Int32 _bytesGapPerBand;
+
+        /// <summary>
+        /// The number of bytes per band row.
+        /// </summary>
         protected Int32 _bytesPerBandRow;
+
+        /// <summary>
+        /// The  number of bytes per row.
+        /// </summary>
         protected Int32 _bytesPerRow;
+
+        /// <summary>
+        /// The number of bytes skipped.
+        /// </summary>
         protected Int32 _bytesSkipped;
+
+        /// <summary>
+        /// The raster mapper.
+        /// </summary>
         protected RasterMapper _mapper;
 
         #endregion
@@ -687,7 +714,7 @@ namespace ELTE.AEGIS.IO.RawImage
             _layout = ResolveParameter<RawImageLayout>(SpectralGeometryStreamParameters.Layout);
             _numberOfRows = ResolveParameter<Int32>(SpectralGeometryStreamParameters.NumerOfRows);
             _numberOfColumns = ResolveParameter<Int32>(SpectralGeometryStreamParameters.NumberOfColumns);
-            _spectralResolution = ResolveParameter<Int32>(SpectralGeometryStreamParameters.SpectralResolution);
+            _numberOfBands = ResolveParameter<Int32>(SpectralGeometryStreamParameters.SpectralResolution);
             _radiometricResolution = ResolveParameter<Int32>(SpectralGeometryStreamParameters.RadiometricResolution);
             _byteOrder = ResolveParameter<ByteOrder>(SpectralGeometryStreamParameters.SpectralResolution);
             _bytesGapPerBand = ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesGapPerBand);
@@ -696,7 +723,7 @@ namespace ELTE.AEGIS.IO.RawImage
                                Convert.ToInt32(Math.Ceiling(_numberOfColumns * _radiometricResolution / 8.0));
             _bytesPerRow = IsProvidedParameter(SpectralGeometryStreamParameters.BytesPerRow) ? 
                            ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesPerRow) : 
-                           (_layout == RawImageLayout.BandInterlevedByLine ? _spectralResolution * _bytesGapPerBand : (Int32)Math.Ceiling(_numberOfRows * _numberOfColumns * _radiometricResolution / 8.0));
+                           (_layout == RawImageLayout.BandInterlevedByLine ? _numberOfBands * _bytesGapPerBand : (Int32)Math.Ceiling(_numberOfRows * _numberOfColumns * _radiometricResolution / 8.0));
             _bytesSkipped = ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesSkipped);
 
             // set raster mapping if all parameters are available
@@ -717,7 +744,7 @@ namespace ELTE.AEGIS.IO.RawImage
         /// <returns>The raster of the geometry.</returns>
         private IRaster ReadRasterContent(IReferenceSystem referenceSystem)
         {
-            IRaster raster = ResolveFactory(referenceSystem).GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateRaster(_spectralResolution, _numberOfRows, _numberOfColumns, _radiometricResolution, _mapper);
+            IRaster raster = ResolveFactory(referenceSystem).GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateRaster(_numberOfBands, _numberOfRows, _numberOfColumns, _radiometricResolution, _mapper);
 
             _baseStream.Seek(_bytesSkipped, SeekOrigin.Begin);
 
@@ -761,14 +788,14 @@ namespace ELTE.AEGIS.IO.RawImage
             Byte[] stripBytes = new Byte[numberOfBytes];
 
             _baseStream.Read(stripBytes, 0, stripBytes.Length);
-            Int32 numberOfBytesLeft = _numberOfRows * _numberOfColumns * _radiometricResolution * _spectralResolution, byteIndex = 0, bitIndex = 8;
+            Int32 numberOfBytesLeft = _numberOfRows * _numberOfColumns * _radiometricResolution * _numberOfBands, byteIndex = 0, bitIndex = 8;
 
             switch (_layout)
             {
                 case RawImageLayout.BandInterlevedByLine:
                     for (Int32 rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
                     {
-                        for (Int32 bandIndex = 0; bandIndex < _spectralResolution; bandIndex++)
+                        for (Int32 bandIndex = 0; bandIndex < _numberOfBands; bandIndex++)
                         {
                             for (Int32 columnIndex = 0; columnIndex < _numberOfColumns; columnIndex++)
                             {
@@ -788,7 +815,7 @@ namespace ELTE.AEGIS.IO.RawImage
                     {
                         for (Int32 columnIndex = 0; columnIndex < _numberOfColumns; columnIndex++)
                         {
-                            for (Int32 bandIndex = 0; bandIndex < _spectralResolution; bandIndex++)
+                            for (Int32 bandIndex = 0; bandIndex < _numberOfBands; bandIndex++)
                             {
                                 ReadValue(stripBytes, ref byteIndex, ref bitIndex, raster, rowIndex, columnIndex, bandIndex);
 
@@ -802,7 +829,7 @@ namespace ELTE.AEGIS.IO.RawImage
                     }
                     break;
                 case RawImageLayout.BandSequential:
-                    for (Int32 bandIndex = 0; bandIndex < _spectralResolution; bandIndex++)
+                    for (Int32 bandIndex = 0; bandIndex < _numberOfBands; bandIndex++)
                     {
                         for (Int32 rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
                         {
@@ -890,7 +917,7 @@ namespace ELTE.AEGIS.IO.RawImage
             {
                 case (RawImageLayout.BandInterlevedByLine):
                     {
-                        index = _spectralResolution * _numberOfColumns * (rowIndex - 1) + (_spectralResolution - 1) * _numberOfColumns + columnIndex;
+                        index = _numberOfBands * _numberOfColumns * (rowIndex - 1) + (_numberOfBands - 1) * _numberOfColumns + columnIndex;
                     }
                     break;
                 case (RawImageLayout.BandInterlevedByPixel):
@@ -938,6 +965,5 @@ namespace ELTE.AEGIS.IO.RawImage
 
 
         #endregion
-
     }
 }

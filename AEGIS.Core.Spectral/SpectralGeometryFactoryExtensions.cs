@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralGeometryFactoryExtensions.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -167,7 +167,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -206,7 +206,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -217,85 +217,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
-
-        /// <summary>
-        /// Creates a spectral geometry.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral geometry.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The factory is null.
-        /// or
-        /// The geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral geometry.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral geometry.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The factory is null.
-        /// or
-        /// The geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
+        
         /// <summary>
         /// Creates a spectral geometry.
         /// </summary>
@@ -390,7 +312,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -430,7 +352,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -441,87 +363,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging);
         }
-
-        /// <summary>
-        /// Creates a spectral geometry.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="format">The format of the raster.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral geometry.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The factory is null.
-        /// or
-        /// The geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral geometry.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="geometry">The geometry.</param>
-        /// <param name="format">The format of the raster.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral geometry.</returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// The factory is null.
-        /// or
-        /// The geometry is null.
-        /// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralGeometry CreateSpectralGeometry(this IGeometryFactory factory, IGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralGeometry(geometry, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
+        
         /// <summary>
         /// Creates a raster image for the specified service.
         /// </summary>
@@ -732,7 +574,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -765,7 +607,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -799,7 +641,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -834,7 +676,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -845,145 +687,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
@@ -1118,7 +822,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -1151,7 +855,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -1185,7 +889,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -1220,7 +924,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -1231,145 +935,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="factory">The geometry factory.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The factory is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
@@ -1575,7 +1141,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -1609,7 +1175,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -1644,7 +1210,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -1680,7 +1246,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -1691,161 +1257,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
@@ -1985,7 +1397,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -2019,7 +1431,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -2054,7 +1466,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -2090,7 +1502,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -2101,161 +1513,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
@@ -2478,7 +1736,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -2513,7 +1771,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -2549,7 +1807,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -2586,7 +1844,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -2597,165 +1855,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>
@@ -2900,7 +2000,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
@@ -2935,7 +2035,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, IDictionary<String, Object> metadata)
         {
@@ -2971,7 +2071,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
         {
@@ -3008,7 +2108,7 @@ namespace ELTE.AEGIS
         /// or
         /// The radiometric resolution is less than 1.
         /// or
-        /// The radiometric resolution is greater than the maximum allowed.
+        /// The radiometric resolution is greater than 64.
         /// </exception>
         public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
         {
@@ -3019,165 +2119,7 @@ namespace ELTE.AEGIS
 
             return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper, presentation, imaging, metadata);
         }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, metadata);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging);
-        }
-
-        /// <summary>
-        /// Creates a spectral polygon.
-        /// </summary>
-        /// <param name="shell">The shell.</param>
-        /// <param name="holes">The holes.</param>
-        /// <param name="numberOfBands">The number of bands.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The list of radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="presentation">The raster presentation data.</param>
-        /// <param name="imaging">The raster imaging data.</param>
-        /// <param name="metadata">The metadata.</param>
-        /// <returns>The produced spectral polygon.</returns>
-        /// <exception cref="System.ArgumentNullException">The shell is null.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The number of bands is less than 1.
-        /// or
-        /// The number of rows is less than 0.
-        /// or
-        /// The number of columns is less than 0.
-        /// or
-        /// One or more radiometric resolutions are less than 1.
-        /// or
-        /// One or more radiometric resolutions are greater than the maximum allowed.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        /// The shell is empty.
-        /// or
-        /// The number of radiometric resolutions does not match the number of bands.
-        /// </exception>
-        public static ISpectralPolygon CreateSpectralPolygon(this IGeometryFactory factory, IEnumerable<Coordinate> shell, IEnumerable<IEnumerable<Coordinate>> holes, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging, IDictionary<String, Object> metadata)
-        {
-            if (factory == null)
-                throw new ArgumentNullException("factory", "The factory is null.");
-
-            EnsureFactory(factory);
-
-            return factory.GetFactory<ISpectralGeometryFactory>().CreateSpectralPolygon(shell, holes, format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper, presentation, imaging, metadata);
-        }
-
+        
         /// <summary>
         /// Creates a spectral polygon.
         /// </summary>

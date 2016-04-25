@@ -35,12 +35,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         /// The mock of the raster.
         /// </summary>
         private Mock<IRaster> _rasterMock;
-
-        /// <summary>
-        /// The radiometric resolution of the mock object.
-        /// </summary>
-        private Int32 _radiometricResolution;
-
+        
         #endregion
 
         #region Test setup
@@ -51,14 +46,14 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
         [SetUp]
         public void SetUp()
         {
-            _radiometricResolution = 8;
             _rasterMock = new Mock<IRaster>(MockBehavior.Strict);
             _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
+            _rasterMock.Setup(raster => raster.Dimensions).Returns(new RasterDimensions(3, 20, 15, 8));
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(20);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(15);
             _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
-            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { _radiometricResolution, _radiometricResolution, _radiometricResolution });
+            _rasterMock.Setup(raster => raster.RadiometricResolution).Returns(8);
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);
@@ -92,7 +87,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             Assert.AreEqual(_rasterMock.Object.NumberOfRows, result.Raster.NumberOfRows);
             Assert.AreEqual(_rasterMock.Object.NumberOfColumns, result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, result.Raster.NumberOfBands);
-            Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
+            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, result.Raster.RadiometricResolution);
             Assert.AreEqual(RasterFormat.Floating, result.Raster.Format);
 
             for (Int32 bandIndex = 0; bandIndex < result.Raster.NumberOfBands; bandIndex++)

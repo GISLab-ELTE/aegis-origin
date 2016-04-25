@@ -95,12 +95,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The Otsu threshold computed from the histogram values.</returns>
         /// <exception cref="System.ArgumentNullException">The list of histogram values is null.</exception>
         /// <exception cref="System.ArgumentException">The list of histogram values is empty.</exception>
-        public static Double ComputeOtsuThreshold(IList<Int32> histogramValues)
+        public static Double ComputeOtsuThreshold(IReadOnlyList<Int32> histogramValues)
         {
             if (histogramValues == null)
-                throw new ArgumentNullException("histogramValues", "The list of histogram values is null.");
+                throw new ArgumentNullException(nameof(histogramValues), "The list of histogram values is null.");
             if (histogramValues.Count == 0)
-                throw new ArgumentException("The list of histogram values is empty.", "histogramValues");
+                throw new ArgumentException("The list of histogram values is empty.", nameof(histogramValues));
 
             // sum the pixel values according to histogram values with relation to intensity
             Double sum = 0; 
@@ -147,12 +147,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The balance point of the histogram values.</returns>
         /// <exception cref="System.ArgumentNullException">The list of histogram values is null.</exception>
         /// <exception cref="System.ArgumentException">The list of histogram values is empty.</exception>
-        public static Double ComputeHistogramBalance(IList<Int32> histogramValues)
+        public static Double ComputeHistogramBalance(IReadOnlyList<Int32> histogramValues)
         {
             if (histogramValues == null)
-                throw new ArgumentNullException("histogramValues", "The list of histogram values is null.");
+                throw new ArgumentNullException(nameof(histogramValues), "The list of histogram values is null.");
             if (histogramValues.Count == 0)
-                throw new ArgumentException("The list of histogram values is empty.", "histogramValues");
+                throw new ArgumentException("The list of histogram values is empty.", nameof(histogramValues));
 
             Int32 leftBoundary = 0, rightBoundary = histogramValues.Count - 1;
 

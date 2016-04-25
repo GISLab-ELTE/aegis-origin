@@ -228,7 +228,7 @@ namespace ELTE.AEGIS.IO.RawImage
                                 _numberOfColumns = Int32.Parse(lineParts[1]);
                                 break;
                             case "NBANDS":
-                                _spectralResolution = Int32.Parse(lineParts[1]);
+                                _numberOfBands = Int32.Parse(lineParts[1]);
                                 break;
                             case "NBITS":
                                 _radiometricResolution = Int32.Parse(lineParts[1]);

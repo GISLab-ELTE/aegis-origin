@@ -53,7 +53,7 @@ namespace ELTE.AEGIS
         /// Gets the histogram values of the band.
         /// </summary>
         /// <value>The histogram values of the band.</value>
-        IList<Int32> HistogramValues { get; }
+        IReadOnlyList<Int32> HistogramValues { get; }
 
         /// <summary>
         /// Get a value indicating whether the raster band is mapped to coordinate space.

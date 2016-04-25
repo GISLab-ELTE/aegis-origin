@@ -275,7 +275,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                                                                                 _referenceGeometry.Raster.NumberOfBands,
                                                                                 _source.Raster.NumberOfRows,
                                                                                 _source.Raster.NumberOfColumns,
-                                                                                _referenceGeometry.Raster.RadiometricResolutions,
+                                                                                _referenceGeometry.Raster.RadiometricResolution,
                                                                                 _source.Raster.Mapper),
                                                             _referenceGeometry.Presentation,
                                                             _source.Imaging);

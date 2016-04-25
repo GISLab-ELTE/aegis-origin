@@ -122,7 +122,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                                  SourceBandIndices.Length,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 SourceBandIndices.Select(index => _source.Raster.RadiometricResolutions[index]).ToArray(),
+                                                                                 _source.Raster.RadiometricResolution,
                                                                                  _source.Raster.Mapper),
                                                              presentation,
                                                              _source.Imaging);

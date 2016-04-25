@@ -48,38 +48,23 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// </summary>
             private readonly SpectralTransformation _operation;
 
-            /// <summary>
-            /// The array of radiometric resolutions. This field is read-only.
-            /// </summary>
-            private readonly Int32[] _radiometricResolutions;
-
             #endregion
 
             #region IRasterService properties
 
             /// <summary>
-            /// Gets the number of columns.
+            /// Gets the dimensions of the raster.
             /// </summary>
-            /// <value>The number of spectral values contained in a row.</value>
-            public Int32 NumberOfColumns { get; private set; }
+            /// <value>
+            /// The dimensions of the raster.
+            /// </value>
+            public RasterDimensions Dimensions { get; }
 
             /// <summary>
-            /// Gets the number of rows.
+            /// Gets the format of the service.
             /// </summary>
-            /// <value>The number of spectral values contained in a column.</value>
-            public Int32 NumberOfRows { get; private set; }
-
-            /// <summary>
-            /// Gets the number of spectral bands.
-            /// </summary>
-            /// <value>The number of spectral bands contained in the raster.</value>
-            public Int32 NumberOfBands { get; private set; }
-
-            /// <summary>
-            /// Gets the radiometric resolutions of the bands in the raster.
-            /// </summary>
-            /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-            public IList<Int32> RadiometricResolutions { get { return Array.AsReadOnly(_radiometricResolutions); } }
+            /// <value>The format of the service.</value>
+            public RasterFormat Format { get; }
 
             /// <summary>
             /// Gets a value indicating whether the service is readable.
@@ -94,16 +79,10 @@ namespace ELTE.AEGIS.Operations.Spectral
             public Boolean IsWritable { get { return false; } }
 
             /// <summary>
-            /// Gets the format of the service.
+            /// Gets the data order of the service.
             /// </summary>
-            /// <value>The format of the service.</value>
-            public RasterFormat Format { get; private set; }
-
-            /// <summary>
-            /// Gets the supported read/write orders.
-            /// </summary>
-            /// <value>The list of supported read/write orders.</value>
-            public IList<RasterDataOrder> SupportedOrders { get { return Array.AsReadOnly(_supportedOrders); } }
+            /// <value>The data order of the service.</value>
+            public RasterDataOrder DataOrder { get { return RasterDataOrder.Unspecified; } }
 
             #endregion
 
@@ -118,18 +97,12 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="numberOfRows">The number of rows.</param>
             /// <param name="numberOfColumns">The number of columns.</param>
             /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-            public SpectralTransformationService(SpectralTransformation operation, RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions)
+            public SpectralTransformationService(SpectralTransformation operation, RasterFormat format, RasterDimensions dimensions)
             {
                 _operation = operation;
-                _radiometricResolutions = radiometricResolutions.ToArray();
 
-                NumberOfBands = numberOfBands;
-                NumberOfColumns = numberOfColumns;
-                NumberOfRows = numberOfRows;
+                Dimensions = dimensions;
                 Format = format;
-
-                if (_supportedOrders == null)
-                    _supportedOrders = new RasterDataOrder[] { RasterDataOrder.RowColumnBand };
             }
 
             #endregion
@@ -143,19 +116,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="columnIndex">The zero-based column index of the value.</param>
             /// <param name="bandIndex">The zero-based band index of the value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The row index is less than 0.
-            /// or
-            /// The row index is equal to or greater than the number of rows.
-            /// or
-            /// The column index is less than 0.
-            /// or
-            /// The column index is equal to or greater than the number of columns.
-            /// or
-            /// The band index is less than 0.
-            /// or
-            /// The band index is equal to or greater than the number of bands.
-            /// </exception>
             public UInt32 ReadValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
             {
                 return _operation.Compute(rowIndex, columnIndex, bandIndex);
@@ -167,15 +127,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
             /// <returns>The array containing the sequence of values in the default order of the service.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The start index is less than 0.
-            /// or
-            /// The start index is equal to or greater than the number of values.
-            /// or
-            /// The number of values is less than 0.
-            /// or
-            /// The number of values is greater than the maximum number allowed to be read.
-            /// </exception>
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues)
             {
                 return ReadValueSequence(startIndex, numberOfValues, RasterDataOrder.RowColumnBand);
@@ -188,32 +139,13 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="numberOfValues">The number of values to be read.</param>
             /// <param name="readOrder">The reading order.</param>
             /// <returns>The array containing the sequence of values in the specified order.</returns>
-            /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The start index is less than 0.
-            /// or
-            /// The start index is equal to or greater than the number of values.
-            /// or
-            /// The number of values is less than 0.
-            /// or
-            /// The number of values is greater than the maximum number allowed to be read.
-            /// </exception>
             public UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (startIndex < 0)
-                    throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex <= NumberOfRows * NumberOfColumns * NumberOfBands)
-                    throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
-                if (numberOfValues < 0)
-                    throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != RasterDataOrder.RowColumnBand)
-                    throw new NotSupportedException("The specified reading order is not supported.");
-
                 // compute the row/column/band indices from the start index
                 Int32 columnIndex = 0, rowIndex = 0, bandIndex = 0;
-                rowIndex = startIndex / (NumberOfColumns * NumberOfBands);
-                columnIndex = (startIndex - rowIndex * NumberOfColumns * NumberOfBands) / NumberOfBands;
-                bandIndex = startIndex - rowIndex * NumberOfColumns * NumberOfBands - columnIndex * NumberOfBands;
+                rowIndex = startIndex / (Dimensions.NumberOfColumns * Dimensions.NumberOfBands);
+                columnIndex = (startIndex - rowIndex * Dimensions.NumberOfColumns * Dimensions.NumberOfBands) / Dimensions.NumberOfBands;
+                bandIndex = startIndex - rowIndex * Dimensions.NumberOfColumns * Dimensions.NumberOfBands - columnIndex * Dimensions.NumberOfBands;
 
                 return ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, readOrder);
             }
@@ -226,23 +158,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="bandIndex">The zero-based band index of the first value.</param>
             /// <param name="numberOfValues">The number of values.</param>
             /// <returns>The array containing the sequence of values in the default order of the service.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The row index is less than 0.
-            /// or
-            /// The row index is equal to or greater than the number of rows.
-            /// or
-            /// The column index is less than 0.
-            /// or
-            /// The column index is equal to or greater than the number of columns.
-            /// or
-            /// The band index is less than 0.
-            /// or
-            /// The band index is equal to or greater than the number of bands.
-            /// or
-            /// The number of values is less than 0.
-            /// or
-            /// The number of values is greater than the maximum number allowed to be read.
-            /// </exception>
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
             {
                 return ReadValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, RasterDataOrder.RowColumnBand);
@@ -257,47 +172,14 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="numberOfValues">The number of values.</param>
             /// <param name="readOrder">The reading order.</param>
             /// <returns>The array containing the sequence of values in the specified order.</returns>
-            /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The row index is less than 0.
-            /// or
-            /// The row index is equal to or greater than the number of rows.
-            /// or
-            /// The column index is less than 0.
-            /// or
-            /// The column index is equal to or greater than the number of columns.
-            /// or
-            /// The band index is less than 0.
-            /// or
-            /// The band index is equal to or greater than the number of bands.
-            /// or
-            /// The number of values is less than 0.
-            /// </exception>
             public UInt32[] ReadValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (rowIndex < 0)
-                    throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-                if (rowIndex >= NumberOfRows)
-                    throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-                if (columnIndex < 0)
-                    throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-                if (columnIndex >= NumberOfColumns)
-                    throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-                if (bandIndex < 0)
-                    throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-                if (bandIndex >= NumberOfBands)
-                    throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-                if (numberOfValues < 0)
-                    throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != RasterDataOrder.RowColumnBand)
-                    throw new NotSupportedException("The specified reading order is not supported.");
-
                 // there may be not enough values, or the number may be greater than the maximum allowed
-                UInt32[] values = new UInt32[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * NumberOfBands + (NumberOfColumns - columnIndex) * NumberOfBands + NumberOfBands - bandIndex)];
+                UInt32[] values = new UInt32[Calculator.Min(MaximumNumberOfValues, numberOfValues, (Dimensions.NumberOfRows - rowIndex) * Dimensions.NumberOfColumns * Dimensions.NumberOfBands + (Dimensions.NumberOfColumns - columnIndex) * Dimensions.NumberOfBands + Dimensions.NumberOfBands - bandIndex)];
 
                 Int32 currentIndex = 0;
                 while (currentIndex < values.Length)
-                { 
+                {
                     // read the specified pixel
                     UInt32[] currentValues = _operation.Compute(rowIndex, columnIndex);
                     Array.Copy(currentValues, bandIndex, values, currentIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
@@ -305,7 +187,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     // change indices for the next pixel
                     bandIndex = 0;
                     columnIndex++;
-                    if (columnIndex == NumberOfColumns) { columnIndex = 0; rowIndex++; }
+                    if (columnIndex == Dimensions.NumberOfColumns) { columnIndex = 0; rowIndex++; }
 
                     currentIndex += currentValues.Length - bandIndex;
                 }
@@ -324,19 +206,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="columnIndex">The zero-based column index of the value.</param>
             /// <param name="bandIndex">The zero-based band index of the value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The row index is less than 0.
-            /// or
-            /// The row index is equal to or greater than the number of rows.
-            /// or
-            /// The column index is less than 0.
-            /// or
-            /// The column index is equal to or greater than the number of columns.
-            /// or
-            /// The band index is less than 0.
-            /// or
-            /// The band index is equal to or greater than the number of bands.
-            /// </exception>
             public Double ReadFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
             {
                 return _operation.ComputeFloat(rowIndex, columnIndex, bandIndex);
@@ -348,13 +217,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="startIndex">The zero-based absolute starting index.</param>
             /// <param name="numberOfValues">The number of values to be read.</param>
             /// <returns>The array containing the sequence of values in the default order of the service.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The start index is less than 0.
-            /// or
-            /// The start index is equal to or greater than the number of values.
-            /// or
-            /// The number of values is less than 0.
-            /// </exception>
             public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues)
             {
                 return ReadFloatValueSequence(startIndex, numberOfValues, RasterDataOrder.RowColumnBand);
@@ -367,30 +229,13 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="numberOfValues">The number of values to be read.</param>
             /// <param name="readOrder">The reading order.</param>
             /// <returns>The array containing the sequence of values in the specified order.</returns>
-            /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The start index is less than 0.
-            /// or
-            /// The start index is equal to or greater than the number of values.
-            /// or
-            /// The number of values is less than 0.
-            /// </exception>
             public Double[] ReadFloatValueSequence(Int32 startIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (startIndex < 0)
-                    throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex <= NumberOfRows * NumberOfColumns * NumberOfBands)
-                    throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
-                if (numberOfValues < 0)
-                    throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != RasterDataOrder.RowColumnBand)
-                    throw new NotSupportedException("The specified reading order is not supported.");
-
                 // compute the row/column/band indices from the start index
                 Int32 columnIndex = 0, rowIndex = 0, bandIndex = 0;
-                rowIndex = startIndex / (NumberOfColumns * NumberOfBands);
-                columnIndex = (startIndex - rowIndex * NumberOfColumns * NumberOfBands) / NumberOfBands;
-                bandIndex = startIndex - rowIndex * NumberOfColumns * NumberOfBands - columnIndex * NumberOfBands;
+                rowIndex = startIndex / (Dimensions.NumberOfColumns * Dimensions.NumberOfBands);
+                columnIndex = (startIndex - rowIndex * Dimensions.NumberOfColumns * Dimensions.NumberOfBands) / Dimensions.NumberOfBands;
+                bandIndex = startIndex - rowIndex * Dimensions.NumberOfColumns * Dimensions.NumberOfBands - columnIndex * Dimensions.NumberOfBands;
 
                 return ReadFloatValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, readOrder);
             }
@@ -402,13 +247,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="numberOfValues">The number of values to be read.</param>
             /// <param name="readOrder">The reading order.</param>
             /// <returns>The array containing the sequence of values in the specified order.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The start index is less than 0.
-            /// or
-            /// The start index is equal to or greater than the number of values.
-            /// or
-            /// The number of values is less than 0.
-            /// </exception>
             public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues)
             {
                 return ReadFloatValueSequence(rowIndex, columnIndex, bandIndex, numberOfValues, RasterDataOrder.RowColumnBand);
@@ -422,43 +260,10 @@ namespace ELTE.AEGIS.Operations.Spectral
             /// <param name="bandIndex">The zero-based band index of the first value.</param>
             /// <param name="numberOfValues">The number of values.</param>
             /// <returns>The array containing the sequence of values in the default order of the service.</returns>
-            /// <exception cref="System.NotSupportedException">The specified reading order is not supported.</exception>
-            /// <exception cref="System.ArgumentOutOfRangeException">
-            /// The row index is less than 0.
-            /// or
-            /// The row index is equal to or greater than the number of rows.
-            /// or
-            /// The column index is less than 0.
-            /// or
-            /// The column index is equal to or greater than the number of columns.
-            /// or
-            /// The band index is less than 0.
-            /// or
-            /// The band index is equal to or greater than the number of bands.
-            /// or
-            /// The number of values is less than 0.
-            /// </exception>
             public Double[] ReadFloatValueSequence(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex, Int32 numberOfValues, RasterDataOrder readOrder)
             {
-                if (rowIndex < 0)
-                    throw new ArgumentOutOfRangeException("rowIndex", "The row index is less than 0.");
-                if (rowIndex >= NumberOfRows)
-                    throw new ArgumentOutOfRangeException("rowIndex", "The row index is equal to or greater than the number of rows.");
-                if (columnIndex < 0)
-                    throw new ArgumentOutOfRangeException("columnIndex", "The column index is less than 0.");
-                if (columnIndex >= NumberOfColumns)
-                    throw new ArgumentOutOfRangeException("columnIndex", "The column index is equal to or greater than the number of columns.");
-                if (bandIndex < 0)
-                    throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
-                if (bandIndex >= NumberOfBands)
-                    throw new ArgumentOutOfRangeException("bandIndex", "The band index is equal to or greater than the number of bands.");
-                if (numberOfValues < 0)
-                    throw new ArgumentOutOfRangeException("numberOfValues", "The number of values is less than 0.");
-                if (readOrder != RasterDataOrder.RowColumnBand)
-                    throw new NotSupportedException("The specified reading order is not supported.");
-
                 // there may be not enough values, or the number may be greater than the maximum allowed
-                Double[] values = new Double[Calculator.Min(MaximumNumberOfValues, numberOfValues, (NumberOfRows - rowIndex) * NumberOfColumns * NumberOfBands + (NumberOfColumns - columnIndex) * NumberOfBands + NumberOfBands - bandIndex)];
+                Double[] values = new Double[Calculator.Min(MaximumNumberOfValues, numberOfValues, (Dimensions.NumberOfRows - rowIndex) * Dimensions.NumberOfColumns * Dimensions.NumberOfBands + (Dimensions.NumberOfColumns - columnIndex) * Dimensions.NumberOfBands + Dimensions.NumberOfBands - bandIndex)];
 
                 Int32 currentIndex = 0;
                 while (currentIndex < values.Length)
@@ -470,7 +275,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     // change indices for the next pixel
                     bandIndex = 0;
                     columnIndex++;
-                    if (columnIndex == NumberOfColumns) { columnIndex = 0; rowIndex++; }
+                    if (columnIndex == Dimensions.NumberOfColumns) { columnIndex = 0; rowIndex++; }
 
                     currentIndex += currentValues.Length - bandIndex;
                 }
@@ -619,15 +424,6 @@ namespace ELTE.AEGIS.Operations.Spectral
             }
 
             #endregion
-
-            #region Private static fields
-
-            /// <summary>
-            /// The supported spectral orders.
-            /// </summary>
-            private static RasterDataOrder[] _supportedOrders;
-
-            #endregion
         }
 
         #endregion
@@ -686,7 +482,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                                  _source.Raster.NumberOfBands,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 _source.Raster.RadiometricResolutions,
+                                                                                 _source.Raster.RadiometricResolution,
                                                                                  _source.Raster.Mapper),
                                                              _source.Presentation,
                                                              _source.Imaging);
@@ -728,36 +524,20 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The resulting raster.</returns>
         protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
         {
-            return PrepareRasterResult(format, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(radiometricResolution, numberOfBands).ToArray(), mapper);
-        }
-
-        /// <summary>
-        /// Prepares the raster result of the operation.
-        /// </summary>
-        /// <param name="numberOfBands">The spectral resolution.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="format">The format.</param>
-        /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-        {
             IRasterFactory factory = _source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>();
 
             if (State == OperationState.Initialized)
             {
                 return factory.CreateRaster(new SpectralTransformationService(this, format,
-                                                                              numberOfBands, numberOfRows, numberOfColumns, 
-                                                                              radiometricResolutions), 
+                                                                              new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution)),
                                                                               mapper);
             }
             else
             {
-                return factory.CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper);
+                return factory.CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
             }
         }
-
+        
         /// <summary>
         /// Computes the specified spectral value.
         /// </summary>

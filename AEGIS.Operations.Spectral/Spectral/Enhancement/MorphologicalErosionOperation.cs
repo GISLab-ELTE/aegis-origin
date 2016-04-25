@@ -70,7 +70,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Enhancement
 
             Int32 firstRowIndex = rowIndex - rowCenter;
             Int32 firstColumnIndex = columnIndex - columnCenter;
-            UInt32 result = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[bandIndex]);
+            UInt32 result = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
 
             for (Int32 row = 0; row < _structuringElement.NumberOfRows; row++)
             {

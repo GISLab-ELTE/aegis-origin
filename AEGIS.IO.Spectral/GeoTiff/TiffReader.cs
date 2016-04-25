@@ -350,11 +350,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
             {
                 case TiffSampleFormat.UnsignedInteger:
                 case TiffSampleFormat.Undefined:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Integer, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Integer, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions.Max(), mapper, presentation, imaging, metadata);
                     break;
                 case TiffSampleFormat.SignedInteger:
                 case TiffSampleFormat.Floating:
-                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Floating, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions, mapper, presentation, imaging, metadata);
+                    spectralGeometry = ResolveFactory(referenceSystem).CreateSpectralPolygon(RasterFormat.Floating, radiometricResolutions.Length, imageLength, imageWidth, radiometricResolutions.Max(), mapper, presentation, imaging, metadata);
                     break;
             }
 
@@ -362,12 +362,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(273))
             {
                 // strip layout
-                ReadRasterContentFromStrips(spectralGeometry.Raster);
+                ReadRasterContentFromStrips(spectralGeometry.Raster, radiometricResolutions);
             }
             else if (_imageFileDirectories[_currentImageIndex].ContainsKey(324))
             {
                 // tiled layout
-                ReadRasterContentFromTiles(spectralGeometry.Raster);
+                ReadRasterContentFromTiles(spectralGeometry.Raster, radiometricResolutions);
             }
             else
             {
@@ -654,7 +654,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Reads the raster of the geometry stored in strips.
         /// </summary>
         /// <param name="raster">The raster.</param>
-        private void ReadRasterContentFromStrips(IRaster raster)
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
+        private void ReadRasterContentFromStrips(IRaster raster, Int32[] radiometricResolutions)
         {
             Int32 rowsPerStrip;
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(278))
@@ -668,12 +669,16 @@ namespace ELTE.AEGIS.IO.GeoTiff
             
             // fit the maximum number of readable bytes to the radiometric resolution
             UInt32 numberOfReadableBytes = NumberOfReadableBytes;
-            while (numberOfReadableBytes * 8 % raster.RadiometricResolutions.Sum() != 0)
+            while (numberOfReadableBytes * 8 % raster.RadiometricResolution != 0)
                 numberOfReadableBytes--;
 
             // read the stripes
             Int32 rowIndex = 0;
             Int32 columnIndex = 0;
+
+            Int64 lastValue = 0;
+            Double lastFloatValue = 0;
+
             for (Int32 stripIndex = 0; stripIndex < numberOfStrips; stripIndex++)
             {
                 _baseStream.Seek(stripOffsets[stripIndex], SeekOrigin.Begin);
@@ -682,6 +687,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 Stream contentStream = null;
                 switch (_compression)
                 {
+                    case TiffCompression.Deflate:
+                        contentStream = new ZlibStream(_baseStream, CompressionMode.Decompress);
+                        break;
                     default:
                         contentStream = _baseStream;
                         break;
@@ -698,25 +706,48 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 while (numberOfBytesLeft > 0 && rowIndex < raster.NumberOfRows)
                 {
                     // perform reading based on format
-                    switch (_sampleFormat)
-                    {
-                        case TiffSampleFormat.Undefined:
-                        case TiffSampleFormat.UnsignedInteger:
-                            raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
-                            break;
-                        case TiffSampleFormat.SignedInteger:
-                            raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
-                            break;
-                        case TiffSampleFormat.Floating:
-                            raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(stripBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
-                            break;
-                    }
+                    
+                            if (_horizontalDifferencing)
+                            {
+                                switch (_sampleFormat)
+                                {
+                                    case TiffSampleFormat.Undefined:
+                                    case TiffSampleFormat.UnsignedInteger:
+                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerDifferenceValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastValue));
+                                        break;
+                                    case TiffSampleFormat.SignedInteger:
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerDifferenceValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastValue));
+                                        break;
+                                    case TiffSampleFormat.Floating:
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatDifferenceValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastFloatValue));
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                switch (_sampleFormat)
+                                {
+                                    case TiffSampleFormat.Undefined:
+                                    case TiffSampleFormat.UnsignedInteger:
+                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
+                                        break;
+                                    case TiffSampleFormat.SignedInteger:
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
+                                        break;
+                                    case TiffSampleFormat.Floating:
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(stripBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
+                                        break;
+                                }
+                            }
 
                     columnIndex++;
                     if (columnIndex == raster.NumberOfColumns)
                     {
                         columnIndex = 0;
                         rowIndex++;
+
+                        lastValue = 0;
+                        lastFloatValue = 0;
 
                         if (rowIndex == raster.NumberOfRows)
                             break;
@@ -741,7 +772,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// Reads the raster of the geometry stored in tiles.
         /// </summary>
         /// <param name="raster">The raster.</param>
-        private void ReadRasterContentFromTiles(IRaster raster)
+        private void ReadRasterContentFromTiles(IRaster raster, Int32[] radiometricResolutions)
         {
             Int64[] tileOffsets = _imageFileDirectories[_currentImageIndex][TiffTag.TileOffsets].Select(value => Convert.ToInt64(value)).ToArray();
             Int64[] tileByteCounts = _imageFileDirectories[_currentImageIndex][TiffTag.TileByteCounts].Select(value => Convert.ToInt64(value)).ToArray();
@@ -755,10 +786,10 @@ namespace ELTE.AEGIS.IO.GeoTiff
             Int32 columnIndex = 0;
 
             // reading the tiles
-            for (Int32 i = 0; i < tilesDown; i++)
-                for (Int32 j = 0; j < tilesAcross; j++)
+            for (Int32 tileVerticalIndex = 0; tileVerticalIndex < tilesDown; tileVerticalIndex++)
+                for (Int32 tileHorizontalIndex = 0; tileHorizontalIndex < tilesAcross; tileHorizontalIndex++)
                 {
-                    _baseStream.Seek(tileOffsets[i * tilesAcross + j], SeekOrigin.Begin);
+                    _baseStream.Seek(tileOffsets[tileVerticalIndex * tilesAcross + tileHorizontalIndex], SeekOrigin.Begin);
 
                     // perform decompression of stream if compressed
                     Stream contentStream = null;
@@ -774,78 +805,62 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                     // read a single tile
                     Int32 byteIndex = 0, bitIndex = 0;
-                    Int32 byteShift = raster.RadiometricResolutions.Sum() / 8;
-                    Int32 bitShift = raster.RadiometricResolutions.Sum() % 8;
+                    Int32 byteShift = radiometricResolutions.Sum() / 8;
+                    Int32 bitShift = radiometricResolutions.Sum() % 8;
                     Byte[] tileBytes = new Byte[tileWidth * tileLength * byteShift];
 
                     contentStream.Read(tileBytes, 0, tileBytes.Length);
 
-                    if (_horizontalDifferencing)
-                    {
-                        Int64 lastValue = 0;
-                        Double lastFloatValue = 0;
+                    Int64 lastValue = 0;
+                    Double lastFloatValue = 0;
 
-                        for (Int32 k = 0; k < tileLength; k++)
+                    for (Int32 tileRowIndex = 0; tileRowIndex < tileLength; tileRowIndex++)
+                    {
+                        rowIndex = tileVerticalIndex * tileLength + tileRowIndex;
+
+                        for (Int32 tileColumnIndex = 0; tileColumnIndex < tileWidth; tileColumnIndex++)
                         {
                             lastValue = 0;
                             lastFloatValue = 0;
-                            rowIndex = i * tileLength + k;
 
-                            for (Int32 l = 0; l < tileWidth; l++)
+                            columnIndex = tileHorizontalIndex * tileWidth + tileColumnIndex;
+
+                            if (rowIndex >= raster.NumberOfRows || columnIndex >= raster.NumberOfColumns) // the tile is larger than the image
                             {
-                                columnIndex = j * tileWidth + l;
+                                byteIndex += byteShift; // the values in the array must be skipped
+                                bitIndex += bitShift;
+                                continue;
+                            }
 
-                                if (rowIndex >= raster.NumberOfRows || columnIndex >= raster.NumberOfColumns) // the tile is larger than the image
-                                {
-                                    byteIndex += byteShift; // the values in the array must be skipped
-                                    bitIndex += bitShift;
-                                    continue;
-                                }
-
+                            if (_horizontalDifferencing)
+                            {
                                 switch (_sampleFormat)
                                 {
                                     case TiffSampleFormat.Undefined:
                                     case TiffSampleFormat.UnsignedInteger:
-                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions, ref lastValue, l == 0));
+                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastValue));
                                         break;
                                     case TiffSampleFormat.SignedInteger:
-                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions, ref lastValue));
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastValue));
                                         break;
                                     case TiffSampleFormat.Floating:
-                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions, ref lastFloatValue));
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatDifferenceValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions, ref lastFloatValue));
                                         break;
                                 }
                             }
-                        }
-                    }
-                    else
-                    {
-                        for (Int32 k = 0; k < tileLength; k++)
-                        {
-                            rowIndex = i * tileLength + k;
-
-                            for (Int32 l = 0; l < tileWidth; l++)
+                            else
                             {
-                                columnIndex = j * tileWidth + l;
-
-                                if (rowIndex >= raster.NumberOfRows || columnIndex >= raster.NumberOfColumns) // the tile is larger than the image
-                                {
-                                    byteIndex += byteShift; // the values in the array must be skipped
-                                    bitIndex += bitShift;
-                                    continue;
-                                }
-
                                 switch (_sampleFormat)
                                 {
                                     case TiffSampleFormat.Undefined:
                                     case TiffSampleFormat.UnsignedInteger:
-                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                                        raster.SetValues(rowIndex, columnIndex, ReadUnsignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
                                         break;
                                     case TiffSampleFormat.SignedInteger:
-                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadSignedIntegerValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
                                         break;
                                     case TiffSampleFormat.Floating:
-                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(tileBytes, ref byteIndex, ref bitIndex, raster.RadiometricResolutions));
+                                        raster.SetFloatValues(rowIndex, columnIndex, ReadFloatValues(tileBytes, ref byteIndex, ref bitIndex, radiometricResolutions));
                                         break;
                                 }
                             }
@@ -861,46 +876,43 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="bytes">The byte array.</param>
         /// <param name="byteIndex">The zero-based byte index in the array.</param>
         /// <param name="bitIndex">The zero-based bit index in the array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
         /// <returns>The unsigned integer values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private UInt32[] ReadUnsignedIntegerValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions)
+        private UInt32[] ReadUnsignedIntegerValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions)
         {
-            UInt32[] values = new UInt32[radiometricResolutions.Count];
+            UInt32[] values = new UInt32[radiometricResolutions.Length];
 
-            for (Int32 i = 0; i < values.Length; i++)
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
             {
-                if (radiometricResolutions[i] == 8)
+                switch (radiometricResolutions[bandIndex])
                 {
-                    values[i] = Convert.ToByte(bytes[byteIndex]);
-                    byteIndex++;
-                }
-                else if (radiometricResolutions[i] == 16)
-                {
-                    values[i] = EndianBitConverter.ToUInt16(bytes, byteIndex, _byteOrder);
-                    byteIndex += 2;
-                }
-                else if (radiometricResolutions[i] == 32)
-                {
-                    values[i] = EndianBitConverter.ToUInt32(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
-                }
-                else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
-                {
-                    bitIndex -= radiometricResolutions[i];
-                    values[i] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
+                    case 1:
+                    case 2:
+                    case 4:
+                        bitIndex -= radiometricResolutions[bandIndex];
+                        values[bandIndex] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
 
-                    if (bitIndex == 0)
-                    {
-                        bitIndex = 8;
+                        if (bitIndex == 0)
+                        {
+                            bitIndex = 8;
+                            byteIndex++;
+                        }
+                        break;
+                    case 8:
+                        values[bandIndex] = Convert.ToByte(bytes[byteIndex]);
                         byteIndex++;
-                    }
+                        break;
+                    case 16:
+                        values[bandIndex] = EndianBitConverter.ToUInt16(bytes, byteIndex, _byteOrder);
+                        byteIndex += 2;
+                        break;
+                    case 32:
+                        values[bandIndex] = EndianBitConverter.ToUInt32(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
+                        break;
                 }
-                else
-                {
-                    // TODO: support other resolutions
-                    throw new NotSupportedException("Radiometric resolution is not supported.");
-                }
+                // TODO: support other radiometric resolutions
             }
 
             return values;
@@ -912,83 +924,22 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="bytes">The byte array.</param>
         /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
         /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
+        /// <param name="lastValue">The last value read previously.</param>
         /// <returns>The signed integer values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private UInt32[] ReadUnsignedIntegerDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions, ref Int64 lastValue, Boolean initial)
+        private UInt32[] ReadUnsignedIntegerDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions, ref Int64 lastValue)
         {
             Int32 currentValue;
-            UInt32[] values = new UInt32[radiometricResolutions.Count];
-
+            UInt32[] values = new UInt32[radiometricResolutions.Length];
             
-            for (Int32 i = 0; i < values.Length; i++)
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
             {
-                if (initial)
+                switch (radiometricResolutions[bandIndex])
                 {
-                    if (radiometricResolutions[i] == 8)
-                    {
-                        values[i] = Convert.ToByte(bytes[byteIndex]);
-                        byteIndex++;
-                    }
-                    else if (radiometricResolutions[i] == 16)
-                    {
-                        values[i] = EndianBitConverter.ToUInt16(bytes, byteIndex, _byteOrder);
-                        byteIndex += 2;
-                    }
-                    else if (radiometricResolutions[i] == 32)
-                    {
-                        values[i] = EndianBitConverter.ToUInt32(bytes, byteIndex, _byteOrder);
-                        byteIndex += 4;
-                    }
-                    else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
-                    {
-                        bitIndex -= radiometricResolutions[i];
-                        values[i] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
-
-                        if (bitIndex == 0)
-                        {
-                            bitIndex = 8;
-                            byteIndex++;
-                        }
-                    }
-                    else
-                    {
-                        // TODO: support other resolutions
-                        throw new NotSupportedException("Radiometric resolution is not supported.");
-                    }
-
-                    lastValue = values[i];
-                    initial = false;
-                }
-                else
-                {
-                    if (radiometricResolutions[i] == 8)
-                    {
-                        currentValue = Convert.ToSByte(bytes[byteIndex]);
-                        byteIndex++;
-
-                        lastValue += currentValue;
-                        values[i] = (Byte)lastValue;
-                    }
-                    else if (radiometricResolutions[i] == 16)
-                    {
-                        currentValue = EndianBitConverter.ToInt16(bytes, byteIndex, _byteOrder);
-                        byteIndex += 2;
-
-                        lastValue += currentValue;
-                        values[i] = (UInt16)lastValue;
-                    }
-                    else if (radiometricResolutions[i] == 32)
-                    {
-                        currentValue = EndianBitConverter.ToInt32(bytes, byteIndex, _byteOrder);
-                        byteIndex += 4;
-
-                        lastValue += currentValue;
-                        values[i] = (UInt32)lastValue;
-                    }
-                    else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
-                    {
-                        bitIndex -= radiometricResolutions[i];
+                    case 1:
+                    case 2:
+                    case 4:
+                        bitIndex -= radiometricResolutions[bandIndex];
                         currentValue = Convert.ToSByte((bytes[byteIndex] >> bitIndex) & 1);
 
                         if (bitIndex == 0)
@@ -998,68 +949,31 @@ namespace ELTE.AEGIS.IO.GeoTiff
                         }
 
                         lastValue += currentValue;
-                        values[i] = (Byte)lastValue;
-                    }
-                    else
-                    {
-                        // TODO: support other resolutions
-
-                        throw new NotSupportedException("Radiometric resolution is not supported.");
-                    }
-                    
-                }
-            }
-
-            return values;
-        }
-
-        /// <summary>
-        /// Reads the signed integer values from the array.
-        /// </summary>
-        /// <param name="bytes">The byte array.</param>
-        /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
-        /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <returns>The signed integer values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private Double[] ReadSignedIntegerValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions)
-        {
-            Double[] values = new Double[radiometricResolutions.Count];
-
-            for (Int32 i = 0; i < values.Length; i++)
-            {
-                if (radiometricResolutions[i] == 8)
-                {
-                    values[i] = Convert.ToSByte(bytes[byteIndex]);
-                    byteIndex++;
-                }
-                else if (radiometricResolutions[i] == 16)
-                {
-                    values[i] = EndianBitConverter.ToInt16(bytes, byteIndex, _byteOrder);
-                    byteIndex += 2;
-                }
-                else if (radiometricResolutions[i] == 32)
-                {
-                    values[i] = EndianBitConverter.ToInt32(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
-                }
-                else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
-                {
-                    bitIndex -= radiometricResolutions[i];
-                    values[i] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
-
-                    if (bitIndex == 0)
-                    {
-                        bitIndex = 8;
+                        values[bandIndex] = (Byte)lastValue;
+                        break;
+                    case 8:
+                        currentValue = Convert.ToSByte(bytes[byteIndex]);
                         byteIndex++;
-                    }
-                }
-                else
-                {
-                    // TODO: support other resolutions
 
-                    throw new NotSupportedException("Radiometric resolution is not supported.");
+                        lastValue += currentValue;
+                        values[bandIndex] = (Byte)lastValue;
+                        break;
+                    case 16:
+                        currentValue = EndianBitConverter.ToInt16(bytes, byteIndex, _byteOrder);
+                        byteIndex += 2;
+
+                        lastValue += currentValue;
+                        values[bandIndex] = (UInt16)lastValue;
+                        break;
+                    case 32:
+                        currentValue = EndianBitConverter.ToInt32(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
+
+                        lastValue += currentValue;
+                        values[bandIndex] = (UInt32)lastValue;
+                        break;
                 }
+                // TODO: support other radiometric resolutions
             }
 
             return values;
@@ -1071,51 +985,103 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="bytes">The byte array.</param>
         /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
         /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
         /// <returns>The signed integer values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private Double[] ReadSignedIntegerDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions, ref Int64 lastValue)
+        private Double[] ReadSignedIntegerValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions)
+        {
+            Double[] values = new Double[radiometricResolutions.Length];
+
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
+            {
+                switch (radiometricResolutions[bandIndex])
+                {
+                    case 1:
+                    case 2:
+                    case 4:
+                        bitIndex -= radiometricResolutions[bandIndex];
+                        values[bandIndex] = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
+
+                        if (bitIndex == 0)
+                        {
+                            bitIndex = 8;
+                            byteIndex++;
+                        }
+                        break;
+                    case 8:
+                        values[bandIndex] = Convert.ToByte(bytes[byteIndex]);
+                        byteIndex++;
+                        break;
+                    case 16:
+                        values[bandIndex] = EndianBitConverter.ToUInt16(bytes, byteIndex, _byteOrder);
+                        byteIndex += 2;
+                        break;
+                    case 32:
+                        values[bandIndex] = EndianBitConverter.ToUInt32(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
+                        break;
+                }
+                // TODO: support other radiometric resolutions
+            }
+
+            return values;
+        }
+
+        /// <summary>
+        /// Reads the signed integer values from the array.
+        /// </summary>
+        /// <param name="bytes">The byte array.</param>
+        /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
+        /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
+        /// <param name="lastValue">The last value read previously.</param>
+        /// <returns>The signed integer values representing a pixel.</returns>
+        private Double[] ReadSignedIntegerDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions, ref Int64 lastValue)
         {
             Int32 currentValue;
-            Double[] values = new Double[radiometricResolutions.Count];
+            Double[] values = new Double[radiometricResolutions.Length];
 
-            for (Int32 i = 0; i < values.Length; i++)
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
             {
-                if (radiometricResolutions[i] == 8)
+                switch (radiometricResolutions[bandIndex])
                 {
-                    currentValue = Convert.ToSByte(bytes[byteIndex]);
-                    byteIndex++;
-                }
-                else if (radiometricResolutions[i] == 16)
-                {
-                    currentValue = EndianBitConverter.ToInt16(bytes, byteIndex, _byteOrder);
-                    byteIndex += 2;
-                }
-                else if (radiometricResolutions[i] == 32)
-                {
-                    currentValue = EndianBitConverter.ToInt32(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
-                }
-                else if (radiometricResolutions[i] < 8 && 8 % radiometricResolutions[i] == 0)
-                {
-                    bitIndex -= radiometricResolutions[i];
-                    currentValue = Convert.ToByte((bytes[byteIndex] >> bitIndex) & 1);
+                    case 1:
+                    case 2:
+                    case 4:
+                        bitIndex -= radiometricResolutions[bandIndex];
+                        currentValue = Convert.ToSByte((bytes[byteIndex] >> bitIndex) & 1);
 
-                    if (bitIndex == 0)
-                    {
-                        bitIndex = 8;
+                        if (bitIndex == 0)
+                        {
+                            bitIndex = 8;
+                            byteIndex++;
+                        }
+
+                        lastValue += currentValue;
+                        values[bandIndex] = (Byte)lastValue;
+                        break;
+                    case 8:
+                        currentValue = Convert.ToSByte(bytes[byteIndex]);
                         byteIndex++;
-                    }
-                }
-                else
-                {
-                    // TODO: support other resolutions
 
-                    throw new NotSupportedException("Radiometric resolution is not supported.");
-                }
+                        lastValue += currentValue;
+                        values[bandIndex] = (Byte)lastValue;
+                        break;
+                    case 16:
+                        currentValue = EndianBitConverter.ToInt16(bytes, byteIndex, _byteOrder);
+                        byteIndex += 2;
 
-                lastValue += currentValue;
-                values[i] = Convert.ToInt32(lastValue);
+                        lastValue += currentValue;
+                        values[bandIndex] = (UInt16)lastValue;
+                        break;
+                    case 32:
+                        currentValue = EndianBitConverter.ToInt32(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
+
+                        lastValue += currentValue;
+                        values[bandIndex] = (UInt32)lastValue;
+                        break;
+                }
+                // TODO: support other radiometric resolutions
             }
 
             return values;
@@ -1127,33 +1093,28 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="bytes">The byte array.</param>
         /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
         /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
         /// <returns>The floating point values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private Double[] ReadFloatValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions)
+        private Double[] ReadFloatValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions)
         {
-            Double[] values = new Double[radiometricResolutions.Count];
+            Double[] values = new Double[radiometricResolutions.Length];
 
-            for (Int32 i = 0; i < values.Length; i++)
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
             {
-                if (radiometricResolutions[i] == 32)
+                switch (radiometricResolutions[bandIndex])
                 {
-                    values[i] = EndianBitConverter.ToSingle(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
+                    case 32:
+                        values[bandIndex] = EndianBitConverter.ToSingle(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
+                        break;
+                    case 64:
+                        values[bandIndex] = EndianBitConverter.ToDouble(bytes, byteIndex, _byteOrder);
+                        byteIndex += 8;
+                        break;
                 }
-                else if (radiometricResolutions[i] == 64)
-                {
-                    values[i] = EndianBitConverter.ToDouble(bytes, byteIndex, _byteOrder);
-                    byteIndex += 8;
-                }
-                else
-                {
-                    // TODO: support other resolutions
-
-                    throw new NotSupportedException("Radiometric resolution is not supported.");
-                }
+                // TODO: support other radiometric resolutions
             }
-
+            
             return values;
         }
 
@@ -1163,37 +1124,36 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <param name="bytes">The byte array.</param>
         /// <param name="byteIndex">The zero-based byte index in the strip array.</param>
         /// <param name="bitIndex">The zero-based bit index in the strip array.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="radiometricResolutions">The array of radiometric resolutions.</param>
+        /// <param name="lastValue">The last value read previously.</param>
         /// <returns>The floating point values representing a pixel.</returns>
-        /// <exception cref="System.NotSupportedException">Radiometric resolution is not supported.</exception>
-        private Double[] ReadFloatDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, IList<Int32> radiometricResolutions, ref Double lastValue)
+        private Double[] ReadFloatDifferenceValues(Byte[] bytes, ref Int32 byteIndex, ref Int32 bitIndex, Int32[] radiometricResolutions, ref Double lastValue)
         {
             Double currentValue;
-            Double[] values = new Double[radiometricResolutions.Count];
+            Double[] values = new Double[radiometricResolutions.Length];
 
-            for (Int32 i = 0; i < values.Length; i++)
+            for (Int32 bandIndex = 0; bandIndex < radiometricResolutions.Length; bandIndex++)
             {
-                if (radiometricResolutions[i] == 32)
+                switch (radiometricResolutions[bandIndex])
                 {
-                    currentValue = EndianBitConverter.ToSingle(bytes, byteIndex, _byteOrder);
-                    byteIndex += 4;
-                }
-                else if (radiometricResolutions[i] == 64)
-                {
-                    currentValue = EndianBitConverter.ToDouble(bytes, byteIndex, _byteOrder);
-                    byteIndex += 8;
-                }
-                else
-                {
-                    // TODO: support other resolutions
+                    case 32:
+                        currentValue = EndianBitConverter.ToSingle(bytes, byteIndex, _byteOrder);
+                        byteIndex += 4;
 
-                    throw new NotSupportedException("Radiometric resolution is not supported.");
-                }
+                        lastValue += currentValue;
+                        values[bandIndex] = (Single)lastValue;
+                        break;
+                    case 64:
+                        currentValue = EndianBitConverter.ToDouble(bytes, byteIndex, _byteOrder);
+                        byteIndex += 8;
 
-                values[i] = lastValue + currentValue;
-                lastValue = currentValue;
+                        lastValue += currentValue;
+                        values[bandIndex] = lastValue;
+                        break;
+                }
+                // TODO: support other radiometric resolutions
             }
-
+            
             return values;
         }
 

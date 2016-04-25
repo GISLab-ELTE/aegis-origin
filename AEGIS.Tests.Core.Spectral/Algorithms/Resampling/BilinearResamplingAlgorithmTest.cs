@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BilinearResamplingAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Tests.Algorithms.Resampling
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(10);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(8);
             _rasterMock.Setup(raster => raster.NumberOfBands).Returns(2);
-            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8 });
+            _rasterMock.Setup(raster => raster.RadiometricResolution).Returns(8);
             _rasterMock.Setup(raster => raster.GetValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>()))
                                               .Returns(new Func<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex) => (UInt32)((rowIndex * columnIndex * bandIndex + 256) % 256)));
             _rasterMock.Setup(raster => raster.GetValues(It.IsAny<Int32>(), It.IsAny<Int32>()))

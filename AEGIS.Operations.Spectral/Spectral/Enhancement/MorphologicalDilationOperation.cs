@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Enhancement
                 {
                     UInt32 value = _source.Raster.GetNearestValue(firstRowIndex + row, firstColumnIndex + column, bandIndex) + (UInt32)_structuringElement[row, column];
 
-                    value = RasterAlgorithms.Restrict(value, _source.Raster.RadiometricResolutions[bandIndex]);
+                    value = RasterAlgorithms.Restrict(value, _source.Raster.RadiometricResolution);
 
                     if (value > result)
                         result = value;

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="IRaster.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -36,16 +36,12 @@ namespace ELTE.AEGIS
         IRasterFactory Factory { get; }
 
         /// <summary>
-        /// Gets the number of columns.
+        /// Gets the dimensions of the raster.
         /// </summary>
-        /// <value>The number of spectral values contained in a row.</value>
-        Int32 NumberOfColumns { get; }
-
-        /// <summary>
-        /// Gets the number of rows.
-        /// </summary>
-        /// <value>The number of spectral values contained in a column.</value>
-        Int32 NumberOfRows { get; }
+        /// <value>
+        /// The dimensions of the raster.
+        /// </value>
+        RasterDimensions Dimensions { get; }
 
         /// <summary>
         /// Gets the number of spectral bands.
@@ -54,29 +50,41 @@ namespace ELTE.AEGIS
         Int32 NumberOfBands { get; }
 
         /// <summary>
+        /// Gets the number of rows.
+        /// </summary>
+        /// <value>The number of spectral values contained in a column.</value>
+        Int32 NumberOfRows { get; }
+
+        /// <summary>
+        /// Gets the number of columns.
+        /// </summary>
+        /// <value>The number of spectral values contained in a row.</value>
+        Int32 NumberOfColumns { get; }
+
+        /// <summary>
+        /// Gets the radiometric resolution of the bands in the raster.
+        /// </summary>
+        /// <value>The radiometric resolution of the bands in the raster.</value>
+        Int32 RadiometricResolution { get; }
+
+        /// <summary>
         /// Gets the spectral bands of the raster.
         /// </summary>
         /// <value>The read-only list containing the spectral bands in the raster.</value>
-        IList<IRasterBand> Bands { get; }
-
-        /// <summary>
-        /// Gets the radiometric resolutions of the bands in the raster.
-        /// </summary>
-        /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-        IList<Int32> RadiometricResolutions { get; }
+        IReadOnlyList<IRasterBand> Bands { get; }
 
         /// <summary>
         /// Gets the histogram values of the raster.
         /// </summary>
         /// <value>The read-only list containing the histogram values of each band in the raster.</value>
         /// <exception cref="System.NotSupportedException">Histogram query is not supported.</exception>
-        IList<IList<Int32>> HistogramValues { get; }
+        IReadOnlyList<IReadOnlyList<Int32>> HistogramValues { get; }
 
         /// <summary>
         /// Gets the bounding coordinates of the raster.
         /// </summary>
         /// <value>The list containing the bounding coordinates of the raster in counterclockwise order.</value>
-        IList<Coordinate> Coordinates { get; }
+        IReadOnlyList<Coordinate> Coordinates { get; }
 
         /// <summary>
         /// Gets the raster mapper used for mapping raster space to geometry space.
@@ -724,7 +732,7 @@ namespace ELTE.AEGIS
         /// or
         /// The band index is equal to or greater than the number of bands.
         /// </exception>
-        IList<Int32> GetHistogramValues(Int32 bandIndex);
+        IReadOnlyList<Int32> GetHistogramValues(Int32 bandIndex);
 
         #endregion
     }

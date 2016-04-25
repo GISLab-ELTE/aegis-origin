@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RawImageWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -37,41 +37,53 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
         {
             #region Private fields
 
-            private readonly Int32 _numberOfBands;
-            private readonly Int32 _numberOfColumns;
-            private readonly Int32 _numberOfRows;
-            private readonly Int32[] _radiometricResolutions;
-            private readonly RasterFormat _format;
-            private static RasterDataOrder[] _supportedOrders;
+            /// <summary>
+            /// The raw image writer.
+            /// </summary>
             private RawImageWriter _rawImageWriter;
+
+            #endregion
+
+            #region Constructor
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="RawImageWriterService" /> class.
+            /// </summary>
+            /// <param name="rawImageWriter">The raw image writer.</param>
+            public RawImageWriterService(RawImageWriter rawImageWriter)
+            {
+                _rawImageWriter = rawImageWriter;
+
+                Dimensions = new RasterDimensions(_rawImageWriter._numberOfBands, _rawImageWriter._numberOfRows, _rawImageWriter._numberOfColumns, _rawImageWriter._radiometricResolution);
+                Format = _rawImageWriter._format;
+
+                switch (rawImageWriter._layout)
+                {
+                    case RawImageLayout.BandInterlevedByLine:
+                        DataOrder = RasterDataOrder.RowBandColumn;
+                        break;
+                    case RawImageLayout.BandInterlevedByPixel:
+                        DataOrder = RasterDataOrder.BandRowColumn;
+                        break;
+                    case RawImageLayout.BandSequential:
+                        DataOrder = RasterDataOrder.RowColumnBand;
+                        break;
+                    default:
+                        break;
+                }
+            }
 
             #endregion
 
             #region IRasterService properties
 
             /// <summary>
-            /// Gets the number of spectral bands.
+            /// Gets the dimensions of the raster.
             /// </summary>
-            /// <value>The number of spectral bands contained in the raster.</value>
-            public Int32 NumberOfBands { get { return _numberOfBands; } }
-
-            /// <summary>
-            /// Gets the number of columns.
-            /// </summary>
-            /// <value>The number of spectral values contained in a row.</value>
-            public Int32 NumberOfColumns { get { return _numberOfColumns; } }
-
-            /// <summary>
-            /// Gets the number of rows.
-            /// </summary>
-            /// <value>The number of spectral values contained in a column.</value>
-            public Int32 NumberOfRows { get { return _numberOfRows; } }
-
-            /// <summary>
-            /// Gets the radiometric resolutions of the bands in the raster.
-            /// </summary>
-            /// <value>The list containing the radiometric resolution of each band in the raster.</value>
-            public IList<Int32> RadiometricResolutions { get { return _radiometricResolutions; } }
+            /// <value>
+            /// The dimensions of the raster.
+            /// </value>
+            public RasterDimensions Dimensions { get; private set; }
 
             /// <summary>
             /// Gets a value indicating whether the dataset is readable.
@@ -89,53 +101,13 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             /// Gets the format of the dataset.
             /// </summary>
             /// <value>The format of the dataset.</value>
-            public RasterFormat Format { get { return _format; } }
+            public RasterFormat Format { get; private set; }
 
             /// <summary>
-            /// Gets the supported read/write orders.
+            /// Gets the data order of the service.
             /// </summary>
-            /// <value>The list of supported read/write orders.</value>
-            public IList<RasterDataOrder> SupportedOrders { get { return Array.AsReadOnly(_supportedOrders); } }
-
-            #endregion
-
-            #region Constructor
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="RawImageWriterService" /> class.
-            /// </summary>
-            /// <param name="rawImageWriter">The raw image writer.</param>
-            public RawImageWriterService(RawImageWriter rawImageWriter)
-            {
-                _rawImageWriter = rawImageWriter;
-                _numberOfBands = rawImageWriter._numberOfBands;
-                _numberOfColumns = rawImageWriter._numberOfColumns;
-                _numberOfRows = rawImageWriter._numberOfRows;
-                _radiometricResolutions = Enumerable.Repeat(rawImageWriter._radiometricResolution, rawImageWriter._numberOfBands).ToArray();
-                _format = rawImageWriter._format;
-
-                switch (rawImageWriter._layout)
-                {
-                    case RawImageLayout.BandInterlevedByLine:
-                        {
-                            _supportedOrders = new RasterDataOrder[] { RasterDataOrder.RowBandColumn };
-                        }
-                        break;
-                    case RawImageLayout.BandInterlevedByPixel:
-                        {
-                            _supportedOrders = new RasterDataOrder[] { RasterDataOrder.BandRowColumn };
-                        }
-                        break;
-                    case RawImageLayout.BandSequential:
-                        {
-                            _supportedOrders = new RasterDataOrder[] { RasterDataOrder.RowColumnBand };
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-            }
+            /// <value>The data order of the service.</value>
+            public RasterDataOrder DataOrder { get; private set; }
 
             #endregion
 
@@ -307,15 +279,15 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
 
                 _rawImageWriter.WriteValue(rowIndex, columnIndex, bandIndex, spectralValue);
@@ -337,7 +309,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex >= _numberOfRows * _numberOfColumns * _numberOfBands)
+                if (startIndex >= Dimensions.NumberOfRows * Dimensions.NumberOfColumns * Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
 
                 _rawImageWriter.WriteValueSequence(startIndex, spectralValues);
@@ -365,9 +337,9 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex >= _numberOfRows * _numberOfColumns * _numberOfBands)
+                if (startIndex >= Dimensions.NumberOfRows * Dimensions.NumberOfColumns * Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
-                if (Array.FindIndex(_supportedOrders, value => value == writeOrder) == 0)
+                if (writeOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 _rawImageWriter.WriteValueSequence(startIndex, spectralValues, writeOrder);
@@ -398,15 +370,15 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
 
                 _rawImageWriter.WriteValueSequence(rowIndex, columnIndex, bandIndex, spectralValues);
@@ -442,17 +414,17 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
-                if (Array.FindIndex(_supportedOrders, value => value == writeOrder) == 0)
+                if (writeOrder != DataOrder)
                     new NotSupportedException("The specified reading order is not supported.");
 
                 _rawImageWriter.WriteValueSequence(rowIndex, columnIndex, bandIndex, spectralValues, writeOrder);
@@ -488,15 +460,15 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
 
                 _rawImageWriter.WriteValue(rowIndex, columnIndex, bandIndex, spectralValue);
@@ -518,7 +490,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex >= _numberOfRows * _numberOfColumns * _numberOfBands)
+                if (startIndex >= Dimensions.NumberOfRows * Dimensions.NumberOfColumns * Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
 
                 _rawImageWriter.WriteValueSequence(startIndex, spectralValues);
@@ -545,9 +517,9 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (startIndex < 0)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is less than 0.");
-                if (startIndex >= _numberOfRows * _numberOfColumns * _numberOfBands)
+                if (startIndex >= Dimensions.NumberOfRows * Dimensions.NumberOfColumns * Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("startIndex", "The start index is equal to or greater than the number of values.");
-                if (Array.FindIndex(_supportedOrders, value => value == writeOrder) == 0)
+                if (writeOrder != DataOrder)
                     throw new NotSupportedException("The specified reading order is not supported.");
 
                 _rawImageWriter.WriteValueSequence(startIndex, spectralValues, writeOrder);
@@ -578,15 +550,15 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
 
                 _rawImageWriter.WriteValueSequence(rowIndex, columnIndex, bandIndex, spectralValues);
@@ -622,17 +594,17 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
             {
                 if (rowIndex < 0)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is less than 0.");
-                if (rowIndex >= _numberOfRows)
+                if (rowIndex >= Dimensions.NumberOfRows)
                     throw new ArgumentOutOfRangeException("rowIndex", "Row index is equal to or greater than the number of rows.");
                 if (columnIndex < 0)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is less than 0.");
-                if (columnIndex >= _numberOfColumns)
+                if (columnIndex >= Dimensions.NumberOfColumns)
                     throw new ArgumentOutOfRangeException("columnIndex", "Column index is equal to or greater than the number of columns.");
                 if (bandIndex < 0)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is less than 0.");
-                if (bandIndex >= _numberOfBands)
+                if (bandIndex >= Dimensions.NumberOfBands)
                     throw new ArgumentOutOfRangeException("bandIndex", "Band index is equal to or greater than the number of bands.");
-                if (Array.FindIndex(_supportedOrders, value => value == writeOrder) == 0)
+                if (writeOrder != DataOrder)
                     new NotSupportedException("The specified reading order is not supported.");
 
                 _rawImageWriter.WriteValueSequence(rowIndex, columnIndex, bandIndex, spectralValues, writeOrder);
@@ -654,21 +626,84 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
 
         #region Protected fields
 
+        /// <summary>
+        /// The byte order of the file.
+        /// </summary>
         protected ByteOrder _byteOrder;
+
+        /// <summary>
+        /// The layout of the file.
+        /// </summary>
         protected RawImageLayout _layout;
-        protected Int32 _numberOfRows;
-        protected Int32 _numberOfColumns;
-        protected Int32 _numberOfBands;
-        protected Int32 _radiometricResolution;
-        protected Int32 _bytesGapPerBand;
-        protected Int32 _bytesPerBandRow;
-        protected Int32 _bytesPerRow;
-        protected Int32 _bytesSkipped;
-        protected RasterMapper _mapper;
+
+        /// <summary>
+        /// The raster format.
+        /// </summary>
         protected RasterFormat _format;
+
+        /// <summary>
+        /// The number of bands.
+        /// </summary>
+        protected Int32 _numberOfBands;
+
+        /// <summary>
+        /// The number of rows.
+        /// </summary>
+        protected Int32 _numberOfRows;
+
+        /// <summary>
+        /// The number of columns.
+        /// </summary>
+        protected Int32 _numberOfColumns;
+
+        /// <summary>
+        /// The radiometric resolution of the raster.
+        /// </summary>
+        protected Int32 _radiometricResolution;
+
+        /// <summary>
+        /// The number of bytes gap per band.
+        /// </summary>
+        protected Int32 _bytesGapPerBand;
+
+        /// <summary>
+        /// The number of bytes per band row.
+        /// </summary>
+        protected Int32 _bytesPerBandRow;
+
+        /// <summary>
+        /// The  number of bytes per row.
+        /// </summary>
+        protected Int32 _bytesPerRow;
+
+        /// <summary>
+        /// The number of bytes skipped.
+        /// </summary>
+        protected Int32 _bytesSkipped;
+
+        /// <summary>
+        /// The raster mapper.
+        /// </summary>
+        protected RasterMapper _mapper;
+
+        /// <summary>
+        /// The X coordinate of the upper left pixel.
+        /// </summary>
         protected Double _upperLeftX;
+
+        /// <summary>
+        /// The Y coordinate of the upper left pixel.
+        /// </summary>
         protected Double _upperLeftY;
+
+        /// <summary>
+        /// The X vector.
+        /// </summary>
         protected Double _vectorX;
+
+        /// <summary>
+        /// The Y vector.
+        /// </summary>
         protected Double _vectorY;
 
         #endregion
@@ -881,7 +916,7 @@ namespace ELTE.AEGIS.IO.Spectral.RawImage
                 _numberOfColumns = raster.NumberOfColumns;
                 _numberOfRows = raster.NumberOfRows;
                 _numberOfBands = raster.NumberOfBands;
-                _radiometricResolution = raster.RadiometricResolutions[0];
+                _radiometricResolution = raster.RadiometricResolution;
                 _mapper = raster.Mapper;
                 _upperLeftX = _mapper.Translation.X;
                 _upperLeftY = _mapper.Translation.Y;

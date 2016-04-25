@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
                 else
                 {
                     _offset[bandIndex] = -minIntensity;
-                    _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolutions[SourceBandIndices[bandIndex]]) / (maxIntensity - minIntensity);
+                    _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution) / (maxIntensity - minIntensity);
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return RasterAlgorithms.Restrict(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex], _source.Raster.RadiometricResolutions[bandIndex]);
+            return RasterAlgorithms.Restrict(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex], _source.Raster.RadiometricResolution);
         }
 
         /// <summary>

@@ -49,27 +49,16 @@ namespace ELTE.AEGIS.Raster
 
         #endregion
 
-        #region Protected Raster properties
-
-        /// <summary>
-        /// Gets the maximum radiometric resolution.
-        /// </summary>
-        /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return 32; } }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Raster32" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="numberOfBands">The number of spectral bands.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -78,22 +67,20 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The number of columns is less than 0.
         /// or
-        /// Not all radiometric resolution values fall within the predefined range.
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than 64.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public Raster32(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-            : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
+        public Raster32(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+            : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper)
         {
-            if (radiometricResolutions != null && radiometricResolutions.Count > 0 && radiometricResolutions.Max() > MaxRadiometricResolution)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "Not all radiometric resolution values fall within the predefined range (1.." + MaxRadiometricResolution + ").");
-
             // generate empty values for all bands
             _values = Enumerable.Repeat<UInt32[]>(null, numberOfBands).ToArray();
             _histogramValues = Enumerable.Repeat<SparseArray<Int32>>(null, numberOfBands).ToArray();
 
-            for (Int32 k = 0; k < _values.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < _values.Length; bandIndex++)
             {
-                _values[k] = new UInt32[NumberOfRows * NumberOfColumns];
+                _values[bandIndex] = new UInt32[NumberOfRows * NumberOfColumns];
             }
         }
 
@@ -101,22 +88,20 @@ namespace ELTE.AEGIS.Raster
         /// Initializes a new instance of the <see cref="Raster32" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="spectralValues">The spectral values.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <param name="dimensions">The dimensions of the raster.</param>
         /// <param name="mapper">The mapper.</param>
-        private Raster32(IRasterFactory factory, IList<UInt32[]> spectralValues, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-            : base(factory, spectralValues != null ? spectralValues.Count : 0, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
+        private Raster32(IRasterFactory factory, UInt32[][] spectralValues, RasterDimensions dimensions, RasterMapper mapper)
+            : base(factory, dimensions, mapper)
         {
             // copy values for all bands
-            for (Int32 i = 0; i < spectralValues.Count; i++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                _values[i] = new UInt32[spectralValues[i].Length];
-                Array.Copy(spectralValues[i], _values[i], spectralValues[i].Length);
+                _values[bandIndex] = new UInt32[spectralValues[bandIndex].Length];
+                Array.Copy(spectralValues[bandIndex], _values[bandIndex], spectralValues[bandIndex].Length);
             }
 
-            _histogramValues = Enumerable.Repeat<SparseArray<Int32>>(null, spectralValues.Count).ToArray();
+            _histogramValues = Enumerable.Repeat<SparseArray<Int32>>(null, spectralValues.Length).ToArray();
         }
 
         #endregion
@@ -129,7 +114,7 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The deep copy of the <see cref="Raster32" /> instance.</returns>
         public override Object Clone()
         {
-            return new Raster32(Factory, _values, NumberOfRows, NumberOfColumns, _radiometricResolutions, Mapper);
+            return new Raster32(Factory, _values, Dimensions, Mapper);
         }
 
         #endregion
@@ -236,7 +221,7 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] ApplyGetValues(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32[] values = new UInt32[_bands.Length];
+            UInt32[] values = new UInt32[NumberOfBands];
             for (Int32 k = 0; k < values.Length; k++)
             {
                 values[k] = _values[k][rowIndex * NumberOfColumns + columnIndex];
@@ -264,7 +249,7 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override Double[] ApplyGetFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
-            Double[] values = new Double[_bands.Length];
+            Double[] values = new Double[NumberOfBands];
             for (Int32 k = 0; k < values.Length; k++)
             {
                 values[k] = _values[k][rowIndex * NumberOfColumns + columnIndex];
@@ -277,16 +262,11 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="bandIndex">The zero-based index of the band.</param>
         /// <returns>The read-only list containing the histogram values for the specified band.<returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The band index is less than 0.
-        /// or
-        /// The band index is equal to or greater than the number of bands.
-        /// </exception>
-        protected override IList<Int32> ApplyGetHistogramValues(Int32 bandIndex)
+        protected override IReadOnlyList<Int32> ApplyGetHistogramValues(Int32 bandIndex)
         {
             if (_histogramValues[bandIndex] == null)
             {
-                _histogramValues[bandIndex] = new SparseArray<Int32>(1L << 32);
+                _histogramValues[bandIndex] = new SparseArray<Int32>(1L << RadiometricResolution);
                 if (_values[bandIndex] == null)
                     _histogramValues[bandIndex][0] = NumberOfColumns * NumberOfRows;
                 else
@@ -298,7 +278,7 @@ namespace ELTE.AEGIS.Raster
                 }
             }
 
-            return _histogramValues[bandIndex].AsReadOnly();
+            return _histogramValues[bandIndex];
         }
 
         #endregion

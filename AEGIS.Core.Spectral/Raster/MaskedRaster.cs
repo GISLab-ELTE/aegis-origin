@@ -1,5 +1,7 @@
-﻿/// <copyright file="MaskedRaster.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+﻿
+using ELTE.AEGIS.Collections;
+/// <copyright file="MaskedRaster.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -12,7 +14,6 @@
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace ELTE.AEGIS.Raster
         /// <summary>
         /// The list of histogram values.
         /// </summary>
-        private List<Int32[]> _histogramValues;
+        private IReadOnlyList<Int32>[] _histogramValues;
 
         #endregion
 
@@ -69,17 +70,7 @@ namespace ELTE.AEGIS.Raster
         public override Boolean IsWritable { get { return _source.IsWritable; } }
 
         #endregion
-
-        #region Protected Raster properties
-
-        /// <summary>
-        /// Gets the maximum radiometric resolution.
-        /// </summary>
-        /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return _source.RadiometricResolutions.Max(); } }
-
-        #endregion
-
+        
         #region Constructors
 
         /// <summary>
@@ -106,25 +97,25 @@ namespace ELTE.AEGIS.Raster
         /// The starting columns index and the number of columns is greater than the number of columns in the source.
         /// </exception>
         public MaskedRaster(IRasterFactory factory, IRaster source, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
-            : base(factory, GetNumberOfBands(source), numberOfRows, numberOfColumns, GetRadiometricResolutions(source), ComputeMapper(source, rowIndex, columnIndex))
+            : base(factory, GetNumberOfBands(source), numberOfRows, numberOfColumns, GetRadiometricResolution(source), ComputeMapper(source, rowIndex, columnIndex))
         {
             if (rowIndex < 0)
-                throw new ArgumentOutOfRangeException("rowIndex", "The starting row index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The starting row index is less than 0.");
             if (rowIndex >= source.NumberOfRows)
-                throw new ArgumentOutOfRangeException("rowIndex", "The starting row index is equal to or greater than the number of rows in the source.");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex), "The starting row index is equal to or greater than the number of rows in the source.");
             if (columnIndex < 0)
-                throw new ArgumentOutOfRangeException("columnIndex", "The starting column index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "The starting column index is less than 0.");
             if (columnIndex >= source.NumberOfColumns)
-                throw new ArgumentOutOfRangeException("columnIndex", "the starting column index is equal to or greater than the number of columns in the source.");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex), "the starting column index is equal to or greater than the number of columns in the source.");
             if (rowIndex + numberOfRows > source.NumberOfRows)
-                throw new ArgumentOutOfRangeException("numberOfRows", "The starting row index and the number of rows is greater than the number of rows in the source.");
+                throw new ArgumentOutOfRangeException(nameof(numberOfRows), "The starting row index and the number of rows is greater than the number of rows in the source.");
             if (columnIndex + numberOfColumns > source.NumberOfColumns)
-                throw new ArgumentOutOfRangeException("numberOfColumns", "The starting columns index and the number of columns is greater than the number of columns in the source.");
+                throw new ArgumentOutOfRangeException(nameof(numberOfColumns), "The starting columns index and the number of columns is greater than the number of columns in the source.");
 
             _source = source;
             _rowIndex = rowIndex;
             _columnIndex = columnIndex;
-            _histogramValues = Enumerable.Repeat<Int32[]>(null, _source.NumberOfBands).ToList();            
+            _histogramValues = Enumerable.Repeat<IReadOnlyList<Int32>>(null, _source.NumberOfBands).ToArray();            
         }
 
         #endregion
@@ -254,19 +245,42 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="bandIndex">The zero-based index of the band.</param>
         /// <returns>The read-only list containing the histogram values for the specified band.<returns>
-        protected override IList<Int32> ApplyGetHistogramValues(Int32 bandIndex) 
+        protected override IReadOnlyList<Int32> ApplyGetHistogramValues(Int32 bandIndex) 
         {
+            if (Format == RasterFormat.Floating)
+                return null;
+
             if (_histogramValues[bandIndex] == null)
             {
-                _histogramValues[bandIndex] = new Int32[1UL << _source.RadiometricResolutions[bandIndex]];
-                for (Int32 rowIndex = _rowIndex; rowIndex < _rowIndex + NumberOfRows; rowIndex++)
-                    for (Int32 columnIndex = _columnIndex; columnIndex < _columnIndex + NumberOfColumns; columnIndex++)
-                    {
-                        _histogramValues[bandIndex][_source.GetValue(rowIndex, columnIndex, bandIndex)]++;
-                    }
+                if (RadiometricResolution < 32)
+                {
+                    Int32[] histogramValues = new Int32[1UL << _source.RadiometricResolution];
+
+                    for (Int32 rowIndex = _rowIndex; rowIndex < _rowIndex + NumberOfRows; rowIndex++)
+                        for (Int32 columnIndex = _columnIndex; columnIndex < _columnIndex + NumberOfColumns; columnIndex++)
+                        {
+                            histogramValues[(Int32)_source.GetValue(rowIndex, columnIndex, bandIndex)]++;
+                        }
+
+                    _histogramValues[bandIndex] = histogramValues;
+                }
+
+                else
+                {
+                    SparseArray<Int32> histogramValues = new SparseArray<Int32>(1L << _source.RadiometricResolution);
+
+                    for (Int32 rowIndex = _rowIndex; rowIndex < _rowIndex + NumberOfRows; rowIndex++)
+                        for (Int32 columnIndex = _columnIndex; columnIndex < _columnIndex + NumberOfColumns; columnIndex++)
+                        {
+                            histogramValues[_source.GetValue(rowIndex, columnIndex, bandIndex)]++;
+                        }
+
+                    _histogramValues[bandIndex] = histogramValues;
+                }
+
             }
 
-            return Array.AsReadOnly(_histogramValues[bandIndex]);
+            return _histogramValues[bandIndex];
         }
 
         #endregion
@@ -293,12 +307,12 @@ namespace ELTE.AEGIS.Raster
         /// <param name="source">The source.</param>
         /// <returns>The radiometric resolutions of the specified source.</returns>
         /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static IList<Int32> GetRadiometricResolutions(IRaster source)
+        private static Int32 GetRadiometricResolution(IRaster source)
         {
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
-            return source.RadiometricResolutions;
+            return source.RadiometricResolution;
         }
 
         /// <summary>

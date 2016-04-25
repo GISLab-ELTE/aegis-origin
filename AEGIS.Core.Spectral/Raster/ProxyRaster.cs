@@ -65,16 +65,6 @@ namespace ELTE.AEGIS.Raster
 
         #endregion
 
-        #region Protected Raster properties
-
-        /// <summary>
-        /// Gets the maximum radiometric resolution.
-        /// </summary>
-        /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return 64; } }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -85,13 +75,13 @@ namespace ELTE.AEGIS.Raster
         /// <param name="mapper">The raster mapper.</param>
         /// <exception cref="System.ArgumentNullException">The service is null.</exception>
         public ProxyRaster(IRasterFactory factory, IRasterService service, RasterMapper mapper)
-            : base(factory, GetNumberOfBands(service), GetNumberOfRows(service), GetNumberOfColumns(service), GetRadiometricResolutions(service), mapper)
+            : base(factory, service?.Dimensions, mapper)
         {
             if (service == null)
                 throw new ArgumentNullException("service", "The service is null.");
             
             _service = service;
-            _isSequentialService = _service.SupportedOrders.Contains(RasterDataOrder.RowColumnBand);
+            _isSequentialService = _service.DataOrder == RasterDataOrder.RowColumnBand;
 
             _histogramValues = Enumerable.Repeat<Int32[]>(null, NumberOfRows).ToArray();
         }
@@ -253,11 +243,11 @@ namespace ELTE.AEGIS.Raster
         /// </summary>
         /// <param name="bandIndex">The zero-based index of the band.</param>
         /// <returns>The read-only list containing the histogram values for the specified band.<returns>
-        protected override IList<Int32> ApplyGetHistogramValues(Int32 bandIndex)
+        protected override IReadOnlyList<Int32> ApplyGetHistogramValues(Int32 bandIndex)
         {
             if (_histogramValues[bandIndex] == null)
             {
-                _histogramValues[bandIndex] = new Int32[1UL << _service.RadiometricResolutions[bandIndex]];
+                _histogramValues[bandIndex] = new Int32[1UL << _service.Dimensions.RadiometricResolution];
                 for (Int32 rowIndex = 0; rowIndex < NumberOfRows; rowIndex++)
                     for (Int32 columnIndex = 0; columnIndex < NumberOfColumns; columnIndex++)
                     {
@@ -266,62 +256,6 @@ namespace ELTE.AEGIS.Raster
             }
 
             return Array.AsReadOnly(_histogramValues[bandIndex]);
-        }
-
-        #endregion
-
-        #region Private static methods
-
-        /// <summary>
-        /// Returns the number of bands of the specified source.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The number of bands.</returns>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static Int32 GetNumberOfBands(IRasterService source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            return source.NumberOfBands;
-        }
-
-        /// <summary>
-        /// Returns the number of rows of the specified source.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The number of rows.</returns>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static Int32 GetNumberOfRows(IRasterService source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            return source.NumberOfRows;
-        }
-
-        /// <summary>
-        /// Returns the number of columns of the specified source.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The number of columns.</returns>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static Int32 GetNumberOfColumns(IRasterService source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            return source.NumberOfColumns;
-        }
-
-        /// <summary>
-        /// Returns the radiometric resolutions of the specified source.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The radiometric resolutions of the specified source.</returns>
-        /// <exception cref="System.ArgumentNullException">The source is null.</exception>
-        private static IList<Int32> GetRadiometricResolutions(IRasterService source)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source", "The source is null.");
-            return source.RadiometricResolutions;
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralResamplingTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -54,10 +54,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             _rasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _rasterMock.Setup(raster => raster.IsReadable).Returns(true);
             _rasterMock.Setup(raster => raster.IsMapped).Returns(false);
+            _rasterMock.Setup(raster => raster.Dimensions).Returns(new RasterDimensions(3, 200, 150, 8));
             _rasterMock.Setup(raster => raster.NumberOfRows).Returns(200);
             _rasterMock.Setup(raster => raster.NumberOfColumns).Returns(150);
             _rasterMock.Setup(raster => raster.NumberOfBands).Returns(3);
-            _rasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8, 8, 8 });
+            _rasterMock.Setup(raster => raster.RadiometricResolution).Returns(8);
             _rasterMock.Setup(raster => raster.Coordinates).Returns(Enumerable.Repeat(Coordinate.Empty, 4).ToArray());
             _rasterMock.Setup(raster => raster.Mapper).Returns<RasterMapper>(null);
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
@@ -103,7 +104,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Resampling
             Assert.AreEqual(20, result.Raster.NumberOfRows);
             Assert.AreEqual(10, result.Raster.NumberOfColumns);
             Assert.AreEqual(_rasterMock.Object.NumberOfBands, result.Raster.NumberOfBands);
-            Assert.IsTrue(_rasterMock.Object.RadiometricResolutions.SequenceEqual(result.Raster.RadiometricResolutions));
+            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, result.Raster.RadiometricResolution);
             Assert.AreEqual(RasterFormat.Integer, result.Raster.Format);
 
             NearestNeighborResamplingAlgorithm strategy = new NearestNeighborResamplingAlgorithm(_rasterMock.Object);

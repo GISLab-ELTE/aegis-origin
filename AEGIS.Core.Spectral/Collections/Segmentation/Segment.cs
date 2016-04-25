@@ -69,7 +69,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public Segment(Int32 numberOfBands, SpectralStatistics statistics)
         {
             if (numberOfBands < 1)
-                throw new ArgumentOutOfRangeException("numberOfBands", "The number of bands is less than 1.");
+                throw new ArgumentOutOfRangeException(nameof(numberOfBands), "The number of bands is less than 1.");
 
             Count = 0;
 
@@ -142,7 +142,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 : this(spectralValues == null || spectralValues.Length == 0 ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length == 0)
                 throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
 
@@ -171,7 +171,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             : this(spectralValues == null || spectralValues.Length == 0 ? 1 : spectralValues.Length, statistics)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length == 0)
                 throw new ArgumentException("The array of spectral values is empty.", "spectralValues");
             
@@ -332,7 +332,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void AddValues(UInt32[] spectralValues)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands.", "spectralValues");
 
@@ -377,7 +377,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void AddFloatValues(Double[] spectralValues)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands.", "spectralValues");
 
@@ -422,7 +422,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void RemoveValues(UInt32[] spectralValues)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands.", "spectralValues");
 
@@ -467,7 +467,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         public void RemoveFloatValues(Double[] spectralValues)
         {
             if (spectralValues == null)
-                throw new ArgumentNullException("spectralValues", "The array of spectral values is null.");
+                throw new ArgumentNullException(nameof(spectralValues), "The array of spectral values is null.");
             if (spectralValues.Length != NumberOfBands)
                 throw new ArgumentException("The number of spectral values does not match the number of bands.", "spectralValues");
 

@@ -209,7 +209,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 return;
 
             // TODO: compute the format more exactly
-            Int64 contentSize = (Int64)raster.RadiometricResolutions.Max() / 8 * raster.NumberOfBands * raster.NumberOfColumns * raster.NumberOfRows;
+            Int64 contentSize = (Int64)raster.RadiometricResolution / 8 * raster.NumberOfBands * raster.NumberOfColumns * raster.NumberOfRows;
 
             InitializeStream(contentSize > BigTiffThreshold ? TiffStructure.BigTiff : TiffStructure.RegularTiff);
             
@@ -302,14 +302,14 @@ namespace ELTE.AEGIS.IO.GeoTiff
             imageFileDirectory.Add(TiffTag.RowsPerStrip, new Object[] { (UInt32)geometry.Raster.NumberOfRows });
             imageFileDirectory.Add(TiffTag.StripOffsets, new Object[] { (UInt32)0 });
             imageFileDirectory.Add(TiffTag.StripByteCounts, new Object[] { (UInt32)0 });
-            imageFileDirectory.Add(TiffTag.BitsPerSample, geometry.Raster.RadiometricResolutions.Select(resolution => (UInt16)resolution).Cast<Object>().ToArray());
+            imageFileDirectory.Add(TiffTag.BitsPerSample, Enumerable.Repeat((UInt16)geometry.Raster.RadiometricResolution, geometry.Raster.NumberOfRows).Cast<Object>().ToArray());
             imageFileDirectory.Add(TiffTag.SamplesPerPixel, new Object[] { (UInt32)geometry.Raster.NumberOfBands });
             imageFileDirectory.Add(TiffTag.SampleFormat, new Object[] { (UInt16)format });
 
             // add color palette
             if (photometricInterpretation == TiffPhotometricInterpretation.PaletteColor)
             {
-                Object[] colorMap = new Object[3 * Calculator.Pow(2, geometry.Raster.RadiometricResolutions[0])];
+                Object[] colorMap = new Object[3 * Calculator.Pow(2, geometry.Raster.RadiometricResolution)];
 
                 for (Int32 valueIndex = 0; valueIndex < colorMap.Length / 3; valueIndex++)
                 {
@@ -646,7 +646,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The size of the raster content (in bytes).</returns>
         private Int64 ComputeRasterContentSize(IRaster raster)
         {
-            Int64 rasterContentSize = (Int64)Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns;
+            Int64 rasterContentSize = (Int64)Math.Ceiling(raster.RadiometricResolution / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns;
 
             if (rasterContentSize % 2 != 0) // correct the number of bytes
                 rasterContentSize++;
@@ -711,7 +711,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             _baseStream.Seek(_currentImageStartPosition, SeekOrigin.Begin);
 
             // mark the starting position of the strip
-            UInt32 numberOfBytes = (UInt32)(Math.Ceiling(raster.RadiometricResolutions.Max() / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns);
+            UInt32 numberOfBytes = (UInt32)(Math.Ceiling(raster.RadiometricResolution / 8.0) * raster.NumberOfBands * raster.NumberOfRows * raster.NumberOfColumns);
             UInt32 numberOfBytesLeft = numberOfBytes;
 
             if (numberOfBytes % 2 != 0) // correct the number of bytes
@@ -731,11 +731,11 @@ namespace ELTE.AEGIS.IO.GeoTiff
                         {
                             case TiffSampleFormat.Undefined:
                             case TiffSampleFormat.UnsignedInteger:
-                                WriteUnsignedIntergerValue(raster.GetValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolutions[bandIndex], bytes, ref byteIndex, ref bitIndex);
+                                WriteUnsignedIntergerValue(raster.GetValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolution, bytes, ref byteIndex, ref bitIndex);
                                 break;
                             case TiffSampleFormat.SignedInteger:
                             case TiffSampleFormat.Floating:
-                                WriteFloatValue(raster.GetFloatValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolutions[bandIndex], bytes, ref byteIndex, ref bitIndex);
+                                WriteFloatValue(raster.GetFloatValue(rowIndex, columnIndex, bandIndex), raster.RadiometricResolution, bytes, ref byteIndex, ref bitIndex);
                                 break;
                         }
 

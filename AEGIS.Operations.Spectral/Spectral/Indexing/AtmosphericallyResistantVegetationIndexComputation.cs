@@ -176,7 +176,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
                                                                                 1,
                                                                                 Source.Raster.NumberOfRows,
                                                                                 Source.Raster.NumberOfColumns,
-                                                                                new Int32[] { 32 },
+                                                                                32,
                                                                                 Source.Raster.Mapper),
                                                             RasterPresentation.CreateGrayscalePresentation(),
                                                             Source.Imaging);

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="Raster8Test.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -40,33 +40,28 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
                 for (Int32 numberOfRows = 0; numberOfRows < 1000; numberOfRows += 250)
                     for (Int32 numberOfColumns = 0; numberOfColumns < 1000; numberOfColumns += 250)
                     {
-                        Raster8 raster = new Raster8(null, numberOfBands, numberOfRows, numberOfColumns, Enumerable.Repeat(8, numberOfBands).ToArray(), null);
+                        Raster8 raster = new Raster8(null, numberOfBands, numberOfRows, numberOfColumns, 8, null);
 
                         Assert.AreEqual(numberOfBands, raster.NumberOfBands);
                         Assert.AreEqual(numberOfRows, raster.NumberOfRows);
                         Assert.AreEqual(numberOfColumns, raster.NumberOfColumns);
+                        Assert.AreEqual(8, raster.RadiometricResolution);
                         Assert.AreEqual(RasterFormat.Integer, raster.Format);
                         Assert.IsFalse(raster.IsMapped);
                         Assert.IsTrue(raster.IsReadable);
                         Assert.IsTrue(raster.IsWritable);
                         Assert.IsInstanceOf<RasterFactory>(raster.Factory);
                         Assert.IsTrue(raster.HistogramValues.All(values => values.Sum() == raster.NumberOfColumns * raster.NumberOfRows && values[0] == raster.NumberOfColumns * raster.NumberOfRows));
-                        Assert.IsTrue(raster.RadiometricResolutions.All(resolution => resolution == 8));
                     }
 
 
             // argument out of range exceptions
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, -1, 1, 1, null, null); });
-            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, -1, 1, null, null); });
-            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, -1, null, null); });
-            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, 1, new Int32[] { -1 }, null); });
-            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, 1, new Int32[] { 33 }, null); });
-
-
-            // argument exceptions
-
-            Assert.Throws<ArgumentException>(() => { Raster8 raster = new Raster8(null, 1, 1, 1, new Int32[] { 8, 8 }, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, -1, 1, 1, 1, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, -1, 1, 1, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, -1, 1, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, 1, -1, null); });
+            Assert.Throws<ArgumentOutOfRangeException>(() => { Raster8 raster = new Raster8(null, 1, 1, 1, 65, null); });
         }
 
         /// <summary>
@@ -75,7 +70,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
         [Test]
         public void Raster8ValueTest()
         {
-            Raster8 raster = new Raster8(null, 3, 9, 27, null, null);
+            Raster8 raster = new Raster8(null, 3, 9, 27, 8, null);
 
             // single values
 
@@ -128,7 +123,7 @@ namespace ELTE.AEGIS.Tests.Core.Collections.Spectral
             Int32[] histogramValues = new Int32[Byte.MaxValue + 1];
             Random random = new Random();
 
-            Raster8 raster = new Raster8(null, 1, 100, 100, null, null);
+            Raster8 raster = new Raster8(null, 1, 100, 100, 8, null);
             for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                 for (Int32 columnIndex = 0; columnIndex < raster.NumberOfColumns; columnIndex++)
                 {

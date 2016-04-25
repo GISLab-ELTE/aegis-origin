@@ -313,7 +313,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <param name="actualTile">The actual tile.</param>
         private void ComputeParametersOfActualTile(Int32 bandIndex, Int32 tileRowIndex, Int32 tileColumnIndex, MaskedRaster actualTile, TileHistogramEqualizationParameters actualTileParameters)
         {
-            IList<Int32> histogram = actualTile.HistogramValues[bandIndex];
+            IReadOnlyList<Int32> histogram = actualTile.HistogramValues[bandIndex];
 
             actualTileParameters.CumulativeDistributionValues[bandIndex] = new Double[histogram.Count];
 
@@ -351,10 +351,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             actualTileParameters.CumulativeDistributionMaximums[bandIndex] = actualTileParameters.CumulativeDistributionValues[bandIndex][maxIndex];
 
             // exponent
-            actualTileParameters.RadiometricResolutionExponents[bandIndex] = Calculator.Pow(2, actualTile.RadiometricResolutions[bandIndex]);
+            actualTileParameters.RadiometricResolutionExponents[bandIndex] = Calculator.Pow(2, actualTile.RadiometricResolution);
 
             // radiometric value limit
-            actualTileParameters.RadiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(actualTile.RadiometricResolutions[bandIndex]);
+            actualTileParameters.RadiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(actualTile.RadiometricResolution);
         }
 
         /// <summary>

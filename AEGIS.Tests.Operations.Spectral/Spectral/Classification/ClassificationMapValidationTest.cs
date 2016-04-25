@@ -71,10 +71,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             _sourceRasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _sourceRasterMock.Setup(raster => raster.Coordinates).Returns(coordinates);
             _sourceRasterMock.Setup(raster => raster.IsReadable).Returns(true);
+            _sourceRasterMock.Setup(raster => raster.Dimensions).Returns(new RasterDimensions(4, 4, 1, 8));
             _sourceRasterMock.Setup(raster => raster.NumberOfRows).Returns(4);
             _sourceRasterMock.Setup(raster => raster.NumberOfColumns).Returns(4);
             _sourceRasterMock.Setup(raster => raster.NumberOfBands).Returns(1);
-            _sourceRasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8 }); 
+            _sourceRasterMock.Setup(raster => raster.RadiometricResolution).Returns(8); 
             _sourceRasterMock.Setup(raster => raster.Mapper).Returns(mapper);
             _sourceRasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _sourceRasterMock.Setup(raster => raster.IsMapped).Returns(true);
@@ -86,10 +87,11 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             _referenceRasterMock.Setup(raster => raster.Factory).Returns(new RasterFactory());
             _referenceRasterMock.Setup(raster => raster.Coordinates).Returns(coordinates);
             _referenceRasterMock.Setup(raster => raster.IsReadable).Returns(true);
+            _referenceRasterMock.Setup(raster => raster.Dimensions).Returns(new RasterDimensions(4, 4, 1, 8));
             _referenceRasterMock.Setup(raster => raster.NumberOfRows).Returns(4);
             _referenceRasterMock.Setup(raster => raster.NumberOfColumns).Returns(4);
             _referenceRasterMock.Setup(raster => raster.NumberOfBands).Returns(1);
-            _referenceRasterMock.Setup(raster => raster.RadiometricResolutions).Returns(new Int32[] { 8 });
+            _referenceRasterMock.Setup(raster => raster.RadiometricResolution).Returns(8);
             _referenceRasterMock.Setup(raster => raster.Mapper).Returns(mapper);
             _referenceRasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _referenceRasterMock.Setup(raster => raster.IsMapped).Returns(true);

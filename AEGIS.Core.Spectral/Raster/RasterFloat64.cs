@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterFloat64.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -43,27 +43,16 @@ namespace ELTE.AEGIS.Raster
 
         #endregion
 
-        #region Protected Raster properties
-
-        /// <summary>
-        /// Gets the maximum radiometric resolution.
-        /// </summary>
-        /// <value>The maximum radiometric resolution.</value>
-        protected override Int32 MaxRadiometricResolution { get { return 64; } }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RasterFloat64" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="numberOfBands">The number of spectral bands.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
         /// <param name="numberOfRows">The number of rows.</param>
         /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <param name="mapper">The mapper.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// The number of bands is less than 1.
@@ -72,21 +61,19 @@ namespace ELTE.AEGIS.Raster
         /// or
         /// The number of columns is less than 0.
         /// or
-        /// Not all radiometric resolution values fall within the predefined range.
+        /// The radiometric resolution is less than 1.
+        /// or
+        /// The radiometric resolution is greater than 64.
         /// </exception>
-        /// <exception cref="System.ArgumentException">The number of radiometric resolutions does not match the number of bands.</exception>
-        public RasterFloat64(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-            : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
+        public RasterFloat64(IRasterFactory factory, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+            : base(factory, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper)
         {
-            if (radiometricResolutions != null && radiometricResolutions.Count > 0 && radiometricResolutions.Max() > MaxRadiometricResolution)
-                throw new ArgumentOutOfRangeException("radiometricResolutions", "Not all radiometric resolution values fall within the predefined range (1.." + MaxRadiometricResolution + ").");
-
             // generate empty values for all bands
             _values = Enumerable.Repeat<Double[]>(null, numberOfBands).ToArray();
 
-            for (Int32 k = 0; k < _values.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < _values.Length; bandIndex++)
             {
-                _values[k] = new Double[NumberOfRows * NumberOfColumns];
+                _values[bandIndex] = new Double[NumberOfRows * NumberOfColumns];
             }
         }
 
@@ -94,19 +81,17 @@ namespace ELTE.AEGIS.Raster
         /// Initializes a new instance of the <see cref="RasterFloat64" /> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        /// <param name="spectralValues">The spectral values.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="radiometricResolutions">The radiometric resolutions.</param>
+        /// <param name="spectralValues">The array of spectral values.</param>
+        /// <param name="dimensions">The dimensions of the raster.</param>
         /// <param name="mapper">The mapper.</param>
-        private RasterFloat64(IRasterFactory factory, IList<Double[]> spectralValues, Int32 numberOfRows, Int32 numberOfColumns, IList<Int32> radiometricResolutions, RasterMapper mapper)
-            : base(factory, spectralValues != null ? spectralValues.Count : 0, numberOfRows, numberOfColumns, radiometricResolutions, mapper)
+        private RasterFloat64(IRasterFactory factory, Double[][] spectralValues, RasterDimensions dimensions, RasterMapper mapper)
+            : base(factory, dimensions, mapper)
         {
             // copy values for all bands
-            for (Int32 i = 0; i < spectralValues.Count; i++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                _values[i] = new Double[spectralValues[i].Length];
-                Array.Copy(spectralValues[i], _values[i], spectralValues[i].Length);
+                _values[bandIndex] = new Double[spectralValues[bandIndex].Length];
+                Array.Copy(spectralValues[bandIndex], _values[bandIndex], spectralValues[bandIndex].Length);
             }
         }
 
@@ -120,7 +105,7 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The deep copy of the <see cref="RasterFloat64" /> instance.</returns>
         public override Object Clone()
         {
-            return new RasterFloat64(Factory, _values, NumberOfRows, NumberOfColumns, _radiometricResolutions, Mapper);
+            return new RasterFloat64(Factory, _values, Dimensions, Mapper);
         }
 
         #endregion
@@ -147,9 +132,9 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetValues(Int32 rowIndex, Int32 columnIndex, UInt32[] spectralValues)
         {
-            for (Int32 k = 0; k < spectralValues.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[k];
+                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[bandIndex];
             }
         }
 
@@ -173,9 +158,9 @@ namespace ELTE.AEGIS.Raster
         /// <param name="spectralValues">The array containing the spectral values for each band.</param>
         protected override void ApplySetFloatValues(Int32 rowIndex, Int32 columnIndex, Double[] spectralValues)
         {
-            for (Int32 k = 0; k < spectralValues.Length; k++)
+            for (Int32 bandIndex = 0; bandIndex < spectralValues.Length; bandIndex++)
             {
-                _values[k][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[k];
+                _values[bandIndex][rowIndex * NumberOfColumns + columnIndex] = (Double)spectralValues[bandIndex];
             }
         }
 
@@ -199,10 +184,10 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] ApplyGetValues(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32[] values = new UInt32[_bands.Length];
-            for (Int32 k = 0; k < values.Length; k++)
+            UInt32[] values = new UInt32[NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
             {
-                values[k] = (UInt32)_values[k][rowIndex * NumberOfColumns + columnIndex];
+                values[bandIndex] = (UInt32)_values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }
@@ -227,10 +212,10 @@ namespace ELTE.AEGIS.Raster
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override Double[] ApplyGetFloatValues(Int32 rowIndex, Int32 columnIndex)
         {
-            Double[] values = new Double[_bands.Length];
-            for (Int32 k = 0; k < values.Length; k++)
+            Double[] values = new Double[NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < values.Length; bandIndex++)
             {
-                values[k] = _values[k][rowIndex * NumberOfColumns + columnIndex];
+                values[bandIndex] = _values[bandIndex][rowIndex * NumberOfColumns + columnIndex];
             }
             return values;
         }

@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                                                                                  1,
                                                                                  _source.Raster.NumberOfRows,
                                                                                  _source.Raster.NumberOfColumns,
-                                                                                 new Int32[] { 32 },
+                                                                                 32,
                                                                                  _source.Raster.Mapper),
                                                             _source.Presentation,
                                                              _source.Imaging);

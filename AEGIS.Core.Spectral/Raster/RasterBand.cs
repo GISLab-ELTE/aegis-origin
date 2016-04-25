@@ -54,13 +54,13 @@ namespace ELTE.AEGIS.Raster
         /// Gets the radiometric resolution of the band.
         /// </summary>
         /// <value>The number of bits used for storing spectral values.</value>
-        public Int32 RadiometricResolution { get { return _raster.RadiometricResolutions[_bandIndex]; } }
+        public Int32 RadiometricResolution { get { return _raster.RadiometricResolution; } }
 
         /// <summary>
         /// Gets the histogram values of the band.
         /// </summary>
         /// <value>The histogram values of the band.</value>
-        public IList<Int32> HistogramValues { get { return _raster.HistogramValues[_bandIndex]; } }
+        public IReadOnlyList<Int32> HistogramValues { get { return _raster.HistogramValues[_bandIndex]; } }
 
         /// <summary>
         /// Get a value indicating whether the raster band is mapped to coordinate space.
@@ -145,9 +145,9 @@ namespace ELTE.AEGIS.Raster
             if (raster == null)
                 throw new ArgumentNullException("raster", "The raster is null.");
             if (bandIndex < 0)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is less than 0.");
             if (bandIndex >= raster.NumberOfBands)
-                throw new ArgumentOutOfRangeException("bandIndex", "The band index is greater than or equal to the number of bands in the raster.");
+                throw new ArgumentOutOfRangeException(nameof(bandIndex), "The band index is greater than or equal to the number of bands in the raster.");
 
             _raster = raster;
             _bandIndex = bandIndex;
