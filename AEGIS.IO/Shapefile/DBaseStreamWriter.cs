@@ -154,6 +154,7 @@ namespace ELTE.AEGIS.IO.Shapefile
 
             _stream = stream;
             _encoding = encoding;
+            _header = new DBaseHeader();
             _headerWritten = false;
             _numberOfRecords = 0;
             _disposed = false;
