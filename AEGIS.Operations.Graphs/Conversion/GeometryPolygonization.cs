@@ -60,7 +60,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GeometryPolygonization(IGeometry source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, GraphOperationMethods.GeometryPolygonization, parameters)
         {
-            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, _source.Factory);
+            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, Source.Factory);
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
 
@@ -71,13 +71,14 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
+        /// <returns>The result object.</returns>
         protected override void ComputeResult()
         {
             Dictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
             parameters.Add(GraphOperationParameters.BidirectionalConversion, true);
             parameters.Add(CommonOperationParameters.MetadataPreservation, _metadataPreservation);
 
-            _networkConversion = new GeometryToNetworkConversion(_source, parameters);
+            _networkConversion = new GeometryToNetworkConversion(Source, parameters);
             _networkConversion.Execute();
 
             parameters = new Dictionary<OperationParameter, Object>();
@@ -87,26 +88,24 @@ namespace ELTE.AEGIS.Operations.Conversion
 
             _geometryConversion = new GraphToGeometryConversion(_networkConversion.Result, parameters);
             _geometryConversion.Execute();
-
-            _result = _geometryConversion.Result;
         }
 
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected override void FinalizeResult()
+        /// <returns>The resulting object.</returns>
+        protected override IGeometry FinalizeResult()
         {
-            if (_result == null)
-                return;
+            IGeometry conversionResult = _geometryConversion.Result;
 
             // the result contains only polygons
-            if (_result is IPolygon || _result is IEnumerable<IPolygon>)
-                return;
+            if (conversionResult is IPolygon || conversionResult is IEnumerable<IPolygon>)
+                return conversionResult;
 
             // the result contains different geometry types
-            if (_result is IGeometryCollection<IGeometry>)
+            if (conversionResult is IGeometryCollection<IGeometry>)
             {
-                IGeometryCollection<IGeometry> collection = _result as IGeometryCollection<IGeometry>;
+                IGeometryCollection<IGeometry> collection = Result as IGeometryCollection<IGeometry>;
 
                 List<IPolygon> polygonList = new List<IPolygon>();
 
@@ -114,12 +113,10 @@ namespace ELTE.AEGIS.Operations.Conversion
                     if (collection[i] is IPolygon)
                         polygonList.Add(collection[i] as IPolygon);
 
-                _result = _factory.CreateMultiPolygon(polygonList);
-                return;
+                return _factory.CreateMultiPolygon(polygonList);
             }
 
-            // the result does not contain any polygons
-            _result = null;
+            return null;
         }
 
         #endregion

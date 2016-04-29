@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The resulting image, although clearer, may be a less accurate representation of the image's subject. 
     /// </remarks>
     [OperationMethodImplementation("AEGIS::251302", "Unsharp masking filter")]
-    public class UnsharpMaskingOperation : PerBandSpectralTransformation
+    public class UnsharpMaskingOperation : SpectralTransformation
     {
         #region Private fields
 
@@ -110,23 +110,23 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             // if threshold is specified, the magnitude of the gradient is computed
             if (_threshold > 0)
             {
-                Double gradientRow = -_source.Raster.GetNearestValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetNearestValue(rowIndex + 1, columnIndex, bandIndex);
-                Double gradientColumn = -_source.Raster.GetNearestValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetNearestValue(rowIndex, columnIndex + 1, bandIndex);
+                Double gradientRow = -Source.Raster.GetNearestValue(rowIndex - 1, columnIndex, bandIndex) + Source.Raster.GetNearestValue(rowIndex + 1, columnIndex, bandIndex);
+                Double gradientColumn = -Source.Raster.GetNearestValue(rowIndex, columnIndex - 1, bandIndex) + Source.Raster.GetNearestValue(rowIndex, columnIndex + 1, bandIndex);
 
                 // if the threshold is not reached, the original value is returned
                 if (Math.Sqrt(gradientRow *gradientRow + gradientColumn * gradientColumn) < _threshold)
-                    return _source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
+                    return Source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
             }
 
             Double filteredValue = 0;
             for (Int32 filterRowIndex = -_unsharpFilter.Radius; filterRowIndex <= _unsharpFilter.Radius; filterRowIndex++)
                 for (Int32 filterColumnIndex = -_unsharpFilter.Radius; filterColumnIndex <= _unsharpFilter.Radius; filterColumnIndex++)
                 {
-                    filteredValue += _source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _unsharpFilter.Kernel[filterRowIndex + _unsharpFilter.Radius, filterColumnIndex + _unsharpFilter.Radius];
+                    filteredValue += Source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _unsharpFilter.Kernel[filterRowIndex + _unsharpFilter.Radius, filterColumnIndex + _unsharpFilter.Radius];
                 }
             filteredValue = filteredValue / _unsharpFilter.Factor + _unsharpFilter.Offset;
 
-            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolution);
+            return RasterAlgorithms.Restrict((1 + _amount) * Source.Raster.GetValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, Source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -141,23 +141,23 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             // if threshold is specified, the magnitude of the gradient is computed
             if (_threshold > 0)
             {
-                Double gradientRow = -_source.Raster.GetNearestFloatValue(rowIndex - 1, columnIndex, bandIndex) + _source.Raster.GetNearestFloatValue(rowIndex + 1, columnIndex, bandIndex);
-                Double gradientColumn = -_source.Raster.GetNearestFloatValue(rowIndex, columnIndex - 1, bandIndex) + _source.Raster.GetNearestFloatValue(rowIndex, columnIndex + 1, bandIndex);
+                Double gradientRow = -Source.Raster.GetNearestFloatValue(rowIndex - 1, columnIndex, bandIndex) + Source.Raster.GetNearestFloatValue(rowIndex + 1, columnIndex, bandIndex);
+                Double gradientColumn = -Source.Raster.GetNearestFloatValue(rowIndex, columnIndex - 1, bandIndex) + Source.Raster.GetNearestFloatValue(rowIndex, columnIndex + 1, bandIndex);
 
                 // if the threshold is not reached, the original value is returned
                 if (Math.Sqrt(gradientRow * gradientRow + gradientColumn * gradientColumn) < _threshold)
-                    return _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
+                    return Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
             }
 
             Double filteredValue = 0;
             for (Int32 filterRowIndex = -_unsharpFilter.Radius; filterRowIndex <= _unsharpFilter.Radius; filterRowIndex++)
                 for (Int32 filterColumnIndex = -_unsharpFilter.Radius; filterColumnIndex <= _unsharpFilter.Radius; filterColumnIndex++)
                 {
-                    filteredValue += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _unsharpFilter.Kernel[filterRowIndex + _unsharpFilter.Radius, filterColumnIndex + _unsharpFilter.Radius];
+                    filteredValue += Source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _unsharpFilter.Kernel[filterRowIndex + _unsharpFilter.Radius, filterColumnIndex + _unsharpFilter.Radius];
                 }
             filteredValue = filteredValue / _unsharpFilter.Factor + _unsharpFilter.Offset;
 
-            return RasterAlgorithms.Restrict((1 + _amount) * _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue, _source.Raster.RadiometricResolution);
+            return (1 + _amount) * Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - _amount * filteredValue;
         }
 
         #endregion

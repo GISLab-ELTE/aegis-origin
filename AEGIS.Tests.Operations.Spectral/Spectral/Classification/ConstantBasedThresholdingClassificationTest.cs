@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ConstantBasedThresholdingClassificationTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -101,30 +101,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
                     {
                         Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, bandIndex));
                     }
-
-
-            // integer values with specified band
-
-            parameters.Add(SpectralOperationParameters.BandIndex, 2);
-
-            operation = new ConstantBasedThresholdingClassification(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
-            operation.Execute();
-
-            result = operation.Result;
-
-            Assert.AreEqual(_rasterMock.Object.NumberOfRows, result.Raster.NumberOfRows);
-            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, result.Raster.NumberOfBands);
-            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, result.Raster.RadiometricResolution);
-
-            Assert.AreEqual(RasterFormat.Integer, result.Raster.Format);
-
-            for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
-                for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
-                {
-                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetValue(rowIndex, columnIndex, 0));
-                }
-
+            
 
             // floating point values
 
@@ -135,11 +112,12 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
 
             result = operation.Result;
 
-            for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
-                for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
-                {
-                    Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) >= 100 && _rasterMock.Object.GetFloatValue(rowIndex, columnIndex, 2) <= 150 ? 255 : 0, result.Raster.GetFloatValue(rowIndex, columnIndex, 0));
-                }
+            for (Int32 bandIndex = 0; bandIndex < result.Raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < result.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < result.Raster.NumberOfColumns; columnIndex++)
+                    {
+                        Assert.AreEqual(_rasterMock.Object.GetFloatValue(rowIndex, columnIndex, bandIndex) >= 100 && _rasterMock.Object.GetFloatValue(rowIndex, columnIndex, bandIndex) <= 150 ? 255 : 0, result.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
+                    }
         }
 
         #endregion

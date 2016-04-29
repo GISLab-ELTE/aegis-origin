@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// CLAHE was developed to prevent the overamplification of noise that adaptive histogram equalization can give rise to.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::250218", "Adaptive histogram equalization")]
-    public class AdaptiveHistogramEqualization : PerBandSpectralTransformation
+    public class AdaptiveHistogramEqualization : SpectralTransformation
     {
         #region Private fields
 
@@ -60,12 +60,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             /// <summary>
             /// The radiometric exponent value of each band of a tile.
             /// </summary>
-            public Double[] RadiometricResolutionExponents { get; set; }
-
-            /// <summary>
-            /// The radiometric limit value of each band of a tile.
-            /// </summary>
-            public UInt32[] RadiometricValueLimits { get; set; }
+            public Double[] RadiometricResolutionExponents { get; set; }    
         }
 
         /// <summary>
@@ -120,13 +115,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         {
             _tileNumberVertically = ResolveParameter<Int32>(SpectralOperationParameters.TileNumberVertically);
             _tileNumberHorizontally = ResolveParameter<Int32>(SpectralOperationParameters.TileNumberHorizontally);
+        }
 
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
             _allTilesParameters = new TileHistogramEqualizationParameters[_tileNumberVertically, _tileNumberHorizontally];
-
-            _numberOfPixelRowsOfNormalTile = _source.Raster.NumberOfRows / _tileNumberVertically;
-            _numberOfPixelColumnsOfNormalTile = _source.Raster.NumberOfColumns / _tileNumberHorizontally;
+            _numberOfPixelRowsOfNormalTile = Source.Raster.NumberOfRows / _tileNumberVertically;
+            _numberOfPixelColumnsOfNormalTile = Source.Raster.NumberOfColumns / _tileNumberHorizontally;
 
             ComputeParametersOfTiles();
+
+            return base.PrepareResult();
         }
 
         #endregion
@@ -142,17 +149,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            // determining which four tiles are the closest to the actual pixel:
+            // determining which four tiles are the closest to the actual pixel
 
-            Int32 upperLeftTileRowIndex =  // upper left tile's tile-row index in the array of tiles
-                (_numberOfPixelRowsOfNormalTile % 2 == 0) ?
-                (rowIndex + _numberOfPixelRowsOfNormalTile / 2 - 1) / _numberOfPixelRowsOfNormalTile - 1 :
-                (rowIndex + _numberOfPixelRowsOfNormalTile / 2) / _numberOfPixelRowsOfNormalTile - 1;
+            // upper left tile's tile-row index in the array of tiles
+            Int32 upperLeftTileRowIndex = (_numberOfPixelRowsOfNormalTile % 2 == 0) ? (rowIndex + _numberOfPixelRowsOfNormalTile / 2 - 1) / _numberOfPixelRowsOfNormalTile - 1 : (rowIndex + _numberOfPixelRowsOfNormalTile / 2) / _numberOfPixelRowsOfNormalTile - 1;
 
-            Int32 upperLeftTileColumnIndex =  // upper left tile's tile-column index in the array of tiles
-                (_numberOfPixelColumnsOfNormalTile % 2 == 0) ?
-                (columnIndex + _numberOfPixelColumnsOfNormalTile / 2 - 1) / _numberOfPixelColumnsOfNormalTile - 1 :
-                (columnIndex + _numberOfPixelColumnsOfNormalTile / 2) / _numberOfPixelColumnsOfNormalTile - 1;
+            // upper left tile's tile-column index in the array of tiles
+            Int32 upperLeftTileColumnIndex = (_numberOfPixelColumnsOfNormalTile % 2 == 0) ? (columnIndex + _numberOfPixelColumnsOfNormalTile / 2 - 1) / _numberOfPixelColumnsOfNormalTile - 1 : (columnIndex + _numberOfPixelColumnsOfNormalTile / 2) / _numberOfPixelColumnsOfNormalTile - 1;
 
             Int32 upperRightTileRowIndex = upperLeftTileRowIndex; // upper right tile's tile-row index in the array of tiles
             Int32 upperRightTileColumnIndex = upperLeftTileColumnIndex + 1; // upper right tile's tile-column index in the array of tiles
@@ -165,8 +168,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
 
             // the four values to be bilinearly interpolated, computed using the four used tiles' transformation formula
-            // for the corresponding tile's (not adaptive!) histogram equalization:
-
+            // for the corresponding tile's (not adaptive!) histogram equalization
             Double upperLeftValue = 0;
             Double upperRightValue = 0;
             Double lowerLeftValue = 0;
@@ -174,79 +176,70 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
             if (!(upperLeftTileRowIndex == -1 || upperLeftTileColumnIndex == -1))
             {
-                upperLeftValue = PixelValueTransformation(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex),
-                                                                bandIndex,
-                                                                _allTilesParameters[upperLeftTileRowIndex, upperLeftTileColumnIndex]);
+                upperLeftValue = PixelValueTransformation(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), bandIndex, _allTilesParameters[upperLeftTileRowIndex, upperLeftTileColumnIndex]);
             }
 
             if (!(upperRightTileRowIndex == -1 || upperRightTileColumnIndex == _tileNumberHorizontally))
             {
-                upperRightValue = PixelValueTransformation(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex),
-                                                                bandIndex,
-                                                                _allTilesParameters[upperRightTileRowIndex, upperRightTileColumnIndex]);
+                upperRightValue = PixelValueTransformation(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), bandIndex, _allTilesParameters[upperRightTileRowIndex, upperRightTileColumnIndex]);
             }
 
             if (!(lowerLeftTileRowIndex == _tileNumberVertically || lowerLeftTileColumnIndex == -1))
             {
-                lowerLeftValue = PixelValueTransformation(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex),
-                                                                bandIndex,
-                                                                _allTilesParameters[lowerLeftTileRowIndex, lowerLeftTileColumnIndex]);
+                lowerLeftValue = PixelValueTransformation(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), bandIndex, _allTilesParameters[lowerLeftTileRowIndex, lowerLeftTileColumnIndex]);
             }
 
             if (!(lowerRightTileRowIndex == _tileNumberVertically || lowerRightTileColumnIndex == _tileNumberHorizontally))
             {
-                lowerRightValue = PixelValueTransformation(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex),
-                                                            bandIndex,
-                                                            _allTilesParameters[lowerRightTileRowIndex, lowerRightTileColumnIndex]);
+                lowerRightValue = PixelValueTransformation(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), bandIndex, _allTilesParameters[lowerRightTileRowIndex, lowerRightTileColumnIndex]);
             }
 
 
-            // the weights of the upper tiles and the left tiles:
+            // the weights of the upper tiles and the left tiles
+            Double upperWeight = ((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - rowIndex) / (Double)((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - (upperLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2));
 
-            Double upperWeight = ((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - rowIndex) /
-                                    (Double)((lowerLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2) - (upperLeftTileRowIndex * _numberOfPixelRowsOfNormalTile + _numberOfPixelRowsOfNormalTile / 2));
-
-            Double leftWeight = ((upperRightTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2) - columnIndex) /
-                                    (Double)((upperRightTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2) - (upperLeftTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2));
+            Double leftWeight = ((upperRightTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2) - columnIndex) / (Double)((upperRightTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2) - (upperLeftTileColumnIndex * _numberOfPixelColumnsOfNormalTile + _numberOfPixelColumnsOfNormalTile / 2));
 
 
-            // computing:
+            Double value;
 
             if (upperLeftTileRowIndex == -1)
             {
                 if (upperLeftTileColumnIndex == -1)
-                    return (UInt32)lowerRightValue;
+                    value = lowerRightValue;
 
                 else if (upperLeftTileColumnIndex >= 0 && upperLeftTileColumnIndex <= (_tileNumberHorizontally - 2))
-                    return (UInt32)LinearInterpolation(lowerLeftValue, lowerRightValue, leftWeight);
+                    value = LinearInterpolation(lowerLeftValue, lowerRightValue, leftWeight);
 
                 else
-                    return (UInt32)lowerLeftValue;
+                    value = lowerLeftValue;
             }
 
             else if (upperLeftTileRowIndex >= 0 && upperLeftTileRowIndex <= (_tileNumberVertically - 2))
             {
                 if (upperLeftTileColumnIndex == -1)
-                    return (UInt32)LinearInterpolation(upperRightValue, lowerRightValue, upperWeight);
+                    value = LinearInterpolation(upperRightValue, lowerRightValue, upperWeight);
 
                 else if (upperLeftTileColumnIndex >= 0 && upperLeftTileColumnIndex <= (_tileNumberHorizontally - 2))
-                    return (UInt32)BilinearInterpolation(upperLeftValue, lowerLeftValue, upperRightValue, lowerRightValue, upperWeight, leftWeight);
+                    value = BilinearInterpolation(upperLeftValue, lowerLeftValue, upperRightValue, lowerRightValue, upperWeight, leftWeight);
 
                 else
-                    return (UInt32)LinearInterpolation(upperLeftValue, lowerLeftValue, upperWeight);
+                    value = LinearInterpolation(upperLeftValue, lowerLeftValue, upperWeight);
             }
 
             else
             {
                 if (upperLeftTileColumnIndex == -1)
-                    return (UInt32)upperRightValue;
+                    value = upperRightValue;
 
                 else if (upperLeftTileColumnIndex >= 0 && upperLeftTileColumnIndex <= (_tileNumberHorizontally - 2))
-                    return (UInt32)LinearInterpolation(upperLeftValue, upperRightValue, leftWeight);
+                    value = LinearInterpolation(upperLeftValue, upperRightValue, leftWeight);
 
                 else
-                    return (UInt32)upperLeftValue;
+                    value = upperLeftValue;
             }
+
+            return RasterAlgorithms.Restrict(value, Source.Raster.RadiometricResolution);
         }
 
         #endregion
@@ -262,43 +255,23 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             {
                 Int32 numberOfRowsInTile = (i < _tileNumberVertically - 1) ?
                     _numberOfPixelRowsOfNormalTile :
-                    _numberOfPixelRowsOfNormalTile + _source.Raster.NumberOfRows % _tileNumberVertically;
+                    _numberOfPixelRowsOfNormalTile + Source.Raster.NumberOfRows % _tileNumberVertically;
 
                 for (Int32 j = 0; j < _tileNumberHorizontally; ++j)
                 {
-                    Int32 numberOfColumnsInTile = (j < _tileNumberHorizontally - 1) ?
-                        _numberOfPixelColumnsOfNormalTile :
-                        _numberOfPixelColumnsOfNormalTile + _source.Raster.NumberOfColumns % _tileNumberHorizontally;
+                    Int32 numberOfColumnsInTile = (j < _tileNumberHorizontally - 1) ? _numberOfPixelColumnsOfNormalTile : _numberOfPixelColumnsOfNormalTile + Source.Raster.NumberOfColumns % _tileNumberHorizontally;
 
-                    MaskedRaster tile = new MaskedRaster(null, _source.Raster, i * _numberOfPixelRowsOfNormalTile, j * _numberOfPixelColumnsOfNormalTile, numberOfRowsInTile, numberOfColumnsInTile);
+                    MaskedRaster tile = new MaskedRaster(null, Source.Raster, i * _numberOfPixelRowsOfNormalTile, j * _numberOfPixelColumnsOfNormalTile, numberOfRowsInTile, numberOfColumnsInTile);
 
-                    if (SourceBandIndices != null)
+                    _allTilesParameters[i, j] = new TileHistogramEqualizationParameters();
+                    _allTilesParameters[i, j].CumulativeDistributionValues = new Double[Source.Raster.NumberOfBands][];
+                    _allTilesParameters[i, j].CumulativeDistributionMinimums = new Double[Source.Raster.NumberOfBands];
+                    _allTilesParameters[i, j].CumulativeDistributionMaximums = new Double[Source.Raster.NumberOfBands];
+                    _allTilesParameters[i, j].RadiometricResolutionExponents = new Double[Source.Raster.NumberOfBands];
+
+                    for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
                     {
-                        _allTilesParameters[i, j] = new TileHistogramEqualizationParameters();
-                        _allTilesParameters[i, j].CumulativeDistributionValues = new Double[_source.Raster.NumberOfBands][];
-                        _allTilesParameters[i, j].CumulativeDistributionMinimums = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].CumulativeDistributionMaximums = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].RadiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].RadiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
-
-                        for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
-                        {
-                            ComputeParametersOfActualTile(SourceBandIndices[bandIndex], i, j, tile, _allTilesParameters[i, j]);
-                        }
-                    }
-                    else
-                    {
-                        _allTilesParameters[i, j] = new TileHistogramEqualizationParameters();
-                        _allTilesParameters[i, j].CumulativeDistributionValues = new Double[_source.Raster.NumberOfBands][];
-                        _allTilesParameters[i, j].CumulativeDistributionMinimums = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].CumulativeDistributionMaximums = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].RadiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
-                        _allTilesParameters[i, j].RadiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
-
-                        for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
-                        {
-                            ComputeParametersOfActualTile(bandIndex, i, j, tile, _allTilesParameters[i, j]);
-                        }
+                        ComputeParametersOfActualTile(bandIndex, i, j, tile, _allTilesParameters[i, j]);
                     }
                 }
             }
@@ -352,9 +325,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
             // exponent
             actualTileParameters.RadiometricResolutionExponents[bandIndex] = Calculator.Pow(2, actualTile.RadiometricResolution);
-
-            // radiometric value limit
-            actualTileParameters.RadiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(actualTile.RadiometricResolution);
         }
 
         /// <summary>
@@ -362,15 +332,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// </summary>
         /// <param name="value">The value of the specified pixel of the specified band.</param>
         /// <param name="bandIndex">The band index.</param>
-        /// <param name="td">The actual tile's data.</param>
-        private Double PixelValueTransformation(UInt32 value, Int32 bandIndex, TileHistogramEqualizationParameters td)
+        /// <param name="tileParameters">The actual tile's data.</param>
+        private Double PixelValueTransformation(UInt32 value, Int32 bandIndex, TileHistogramEqualizationParameters tileParameters)
         {
-            // source: http://en.wikipedia.org/wiki/Histogram_equalization
-
-            return Math.Min(((td.CumulativeDistributionValues[bandIndex][value] - td.CumulativeDistributionMinimums[bandIndex]) /
-                         (Double)((td.CumulativeDistributionMaximums[bandIndex] - td.CumulativeDistributionMinimums[bandIndex])) *
-                         td.RadiometricResolutionExponents[bandIndex]),
-                            td.RadiometricValueLimits[bandIndex]);
+            return (tileParameters.CumulativeDistributionValues[bandIndex][value] - tileParameters.CumulativeDistributionMinimums[bandIndex]) / ((tileParameters.CumulativeDistributionMaximums[bandIndex] - tileParameters.CumulativeDistributionMinimums[bandIndex])) * tileParameters.RadiometricResolutionExponents[bandIndex];
         }
 
         /// <summary>
@@ -395,9 +360,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <param name="weightOfFirstParameterInTheSecondDimension">The weight of the first parameter in the second dimension, so when linearly interpolating the two values computed in the first two linear interpolation steps.</param>
         private Double BilinearInterpolation(Double a1, Double a2, Double b1, Double b2, Double weightOfFirstParameterInTheFirstDimension, Double weightOfFirstParameterInTheSecondDimension)
         {
-            return LinearInterpolation(LinearInterpolation(a1, a2, weightOfFirstParameterInTheFirstDimension),
-                                       LinearInterpolation(b1, b2, weightOfFirstParameterInTheFirstDimension),
-                                       weightOfFirstParameterInTheSecondDimension);
+            return LinearInterpolation(LinearInterpolation(a1, a2, weightOfFirstParameterInTheFirstDimension), LinearInterpolation(b1, b2, weightOfFirstParameterInTheFirstDimension), weightOfFirstParameterInTheSecondDimension);
         }
 
         #endregion

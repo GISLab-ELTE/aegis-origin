@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represents a spectral translation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::250102", "Spectral translation")]
-    public class SpectralTranslation : PerBandSpectralTransformation
+    public class SpectralTranslation : SpectralTransformation
     {
         #region Private fields
 
@@ -79,8 +80,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SpectralTranslation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SpectralTranslation, parameters)
         {
-            _offset = parameters.ContainsKey(SpectralOperationParameters.SpectralOffset) ? (Double)parameters[SpectralOperationParameters.SpectralOffset] : 0;
-            _factor = parameters.ContainsKey(SpectralOperationParameters.SpectralFactor) ? (Double)parameters[SpectralOperationParameters.SpectralFactor] : 1;
+            _offset = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SpectralOffset));
+            _factor = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SpectralFactor));
         }
 
         #endregion
@@ -96,7 +97,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return (UInt32)(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor + _offset); 
+            return RasterAlgorithms.Restrict(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor + _offset, Source.Raster.RadiometricResolution); 
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor + _offset; 
+            return Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor + _offset; 
         }
 
         #endregion
@@ -125,7 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             parameters.Add(SpectralOperationParameters.SpectralOffset, -_offset);
             parameters.Add(SpectralOperationParameters.SpectralFactor, 1 / _factor);
 
-            return new SpectralTranslation(_result, _source, parameters);
+            return new SpectralTranslation(Result, parameters);
         }
 
         #endregion

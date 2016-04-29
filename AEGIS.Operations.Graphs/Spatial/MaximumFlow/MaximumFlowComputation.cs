@@ -97,33 +97,37 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
             _usedCapacity = new Dictionary<IGraphEdge, Int32>();
             _maximumFlow = 0;
             _isTargetReached = false;
+
+            return null;
         }
 
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected override void FinalizeResult()
+        protected override IGeometryGraph FinalizeResult()
         {
             if (!_isTargetReached)
-                return;
+                return null;
 
-            if (_result == null)
-                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
+            IGeometryGraph result = Source.Factory.CreateGraph(Source.VertexComparer, Source.EdgeComparer);
 
-            _result["MaximumFlow"] = _maximumFlow;
+            result["MaximumFlow"] = _maximumFlow;
 
             foreach (IGraphEdge edge in _usedCapacity.Keys)
             {
                 Dictionary<String, Object> metadata = new Dictionary<String, Object>();
                 metadata["ResidualCapacity"] = _capacityMetric(edge) - _usedCapacity[edge];
 
-                _result.AddEdge(edge.Source.Coordinate, edge.Target.Coordinate, metadata);
+                result.AddEdge(edge.Source.Coordinate, edge.Target.Coordinate, metadata);
             }
+
+            return result;
         }
 
         #endregion

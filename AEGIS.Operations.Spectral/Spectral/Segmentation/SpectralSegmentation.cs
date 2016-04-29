@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralSegmentation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -92,10 +92,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            if (_result == null)
-                _result = new SegmentCollection(_source.Raster, SpectralStatistics.All);
+            return new SegmentCollection(Source.Raster, SpectralStatistics.All);
         }
       
         #endregion

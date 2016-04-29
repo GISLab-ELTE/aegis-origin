@@ -24,11 +24,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represents an inversion transformation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::250104", "Spectral inversion")]
-    public class SpectralInversion : PerBandSpectralTransformation
+    public class SpectralInversion : SpectralTransformation
     {
         #region Private fields
 
-        private UInt32[] _peeks;
+        /// <summary>
+        /// The peek value.
+        /// </summary>
+        private UInt32 _peek;
         
         #endregion
 
@@ -79,26 +82,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SpectralInversion(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SpectralInversion, parameters)
         {
-            if (SourceBandIndices != null)
-            {
-                _peeks = new UInt32[SourceBandIndices.Length];
-                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
-                {
-                    _peeks[k] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
-                }
-            }
-            else
-            {
-                _peeks = new UInt32[_source.Raster.NumberOfBands];
-
-                for (Int32 i = 0; i < _peeks.Length; i++)
-                {
-                    _peeks[i] = (UInt32)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
-                }
-            }
         }
 
         #endregion
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            _peek = RasterAlgorithms.RadiometricResolutionMax(Source.Raster.RadiometricResolution);
+
+            return base.PrepareResult();
+        }
 
         #region Protected RasterTransformation methods
 
@@ -111,7 +108,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return (UInt32)(_peeks[bandIndex] - _source.Raster.GetValue(rowIndex, columnIndex, bandIndex));
+            return (UInt32)(_peek - Source.Raster.GetValue(rowIndex, columnIndex, bandIndex));
         }
 
         /// <summary>
@@ -123,7 +120,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return -_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
+            return -Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
         }
 
         #endregion
@@ -136,7 +133,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The reverse operation.</returns>
         protected override IOperation<ISpectralGeometry, ISpectralGeometry> ComputeReverseOperation()
         {
-            return new SpectralInversion(_result, Parameters);
+            return new SpectralInversion(Result, Parameters);
         }
 
         #endregion

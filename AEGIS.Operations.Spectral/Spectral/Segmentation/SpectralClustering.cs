@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpectralClustering.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2014 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -103,19 +103,30 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            // if the initial segments are specified, they should be copied to the result
-            if (_initialSegments != null)
-            {
-                _result = new SegmentCollection(_initialSegments, _distance.Statistics | _clusterDistance.Statistics);
-                _initialSegments = null;
-                _initialSegmentsProvided = true;
-            }
-            else
-            {
-                _result = new SegmentCollection(Source.Raster, _distance.Statistics | _clusterDistance.Statistics);
-            }
+            return CreateResultCollection();
+        }
+
+        #endregion
+
+        #region Protected methods
+
+        /// <summary>
+        /// Creates the result segment collection.
+        /// </summary>
+        /// <returns>The result segment collection.</returns>
+        protected SegmentCollection CreateResultCollection()
+        {
+            if (_initialSegments == null)
+                return new SegmentCollection(Source.Raster, _distance.Statistics | _clusterDistance.Statistics);
+
+            SegmentCollection collection = new SegmentCollection(_initialSegments, _distance.Statistics | _clusterDistance.Statistics);
+            _initialSegments = null;
+            _initialSegmentsProvided = true;
+
+            return collection;
         }
 
         #endregion

@@ -55,11 +55,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// The clusters.
         /// </summary>
         private Segment[] _clusters;
-
+        
         /// <summary>
-        /// The initial segment collection (if provided).
+        /// The intermediate segment collection.
         /// </summary>
-        private SegmentCollection _initialSegmentCollection;
+        private SegmentCollection _intermediateSegmentCollection;
 
         #endregion
 
@@ -125,13 +125,23 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             Int32 numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
             _numberOfClusters = (numberOfClusters < 1) ? 1 : numberOfClusters;
-            _initialSegmentCollection = ResolveParameter(SpectralOperationParameters.SegmentCollection) as SegmentCollection;
         }
 
         #endregion
 
         #region Protected Operation methods
+        
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
+        {
+            _intermediateSegmentCollection = CreateResultCollection();
 
+            return null;
+        }
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -143,6 +153,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 MergeSegmentsToClusters();
             else
                 MergeValuesToClusters();
+        }
+
+        /// <summary>
+        /// Finalizes the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection FinalizeResult()
+        {
+            return _intermediateSegmentCollection;
         }
 
         #endregion
@@ -161,18 +180,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
             for (Int32 clusterIndex = 0; clusterIndex < _numberOfClusters; clusterIndex++)
             {
-                centroidRow = randomGenerator.Next(0, _source.Raster.NumberOfRows);
-                centroidColumn = randomGenerator.Next(0, _source.Raster.NumberOfColumns);
+                centroidRow = randomGenerator.Next(0, Source.Raster.NumberOfRows);
+                centroidColumn = randomGenerator.Next(0, Source.Raster.NumberOfColumns);
 
                 // find a cluster center different from the former ones
                 Boolean hasMoreColors = true;
                 for (Int32 i = 0; i < 1000; i++)
                 {
                     hasMoreColors = true;
-                    if ((ContainsCentroid(clusterIndex, _source.Raster.GetFloatValues(centroidRow, centroidColumn))))
+                    if ((ContainsCentroid(clusterIndex, Source.Raster.GetFloatValues(centroidRow, centroidColumn))))
                     {
-                        centroidRow = randomGenerator.Next(0, _source.Raster.NumberOfRows);
-                        centroidColumn = randomGenerator.Next(0, _source.Raster.NumberOfColumns);
+                        centroidRow = randomGenerator.Next(0, Source.Raster.NumberOfRows);
+                        centroidColumn = randomGenerator.Next(0, Source.Raster.NumberOfColumns);
                         hasMoreColors = false;
                     }
                     else
@@ -185,8 +204,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     _numberOfClusters = clusterIndex;
 
                 // set the centroid
-                _centroids.Add(new Double[_source.Raster.NumberOfBands]);
-                _centroids[clusterIndex] = _source.Raster.GetFloatValues(centroidRow, centroidColumn);
+                _centroids.Add(new Double[Source.Raster.NumberOfBands]);
+                _centroids[clusterIndex] = Source.Raster.GetFloatValues(centroidRow, centroidColumn);
             }
 
             Array.Resize(ref _clusters, _numberOfClusters);
@@ -199,16 +218,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             Boolean isConvergent = false;
             Int32 steps = 0;
-            SegmentCollection initialSegments = _initialSegmentCollection;
 
             while (!isConvergent && steps < NumberOfSteps)
             {
                 Int32 segmentIndex = 0;
-                Segment[] segments = _result.GetSegments().ToArray();
+                Segment[] segments = Result.GetSegments().ToArray();
 
                 foreach (Segment segment in segments)
                 {
-                    if (!_result.Contains(segment))
+                    if (!Result.Contains(segment))
                         continue;
 
                     // find the cluster with the minimum distance
@@ -227,22 +245,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     if (_clusters[segmentIndex] == null)
                         _clusters[segmentIndex] = segment;
                     else
-                        _result.MergeSegments(_clusters[segmentIndex], segment);
+                        Result.MergeSegments(_clusters[segmentIndex], segment);
                 }
 
                 isConvergent = IsConvergent();
-                // create new clusters with new centroids
                 if (!isConvergent)
                 {
+                    steps++;
+                    if (steps == NumberOfSteps)
+                        break;
+
+                    // create new clusters with new centroids
                     for (Int32 i = 0; i < _clusters.Length; i++)
                     {
                         _centroids[i] = _clusters[i].Mean.ToArray();
                         _clusters[i] = null;
                     }
 
-                    steps++;
-                    if (steps < NumberOfSteps)
-                        _result = new SegmentCollection(initialSegments);
+                    _intermediateSegmentCollection = CreateResultCollection();
                 }
             }
         }
@@ -259,18 +279,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 Int32 row = 0;
                 Int32 column = 0;
                 Int32 segmentIndex = 0;
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
                 {
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                     {
                         // find the cluster with the minimum distance
-                        Double minimumDistance = _clusterDistance.Distance(_centroids[0], _source.Raster.GetFloatValues(rowIndex, columnIndex));
+                        Double minimumDistance = _clusterDistance.Distance(_centroids[0], Source.Raster.GetFloatValues(rowIndex, columnIndex));
                         row = rowIndex;
                         column = columnIndex;
                         segmentIndex = 0;
                         for (Int32 clusterIndex = 1; clusterIndex < _numberOfClusters; clusterIndex++)
                         {
-                            Double distance = _clusterDistance.Distance(_centroids[clusterIndex], _source.Raster.GetFloatValues(rowIndex, columnIndex));
+                            Double distance = _clusterDistance.Distance(_centroids[clusterIndex], Source.Raster.GetFloatValues(rowIndex, columnIndex));
                             if (distance < minimumDistance)
                             {
                                 minimumDistance = distance;
@@ -281,25 +301,27 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         }
 
                         if (_clusters[segmentIndex] == null)
-                            _clusters[segmentIndex] = _result.GetSegment(row, column);
+                            _clusters[segmentIndex] = Result.GetSegment(row, column);
                         else
-                            _result.MergeSegments(_clusters[segmentIndex], row, column);
+                            Result.MergeSegments(_clusters[segmentIndex], row, column);
                     }
                 }
 
                 isConvergent = IsConvergent();
-                // create new clusters with new centroids
                 if (!isConvergent)
                 {
+                    steps++;
+                    if (steps == NumberOfSteps)
+                        break;
+
+                    // create new clusters with new centroids
                     for (Int32 i = 0; i < _clusters.Length; i++)
                     {
                         _centroids[i] = _clusters[i].Mean.ToArray();
                         _clusters[i] = null;
                     }
 
-                    steps++;
-                    if (steps < NumberOfSteps)
-                        _result = new SegmentCollection(_source.Raster, _distance.Statistics);
+                    _intermediateSegmentCollection = CreateResultCollection();
                 }
             }
         }
@@ -343,7 +365,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             Boolean areAllEqual = true;
             for (Int32 i = 0; i < _clusters.Length; i++)
             {
-                for (Int32 j = 0; j < _source.Raster.NumberOfBands; j++)
+                for (Int32 j = 0; j < Source.Raster.NumberOfBands; j++)
                 {
                     if (_clusters[i] == null)
                         return true;

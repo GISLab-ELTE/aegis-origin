@@ -95,28 +95,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
                     {
                         Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, bandIndex), 255 - operation.Result.Raster.GetValue(rowIndex, columnIndex, bandIndex));
                     }
-
-
-            // integer values with specified band
-
-            IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.BandIndex, 0);
-
-            operation = new SpectralInversion(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
-            operation.Execute();
-
-            Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
-            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
-            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, operation.Result.Raster.RadiometricResolution);
-            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
-
-            for (Int32 rowIndex = 0; rowIndex < operation.Result.Raster.NumberOfRows; rowIndex++)
-                for (Int32 columnIndex = 0; columnIndex < operation.Result.Raster.NumberOfColumns; columnIndex++)
-                {
-                    Assert.AreEqual(_rasterMock.Object.GetValue(rowIndex, columnIndex, 0), 255 - operation.Result.Raster.GetValue(rowIndex, columnIndex, 0));
-                }
-
+            
 
             // floating point values
 

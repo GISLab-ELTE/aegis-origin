@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ELTE.AEGIS.Operations</RootNamespace>
     <AssemblyName>AEGIS.Operations.Spectral</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,17 +72,15 @@
     <Compile Include="Spectral\Classification\NiblackLocalThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\OtsuThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\PaletteColorClassification.cs" />
-    <Compile Include="Spectral\Classification\PerBandSpectralClassification.cs" />
     <Compile Include="Spectral\Classification\RandomColorClassification.cs" />
     <Compile Include="Spectral\Classification\ReferenceMatchingClassification.cs" />
     <Compile Include="Spectral\Classification\SauvolaLocalThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\SegmentBasedClassification.cs" />
-    <Compile Include="Spectral\Classification\ThresholdingClassification.cs" />
+    <Compile Include="Spectral\Classification\BasicThresholdingClassification.cs" />
     <Compile Include="Spectral\Common\AdaptiveHistogramEqualization.cs" />
     <Compile Include="Spectral\Common\ExponentialTransformation.cs" />
     <Compile Include="Spectral\Common\GreyWorldNormalization.cs" />
     <Compile Include="Spectral\Common\HistogramEqualization.cs" />
-    <Compile Include="Spectral\Common\HistogramTransformation.cs" />
     <Compile Include="Spectral\Common\LogarithmicTransformation.cs" />
     <Compile Include="Spectral\Common\SaturatingContrastEnhancement.cs" />
     <Compile Include="Spectral\Common\SpectralInversion.cs" />
@@ -140,11 +139,9 @@
     <Compile Include="Spectral\Indexing\VogelmannRedEdgeIndex3Computation.cs" />
     <Compile Include="Spectral\Indexing\VogelmannRedEdgeIndexComputation.cs" />
     <Compile Include="Spectral\Indexing\WaterBandIndexComputation.cs" />
-    <Compile Include="Spectral\PerBandSpectralTransformation.cs" />
     <Compile Include="Spectral\Reflectance\LandsatTemperatureExtraction.cs" />
     <Compile Include="Spectral\Reflectance\LandsatTopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Reflectance\SpotTopOfAtmosphereReflectanceComputation.cs" />
-    <Compile Include="Spectral\Reflectance\TopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Resampling\SpectralResampling.cs" />
     <Compile Include="Spectral\Segmentation\BestMergeBasedSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\GraphBasedMergeSegmentation.cs" />

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="PaletteColorClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -92,19 +92,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Integer,
-                                                                                 3,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 8,
-                                                                                 _source.Raster.Mapper),
-                                                             RasterPresentation.CreateTrueColorPresentation(0, 1, 2),
-                                                             null);
-        }
+            SetResultProperties(RasterFormat.Integer, 3, 8, RasterPresentation.CreateTrueColorPresentation(0, 1, 2));
 
+            return base.PrepareResult();
+        }
+        
         #endregion
 
         #region Protected SpectralTransformation methods
@@ -120,7 +115,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// </returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            UInt32 value = _source.Raster.GetValue(rowIndex, columnIndex, 0);
+            UInt32 value = Source.Raster.GetValue(rowIndex, columnIndex, 0);
 
             if (value >= _palette.Length)
                 return 0;
@@ -136,7 +131,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32 value = _source.Raster.GetValue(rowIndex, columnIndex, 0);
+            UInt32 value = Source.Raster.GetValue(rowIndex, columnIndex, 0);
 
             if (value >= _palette.Length)
                 return Enumerable.Repeat((UInt32)0, _palette[0].Length).ToArray();

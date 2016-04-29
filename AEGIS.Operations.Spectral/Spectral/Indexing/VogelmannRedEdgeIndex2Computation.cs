@@ -106,10 +106,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             try
             {
-                _indexOf715nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf715nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 715e-9 && range.WavelengthMaximum >= 715e-9)));
-                _indexOf726nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf726nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 726e-9 && range.WavelengthMaximum >= 726e-9)));
-                _indexOf734nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf734nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 734e-9 && range.WavelengthMaximum >= 734e-9)));
-                _indexOf747nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf747nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 747e-9 && range.WavelengthMaximum >= 747e-9)));
+                _indexOf715nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf715nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 715e-9 && range.WavelengthMaximum >= 715e-9)));
+                _indexOf726nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf726nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 726e-9 && range.WavelengthMaximum >= 726e-9)));
+                _indexOf734nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf734nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 734e-9 && range.WavelengthMaximum >= 734e-9)));
+                _indexOf747nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf747nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 747e-9 && range.WavelengthMaximum >= 747e-9)));
             }
             catch
             {
@@ -177,17 +177,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Floating,
-                                                                                1,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                32,
-                                                                                Source.Raster.Mapper),
-                                                            RasterPresentation.CreateGrayscalePresentation(),
-                                                            Source.Imaging);
+            SetResultProperties(RasterFormat.Floating, 1, 32, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
         }
 
         #endregion

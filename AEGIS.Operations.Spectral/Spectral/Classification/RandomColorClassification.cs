@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RandomColorClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,20 +24,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// <summary>
     /// Represents an operation performing spectral classification with random colors.
     /// </summary>
+    /// <remarks>
+    /// The operation expects a single band thematic raster as input and creates an RGB colored raster with the categories appearing in randomly generated RGB values.
+    /// </remarks>
     [OperationMethodImplementation("AEGIS::253402", "Random color classification")]
     public class RandomColorClassification : SpectralTransformation
     {
-        #region Protected fields
-
-        /// <summary>
-        /// The maximum spectral value.
-        /// </summary>
-        private Int32 _maxSpectralValue;
-
+        #region Private fields
+        
         /// <summary>
         /// The array of generated random colors.
         /// </summary>
-        protected Int32[] _colors;
+        private Int32[] _colors;
 
         #endregion
 
@@ -89,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             : base(source, target, SpectralOperationMethods.RandomColorClassification, parameters)
         {
             if (source.Raster.NumberOfBands != 1)
-                throw new ArgumentException("The number of bands in the source geometry is not equal to 1.", "source");
+                throw new ArgumentException("The number of bands in the source geometry is not equal to 1.", nameof(source));
         }
 
         #endregion
@@ -99,26 +97,17 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _maxSpectralValue = 0;
-            for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                        _maxSpectralValue = Math.Max(_maxSpectralValue, (Int32)_source.Raster.GetValue(rowIndex, columnIndex, bandIndex));
-
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Integer,
-                                                                                 3,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 _maxSpectralValue > Calculator.Pow(256, 3) ? 16 : 8,
-                                                                                 _source.Raster.Mapper),
-                                                             RasterPresentation.CreateTrueColorPresentation(),
-                                                             null);
+            Int32 maxSourceValue = 0;
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
+                        maxSourceValue = Math.Max(maxSourceValue, (Int32)Source.Raster.GetValue(rowIndex, columnIndex, bandIndex));
 
             // selection of colors with equal range from minimum to maximum
-            _colors = Enumerable.Range(1, _maxSpectralValue + 1).Select(number => (Int32)(number * ((1 << 24) - 1.0) / (_maxSpectralValue + 1))).ToArray();
+            _colors = Enumerable.Range(1, maxSourceValue + 1).Select(number => (Int32)(number * ((1 << 24) - 1.0) / (maxSourceValue + 1))).ToArray();
 
             // randomization
             Random random = new Random();
@@ -130,8 +119,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 _colors[replaceIndex] = temp;
             }
 
-        }
+            SetResultProperties(RasterFormat.Integer, 3, maxSourceValue > Calculator.Pow(256, 3) ? 16 : 8, RasterPresentation.CreateTrueColorPresentation());
 
+            return base.PrepareResult();
+        }
+        
         #endregion
 
         #region Protected SpectralOperation methods
@@ -145,7 +137,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            UInt32 colorNumber = _source.Raster.GetValue(rowIndex, columnIndex, 0);
+            UInt32 colorNumber = Source.Raster.GetValue(rowIndex, columnIndex, 0);
 
             switch (bandIndex)
             { 
@@ -168,7 +160,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected override UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            UInt32 colorNumber = _source.Raster.GetValue(rowIndex, columnIndex, 0);
+            UInt32 colorNumber = Source.Raster.GetValue(rowIndex, columnIndex, 0);
 
             UInt32[] value = new UInt32[3];
             value[0] = (UInt32)_colors[colorNumber] >> 16;

@@ -46,10 +46,10 @@ namespace ELTE.AEGIS.Tests.Numerics.Statistics
         public void Setup()
         {
             _generator = new GaussianRandomGenerator();
-            _numberOfGeneratedNumbers = 1000000;
+            _numberOfGeneratedNumbers = 100000;
             _mean = new Double[] { 0, 1, 10, -10, 100, -100, 10000, -10000, 10, 10 };
             _stdDeviation = new Double[] { 1, 1, 5, 5, 10, 10, 100, 100, 0.1, 0.1 };
-            _error = new double[] { 0.01, 0.01, 0.01, 0.01, 0.1, 0.1, 1, 1, 0.001, 0.001 };
+            _error = new Double[] { 0.01, 0.05, 0.05, 0.05, 0.1, 0.1, 1, 1, 0.005, 0.005 };
         }
 
         #endregion

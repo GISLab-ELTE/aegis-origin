@@ -82,7 +82,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
 
         #endregion
 
-        #region Protected MultiFilterTransformation methods
+        #region Protected GradientFilterOperation methods
 
         /// <summary>
         /// Combines the specified filtered values.

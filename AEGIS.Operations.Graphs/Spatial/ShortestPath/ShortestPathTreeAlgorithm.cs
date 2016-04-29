@@ -91,49 +91,49 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult() 
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult() 
         {
-            _parent = new Dictionary<IGraphVertex, IGraphVertex>(_source.VertexComparer);
-            _distance = new Dictionary<IGraphVertex, Double>(_source.VertexComparer);
+            _parent = new Dictionary<IGraphVertex, IGraphVertex>(Source.VertexComparer);
+            _distance = new Dictionary<IGraphVertex, Double>(Source.VertexComparer);
             _isValidPath = true;
+
+            return Source.Factory.CreateGraph(Source.VertexComparer, Source.EdgeComparer);
         }
 
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected override void FinalizeResult()
+        /// <returns>The resulting object.</returns>
+        protected override IGeometryGraph FinalizeResult()
         {
             // if the path is not valid, there is no result
             if (!_isValidPath)
-            {
-                _result = null;
-                return;
-            }
+                return Result;
             
             // generate a graph from the path
-            if (_result == null)
-                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
-
             _parent.Remove(_sourceVertex); // removing the source, we really don't want an edge between a vertex and a null.
             foreach (IGraphVertex vertex in _parent.Keys)
             {
-                IGraphVertex sourceVertex = _result.GetVertex(_parent[vertex].Coordinate);
-                IGraphVertex targetVertex = _result.GetVertex(vertex.Coordinate);
+                IGraphVertex sourceVertex = Result.GetVertex(_parent[vertex].Coordinate);
+                IGraphVertex targetVertex = Result.GetVertex(vertex.Coordinate);
 
                 if (sourceVertex == null)
                 {
-                    sourceVertex = _result.AddVertex(_parent[vertex].Coordinate);
+                    sourceVertex = Result.AddVertex(_parent[vertex].Coordinate);
                     sourceVertex["Distance"] = _distance[_parent[vertex]];
                 }
 
                 if (targetVertex == null)
                 {
-                    targetVertex = _result.AddVertex(vertex.Coordinate);
+                    targetVertex = Result.AddVertex(vertex.Coordinate);
                     targetVertex["Distance"] = _distance[vertex];
                 }
 
-                _result.AddEdge(sourceVertex, targetVertex);
+                Result.AddEdge(sourceVertex, targetVertex);
             }
+
+            return Result;
         }
 
         #endregion

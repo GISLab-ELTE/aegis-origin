@@ -91,11 +91,11 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             Boolean hasChanged = false;
 
             // relax edges
-            for (int i = 0; i < _source.VertexCount; i++)
+            for (Int32 iterationIndex = 0; iterationIndex < Source.VertexCount; iterationIndex++)
             {
                 hasChanged = false;
 
-                foreach (IGraphEdge edge in _source.Edges)
+                foreach (IGraphEdge edge in Source.Edges)
                 {
                     if (!_distance.ContainsKey(edge.Target))
                     {

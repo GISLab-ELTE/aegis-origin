@@ -101,9 +101,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             try
             {
-                _indexOf500nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf500nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 500e-9)));
-                _indexOf680nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf680nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 680e-9 && range.WavelengthMaximum >= 680e-9)));
-                _indexOf750nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf750nmBand, _source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 750e-9 && range.WavelengthMaximum >= 750e-9)));
+                _indexOf500nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf500nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 500e-9)));
+                _indexOf680nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf680nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 680e-9 && range.WavelengthMaximum >= 680e-9)));
+                _indexOf750nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf750nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 750e-9 && range.WavelengthMaximum >= 750e-9)));
             }
             catch
             {
@@ -169,20 +169,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Floating,
-                                                                                1,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                32,
-                                                                                Source.Raster.Mapper),
-                                                            RasterPresentation.CreateGrayscalePresentation(),
-                                                            Source.Imaging);
+            SetResultProperties(RasterFormat.Floating, 1, 32, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
         }
 
         #endregion
-
     }
 }

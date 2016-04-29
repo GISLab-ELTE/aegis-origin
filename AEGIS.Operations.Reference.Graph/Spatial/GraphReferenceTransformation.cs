@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GraphReferenceTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -50,6 +50,11 @@ namespace ELTE.AEGIS.Operations.Spatial
         /// </summary>
         private ITransformationStrategy _transformation;
 
+        /// <summary>
+        /// The intermediate result.
+        /// </summary>
+        private IGeometry _intermediateResult;
+
         #endregion
 
         #region Constructors
@@ -70,28 +75,31 @@ namespace ELTE.AEGIS.Operations.Spatial
         #endregion
 
         #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        protected override void PrepareResult()
-        {
-            if (_source.ReferenceSystem != null && _targetReferenceSystem != null && !_source.ReferenceSystem.Equals(_targetReferenceSystem))
-            {
-                // strategy pattern
-                _transformation = TransformationStrategyFactory.CreateStrategy(_source.ReferenceSystem as ReferenceSystem, _targetReferenceSystem as ReferenceSystem);
-            }
-
-            if (_factory == null)
-                _factory = (IGeometryFactory)FactoryRegistry.GetFactory(FactoryRegistry.GetContract(_source.Factory), _targetReferenceSystem);
-        }
-
+        
         /// <summary>
         /// Computes the result.
         /// </summary>
         protected override void ComputeResult()
         {
-            _result = Compute(_source);
+            if (Source.ReferenceSystem != null && _targetReferenceSystem != null && !Source.ReferenceSystem.Equals(_targetReferenceSystem))
+            {
+                // strategy pattern
+                _transformation = TransformationStrategyFactory.CreateStrategy(Source.ReferenceSystem as ReferenceSystem, _targetReferenceSystem as ReferenceSystem);
+            }
+
+            if (_factory == null)
+                _factory = (IGeometryFactory)FactoryRegistry.GetFactory(FactoryRegistry.GetContract(Source.Factory), _targetReferenceSystem);
+
+            _intermediateResult = Compute(Source);
+        }
+
+        /// <summary>
+        /// Finalizes the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override IGeometry FinalizeResult()
+        {
+            return _intermediateResult;
         }
 
         #endregion

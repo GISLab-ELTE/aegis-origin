@@ -25,11 +25,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represent an operation performing gray world normalization.
     /// </summary>
     /// <remarks>
-    /// The gray world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be 
+    /// The grey world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be 
     /// modeled by constant factors applied to the different bands.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::250285", "Grey world normalization")]
-    public class GreyWorldNormalization : PerBandSpectralTransformation
+    public class GreyWorldNormalization : SpectralTransformation
     {
         #region Private fields
 
@@ -63,10 +63,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public GreyWorldNormalization(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.GreyWorldNormalization, parameters)
         {
-            _multipliers = new Double[SourceBandIndices.Length];
+        }
 
-            foreach (Int32 bandIndex in SourceBandIndices)
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            _multipliers = new Double[Source.Raster.NumberOfBands];
+
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
                 ComputeParameters(bandIndex);
+
+            return base.PrepareResult();
         }
 
         #endregion
@@ -84,11 +98,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         {
             if (_multipliers[bandIndex] == 0)
             {
-                return RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution) / 2 + 1;
+                return RasterAlgorithms.RadiometricResolutionMax(Source.Raster.RadiometricResolution) / 2 + 1;
             }
 
-            return RasterAlgorithms.Restrict(_multipliers[bandIndex] * _source.Raster.GetValue(rowIndex, columnIndex, bandIndex),  
-                                             _source.Raster.RadiometricResolution);
+            return RasterAlgorithms.Restrict(_multipliers[bandIndex] * Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), Source.Raster.RadiometricResolution);
         }
         
         #endregion
@@ -101,26 +114,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <param name="bandIndex">The band index.</param>
         private void ComputeParameters(Int32 bandIndex)
         {
-            UInt32 assumedAverage = (UInt32)((Calculator.Pow(2, _source.Raster.RadiometricResolution) - 1) / 2);
-            UInt32 computedAverage = 0;
+            Double assumedAverage = (Calculator.Pow(2, Source.Raster.RadiometricResolution) - 1) / 2;
+            Double computedAverage = 0;
 
-            for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
             {
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                 {
-                    computedAverage += _source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
+                    computedAverage += Source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
                 }
             }
 
-            computedAverage /= (UInt32)(_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
+            computedAverage /= Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns;
 
             if (computedAverage != 0)
             {
-                _multipliers[bandIndex] = assumedAverage / (Double)computedAverage;
-            }
-            else //this means that the whole image is black on this band
-            {
-                _multipliers[bandIndex] = 0; // 0 is a special value that _scales[bandIndex] cannot get otherwise, and this will mean a special case in Compute()
+                _multipliers[bandIndex] = assumedAverage / computedAverage;
             }
         }
 

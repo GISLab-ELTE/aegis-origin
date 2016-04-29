@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Niblack local thresholding separates white and black pixels given the local mean and standard deviation for the current window.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253311", "Niblack local thresholding")]
-    public class NiblackLocalThresholdingClassification : PerBandSpectralClassification
+    public class NiblackLocalThresholdingClassification : SpectralTransformation
     {
         #region Private fields
 
@@ -97,6 +97,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
 
         #endregion
 
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            SetResultProperties(RasterFormat.Integer, 8, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
+        }
+
+        #endregion
+
         #region Protected SpectralTransformation methods
 
         /// <summary>
@@ -111,10 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Double mean = ComputeMean(rowIndex, columnIndex, bandIndex);
             Double standardDeviation = ComputeStandardDeviation(rowIndex, columnIndex, bandIndex, mean);
 
-            if (_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) > mean + _standardDeviationWeight * standardDeviation)
-                return 255;
-            else
-                return 0;
+            return (Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) > mean + _standardDeviationWeight * standardDeviation) ? Byte.MaxValue : Byte.MinValue;
         }
 
         #endregion
@@ -134,15 +146,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Int32 numberOfElements = 0;
 
             Int32 rowStart = Math.Max(rowIndex - _windowRadius, 0);
-            Int32 rowEnd = Math.Min(rowIndex + _windowRadius, _source.Raster.NumberOfRows);
+            Int32 rowEnd = Math.Min(rowIndex + _windowRadius, Source.Raster.NumberOfRows);
             Int32 columnStart = Math.Max(columnIndex - _windowRadius, 0);
-            Int32 columnEnd = Math.Min(columnIndex + _windowRadius, _source.Raster.NumberOfColumns);
+            Int32 columnEnd = Math.Min(columnIndex + _windowRadius, Source.Raster.NumberOfColumns);
 
             for (Int32 localRowIndex = rowStart; localRowIndex < rowEnd; localRowIndex++)
             {
                 for (Int32 localColumnIndex = columnStart; localColumnIndex < columnEnd; localColumnIndex++)
                 {
-                    sum += _source.Raster.GetFloatValue(localRowIndex, localColumnIndex, bandIndex);
+                    sum += Source.Raster.GetFloatValue(localRowIndex, localColumnIndex, bandIndex);
                     numberOfElements++;
                 }
             }
@@ -164,15 +176,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Int32 numberOfElements = 0;
 
             Int32 rowStart = Math.Max(rowIndex - _windowRadius, 0);
-            Int32 rowEnd = Math.Min(rowIndex + _windowRadius, _source.Raster.NumberOfRows);
+            Int32 rowEnd = Math.Min(rowIndex + _windowRadius, Source.Raster.NumberOfRows);
             Int32 columnStart = Math.Max(columnIndex - _windowRadius, 0);
-            Int32 columnEnd = Math.Min(columnIndex + _windowRadius, _source.Raster.NumberOfColumns);
+            Int32 columnEnd = Math.Min(columnIndex + _windowRadius, Source.Raster.NumberOfColumns);
             
             for (Int32 localRowIndex = rowStart; localRowIndex < rowEnd; localRowIndex++)
             {
                 for (Int32 localColumnIndex = columnStart; localColumnIndex < columnEnd; localColumnIndex++)
                 {
-                    sum += Math.Pow(_source.Raster.GetFloatValue(localRowIndex, localColumnIndex, bandIndex) - mean, 2);
+                    sum += Math.Pow(Source.Raster.GetFloatValue(localRowIndex, localColumnIndex, bandIndex) - mean, 2);
                     numberOfElements++;
                 }
             }

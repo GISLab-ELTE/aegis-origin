@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// It is a variant of Niblack's method.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253312", "Sauvola local thresholding")]
-    public class SauvolaLocalThresholdingClassification : PerBandSpectralClassification
+    public class SauvolaLocalThresholdingClassification : SpectralTransformation
     {
         #region Private fields
 
@@ -103,6 +103,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
 
         #endregion
 
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            SetResultProperties(RasterFormat.Integer, 8, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
+        }
+
+        #endregion
+
         #region Protected SpectralTransformation methods
 
         /// <summary>
@@ -117,10 +132,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Double mean = ComputeMean(rowIndex, columnIndex, bandIndex);
             Double standardDeviation = ComputeStandardDeviation(rowIndex, columnIndex, bandIndex, mean);
 
-            if (_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) > mean * (1 + _standardDeviationWeight * (standardDeviation / _standardDeviatonRange - 1)))
-                return 255;
-            else
-                return 0;
+            return (Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) > mean * (1 + _standardDeviationWeight * (standardDeviation / _standardDeviatonRange - 1))) ? Byte.MaxValue : Byte.MinValue;
         }
 
         #endregion
@@ -138,11 +150,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         {
             Double sum = 0.0;
             Int32 numberOfElements = 0;
-            for (Int32 i = Math.Max(rowIndex - _windowRadius, 0); i < Math.Min(rowIndex + _windowRadius, _source.Raster.NumberOfRows); i++)
+            for (Int32 i = Math.Max(rowIndex - _windowRadius, 0); i < Math.Min(rowIndex + _windowRadius, Source.Raster.NumberOfRows); i++)
             {
-                for (Int32 j = Math.Max(columnIndex - _windowRadius, 0); j < Math.Min(columnIndex + _windowRadius, _source.Raster.NumberOfColumns); j++)
+                for (Int32 j = Math.Max(columnIndex - _windowRadius, 0); j < Math.Min(columnIndex + _windowRadius, Source.Raster.NumberOfColumns); j++)
                 {
-                    sum += _source.Raster.GetFloatValue(i, j, bandIndex);
+                    sum += Source.Raster.GetFloatValue(i, j, bandIndex);
                     numberOfElements++;
                 }
             }
@@ -162,11 +174,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Double sum = 0.0;
             Int32 numberOfElements = 0;
 
-            for (Int32 i = Math.Max(rowIndex - _windowRadius, 0); i < Math.Min(rowIndex + _windowRadius, _source.Raster.NumberOfRows); i++)
+            for (Int32 i = Math.Max(rowIndex - _windowRadius, 0); i < Math.Min(rowIndex + _windowRadius, Source.Raster.NumberOfRows); i++)
             {
-                for (Int32 j = Math.Max(columnIndex - _windowRadius, 0); j < Math.Min(columnIndex + _windowRadius, _source.Raster.NumberOfColumns); j++)
+                for (Int32 j = Math.Max(columnIndex - _windowRadius, 0); j < Math.Min(columnIndex + _windowRadius, Source.Raster.NumberOfColumns); j++)
                 {
-                    sum += Math.Pow(_source.Raster.GetFloatValue(i, j, bandIndex) - mean, 2);
+                    sum += Math.Pow(Source.Raster.GetFloatValue(i, j, bandIndex) - mean, 2);
                     numberOfElements++;
                 }
             }

@@ -103,41 +103,40 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
-            _parent = new Dictionary<IGraphVertex, IGraphVertex>(_source.VertexComparer);
-            _distance = new Dictionary<IGraphVertex, Double>(_source.VertexComparer);
-            _finished = new HashSet<IGraphVertex>(_source.VertexComparer);
+            _parent = new Dictionary<IGraphVertex, IGraphVertex>(Source.VertexComparer);
+            _distance = new Dictionary<IGraphVertex, Double>(Source.VertexComparer);
+            _finished = new HashSet<IGraphVertex>(Source.VertexComparer);
             _isTargetReached = false;
+
+            return Source.Factory.CreateGraph(Source.VertexComparer, Source.EdgeComparer);
         }
 
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected override void FinalizeResult()
+        /// <returns>The resultin object.</returns>
+        protected override IGeometryGraph FinalizeResult()
         {
             // if the target is not reached, there is no result
             if (!_isTargetReached)
-            {
-                _result = null;
-                return;
-            }
-
-            // generate a network from the path
-            if (_result == null)
-                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
-
+                return Result;
+            
             IGraphVertex currentVertex = _targetVertex;
-            _result.AddVertex(currentVertex.Coordinate)["Distance"] = _distance[currentVertex];
+            Result.AddVertex(currentVertex.Coordinate)["Distance"] = _distance[currentVertex];
 
             // add the path leading from source to target
-            while (_parent.ContainsKey(currentVertex) && !_source.VertexComparer.Equals(_sourceVertex, currentVertex))
+            while (_parent.ContainsKey(currentVertex) && !Source.VertexComparer.Equals(_sourceVertex, currentVertex))
             {
-                _result.AddVertex(_parent[currentVertex].Coordinate)["Distance"] = _distance[_parent[currentVertex]];
-                _result.AddEdge(_parent[currentVertex].Coordinate, currentVertex.Coordinate);
+                Result.AddVertex(_parent[currentVertex].Coordinate)["Distance"] = _distance[_parent[currentVertex]];
+                Result.AddEdge(_parent[currentVertex].Coordinate, currentVertex.Coordinate);
 
                 currentVertex = _parent[currentVertex];
             }
+
+            return Result;
         }
 
         #endregion

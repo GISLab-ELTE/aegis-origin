@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SpotTopOfAtmosphereReflectanceComputation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries for SPOT images.
     /// </summary>
     [OperationMethodImplementation("AEGIS::255105", "Top of atmosphere reflectance computation")]
-    public class SpotTopOfAtmosphereReflectanceComputation : TopOfAtmosphereReflectanceComputation
+    public class SpotTopOfAtmosphereReflectanceComputation : SpectralTransformation
     {
         #region Private fields
 
@@ -110,7 +110,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// The source contains invalid data.
         /// </exception>
         public SpotTopOfAtmosphereReflectanceComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
-            : base(source, result, parameters)
+            : base(source, result, SpectralOperationMethods.TopOfAtmospehereReflectanceComputation, parameters)
         {
             if (Source.Imaging == null)
                 throw new ArgumentException("The source does not contain required data.", "source");
@@ -145,30 +145,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Floating,
-                                                                                4,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                32,
-                                                                                Source.Raster.Mapper),
-                                                            Source.Presentation,
-                                                            Source.Imaging);
+            _toarefGain = new Double[Source.Raster.NumberOfBands];
 
             Double sunZenith = 90 - Source.Imaging.SunElevation, doySolarIrradianceSunZenithRatio;
             Int32 dayOfYear = Source.Imaging.Time.DayOfYear;
 
-            _toarefGain = new Double[4];
-
-            for (Int32 bandIndex = 0; bandIndex < 4; bandIndex++)
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
                 doySolarIrradianceSunZenithRatio = Convert.ToSingle(Constants.PI * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Constants.PI / 180) * (1 - 0.01673 * Math.Cos(0.9856 * (dayOfYear - 4) * Math.PI / 180))) / (Source.Imaging.Bands[bandIndex].SolarIrradiance * Math.Cos(sunZenith * Constants.PI / 180)));
                 _toarefGain[bandIndex] = doySolarIrradianceSunZenithRatio / Source.Imaging.Bands[bandIndex].PhysicalGain;
             }
-        }
 
+            SetResultProperties(RasterFormat.Floating, 32, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
+        }
+        
         #endregion
 
         #region Protected SpectralTransformation methods

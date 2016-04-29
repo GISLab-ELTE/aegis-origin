@@ -106,7 +106,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
         protected override void ComputeResult()
         {
             _edgeSet = new HashSet<IGraphEdge>();
-            _forest = new DisjointSetForest<IGraphVertex>(_source.Vertices);
+            _forest = new DisjointSetForest<IGraphVertex>(Source.Vertices);
 
             while (_forest.SetCount > 1)
             {
@@ -125,9 +125,9 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
                         _edgeSet.Clear();
                     }
 
-                    if (_source.OutEdges(vertex).Any(x => _forest.Find(x.Target) != currentRep))
+                    if (Source.OutEdges(vertex).Any(x => _forest.Find(x.Target) != currentRep))
                         _edgeSet.Add(
-                            _source.OutEdges(vertex)
+                            Source.OutEdges(vertex)
                                 .Where(x => _forest.Find(x.Target) != currentRep)
                                 .MinBy(y => _weightMetric(y)));
                 }

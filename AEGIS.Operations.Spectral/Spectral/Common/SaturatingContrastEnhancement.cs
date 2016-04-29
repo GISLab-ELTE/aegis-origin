@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represents an inversion transformation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::250204", "Saturating contrast enhancement")]
-    public class SaturatingContrastEnhancement : PerBandSpectralTransformation
+    public class SaturatingContrastEnhancement : SpectralTransformation
     {
         #region Private fields
 
@@ -87,16 +87,28 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public SaturatingContrastEnhancement(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.SaturatingContrastEnhancement, parameters)
         {
-            _offset = new Int32[SourceBandIndices.Length];
-            _factor = new Double[SourceBandIndices.Length];
+        }
 
-            for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            _offset = new Int32[Source.Raster.NumberOfBands];
+            _factor = new Double[Source.Raster.NumberOfBands];
+
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
-                Int32 minIntensity = 0, maxIntensity = _source.Raster.HistogramValues[SourceBandIndices[bandIndex]].Count - 1;
+                Int32 minIntensity = 0, maxIntensity = Source.Raster.HistogramValues[bandIndex].Count - 1;
 
-                while (minIntensity < _source.Raster.HistogramValues[SourceBandIndices[bandIndex]].Count && _source.Raster.HistogramValues[SourceBandIndices[bandIndex]][minIntensity] == 0)
+                while (minIntensity < Source.Raster.HistogramValues[bandIndex].Count && Source.Raster.HistogramValues[bandIndex][minIntensity] == 0)
                     minIntensity++;
-                while (maxIntensity >= 0 && _source.Raster.HistogramValues[SourceBandIndices[bandIndex]][maxIntensity] == 0)
+                while (maxIntensity >= 0 && Source.Raster.HistogramValues[bandIndex][maxIntensity] == 0)
                     maxIntensity--;
 
                 if (minIntensity == maxIntensity)
@@ -107,9 +119,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
                 else
                 {
                     _offset[bandIndex] = -minIntensity;
-                    _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution) / (maxIntensity - minIntensity);
+                    _factor[bandIndex] = (Double)RasterAlgorithms.RadiometricResolutionMax(Source.Raster.RadiometricResolution) / (maxIntensity - minIntensity);
                 }
             }
+
+            return base.PrepareResult();
         }
 
         #endregion
@@ -125,7 +139,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return RasterAlgorithms.Restrict(_source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex], _source.Raster.RadiometricResolution);
+            return RasterAlgorithms.Restrict(Source.Raster.GetValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex], Source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -137,7 +151,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return _source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex];
+            return Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) * _factor[bandIndex] + _offset[bandIndex];
         }
 
         #endregion        

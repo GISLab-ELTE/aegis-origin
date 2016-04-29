@@ -1,5 +1,5 @@
 ﻿/// <copyright file="SegmentBasedClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -17,7 +17,6 @@ using ELTE.AEGIS.Collections.Segmentation;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
@@ -106,20 +105,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            Int32 radiometricResolution = _segmentCollection.Count > Int16.MaxValue ? 32 : (_segmentCollection.Count > Byte.MaxValue ? 16 : 8);
-
-            _result = Source.Factory.CreateSpectralGeometry(_source,
-                                                      PrepareRasterResult(RasterFormat.Integer,
-                                                                          1,
-                                                                          _source.Raster.NumberOfRows,
-                                                                          _source.Raster.NumberOfColumns,
-                                                                          radiometricResolution,
-                                                                          _source.Raster.Mapper),
-                                                      RasterPresentation.CreateGrayscalePresentation(),
-                                                      null);
-
             _segmentNumbers = new Dictionary<Segment, UInt32>();
 
             UInt32 number = 0;
@@ -128,8 +116,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 _segmentNumbers.Add(segment, number);
                 number++;
             }
-        }
 
+            Int32 radiometricResolution = _segmentCollection.Count > Int16.MaxValue ? 32 : (_segmentCollection.Count > Byte.MaxValue ? 16 : 8);
+
+            SetResultProperties(RasterFormat.Integer, 1, radiometricResolution, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
+        }
+        
         #endregion
 
         #region Protected SpectralTransformation methods

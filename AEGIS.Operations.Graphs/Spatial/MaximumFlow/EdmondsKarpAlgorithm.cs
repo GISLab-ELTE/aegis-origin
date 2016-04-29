@@ -101,12 +101,12 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
                 // backtrack search
                 IGraphVertex currentVertex = _targetVertex;
 
-                while (!_source.VertexComparer.Equals(currentVertex, _sourceVertex))
+                while (!Source.VertexComparer.Equals(currentVertex, _sourceVertex))
                 {
                     IGraphVertex parentVertex = parent[currentVertex];
 
-                    IGraphEdge forwardEdge = _source.GetEdge(parentVertex, currentVertex);
-                    IGraphEdge reverseEdge = _source.GetEdge(currentVertex, parentVertex);
+                    IGraphEdge forwardEdge = Source.GetEdge(parentVertex, currentVertex);
+                    IGraphEdge reverseEdge = Source.GetEdge(currentVertex, parentVertex);
 
                     // modify used capacity
                     if (!_usedCapacity.ContainsKey(forwardEdge))
@@ -139,9 +139,9 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         protected Boolean BreadthFirstSearch(out Int32 capacity, out Dictionary<IGraphVertex, IGraphVertex> parent)
         {
             capacity = 0;
-            parent = new Dictionary<IGraphVertex, IGraphVertex>(_source.VertexComparer);
+            parent = new Dictionary<IGraphVertex, IGraphVertex>(Source.VertexComparer);
 
-            Dictionary<IGraphVertex, Int32> pathCapacity = new Dictionary<IGraphVertex, Int32>(_source.VertexComparer);
+            Dictionary<IGraphVertex, Int32> pathCapacity = new Dictionary<IGraphVertex, Int32>(Source.VertexComparer);
             Queue<IGraphVertex> vertexQueue = new Queue<IGraphVertex>();
             vertexQueue.Enqueue(_sourceVertex);
 
@@ -149,7 +149,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
             {
                 IGraphVertex currentVertex = vertexQueue.Dequeue();
 
-                foreach (IGraphEdge edge in _source.OutEdges(currentVertex))
+                foreach (IGraphEdge edge in Source.OutEdges(currentVertex))
                 {
                     if (!_usedCapacity.ContainsKey(edge))
                         _usedCapacity.Add(edge, 0);
@@ -164,7 +164,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
                         else
                             pathCapacity.Add(edge.Target, _capacityMetric(edge) - _usedCapacity[edge]);
 
-                        if (_source.VertexComparer.Equals(_targetVertex, edge.Target))
+                        if (Source.VertexComparer.Equals(_targetVertex, edge.Target))
                         {
                             capacity = pathCapacity[edge.Target];
                             return true;

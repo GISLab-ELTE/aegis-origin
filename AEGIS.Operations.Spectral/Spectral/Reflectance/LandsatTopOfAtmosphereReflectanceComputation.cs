@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LandsatTopOfAtmosphereReflectanceComputation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -26,7 +26,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
     /// Represents an operation computing the Top of Atmosphere (ToA) reflectance of raster geometries for Landsat TM7 images.
     /// </summary>
     [OperationMethodImplementation("AEGIS::255105", "Top of atmosphere reflectance computation")]
-    public class LandsatTopOfAtmosphereReflectanceComputation : TopOfAtmosphereReflectanceComputation
+    public class LandsatTopOfAtmosphereReflectanceComputation : SpectralTransformation
     {
         #region Private fields
 
@@ -90,12 +90,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// The source contains invalid data.
         /// </exception>
         public LandsatTopOfAtmosphereReflectanceComputation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
-            : base(source, result, parameters)
+            : base(source, result, SpectralOperationMethods.TopOfAtmospehereReflectanceComputation, parameters)
         {
             if (Source.Imaging == null)
-                throw new ArgumentException("The source does not contain required data.", "source");
+                throw new ArgumentException("The source does not contain required data.", nameof(source));
             if (Source.Imaging.Device.Mission != "Landsat")
-                throw new ArgumentException("The source does not contain required data.", "source");
+                throw new ArgumentException("The source does not contain required data.", nameof(source));
         }
 
         #endregion
@@ -105,18 +105,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Floating,
-                                                                                Source.Raster.NumberOfBands,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                32,
-                                                                                Source.Raster.Mapper),
-                                                            Source.Presentation,
-                                                            Source.Imaging);
-
             _toarefGain = new Double[Source.Raster.NumberOfBands];
 
             switch (Source.Imaging.Device.MissionNumber)
@@ -144,8 +135,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
                     }
                     break;
             }
-        }
 
+            SetResultProperties(RasterFormat.Floating, 32, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
+        }
+        
         #endregion
 
         #region Protected SpectralTransformation methods
@@ -171,22 +166,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
 
             return 0;
         }
-
-        /// <summary>
-        /// Computes the specified floating spectral values.
-        /// </summary>
-        /// <param name="rowIndex">The zero-based row index of the value.</param>
-        /// <param name="columnIndex">The zero-based column index of the value.</param>
-        /// <returns>The array containing the spectral values for each band at the specified index.</returns>
-        protected override sealed Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
-        {
-            Double[] values = new Double[_result.Raster.NumberOfBands];
-            for (Int32 bandIndex = 0; bandIndex < _result.Raster.NumberOfBands; bandIndex++)
-                values[bandIndex] = ComputeFloat(rowIndex, columnIndex, bandIndex);
-
-            return values;
-        }
-
+        
         #endregion
     }
 }

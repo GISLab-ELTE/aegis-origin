@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// This variant of filtering uses multiple kernels which are applied separately on the image. The initial results are then combined to form the final result.
     /// Filtering is a focal operation that modifies the central spectral value under the kernel.
     /// </remarks>
-    public abstract class GradientFilterOperation : PerBandSpectralTransformation
+    public abstract class GradientFilterOperation : SpectralTransformation
     {
         #region Private fields
 
@@ -85,7 +85,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             if (_filters.Count == 0)
             {
-                return 0;
+                return Source.Raster.GetValue(rowIndex, columnIndex, bandIndex);
             }
 
             if (_filters.Count == 1)
@@ -94,10 +94,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 for (Int32 filterRowIndex = -_filters[0].Radius; filterRowIndex <= _filters[0].Radius; filterRowIndex++)
                     for (Int32 filterColumnIndex = -_filters[0].Radius; filterColumnIndex <= _filters[0].Radius; filterColumnIndex++)
                     {
-                        filteredValue += _source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[0].Kernel[filterRowIndex + _filters[0].Radius, filterColumnIndex + _filters[0].Radius];
+                        filteredValue += Source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[0].Kernel[filterRowIndex + _filters[0].Radius, filterColumnIndex + _filters[0].Radius];
                     }
 
-                return RasterAlgorithms.Restrict(filteredValue / _filters[0].Factor + _filters[0].Offset, _source.Raster.RadiometricResolution);
+                return RasterAlgorithms.Restrict(filteredValue / _filters[0].Factor + _filters[0].Offset, Source.Raster.RadiometricResolution);
             }
 
             Double[] filteredValues = new Double[_filters.Count];
@@ -107,12 +107,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 for (Int32 filterRowIndex = -_filters[filterIndex].Radius; filterRowIndex <= _filters[filterIndex].Radius; filterRowIndex++)
                     for (Int32 filterColumnIndex = -_filters[filterIndex].Radius; filterColumnIndex <= _filters[filterIndex].Radius; filterColumnIndex++)
                     {
-                        filteredValues[filterIndex] += _source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
+                        filteredValues[filterIndex] += Source.Raster.GetNearestValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
                     }
                 filteredValues[filterIndex] = filteredValues[filterIndex] / _filters[filterIndex].Factor + _filters[filterIndex].Offset;
             }
 
-            return RasterAlgorithms.Restrict(CombineValues(filteredValues), _source.Raster.RadiometricResolution);
+            return RasterAlgorithms.Restrict(CombineValues(filteredValues), Source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             if (_filters.Count == 0)
             {
-                return 0;
+                return Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
             }
 
             if (_filters.Count == 1)
@@ -135,7 +135,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 for (Int32 filterRowIndex = -_filters[0].Radius; filterRowIndex <= _filters[0].Radius; filterRowIndex++)
                     for (Int32 filterColumnIndex = -_filters[0].Radius; filterColumnIndex <= _filters[0].Radius; filterColumnIndex++)
                     {
-                        filteredValue += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[0].Kernel[filterRowIndex + _filters[0].Radius, filterColumnIndex + _filters[0].Radius];
+                        filteredValue += Source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[0].Kernel[filterRowIndex + _filters[0].Radius, filterColumnIndex + _filters[0].Radius];
                     }
 
                 return filteredValue / _filters[0].Factor + _filters[0].Offset;
@@ -147,7 +147,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                 for (Int32 filterRowIndex = -_filters[filterIndex].Radius; filterRowIndex <= _filters[filterIndex].Radius; filterRowIndex++)
                     for (Int32 filterColumnIndex = -_filters[filterIndex].Radius; filterColumnIndex <= _filters[filterIndex].Radius; filterColumnIndex++)
                     {
-                        filteredValues[filterIndex] += _source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
+                        filteredValues[filterIndex] += Source.Raster.GetNearestFloatValue(rowIndex + filterRowIndex, columnIndex + filterColumnIndex, bandIndex) * _filters[filterIndex].Kernel[filterRowIndex + _filters[filterIndex].Radius, filterColumnIndex + _filters[filterIndex].Radius];
                     }
                 filteredValues[filterIndex] = filteredValues[filterIndex] / _filters[filterIndex].Factor + _filters[filterIndex].Offset;
             }

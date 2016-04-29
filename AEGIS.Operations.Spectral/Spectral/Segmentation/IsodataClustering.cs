@@ -107,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             _clusterSizeThreshold = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.ClusterSizeThreshold));
 
             if (_numberOfClusters < 10)
-                _numberOfClusters = Math.Min(Math.Max(10, Convert.ToInt32(Math.Sqrt(_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns))), _source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
+                _numberOfClusters = Math.Min(Math.Max(10, Convert.ToInt32(Math.Sqrt(Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns))), Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns);
         }
 
         #endregion
@@ -141,25 +141,25 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private void CreateInitialClusters()
         {            
             // compute median and std. deviation
-            Double[] mean = new Double[_source.Raster.NumberOfBands];
-            Double[] standardDeviation = new Double[_source.Raster.NumberOfBands];
+            Double[] mean = new Double[Source.Raster.NumberOfBands];
+            Double[] standardDeviation = new Double[Source.Raster.NumberOfBands];
 
-            for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
                 mean[bandIndex] = 0;
                 standardDeviation[bandIndex] = 0;
 
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                         mean[bandIndex] += Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
 
-                mean[bandIndex] /= (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
+                mean[bandIndex] /= (Source.Raster.NumberOfColumns * Source.Raster.NumberOfRows);
 
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                        standardDeviation[bandIndex] += Math.Pow(_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - mean[bandIndex], 2);
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
+                        standardDeviation[bandIndex] += Math.Pow(Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) - mean[bandIndex], 2);
 
-                standardDeviation[bandIndex] = Math.Sqrt(standardDeviation[bandIndex] / (_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns - 1));
+                standardDeviation[bandIndex] = Math.Sqrt(standardDeviation[bandIndex] / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns - 1));
             }
 
             // generate the initial clusters
@@ -168,9 +168,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
             for (Int32 clusterIndex = 0; clusterIndex < _numberOfClusters; clusterIndex++)
             {
-                Double[] randomNumbers = new Double[_source.Raster.NumberOfBands];
+                Double[] randomNumbers = new Double[Source.Raster.NumberOfBands];
 
-                for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
+                for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
                     randomNumbers[bandIndex] = randomGenerator.NextDouble(mean[bandIndex], standardDeviation[bandIndex]);
 
                 _clusterCenters[clusterIndex] = randomNumbers;
@@ -186,26 +186,26 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             
             Int32 minimalIndex = 0;
 
-            for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
             {
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                 {
                     switch (Source.Raster.Format)
                     {
                         case RasterFormat.Integer:
-                            UInt32[] values = _source.Raster.GetValues(rowIndex, columnIndex);
+                            UInt32[] values = Source.Raster.GetValues(rowIndex, columnIndex);
                             minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, values));
                             break;
                         case RasterFormat.Floating:
-                            Double[] floatValues = _source.Raster.GetFloatValues(rowIndex, columnIndex);
+                            Double[] floatValues = Source.Raster.GetFloatValues(rowIndex, columnIndex);
                             minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, floatValues));
                             break;
                     }
 
                     if (clusters[minimalIndex] == null)
-                        clusters[minimalIndex] = _result.GetSegment(rowIndex, columnIndex);
+                        clusters[minimalIndex] = Result.GetSegment(rowIndex, columnIndex);
                     else
-                        _result.MergeSegments(clusters[minimalIndex], rowIndex, columnIndex);
+                        Result.MergeSegments(clusters[minimalIndex], rowIndex, columnIndex);
                 }
             }
         }
@@ -219,11 +219,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             
             Int32 minimalIndex = 0;
 
-            Segment[] segments = _result.GetSegments().ToArray();
+            Segment[] segments = Result.GetSegments().ToArray();
 
             foreach (Segment segment in segments)
             {
-                if (!_result.Contains(segment))
+                if (!Result.Contains(segment))
                     continue;
 
                 minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(segment, center));
@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (clusters[minimalIndex] == null)
                     clusters[minimalIndex] = segment;
                 else
-                    _result.MergeSegments(clusters[minimalIndex], segment);
+                    Result.MergeSegments(clusters[minimalIndex], segment);
             }
         }
 
@@ -242,12 +242,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             _clusterCenters = null;
 
-            Segment[] segments = _result.GetSegments().ToArray();
+            Segment[] segments = Result.GetSegments().ToArray();
 
             foreach (Segment segment in segments)
             {
                 if (segment.Count < _clusterSizeThreshold)
-                    _result.SplitSegment(segment);
+                    Result.SplitSegment(segment);
             }
         }
 
@@ -262,7 +262,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             {
                 clusterMerged = false;
 
-                List<Segment> segments = _result.GetSegments().ToList();
+                List<Segment> segments = Result.GetSegments().ToList();
 
                 for (Int32 firstIndex = 0; firstIndex < segments.Count - 1; firstIndex++)
                 {
@@ -272,7 +272,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
                         if (distance < _clusterDistanceThreshold)
                         {
-                            Segment mergedSegment = _result.MergeSegments(segments[firstIndex], segments[secondIndex]);
+                            Segment mergedSegment = Result.MergeSegments(segments[firstIndex], segments[secondIndex]);
                             segments.RemoveAt(mergedSegment == segments[firstIndex] ? secondIndex : firstIndex);
                             clusterMerged = true;
                         }

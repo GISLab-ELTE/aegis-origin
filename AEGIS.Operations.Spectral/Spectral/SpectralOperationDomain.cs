@@ -21,43 +21,48 @@ namespace ELTE.AEGIS.Operations
     public enum SpectralOperationDomain
     {
         /// <summary>
+        /// Operates within the raster band.
+        /// </summary>
+        Band = 1,
+
+        /// <summary>
         /// Operates on distinct spectral values within the raster band.
         /// </summary>
-        BandLocal,
+        BandLocal = 3,
 
         /// <summary>
         /// Operates on distinct spectral values by using neighbor values within the raster band.
         /// </summary>
-        BandFocal,
+        BandFocal = 5,
 
         /// <summary>
         /// Operates on distinct parts of the raster band.
         /// </summary>
-        BandZonal,
+        BandZonal = 9,
 
         /// <summary>
         /// Operates on the entire raster band.
         /// </summary>
-        BandGlobal,
+        BandGlobal = 17,
 
         /// <summary>
         /// Operates on distinct spectral values within the raster.
         /// </summary>
-        Local,
+        Local = 2,
 
         /// <summary>
         /// Operates on distinct spectral values by using neighbor values within the raster.
         /// </summary>
-        Focal,
+        Focal = 4,
 
         /// <summary>
         /// Operates on distinct parts of the raster.
         /// </summary>
-        Zonal,
+        Zonal = 8,
 
         /// <summary>
         /// Operates on the entire raster.
         /// </summary>
-        Global
+        Global = 16
     }
 }

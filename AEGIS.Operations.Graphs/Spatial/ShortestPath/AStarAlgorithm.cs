@@ -122,13 +122,13 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
 
                 _finished.Add(currentVertex);
 
-                if (_source.VertexComparer.Equals(currentVertex, _targetVertex)) // the target vertex is found
+                if (Source.VertexComparer.Equals(currentVertex, _targetVertex)) // the target vertex is found
                 {
                     _isTargetReached = true;
                     return;
                 }
 
-                foreach (IGraphEdge edge in _source.OutEdges(currentVertex))
+                foreach (IGraphEdge edge in Source.OutEdges(currentVertex))
                 {
                     if (_finished.Contains(edge.Target))
                         continue;

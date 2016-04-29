@@ -99,8 +99,8 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
         /// </summary>
         protected override void ComputeResult()
         {
-            _forest = new DisjointSetForest<IGraphVertex>(_source.Vertices);
-            foreach (IGraphEdge edge in _source.Edges.OrderBy(x => _weightMetric(x)))
+            _forest = new DisjointSetForest<IGraphVertex>(Source.Vertices);
+            foreach (IGraphEdge edge in Source.Edges.OrderBy(x => _weightMetric(x)))
             {
                 if (_forest.Find(edge.Source) != _forest.Find(edge.Target))
                 {

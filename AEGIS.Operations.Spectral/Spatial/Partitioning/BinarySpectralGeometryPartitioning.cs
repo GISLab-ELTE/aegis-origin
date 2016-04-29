@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BinarySpectralGeometryPartitioning.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -102,7 +102,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         /// <summary>
         /// The source raster.
         /// </summary>
-        private IRaster _sourceRaster;
+        private IRaster SourceRaster;
 
         /// <summary>
         /// A value indicating whether to preserve the metadata.
@@ -123,6 +123,11 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         /// The number of values which should overlap for rows.
         /// </summary>
         private Int32 _overlapRowMargin;
+
+        /// <summary>
+        /// The array of raster masks.
+        /// </summary>
+        private ISpectralGeometry[] _rasterMasks;
 
         #endregion
 
@@ -152,7 +157,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
             if (!(Source is ISpectralGeometry))
                 throw new ArgumentException("source", "The specified source is not supported.");
 
-            _sourceRaster = (source as ISpectralGeometry).Raster;
+            SourceRaster = (source as ISpectralGeometry).Raster;
             _metadataPreservation = ResolveParameter<Boolean>(CommonOperationParameters.MetadataPreservation);
             _numberOfParts = Convert.ToInt32(ResolveParameter(CommonOperationParameters.NumberOfParts));
 
@@ -185,7 +190,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         {
             // perform the partitioning using a queue containing the dimensions
             Queue<PartDimensions> mappingQueue = new Queue<PartDimensions>();
-            mappingQueue.Enqueue(new PartDimensions(0, 0, _sourceRaster.NumberOfRows, _sourceRaster.NumberOfColumns));
+            mappingQueue.Enqueue(new PartDimensions(0, 0, SourceRaster.NumberOfRows, SourceRaster.NumberOfColumns));
 
             Int32 currentLevel = 0;
 
@@ -213,7 +218,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
 
             // the partitioning only creates a mask for the specified raster
 
-            ISpectralGeometry[] masks = new ISpectralGeometry[mappingQueue.Count];
+            _rasterMasks = new ISpectralGeometry[mappingQueue.Count];
 
             Int32 partIndex = 0;
             while (mappingQueue.Count > 0)
@@ -229,14 +234,21 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
                 dimensions.NumberOfRows = Math.Min(dimensions.NumberOfRows + _overlapRowMargin, (Source as ISpectralGeometry).Raster.NumberOfRows - dimensions.RowIndex);
 
                 // create mask
-                masks[partIndex] = Source.Factory.CreateSpectralPolygon(Source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateMask(_sourceRaster, dimensions.RowIndex, dimensions.ColumnIndex, dimensions.NumberOfRows, dimensions.NumberOfColumns), 
+                _rasterMasks[partIndex] = Source.Factory.CreateSpectralPolygon(Source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateMask(SourceRaster, dimensions.RowIndex, dimensions.ColumnIndex, dimensions.NumberOfRows, dimensions.NumberOfColumns), 
                                                                         (Source as ISpectralGeometry).Presentation, 
                                                                         _metadataPreservation ? (Source as ISpectralGeometry).Imaging : null, 
                                                                         _metadataPreservation ? Source.Metadata : null);
                 partIndex++;
             }
+        }
 
-            _result = Source.Factory.CreateGeometryCollection<ISpectralGeometry>(masks);
+        /// <summary>
+        /// Finalizes the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override IGeometryCollection<IGeometry> FinalizeResult()
+        {
+            return Source.Factory.CreateGeometryCollection<ISpectralGeometry>(_rasterMasks);
         }
 
         #endregion

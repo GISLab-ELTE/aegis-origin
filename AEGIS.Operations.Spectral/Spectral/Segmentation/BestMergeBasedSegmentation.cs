@@ -80,12 +80,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            if (_result == null)
-                _result = new SegmentCollection(_source.Raster, _distance.Statistics);
+            return new SegmentCollection(Source.Raster, _distance.Statistics);
         }
-
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -98,9 +98,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             {
                 hasMerged = false;
 
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
                 {
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                     {
                         // select best merge direction
 
@@ -119,16 +119,16 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         switch ((SegmentMergeDirection)Array.IndexOf(distances, minDistance))
                         {
                             case SegmentMergeDirection.Left:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1);
                                 break;
                             case SegmentMergeDirection.Up:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex);
                                 break;
                             case SegmentMergeDirection.Right:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
                                 break;
                             case SegmentMergeDirection.Down:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
                                 break;
                         }
 
@@ -152,14 +152,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <returns></returns>
         private Double ComputeDistance(Int32 firstRowIndex, Int32 firstColumnIndex, Int32 secondRowIndex, Int32 secondColumnIndex)
         {
-            if (firstRowIndex < 0 || firstColumnIndex < 0 || firstRowIndex >= _source.Raster.NumberOfRows || firstColumnIndex >= _source.Raster.NumberOfColumns)
+            if (firstRowIndex < 0 || firstColumnIndex < 0 || firstRowIndex >= Source.Raster.NumberOfRows || firstColumnIndex >= Source.Raster.NumberOfColumns)
                 return Double.MaxValue;
 
-            if (secondRowIndex < 0 || secondColumnIndex < 0 || secondRowIndex >= _source.Raster.NumberOfRows || secondColumnIndex >= _source.Raster.NumberOfColumns)
+            if (secondRowIndex < 0 || secondColumnIndex < 0 || secondRowIndex >= Source.Raster.NumberOfRows || secondColumnIndex >= Source.Raster.NumberOfColumns)
                 return Double.MaxValue;
 
-            Segment firstSegment = _result[firstRowIndex, firstColumnIndex];
-            Segment secondSegment = _result[secondRowIndex, secondColumnIndex];
+            Segment firstSegment = Result[firstRowIndex, firstColumnIndex];
+            Segment secondSegment = Result[secondRowIndex, secondColumnIndex];
 
             if (firstSegment == secondSegment)
                 return Double.MaxValue;

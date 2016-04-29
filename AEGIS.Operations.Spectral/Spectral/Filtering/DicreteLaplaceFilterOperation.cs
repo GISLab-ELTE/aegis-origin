@@ -79,7 +79,5 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         }
 
         #endregion
-
-
     }
 }

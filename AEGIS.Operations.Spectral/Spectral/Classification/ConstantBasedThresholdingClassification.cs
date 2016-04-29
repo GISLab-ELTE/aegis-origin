@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ConstantBasedThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represents a threshold based spectral classification using the specified constants.
     /// </summary>
     [OperationMethodImplementation("AEGIS::253120", "Constant based spectral thresholding")]
-    public class ConstantBasedThresholdingClassification : ThresholdingClassification
+    public class ConstantBasedThresholdingClassification : BasicThresholdingClassification
     {
         #region Constructors
 
@@ -74,27 +74,17 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public ConstantBasedThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.ConstantBasedThresholdClassification, parameters)
         {
-            if (SourceBandIndices != null)
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
-                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
-                {
-                    _lowerThresholdValues[SourceBandIndices[k]] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
-                    _upperThresholdValues[SourceBandIndices[k]] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
-                }
-            }
-            else
-            {
-                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
-                {
-                    _lowerThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
-                    _upperThresholdValues[i] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
-                }
-            }
+                _lowerThresholdValues[bandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.LowerThresholdBoundary));
+                _upperThresholdValues[bandIndex] = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.UpperThresholdBoundary));
 
-            for (Int32 i = 0; i < _lowerThresholdValues.Length; i++)
-            {
-                if (_lowerThresholdValues[i] > _upperThresholdValues[i])
-                    _upperThresholdValues[i] = Double.MaxValue;
+                if (_lowerThresholdValues[bandIndex] > _upperThresholdValues[bandIndex])
+                {
+                    Double temp = _upperThresholdValues[bandIndex];
+                    _upperThresholdValues[bandIndex] = _lowerThresholdValues[bandIndex];
+                    _lowerThresholdValues[bandIndex] = temp;
+                }
             }
         }
 

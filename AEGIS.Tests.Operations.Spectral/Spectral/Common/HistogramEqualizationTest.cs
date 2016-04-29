@@ -98,25 +98,6 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Common
             {
                 AssertResultForBand(_rasterMock.Object, bandIndex, operation.Result.Raster, bandIndex);
             }
-
-
-            // execute for a specific band
-
-            IDictionary<OperationParameter, Object> parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.BandIndex, 1);
-
-            operation = new HistogramEqualization(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
-            operation.Execute();
-
-            Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
-            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
-            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, operation.Result.Raster.RadiometricResolution);
-            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
-
-            Assert.AreEqual(_rasterMock.Object.HistogramValues[0].Sum(), operation.Result.Raster.HistogramValues[0].Sum());
-
-            AssertResultForBand(_rasterMock.Object, 1, operation.Result.Raster, 0);
         }
 
         #endregion

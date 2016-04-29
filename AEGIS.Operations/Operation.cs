@@ -40,66 +40,19 @@ namespace ELTE.AEGIS.Operations
         private readonly IDictionary<OperationParameter, Object> _parameters;
 
         /// <summary>
-        /// The current operation state.
-        /// </summary>
-        private OperationState _state;
-
-        #endregion
-
-        #region Protected fields
-
-        /// <summary>
         /// The source object. This field is read-only.
         /// </summary>
-        protected readonly SourceType _source;
+        private readonly SourceType _source;
 
         /// <summary>
         /// The result object.
         /// </summary>
-        protected ResultType _result;
-        
-        #endregion
-
-        #region IOperation properties
+        private ResultType _result;
 
         /// <summary>
-        /// Gets the method associated with the operation.
+        /// The current operation state.
         /// </summary>
-        /// <value>The associated coordinate operation method.</value>
-        public OperationMethod Method { get { return _method; } }
-
-        /// <summary>
-        /// Gets the parameters of the operation.
-        /// </summary>
-        /// <value>The parameters of the operation stored as key/value pairs.</value>
-        public IDictionary<OperationParameter, Object> Parameters { get { return _parameters.AsReadOnly(); } }
-
-        /// <summary>
-        /// Gets a value indicating whether the operation is reversible.
-        /// </summary>
-        /// <value><c>true</c> if the operation is reversible; otherwise, <c>false</c>.</value>
-        public Boolean IsReversible { get { return Method.IsReversible; } }
-
-        /// <summary>
-        /// Gets the operation state.
-        /// </summary>
-        /// <value>The current state of the operation.</value>
-        public OperationState State { get { return _state; } }
-
-        /// <summary>
-        /// Gets the source of the operation.
-        /// </summary>
-        /// <value>The source of the operation.</value>
-        public SourceType Source { get { return _source; } }
-
-        /// <summary>
-        /// Gets the result of the operation.
-        /// </summary>
-        /// <value>The result of the operation.</value>
-        public ResultType Result
-        {
-            get { if (_result == null) PrepareResult(); return _result; }
-        }
+        private OperationState _state;
 
         #endregion
 
@@ -182,6 +135,54 @@ namespace ELTE.AEGIS.Operations
 
         #endregion
 
+        #region IOperation properties
+
+        /// <summary>
+        /// Gets the method associated with the operation.
+        /// </summary>
+        /// <value>The associated coordinate operation method.</value>
+        public OperationMethod Method { get { return _method; } }
+
+        /// <summary>
+        /// Gets the parameters of the operation.
+        /// </summary>
+        /// <value>The parameters of the operation stored as key/value pairs.</value>
+        public IDictionary<OperationParameter, Object> Parameters { get { return _parameters.AsReadOnly(); } }
+
+        /// <summary>
+        /// Gets a value indicating whether the operation is reversible.
+        /// </summary>
+        /// <value><c>true</c> if the operation is reversible; otherwise, <c>false</c>.</value>
+        public Boolean IsReversible { get { return Method.IsReversible; } }
+
+        /// <summary>
+        /// Gets the operation state.
+        /// </summary>
+        /// <value>The current state of the operation.</value>
+        public OperationState State { get { return _state; } }
+
+        /// <summary>
+        /// Gets the source of the operation.
+        /// </summary>
+        /// <value>The source of the operation.</value>
+        public SourceType Source { get { return _source; } }
+
+        /// <summary>
+        /// Gets the result of the operation.
+        /// </summary>
+        /// <value>The result of the operation.</value>
+        public ResultType Result
+        {
+            get
+            {
+                if (_result == null)
+                    _result = PrepareResult();
+                return _result;
+            }
+        }
+
+        #endregion
+
         #region IOperation methods
 
         /// <summary>
@@ -195,16 +196,16 @@ namespace ELTE.AEGIS.Operations
 
             // if the result has already been computed, reset
             if (_state == OperationState.FinishedWithResult)
-                ResetResult();
+                _result = default(ResultType);
 
             try
             {
                 _state = OperationState.Preparing;
-                PrepareResult();
+                _result = PrepareResult();
                 _state = OperationState.Executing;
                 ComputeResult();
                 _state = OperationState.Finalizing;
-                FinalizeResult();
+                _result = FinalizeResult();
 
                 if (CheckResult())
                     _state = OperationState.FinishedWithResult;
@@ -247,18 +248,14 @@ namespace ELTE.AEGIS.Operations
         #region Protected methods
 
         /// <summary>
-        /// Resets the result object.
-        /// </summary>
-        protected virtual void ResetResult()
-        {
-            _result = default(ResultType);
-        }
-
-        /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected virtual void PrepareResult() { }
-
+        /// <returns>The result object.</returns>
+        protected virtual ResultType PrepareResult()
+        {
+            return default(ResultType);
+        }
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -267,7 +264,8 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected virtual void FinalizeResult() { }
+        /// <param name="value">The new result object.</param>
+        protected virtual ResultType FinalizeResult() { return _result; }
 
         /// <summary>
         /// Checks the result object.
@@ -330,7 +328,7 @@ namespace ELTE.AEGIS.Operations
         /// <returns><c>true</c> if the parameter is provided; otherwise, <c>false</c>.</returns>
         protected Boolean IsProvidedParameter(OperationParameter parameter)
         {
-            return _parameters != null && _parameters.ContainsKey(parameter);
+            return _parameters != null && _parameters.ContainsKey(parameter) && _parameters[parameter] != null;
         }
 
         #endregion

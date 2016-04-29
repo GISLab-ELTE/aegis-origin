@@ -16,7 +16,6 @@
 using ELTE.AEGIS.Numerics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral
 {
@@ -179,7 +178,7 @@ namespace ELTE.AEGIS.Operations.Spectral
 
                 Int32 currentIndex = 0;
                 while (currentIndex < values.Length)
-                {
+                { 
                     // read the specified pixel
                     UInt32[] currentValues = _operation.Compute(rowIndex, columnIndex);
                     Array.Copy(currentValues, bandIndex, values, currentIndex, Math.Min(currentValues.Length - bandIndex, values.Length - currentIndex));
@@ -428,6 +427,54 @@ namespace ELTE.AEGIS.Operations.Spectral
 
         #endregion
 
+        #region Private fields
+
+        /// <summary>
+        /// A value indicating whether the properties of the result are set.
+        /// </summary>
+        private Boolean _resultPropertiesSet;
+
+        /// <summary>
+        /// The geometry of the result.
+        /// </summary>
+        private IGeometry _resultGeometry;
+
+        /// <summary>
+        /// The raster format of the result.
+        /// </summary>
+        private RasterFormat _resultFormat;
+
+        /// <summary>
+        /// The raster dimensions of the result.
+        /// </summary>
+        private RasterDimensions _resultDimensions;
+
+        /// <summary>
+        /// The raster mapper of the result.
+        /// </summary>
+        private RasterMapper _resultMapper;
+
+        /// <summary>
+        /// The raster presentation of the result.
+        /// </summary>
+        private RasterPresentation _resultPresentation;
+
+        /// <summary>
+        /// The raster imaging of the result.
+        /// </summary>
+        private RasterImaging _resultImaging;
+
+        #endregion
+
+        #region Protected properties
+
+        /// <summary>
+        /// The geometry factory.
+        /// </summary>
+        protected IGeometryFactory Factory { get; private set; }
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -461,31 +508,80 @@ namespace ELTE.AEGIS.Operations.Spectral
             : base(source, target, method, parameters)
         {
             if (source.Raster == null)
-                throw new ArgumentException("The source is invalid.", "source", new InvalidOperationException("The geometry does not contain raster data."));
+                throw new ArgumentException("The source is invalid.", nameof(source), new InvalidOperationException("The geometry does not contain raster data."));
             if (!method.SupportedFormats.Contains(source.Raster.Format))
-                throw new ArgumentException("The source is invalid.", "source", new InvalidOperationException("The raster format is not supported by the method."));
+                throw new ArgumentException("The source is invalid.", nameof(source), new InvalidOperationException("The raster format is not supported by the method."));
             if (target != null && target.Raster == null)
-                throw new ArgumentException("The target is invalid.", "source", new InvalidOperationException("The geometry does not contain raster data."));
+                throw new ArgumentException("The target is invalid.", nameof(source), new InvalidOperationException("The geometry does not contain raster data."));
+
+            Factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, Source.Factory);
+
+            if (Factory.GetFactory<IRasterFactory>() == null)
+                Factory = Source.Factory;
+
+            _resultPropertiesSet = false;
         }
 
         #endregion
-
+                
         #region Protected Operation methods
 
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source, 
-                                                             PrepareRasterResult(_source.Raster.Format,
-                                                                                 _source.Raster.NumberOfBands,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 _source.Raster.RadiometricResolution,
-                                                                                 _source.Raster.Mapper),
-                                                             _source.Presentation,
-                                                             _source.Imaging);
+            SetResultProperties(Source.Raster.Format, Source.Raster.Dimensions, Source.Raster.Mapper, Source.Presentation, Source.Imaging);
+
+            // raster
+            IRaster raster;
+            if (State == OperationState.Initialized)
+            {
+                raster = Factory.GetFactory<IRasterFactory>().CreateRaster(new SpectralTransformationService(this, _resultFormat, _resultDimensions), _resultMapper);
+            }
+            else
+            {
+                raster = Factory.GetFactory<IRasterFactory>().CreateRaster(_resultFormat, _resultDimensions.NumberOfBands, _resultDimensions.NumberOfRows, _resultDimensions.NumberOfColumns, _resultDimensions.RadiometricResolution, _resultMapper);
+            }
+
+            // geometry
+            IGeometry geometry;
+            if (_resultGeometry != null)
+            {
+                geometry = _resultGeometry;
+            }
+            else if (Source.Raster.Dimensions.Equals(_resultDimensions) && (Source.Raster.Mapper != null && _resultMapper != null && Source.Raster.Mapper.Equals(_resultMapper)))
+            {
+                geometry = Source;
+            }
+            else
+            {
+                if (_resultMapper == null)
+                {
+                    geometry = Source.Factory.CreatePolygon(new Coordinate(0, 0),
+                                                           new Coordinate(_resultDimensions.NumberOfRows, 0),
+                                                           new Coordinate(_resultDimensions.NumberOfRows, _resultDimensions.NumberOfColumns),
+                                                           new Coordinate(0, _resultDimensions.NumberOfColumns));
+                }
+                else if (_resultMapper.Mode == RasterMapMode.ValueIsArea)
+                {
+                    geometry = Source.Factory.CreatePolygon(_resultMapper.MapCoordinate(0, 0),
+                                                           _resultMapper.MapCoordinate(_resultDimensions.NumberOfRows - 1, 0),
+                                                           _resultMapper.MapCoordinate(_resultDimensions.NumberOfRows - 1, _resultDimensions.NumberOfColumns - 1),
+                                                           _resultMapper.MapCoordinate(0, _resultDimensions.NumberOfColumns - 1));
+                }
+                else
+                {
+                    geometry = Source.Factory.CreatePolygon(_resultMapper.MapCoordinate(0, 0),
+                                                           _resultMapper.MapCoordinate(_resultDimensions.NumberOfRows, 0),
+                                                           _resultMapper.MapCoordinate(_resultDimensions.NumberOfRows, _resultDimensions.NumberOfColumns),
+                                                           _resultMapper.MapCoordinate(0, _resultDimensions.NumberOfColumns));
+                }
+            }
+
+            // result
+            return Factory.CreateSpectralGeometry(geometry, raster, _resultPresentation, _resultImaging);            
         }
 
         /// <summary>
@@ -493,17 +589,37 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// </summary>
         protected override void ComputeResult()
         {
-            if (_result.Raster.Format == RasterFormat.Floating)
+            if ((Method as SpectralOperationMethod).SpectralDomain.HasFlag(SpectralOperationDomain.Band))
             {
-                for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
-                    for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
-                        _result.Raster.SetFloatValues(i, j, ComputeFloat(i, j));
+                if (Result.Raster.Format == RasterFormat.Floating)
+                {
+                    for (Int32 bandIndex = 0; bandIndex < Result.Raster.NumberOfBands; bandIndex++)
+                        for (Int32 rowIndex = 0; rowIndex < Result.Raster.NumberOfRows; rowIndex++)
+                            for (Int32 columnIndex = 0; columnIndex < Result.Raster.NumberOfColumns; columnIndex++)
+                                Result.Raster.SetFloatValue(rowIndex, columnIndex, bandIndex, ComputeFloat(rowIndex, columnIndex, bandIndex));
+                }
+                else
+                {
+                    for (Int32 bandIndex = 0; bandIndex < Result.Raster.NumberOfBands; bandIndex++)
+                        for (Int32 rowIndex = 0; rowIndex < Result.Raster.NumberOfRows; rowIndex++)
+                            for (Int32 columnIndex = 0; columnIndex < Result.Raster.NumberOfColumns; columnIndex++)
+                                Result.Raster.SetValue(rowIndex, columnIndex, bandIndex, Compute(rowIndex, columnIndex, bandIndex));
+                }
             }
             else
             {
-                for (Int32 i = 0; i < _result.Raster.NumberOfRows; i++)
-                    for (Int32 j = 0; j < _result.Raster.NumberOfColumns; j++)
-                        _result.Raster.SetValues(i, j, Compute(i, j));
+                if (Result.Raster.Format == RasterFormat.Floating)
+                {
+                    for (Int32 i = 0; i < Result.Raster.NumberOfRows; i++)
+                        for (Int32 j = 0; j < Result.Raster.NumberOfColumns; j++)
+                            Result.Raster.SetFloatValues(i, j, ComputeFloat(i, j));
+                }
+                else
+                {
+                    for (Int32 i = 0; i < Result.Raster.NumberOfRows; i++)
+                        for (Int32 j = 0; j < Result.Raster.NumberOfColumns; j++)
+                            Result.Raster.SetValues(i, j, Compute(i, j));
+                }
             }
         }
 
@@ -512,32 +628,321 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Protected methods
 
         /// <summary>
-        /// Prepares the raster result of the operation.
+        /// Sets the properties of the result.
         /// </summary>
-        /// <param name="numberOfBands">The spectral resolution.</param>
-        /// <param name="numberOfColumns">The number of columns.</param>
-        /// <param name="numberOfRows">The number of rows.</param>
-        /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <param name="spectralRanges">The spectral ranges.</param>
-        /// <param name="mapper">The mapper.</param>
-        /// <param name="format">The format.</param>
-        /// <returns>The resulting raster.</returns>
-        protected IRaster PrepareRasterResult(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        /// <param name="dimensions">The raster dimensions.</param>
+        protected void SetResultProperties(RasterDimensions dimensions)
         {
-            IRasterFactory factory = _source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>();
+            if (_resultPropertiesSet)
+                return;
 
-            if (State == OperationState.Initialized)
-            {
-                return factory.CreateRaster(new SpectralTransformationService(this, format,
-                                                                              new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution)),
-                                                                              mapper);
-            }
-            else
-            {
-                return factory.CreateRaster(format, numberOfBands, numberOfRows, numberOfColumns, radiometricResolution, mapper);
-            }
+            _resultFormat = Source.Raster.Format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="dimensions">The raster dimensions.</param>
+        protected void SetResultProperties(RasterFormat format, RasterDimensions dimensions)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="dimensions">The raster dimensions.</param>
+        /// <param name="mapper">The mapper.</param>
+        protected void SetResultProperties(RasterFormat format, RasterDimensions dimensions, RasterMapper mapper)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="dimensions">The raster dimensions.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, RasterDimensions dimensions, RasterPresentation presentation)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="dimensions">The raster dimensions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, RasterDimensions dimensions, RasterMapper mapper, RasterPresentation presentation)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = mapper;
+            _resultPresentation = presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="dimensions">The raster dimensions.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        /// <param name="imaging">The raster imaging.</param>
+        protected void SetResultProperties(RasterFormat format, RasterDimensions dimensions, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = dimensions ?? Source.Raster.Dimensions;
+            _resultMapper = mapper;
+            _resultPresentation = presentation;
+            _resultImaging = imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 radiometricResolution)
+        {
+            SetResultProperties(format, Source.Raster.NumberOfBands, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, radiometricResolution);
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 radiometricResolution, RasterPresentation rasterPresentation)
+        {
+            SetResultProperties(format, Source.Raster.NumberOfBands, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, radiometricResolution, rasterPresentation);
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 radiometricResolution, RasterPresentation presentation)
+        {
+            SetResultProperties(format, numberOfBands, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, radiometricResolution, presentation);
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        protected void SetResultProperties(Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = Source.Raster.Format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
         }
         
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = mapper;
+            _resultPresentation = Source.Presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterPresentation presentation)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = mapper;
+            _resultPresentation = presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="numberOfRows">The number of rows.</param>
+        /// <param name="numberOfColumns">The number of columns.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="mapper">The mapper.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        /// <param name="imaging">The raster imaging.</param>
+        protected void SetResultProperties(RasterFormat format, Int32 numberOfBands, Int32 numberOfRows, Int32 numberOfColumns, Int32 radiometricResolution, RasterMapper mapper, RasterPresentation presentation, RasterImaging imaging)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, numberOfRows, numberOfColumns, radiometricResolution);
+            _resultMapper = mapper;
+            _resultPresentation = presentation;
+            _resultImaging = imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+
+        /// <summary>
+        /// Sets the properties of the result.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="format">The raster format.</param>
+        /// <param name="numberOfBands">The number of bands.</param>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <param name="presentation">The raster presentation.</param>
+        protected void SetResultProperties(ISpectralGeometry geometry, RasterFormat format, Int32 numberOfBands, Int32 radiometricResolution, RasterPresentation presentation)
+        {
+            if (_resultPropertiesSet)
+                return;
+
+            _resultGeometry = geometry;
+            _resultFormat = format;
+            _resultDimensions = new RasterDimensions(numberOfBands, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, radiometricResolution);
+            _resultMapper = Source.Raster.Mapper;
+            _resultPresentation = presentation;
+            _resultImaging = Source.Imaging;
+
+            _resultPropertiesSet = true;
+        }
+
+
         /// <summary>
         /// Computes the specified spectral value.
         /// </summary>
@@ -558,7 +963,11 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected virtual UInt32[] Compute(Int32 rowIndex, Int32 columnIndex)
         {
-            throw new NotSupportedException("The specified execution is not supported.");
+            UInt32[] values = new UInt32[Result.Raster.NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < Result.Raster.NumberOfBands; bandIndex++)
+                values[bandIndex] = Compute(rowIndex, columnIndex, bandIndex);
+
+            return values;
         }
 
         /// <summary>
@@ -581,9 +990,13 @@ namespace ELTE.AEGIS.Operations.Spectral
         /// <returns>The array containing the spectral values for each band at the specified index.</returns>
         protected virtual Double[] ComputeFloat(Int32 rowIndex, Int32 columnIndex)
         {
-            throw new NotSupportedException("The specified execution is not supported.");
-        }
+            Double[] values = new Double[Result.Raster.NumberOfBands];
+            for (Int32 bandIndex = 0; bandIndex < Result.Raster.NumberOfBands; bandIndex++)
+                values[bandIndex] = ComputeFloat(rowIndex, columnIndex, bandIndex);
 
+            return values;
+        }
+        
         #endregion
     }
 }

@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// is set to object or background depending on the value of the midgray.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253302", "Bernsen local thresholding")]
-    public class BernsenLocalThresholdingClassification : PerBandSpectralTransformation
+    public class BernsenLocalThresholdingClassification : SpectralTransformation
     {
         #region Constructors
 
@@ -94,31 +94,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             Double nMax = GetNeighborMaximum(rowIndex, columnIndex, bandIndex);
             Double nMin = GetNeighborMinimum(rowIndex, columnIndex, bandIndex);
 
-            if (_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) < (nMax + nMin) / 2)
-                return 255;
-            else
-                return 0;
+            return (Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) < (nMax + nMin) / 2) ? Byte.MaxValue : Byte.MinValue;
         }
 
         #endregion
 
         #region Protected Operation methods
-
+        
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override sealed void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            // the result will have integer representation in all cases
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Integer,
-                                                                                 SourceBandIndices.Length,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 8,
-                                                                                 _source.Raster.Mapper),
-                                                             RasterPresentation.CreateGrayscalePresentation(),
-                                                             _source.Imaging);
+            SetResultProperties(RasterFormat.Integer, 8, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
         }
 
         #endregion
@@ -141,9 +132,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 for (Int32 j = columnIndex - 1; j <= columnIndex + 1; j++)
                 {
                     Boolean isOwnPixel = i == rowIndex && j == columnIndex;
-                    Boolean isInRange = i >= 0 && j >= 0 && i < _source.Raster.NumberOfRows && j < _source.Raster.NumberOfColumns;
-                    if (isInRange && !isOwnPixel && min > _source.Raster.GetFloatValue(i, j, bandIndex))
-                        min = _source.Raster.GetFloatValue(i, j, bandIndex);
+                    Boolean isInRange = i >= 0 && j >= 0 && i < Source.Raster.NumberOfRows && j < Source.Raster.NumberOfColumns;
+                    if (isInRange && !isOwnPixel && min > Source.Raster.GetFloatValue(i, j, bandIndex))
+                        min = Source.Raster.GetFloatValue(i, j, bandIndex);
                 }
             }
 
@@ -166,9 +157,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 for (Int32 j = columnIndex - 1; j <= columnIndex + 1; j++)
                 {
                     Boolean isOwnPixel = i == rowIndex && j == columnIndex;
-                    Boolean isInRange = i >= 0 && j >= 0 && i < _source.Raster.NumberOfRows && j < _source.Raster.NumberOfColumns;
-                    if (isInRange && !isOwnPixel && max < _source.Raster.GetFloatValue(i, j, bandIndex))
-                        max = _source.Raster.GetFloatValue(i, j, bandIndex);
+                    Boolean isInRange = i >= 0 && j >= 0 && i < Source.Raster.NumberOfRows && j < Source.Raster.NumberOfColumns;
+                    if (isInRange && !isOwnPixel && max < Source.Raster.GetFloatValue(i, j, bandIndex))
+                        max = Source.Raster.GetFloatValue(i, j, bandIndex);
                 }
             }
 

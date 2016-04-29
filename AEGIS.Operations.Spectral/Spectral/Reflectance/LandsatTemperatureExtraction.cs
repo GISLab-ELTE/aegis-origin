@@ -129,19 +129,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Reflectance
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override sealed void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_source,
-                                                             PrepareRasterResult(RasterFormat.Floating,
-                                                                                 1,
-                                                                                 _source.Raster.NumberOfRows,
-                                                                                 _source.Raster.NumberOfColumns,
-                                                                                 32,
-                                                                                 _source.Raster.Mapper),
-                                                            _source.Presentation,
-                                                             _source.Imaging);
-        }
+            SetResultProperties(RasterFormat.Floating, 1, 32, RasterPresentation.CreateGrayscalePresentation());
 
+            return base.PrepareResult();
+        }
+        
         /// <summary>
         /// Computes the specified spectral value.
         /// </summary>

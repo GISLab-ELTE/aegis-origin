@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryToNetworkConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,7 +13,6 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
@@ -84,10 +83,10 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
-            if (State == OperationState.Preparing && _result == null)
-                _result = _source.Factory.CreateNetwork(_metadataPreservation ? _source.Metadata : null);
+            return Source.Factory.CreateNetwork(_metadataPreservation ? Source.Metadata : null);
         }
 
         #endregion

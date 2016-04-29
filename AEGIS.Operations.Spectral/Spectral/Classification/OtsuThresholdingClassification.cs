@@ -1,5 +1,5 @@
 ﻿/// <copyright file="OtsuThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represents a threshold based spectral classification using Otsu's method.
     /// </summary>
     [OperationMethodImplementation("AEGIS::253205", "Otsu thresholding")]
-    public class OtsuThresholdingClassification : ThresholdingClassification
+    public class OtsuThresholdingClassification : BasicThresholdingClassification
     {
         #region Constructors
 
@@ -75,20 +75,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public OtsuThresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, SpectralOperationMethods.OtsuThresholdingClassification, parameters)
         {
-            if (SourceBandIndices != null)
+        }
+
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
-                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
-                {
-                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(SourceBandIndices[k]));
-                }
+                _lowerThresholdValues[bandIndex] = RasterAlgorithms.ComputeOtsuThreshold(Source.Raster.GetHistogramValues(bandIndex));
             }
-            else
-            {
-                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
-                {
-                    _lowerThresholdValues[i] = RasterAlgorithms.ComputeOtsuThreshold(_source.Raster.GetHistogramValues(i));
-                }
-            }
+            
+            return base.PrepareResult();
         }
 
         #endregion

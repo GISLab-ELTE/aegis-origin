@@ -1,5 +1,5 @@
 ﻿/// <copyright file="LogSpectralTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,6 +13,7 @@
 /// </copyright>
 /// <author>Gábor Balázs Butkay</author>
 
+using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represents a logarithmic spectral transformation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::250108", "Logarithmic spectral transformation")]
-    public class LogarithmicTransformation : PerBandSpectralTransformation
+    public class LogarithmicTransformation : SpectralTransformation
     {
         #region Constructors
 
@@ -32,6 +33,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source is null.
+        /// or
+        /// The method requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter does not match the type specified by the method.
+        /// or
+        /// The value of a parameter is not within the expected range.
+        /// </exception>
         public LogarithmicTransformation(ISpectralGeometry source, IDictionary<OperationParameter, Object> parameters)
             : this(source, null, parameters)
         {
@@ -43,6 +56,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <param name="source">The source.</param>
         /// <param name="result">The result.</param>
         /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// The source is null.
+        /// or
+        /// The method requires parameters which are not specified.
+        /// </exception>
+        /// <exception cref="System.ArgumentException">
+        /// The parameters do not contain a required parameter value.
+        /// or
+        /// The type of a parameter does not match the type specified by the method.
+        /// or
+        /// The value of a parameter is not within the expected range.
+        /// </exception>
         public LogarithmicTransformation(ISpectralGeometry source, ISpectralGeometry result, IDictionary<OperationParameter, Object> parameters)
             : base(source, result, SpectralOperationMethods.LogarithmicTransformation, parameters)
         {
@@ -62,7 +87,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return (UInt32)ComputeFloat(rowIndex, columnIndex, bandIndex);
+            return RasterAlgorithms.Restrict(Math.Log(Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex)), Source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -74,7 +99,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return Math.Log(_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
+            return Math.Log(Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex));
         }
 
         #endregion

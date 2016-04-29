@@ -92,7 +92,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
             try
             {
                 _indicesOf500600nmBands = new List<Int32>();
-                _indicesOf500600nmBands = ResolveParameter(SpectralOperationParameters.IndicesOfBandsBetween500nm600nm, _source.Imaging.SpectralRanges.FindIndices(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 600e-9));
+                _indicesOf500600nmBands = ResolveParameter(SpectralOperationParameters.IndicesOfBandsBetween500nm600nm, Source.Imaging.SpectralRanges.FindIndices(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 600e-9));
             }
             catch
             {
@@ -157,17 +157,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = Source.Factory.CreateSpectralGeometry(Source,
-                                                            PrepareRasterResult(RasterFormat.Floating,
-                                                                                1,
-                                                                                Source.Raster.NumberOfRows,
-                                                                                Source.Raster.NumberOfColumns,
-                                                                                32,
-                                                                                Source.Raster.Mapper),
-                                                            RasterPresentation.CreateGrayscalePresentation(),
-                                                            Source.Imaging);
+            SetResultProperties(RasterFormat.Floating, 1, 32, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
         }
 
         #endregion

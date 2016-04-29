@@ -33,6 +33,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// </summary>
         private ISpectralGeometry _validationGeometry;
 
+        /// <summary>
+        /// The accuracy.
+        /// </summary>
+        private Double _accuracy;
+
         #endregion
 
         #region Constructor
@@ -71,18 +76,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             {
                 MatchByIndices();
             }
-            else if (_validationGeometry.Raster.IsMapped && _source.Raster.IsMapped)
+            else if (_validationGeometry.Raster.IsMapped && Source.Raster.IsMapped)
             {
                 MatchByLocation();
             }
         }
 
         /// <summary>
-        /// Prepares the result of the operation.
+        /// Finalizes the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override Double FinalizeResult()
         {
-            _result = 0;
+            return _accuracy;
         }
 
         #endregion
@@ -102,22 +108,22 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 for (Int32 columnIndex = 0; columnIndex < _validationGeometry.Raster.NumberOfColumns; columnIndex++)
                 {
                     Coordinate coordinate = _validationGeometry.Raster.Mapper.MapCoordinate(rowIndex, columnIndex);
-                    _source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
+                    Source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
 
-                    if (sourceRowIndex < 0 || sourceRowIndex >= _source.Raster.NumberOfRows || sourceColumnIndex < 0 || sourceColumnIndex >= _source.Raster.NumberOfColumns)
+                    if (sourceRowIndex < 0 || sourceRowIndex >= Source.Raster.NumberOfRows || sourceColumnIndex < 0 || sourceColumnIndex >= Source.Raster.NumberOfColumns)
                         continue;
 
                     for (Int32 bandIndex = 0; bandIndex < _validationGeometry.Raster.NumberOfBands; bandIndex++)
                     {
                         UInt32 referenceValue = _validationGeometry.Raster.GetValue(rowIndex, columnIndex, bandIndex);
-                        UInt32 sourceValue = _source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex);
+                        UInt32 sourceValue = Source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex);
                         if (sourceValue == referenceValue)
                             numberOfMatchingValues++;
                     }
                 }
             }
 
-            _result = numberOfMatchingValues / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns * Source.Raster.NumberOfBands);
+            _accuracy = numberOfMatchingValues / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns * Source.Raster.NumberOfBands);
         }
 
         /// <summary>
@@ -134,7 +140,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                     for (Int32 columnInex = 0; columnInex < _validationGeometry.Raster.NumberOfColumns; columnInex++)
                     {
                         UInt32 referenceValue = _validationGeometry.Raster.GetValue(rowIndex, columnInex, bandIndex);
-                        UInt32 sourceValue = _source.Raster.GetValue(rowIndex, columnInex, bandIndex);
+                        UInt32 sourceValue = Source.Raster.GetValue(rowIndex, columnInex, bandIndex);
 
                         if (sourceValue == referenceValue)
                             numberOfMatchingValues++;
@@ -142,7 +148,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 }
             }
 
-            _result = numberOfMatchingValues / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns * Source.Raster.NumberOfBands);
+            _accuracy = numberOfMatchingValues / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns * Source.Raster.NumberOfBands);
         }
 
         #endregion

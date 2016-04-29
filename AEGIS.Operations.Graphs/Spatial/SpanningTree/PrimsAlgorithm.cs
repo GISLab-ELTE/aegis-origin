@@ -125,7 +125,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
             _distance = new Dictionary<IGraphVertex, double>();
             _parent = new Dictionary<IGraphVertex, IGraphVertex>();
             _visitedVertices = new HashSet<IGraphVertex>();
-            foreach (IGraphVertex v in _source.Vertices.Except(new List<IGraphVertex> {_sourceVertex} ))
+            foreach (IGraphVertex v in Source.Vertices.Except(new List<IGraphVertex> {_sourceVertex} ))
             {
                 _minQ.Insert(Double.MaxValue, v);
                 _distance.Add(v, Double.MaxValue);
@@ -139,13 +139,13 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
                 _visitedVertices.Add(u);
                 if (_parent.ContainsKey(u))
                 {
-                    _spanningEdges.Add(_source.GetEdge(_parent[u], u));
+                    _spanningEdges.Add(Source.GetEdge(_parent[u], u));
                 }
                 foreach (IGraphVertex v in GetAdjacentVertices(u))
                 {
-                    if (!_visitedVertices.Contains(v) && _weightMetric(_source.GetEdge(u,v)) < _distance[v])
+                    if (!_visitedVertices.Contains(v) && _weightMetric(Source.GetEdge(u,v)) < _distance[v])
                     {
-                        _distance[v] = _weightMetric(_source.GetEdge(u, v));
+                        _distance[v] = _weightMetric(Source.GetEdge(u, v));
                         _minQ.Insert(_distance[v], v);
                         _parent[v] = u;
                     }
@@ -165,7 +165,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
         List<IGraphVertex> GetAdjacentVertices(IGraphVertex vertex)
         {
             List<IGraphVertex> adjacentVertices = new List<IGraphVertex>();
-            foreach (IGraphEdge edge in _source.OutEdges(vertex))
+            foreach (IGraphEdge edge in Source.OutEdges(vertex))
             {
                 if (edge.Source == vertex)
                 {

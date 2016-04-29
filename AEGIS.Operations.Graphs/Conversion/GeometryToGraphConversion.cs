@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GeometryToGraphConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -129,10 +129,10 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
-            if (State == OperationState.Preparing && _result == null)
-                _result = _source.Factory.CreateGraph(_source.Metadata);
+            return Source.Factory.CreateGraph(Source.Metadata);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// </summary>
         protected override void ComputeResult()
         {
-            _source.ToGraph(_result, _bidirectionalConversion, _metadataPreservation);
+            Source.ToGraph(Result, _bidirectionalConversion, _metadataPreservation);
         }
 
         #endregion

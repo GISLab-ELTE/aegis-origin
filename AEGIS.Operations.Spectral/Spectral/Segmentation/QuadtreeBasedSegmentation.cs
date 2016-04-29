@@ -78,18 +78,18 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            if (_result == null)
-                _result = new QuadSegmentCollection(_source.Raster, _distance.Statistics | SpectralStatistics.Variance);
+            return new QuadSegmentCollection(Source.Raster, _distance.Statistics | SpectralStatistics.Variance);
         }
-
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()
         {
-            QuadSegmentCollection result = _result as QuadSegmentCollection;
+            QuadSegmentCollection result = Result as QuadSegmentCollection;
             IList<Segment> segmentList = result.GetSegments().ToList();
 
             // split until all the segments are homogeneous

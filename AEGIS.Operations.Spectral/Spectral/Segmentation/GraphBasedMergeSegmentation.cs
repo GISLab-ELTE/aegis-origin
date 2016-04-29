@@ -141,12 +141,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            if (_result == null)
-                _result = new SegmentCollection(_source.Raster, _distance.Statistics);
+            return new SegmentCollection(Source.Raster, _distance.Statistics);
         }
-
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -163,8 +163,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 SimpleGraphEdge edge = edges[edges.Count - 1];
                 edges.RemoveAt(edges.Count - 1);
 
-                Segment firstSegment = _result[edge.Source / _source.Raster.NumberOfColumns, edge.Source % _source.Raster.NumberOfColumns];
-                Segment secondSegment = _result[edge.Destination / _source.Raster.NumberOfColumns, edge.Destination % _source.Raster.NumberOfColumns];
+                Segment firstSegment = Result[edge.Source / Source.Raster.NumberOfColumns, edge.Source % Source.Raster.NumberOfColumns];
+                Segment secondSegment = Result[edge.Destination / Source.Raster.NumberOfColumns, edge.Destination % Source.Raster.NumberOfColumns];
 
                 // if the two indices are already within the same segment
                 if (firstSegment == secondSegment)
@@ -176,7 +176,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (internalDifference > edge.Weight)
                 {
                     // the segments should be merged
-                    Segment mergedSegment = _result.MergeSegments(firstSegment, secondSegment);
+                    Segment mergedSegment = Result.MergeSegments(firstSegment, secondSegment);
                     Segment otherSegment = mergedSegment == firstSegment ? firstSegment : secondSegment;
 
                     // modify internal difference
@@ -208,63 +208,63 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             List<SimpleGraphEdge> edges = new List<SimpleGraphEdge>();
 
             // compute edge weight
-            for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
             {
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                 {
-                    Int32 index = rowIndex * _source.Raster.NumberOfColumns + columnIndex;
+                    Int32 index = rowIndex * Source.Raster.NumberOfColumns + columnIndex;
                     Single weight;
 
                     switch (Source.Raster.Format)
                     { 
                         case RasterFormat.Integer:                            
-                            if (columnIndex < _source.Raster.NumberOfColumns - 1)
+                            if (columnIndex < Source.Raster.NumberOfColumns - 1)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex + 1));
+                                weight = (Single)_distance.Distance(Source.Raster.GetValues(rowIndex, columnIndex), Source.Raster.GetValues(rowIndex, columnIndex + 1));
                                 edges.Add(new SimpleGraphEdge(index, index + 1, weight));
                             }
 
                             if (columnIndex > 0)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex, columnIndex - 1));
+                                weight = (Single)_distance.Distance(Source.Raster.GetValues(rowIndex, columnIndex), Source.Raster.GetValues(rowIndex, columnIndex - 1));
                                 edges.Add(new SimpleGraphEdge(index, index - 1, weight));
                             }
 
                             if (rowIndex > 0)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex - 1, columnIndex));
-                                edges.Add(new SimpleGraphEdge(index, index - _source.Raster.NumberOfColumns, weight));
+                                weight = (Single)_distance.Distance(Source.Raster.GetValues(rowIndex, columnIndex), Source.Raster.GetValues(rowIndex - 1, columnIndex));
+                                edges.Add(new SimpleGraphEdge(index, index - Source.Raster.NumberOfColumns, weight));
                             }
 
-                            if (rowIndex < _source.Raster.NumberOfRows - 1)
+                            if (rowIndex < Source.Raster.NumberOfRows - 1)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetValues(rowIndex, columnIndex), _source.Raster.GetValues(rowIndex + 1, columnIndex));
-                                edges.Add(new SimpleGraphEdge(index, index + _source.Raster.NumberOfColumns, weight));
+                                weight = (Single)_distance.Distance(Source.Raster.GetValues(rowIndex, columnIndex), Source.Raster.GetValues(rowIndex + 1, columnIndex));
+                                edges.Add(new SimpleGraphEdge(index, index + Source.Raster.NumberOfColumns, weight));
                             }
                             break;
                         case RasterFormat.Floating:
-                            if (columnIndex < _source.Raster.NumberOfColumns - 1)
+                            if (columnIndex < Source.Raster.NumberOfColumns - 1)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex + 1));
+                                weight = (Single)_distance.Distance(Source.Raster.GetFloatValues(rowIndex, columnIndex), Source.Raster.GetFloatValues(rowIndex, columnIndex + 1));
                                 edges.Add(new SimpleGraphEdge(index, index + 1, weight));
                             }
 
                             if (columnIndex > 0)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex, columnIndex - 1));
+                                weight = (Single)_distance.Distance(Source.Raster.GetFloatValues(rowIndex, columnIndex), Source.Raster.GetFloatValues(rowIndex, columnIndex - 1));
                                 edges.Add(new SimpleGraphEdge(index, index - 1, weight));
                             }
 
                             if (rowIndex > 0)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex - 1, columnIndex));
-                                edges.Add(new SimpleGraphEdge(index, index - _source.Raster.NumberOfColumns, weight));
+                                weight = (Single)_distance.Distance(Source.Raster.GetFloatValues(rowIndex, columnIndex), Source.Raster.GetFloatValues(rowIndex - 1, columnIndex));
+                                edges.Add(new SimpleGraphEdge(index, index - Source.Raster.NumberOfColumns, weight));
                             }
 
-                            if (rowIndex < _source.Raster.NumberOfRows - 1)
+                            if (rowIndex < Source.Raster.NumberOfRows - 1)
                             {
-                                weight = (Single)_distance.Distance(_source.Raster.GetFloatValues(rowIndex, columnIndex), _source.Raster.GetFloatValues(rowIndex + 1, columnIndex));
-                                edges.Add(new SimpleGraphEdge(index, index + _source.Raster.NumberOfColumns, weight));
+                                weight = (Single)_distance.Distance(Source.Raster.GetFloatValues(rowIndex, columnIndex), Source.Raster.GetFloatValues(rowIndex + 1, columnIndex));
+                                edges.Add(new SimpleGraphEdge(index, index + Source.Raster.NumberOfColumns, weight));
                             }
                             break;
                     }

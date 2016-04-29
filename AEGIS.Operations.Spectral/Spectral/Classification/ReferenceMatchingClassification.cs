@@ -1,5 +1,5 @@
 ﻿/// <copyright file="ReferenceMatchingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -104,7 +104,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             _segmentCollection = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
             _referenceGeometry = ResolveParameter<ISpectralGeometry>(SpectralOperationParameters.ClassificationReferenceGeometry);
 
-            if (_segmentCollection.Raster != _source.Raster)
+            if (_segmentCollection.Raster != Source.Raster)
                 throw new ArgumentException(String.Format("The parameter value ({0}) does not satisfy the conditions of the parameter.", SpectralOperationParameters.SegmentCollection.Name));
         }
 
@@ -189,7 +189,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting geometry.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
             Dictionary<Segment, Dictionary<Int32, Int32>> segmentToClassDictionary = new Dictionary<Segment, Dictionary<Int32, Int32>>();
             Dictionary<Int32, Int32> classToIndexDictionary = new Dictionary<Int32, Int32>(); 
@@ -223,7 +224,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                     }
 
                     // match the source coordinates
-                    if (!referenceRaster.IsMapped || !_source.Raster.IsMapped || _source.Raster.Coordinates.SequenceEqual(referenceRaster.Coordinates))
+                    if (!referenceRaster.IsMapped || !Source.Raster.IsMapped || Source.Raster.Coordinates.SequenceEqual(referenceRaster.Coordinates))
                     {
                         sourceColumnIndex = columnIndex;
                         sourceRowIndex = rowIndex;
@@ -231,7 +232,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                     else
                     {
                         Coordinate coordinate = referenceRaster.Mapper.MapCoordinate(rowIndex, columnIndex);
-                        _source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
+                        Source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
                     }
 
                     // check if the reference location is available in the source
@@ -269,16 +270,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
                 _segmentToIndexDictionary.Add(segment, classToIndexDictionary[maxValueHashCode]);
             }
 
-            // create result
-            _result = Source.Factory.CreateSpectralGeometry(_source,
-                                                            PrepareRasterResult(_referenceGeometry.Raster.Format,
-                                                                                _referenceGeometry.Raster.NumberOfBands,
-                                                                                _source.Raster.NumberOfRows,
-                                                                                _source.Raster.NumberOfColumns,
-                                                                                _referenceGeometry.Raster.RadiometricResolution,
-                                                                                _source.Raster.Mapper),
-                                                            _referenceGeometry.Presentation,
-                                                            _source.Imaging);
+            SetResultProperties(_referenceGeometry.Raster.Format, _referenceGeometry.Raster.NumberOfBands, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, _referenceGeometry.Raster.RadiometricResolution, Source.Raster.Mapper, _referenceGeometry.Presentation, _referenceGeometry.Imaging);
+            
+            return base.PrepareResult();
         }
 
         #endregion

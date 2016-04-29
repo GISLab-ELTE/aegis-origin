@@ -1,5 +1,5 @@
 ﻿/// <copyright file="BalancedHistogramTresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -17,7 +17,6 @@ using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
@@ -25,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represents a threshold based spectral classification using histogram balancing.
     /// </summary>
     [OperationMethodImplementation("AEGIS::253126", "Balanced histogram thresholding")]
-    public class BalancedHistogramTresholdingClassification : ThresholdingClassification
+    public class BalancedHistogramTresholdingClassification : BasicThresholdingClassification
     {
         #region Constructors
 
@@ -74,20 +73,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public BalancedHistogramTresholdingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.BalancedHistogramThresholdingClassification, parameters)
         {
-            if (SourceBandIndices != null)
+        }
+
+        #endregion
+        
+        #region Protected operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
             {
-                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
-                {
-                    _lowerThresholdValues[k] = RasterAlgorithms.ComputeHistogramBalance(_source.Raster[SourceBandIndices[k]].HistogramValues);
-                }
+                _lowerThresholdValues[bandIndex] = RasterAlgorithms.ComputeHistogramBalance(Source.Raster[bandIndex].HistogramValues);
             }
-            else
-            {
-                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
-                {
-                    _lowerThresholdValues[i] = RasterAlgorithms.ComputeHistogramBalance(_source.Raster[i].HistogramValues);
-                }
-            }
+
+            return base.PrepareResult();
         }
 
         #endregion

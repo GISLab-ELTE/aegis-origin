@@ -17,6 +17,7 @@ using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ELTE.AEGIS.Algorithms;
 
 namespace ELTE.AEGIS.Operations.Spectral.Filtering
 {
@@ -27,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::251168", "Kuwahara filter")]
-    public class KuwaharaFilterOperation : PerBandSpectralTransformation
+    public class KuwaharaFilterOperation : SpectralTransformation
     {
         #region Private fields
 
@@ -35,7 +36,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// The radius of the filter.
         /// </summary>
         private Int32 _filterRadius;
-
+        
         #endregion
 
         #region Constructors
@@ -99,7 +100,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            return (UInt32)ComputeFloat(rowIndex, columnIndex, bandIndex);
+            return RasterAlgorithms.Restrict(ComputeFloat(rowIndex, columnIndex, bandIndex), Source.Raster.RadiometricResolution);
         }
 
         /// <summary>
@@ -117,10 +118,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             List<Double> bottomRightElements = GetBottomRightElements(rowIndex, columnIndex, bandIndex);
 
             Double[] standardDeviations = new Double[4];
-            standardDeviations[0] = CalculateStandardDeviationOfPopulation(topLeftElements);
-            standardDeviations[1] = CalculateStandardDeviationOfPopulation(topRightElements);
-            standardDeviations[2] = CalculateStandardDeviationOfPopulation(bottomLeftElements);
-            standardDeviations[3] = CalculateStandardDeviationOfPopulation(bottomRightElements);
+            standardDeviations[0] = StandardDeviation(topLeftElements);
+            standardDeviations[1] = StandardDeviation(topRightElements);
+            standardDeviations[2] = StandardDeviation(bottomLeftElements);
+            standardDeviations[3] = StandardDeviation(bottomRightElements);
 
             Int32 min = 0;
             for (Int32 i = 1; i < standardDeviations.Length; i++)
@@ -145,16 +146,16 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         #region Private methods
 
         /// <summary>
-        /// Calculate the standard deviation of a concrete area.
+        /// Returns the standard deviation of a concrete area.
         /// </summary>
-        /// <param name="population">The population of the area.</param>
+        /// <param name="values">The population of the area.</param>
         /// <returns>The standard deviation of the area.</returns>
-        private Double CalculateStandardDeviationOfPopulation(List<Double> population)
+        private Double StandardDeviation(List<Double> values)
         {
-            Double mean = population.Average();
-            List<Double> deviationsFromMean = new List<Double>(population.Count);
+            Double mean = values.Average();
+            List<Double> deviationsFromMean = new List<Double>(values.Count);
 
-            foreach (Double elem in population)
+            foreach (Double elem in values)
                 deviationsFromMean.Add(Math.Pow(elem - mean, 2));
      
             Double variance = deviationsFromMean.Average();
@@ -174,7 +175,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
 
             for (Int32 i = Math.Max(rowIndex - _filterRadius, 0); i <= rowIndex; i++)
                 for (Int32 j = Math.Max(columnIndex - _filterRadius, 0); j <= columnIndex; j++)
-                    result.Add(_source.Raster.GetFloatValue(i,j,bandIndex));
+                    result.Add(Source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
         }
@@ -191,8 +192,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             List<Double> result = new List<Double>();
 
             for (Int32 i = Math.Max(rowIndex - _filterRadius, 0); i <= rowIndex; i++)
-                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns - 1); j++)
-                    result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
+                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, Source.Raster.NumberOfColumns - 1); j++)
+                    result.Add(Source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
         }
@@ -208,9 +209,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             List<Double> result = new List<Double>();
 
-            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows - 1); i++)
+            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, Source.Raster.NumberOfRows - 1); i++)
                 for (Int32 j = Math.Max(columnIndex - _filterRadius, 0); j <= columnIndex; j++)
-                    result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
+                    result.Add(Source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
         }
@@ -226,9 +227,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         {
             List<Double> result = new List<Double>();
 
-            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, _source.Raster.NumberOfRows - 1); i++)
-                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, _source.Raster.NumberOfColumns - 1); j++)
-                    result.Add(_source.Raster.GetFloatValue(i, j, bandIndex));
+            for (Int32 i = rowIndex; i <= Math.Min(rowIndex + _filterRadius, Source.Raster.NumberOfRows - 1); i++)
+                for (Int32 j = columnIndex; j <= Math.Min(columnIndex + _filterRadius, Source.Raster.NumberOfColumns - 1); j++)
+                    result.Add(Source.Raster.GetFloatValue(i, j, bandIndex));
 
             return result;
         }

@@ -98,12 +98,13 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
-            base.PrepareResult();
-
             _priorityQueue = new Heap<Double, IGraphVertex>();
             _finished = new HashSet<IGraphVertex>();
+
+            return base.PrepareResult();
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             {
                 IGraphVertex currentVertex = _priorityQueue.RemovePeek();
 
-                foreach (IGraphEdge edge in _source.OutEdges(currentVertex))
+                foreach (IGraphEdge edge in Source.OutEdges(currentVertex))
                 {
                     if (_finished.Contains(edge.Target))
                         continue;

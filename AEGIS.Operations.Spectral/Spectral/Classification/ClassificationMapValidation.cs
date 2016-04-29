@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represents an operation performing the validation of classification based on a reference geometry that results in an image map of correctly classified pixels.
     /// </summary>
     [OperationMethodImplementation("AEGIS::253925", "Classification validation using image map")]
-    public class ClassificationMapValidation : PerBandSpectralTransformation
+    public class ClassificationMapValidation : SpectralTransformation
     {
         #region Private fields
 
@@ -79,7 +79,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// </returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            if (_source.Envelope.Disjoint(_validationGeometry.Envelope))
+            if (Source.Envelope.Disjoint(_validationGeometry.Envelope))
                 return 0;
 
             Int32 sourceRowIndex, sourceColumnIndex;
@@ -93,13 +93,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             else
             {
                 Coordinate coordinate = _validationGeometry.Raster.Mapper.MapCoordinate(rowIndex, columnIndex);
-                _source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
+                Source.Raster.Mapper.MapRaster(coordinate, out sourceRowIndex, out sourceColumnIndex);
 
-                if (sourceRowIndex < 0 || sourceRowIndex >= _source.Raster.NumberOfRows || sourceColumnIndex < 0 || sourceColumnIndex >= _source.Raster.NumberOfColumns)
+                if (sourceRowIndex < 0 || sourceRowIndex >= Source.Raster.NumberOfRows || sourceColumnIndex < 0 || sourceColumnIndex >= Source.Raster.NumberOfColumns)
                     return 0;
             }
 
-            if (_validationGeometry.Raster.GetValue(rowIndex, columnIndex, bandIndex) == _source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex))
+            if (_validationGeometry.Raster.GetValue(rowIndex, columnIndex, bandIndex) == Source.Raster.GetValue(sourceRowIndex, sourceColumnIndex, bandIndex))
                 return 255;
             else
                 return 0;
@@ -126,19 +126,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            _result = _source.Factory.CreateSpectralGeometry(_validationGeometry,
-                                                             PrepareRasterResult(RasterFormat.Integer,
-                                                                                 1,
-                                                                                 _validationGeometry.Raster.NumberOfRows,
-                                                                                 _validationGeometry.Raster.NumberOfColumns,
-                                                                                 8,
-                                                                                 _validationGeometry.Raster.Mapper),
-                                                             RasterPresentation.CreateGrayscalePresentation(), 
-                                                             null);
-        }
+            SetResultProperties(_validationGeometry, RasterFormat.Integer, 1, 8, RasterPresentation.CreateGrayscalePresentation());
 
+            return base.PrepareResult();
+        }
+        
         #endregion
     }
 }

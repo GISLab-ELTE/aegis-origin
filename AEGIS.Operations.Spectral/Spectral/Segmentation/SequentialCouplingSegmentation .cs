@@ -124,41 +124,41 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The resulting object.</returns>
+        protected override SegmentCollection PrepareResult()
         {
-            if (_result == null)
-                _result = new SegmentCollection(_source.Raster, _distance.Statistics | SpectralStatistics.Variance);
+            return new SegmentCollection(Source.Raster, _distance.Statistics | SpectralStatistics.Variance);
         }
-
+        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()
         {
-            for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex += 2)
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex += 2)
             {
                 // initialize the segments of the next rows with 2x2 sized segments
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex += 2)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex += 2)
                 {
-                    if (columnIndex < _source.Raster.NumberOfColumns - 1)
+                    if (columnIndex < Source.Raster.NumberOfColumns - 1)
                     {
-                        _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
+                        Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
                     }
-                    if (rowIndex < _source.Raster.NumberOfRows - 1)
+                    if (rowIndex < Source.Raster.NumberOfRows - 1)
                     {
-                        _result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
-                        if (columnIndex < _source.Raster.NumberOfColumns - 1)
-                            _result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex + 1);
+                        Result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
+                        if (columnIndex < Source.Raster.NumberOfColumns - 1)
+                            Result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex + 1);
                     }
                 }
 
                 // connect segments
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex += 2)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex += 2)
                 {
                     SegmentMergeDirection direction = SegmentMergeDirection.None;
                     Double currentDistance = Double.MaxValue;
 
-                    Segment currentSegment = _result[rowIndex, columnIndex];
+                    Segment currentSegment = Result[rowIndex, columnIndex];
 
                     // only connect if the cell is homogeneous
                     if (currentSegment.IsHomogeneous(_segmentHomogeneityThreshold))
@@ -168,14 +168,14 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         // left
                         if (CanMergeSegments(currentSegment, rowIndex, columnIndex - 2))
                         {
-                            currentDistance = _distance.Distance(currentSegment, _result[rowIndex, columnIndex - 2]);
+                            currentDistance = _distance.Distance(currentSegment, Result[rowIndex, columnIndex - 2]);
                             direction = SegmentMergeDirection.Left;
                         }
 
                         // up
                         if (CanMergeSegments(currentSegment, rowIndex - 2, columnIndex))
                         {
-                            Double distance = _distance.Distance(currentSegment, _result[rowIndex - 2, columnIndex]);
+                            Double distance = _distance.Distance(currentSegment, Result[rowIndex - 2, columnIndex]);
                             if (distance < currentDistance)
                                 direction = SegmentMergeDirection.Up;
                         }
@@ -183,7 +183,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         // right 1
                         if (CanMergeSegments(rowIndex - 2, columnIndex + 2, rowIndex, columnIndex + 2))
                         {
-                            Segment mergedSegment = _result.MergeSegments(_result[rowIndex - 2, columnIndex + 2], _result[rowIndex, columnIndex + 2]);
+                            Segment mergedSegment = Result.MergeSegments(Result[rowIndex - 2, columnIndex + 2], Result[rowIndex, columnIndex + 2]);
 
                             if (CanMergeSegments(mergedSegment, currentSegment))
                             {
@@ -196,8 +196,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         // right 2
                         /*if (direction == SegmentMergeDirection.Right1 && CanMergeSegments(rowIndex - 2, columnIndex + 4, rowIndex, columnIndex + 4))
                         {
-                            Segment upperSegment = _result[rowIndex - 2, columnIndex + 4];
-                            Segment lowerSegment = _result[rowIndex, columnIndex + 4];
+                            Segment upperSegment = Result[rowIndex - 2, columnIndex + 4];
+                            Segment lowerSegment = Result[rowIndex, columnIndex + 4];
                             Segment mergedSegment = upperSegment + lowerSegment;
 
                             if (CanMergeSegments(mergedSegment, currentSegment))
@@ -212,20 +212,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         switch (direction)
                         {
                             case SegmentMergeDirection.Left:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 2);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 2);
                                 break;
                             case SegmentMergeDirection.Up:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex);
                                 break;
                             case SegmentMergeDirection.Right1:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 2);
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 2);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 2);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 2);
                                 break;
                             case SegmentMergeDirection.Right2:
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 2);
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 2);
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 4);
-                                _result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 4);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 2);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 2);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 4);
+                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 2, columnIndex + 4);
                                 break;
                         }
                     }
@@ -233,12 +233,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             }
 
             // remove original segments that are not homogeneous
-            for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex += 2)
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex += 2)
             {
-                for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex += 2)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex += 2)
                 {
-                    if (_result[rowIndex, columnIndex].Count <= 4 && !_result[rowIndex, columnIndex].IsHomogeneous(_segmentHomogeneityThreshold))
-                        _result.SplitSegment(rowIndex, columnIndex);
+                    if (Result[rowIndex, columnIndex].Count <= 4 && !Result[rowIndex, columnIndex].IsHomogeneous(_segmentHomogeneityThreshold))
+                        Result.SplitSegment(rowIndex, columnIndex);
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             if (!otherSegment.IsHomogeneous(_segmentHomogeneityThreshold))
                 return false;
 
-            for (Int32 bandIndex = 0; bandIndex < _source.Raster.NumberOfBands; bandIndex++)
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
                 if (!AnovaCriteria(segment, otherSegment, bandIndex))
                     return false;
 
@@ -277,10 +277,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <returns><c>true</c> if the segments can be merged, otherwise <c>false</c>.</returns>
         private Boolean CanMergeSegments(Segment segment, Int32 rowIndex, Int32 columnIndex)
         {
-            if (rowIndex < 0 || rowIndex >= _source.Raster.NumberOfRows || columnIndex < 0 || columnIndex >= _source.Raster.NumberOfColumns)
+            if (rowIndex < 0 || rowIndex >= Source.Raster.NumberOfRows || columnIndex < 0 || columnIndex >= Source.Raster.NumberOfColumns)
                 return false;
 
-            Segment otherSegment = _result[rowIndex, columnIndex];
+            Segment otherSegment = Result[rowIndex, columnIndex];
             return CanMergeSegments(segment, otherSegment);
         }
 
@@ -294,13 +294,13 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <returns><c>true</c> if the segments can be merged, otherwise <c>false</c>.</returns>
         private Boolean CanMergeSegments(Int32 rowIndex, Int32 columnIndex, Int32 otherRowIndex, Int32 otherColumnIndex)
         {
-            if (rowIndex < 0 || rowIndex >= _source.Raster.NumberOfRows || columnIndex < 0 || columnIndex >= _source.Raster.NumberOfColumns)
+            if (rowIndex < 0 || rowIndex >= Source.Raster.NumberOfRows || columnIndex < 0 || columnIndex >= Source.Raster.NumberOfColumns)
                 return false;
-            if (otherRowIndex < 0 || otherRowIndex >= _source.Raster.NumberOfRows || otherColumnIndex < 0 || otherColumnIndex >= _source.Raster.NumberOfColumns)
+            if (otherRowIndex < 0 || otherRowIndex >= Source.Raster.NumberOfRows || otherColumnIndex < 0 || otherColumnIndex >= Source.Raster.NumberOfColumns)
                 return false;
 
-            Segment segment = _result[rowIndex, columnIndex];
-            Segment otherSegment = _result[otherRowIndex, otherColumnIndex];
+            Segment segment = Result[rowIndex, columnIndex];
+            Segment otherSegment = Result[otherRowIndex, otherColumnIndex];
 
             return CanMergeSegments(segment, otherSegment);
         }
@@ -332,12 +332,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
             Double bX = 0, bY = 0;
 
-            foreach (UInt32 value in _result.GetFloatValues(first, bandIndex))
+            foreach (UInt32 value in Result.GetFloatValues(first, bandIndex))
             {
                 bX += (value - zMean) * (value - zMean);
             }
 
-            foreach (UInt32 value in _result.GetFloatValues(second, bandIndex))
+            foreach (UInt32 value in Result.GetFloatValues(second, bandIndex))
             {
                 bY += (value - zMean) * (value - zMean);
             }

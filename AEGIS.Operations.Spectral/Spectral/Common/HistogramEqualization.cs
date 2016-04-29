@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represent an operation performing histogram equalization of <see cref="ISpectralGeometry"/> instances.
     /// </summary>
     [OperationMethodImplementation("AEGIS::250207", "Histogram equalization")]
-    public class HistogramEqualization : HistogramTransformation
+    public class HistogramEqualization : SpectralTransformation
     {
         #region Private fields
 
@@ -101,46 +101,46 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         public HistogramEqualization(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.HistogramEqualization, parameters)
         {
-            _cumulativeDistributionValues = new Double[_source.Raster.NumberOfBands][];
-            _cumulativeDistributionMinimums = new Double[_source.Raster.NumberOfBands];
-            _cumulativeDistributionMaximums = new Double[_source.Raster.NumberOfBands];
-            _radiometricResolutionExponents = new Double[_source.Raster.NumberOfBands];
-            _radiometricValueLimits = new UInt32[_source.Raster.NumberOfBands];
-
-            if (SourceBandIndices != null)
-            {
-                for (Int32 k = 0; k < SourceBandIndices.Length; k++)
-                {
-                    ComputeParameters(SourceBandIndices[k]);
-                }
-            }
-            else
-            {
-                for (Int32 i = 0; i < _source.Raster.NumberOfBands; i++)
-                    ComputeParameters(i);
-            }
         }
 
         #endregion
 
-        #region Private HistogramTransformation methods
+        #region Protected Operation methods
 
         /// <summary>
-        /// Computes the specified value.
+        /// Prepares the result of the operation.
         /// </summary>
-        /// <param name="value">The original value.</param>
-        /// <param name="bandIndex">The band index.</param>
-        /// <returns>The transformed value.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        protected override UInt32 Compute(Int32 bandIndex, UInt32 value)
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
         {
-            // source: http://en.wikipedia.org/wiki/Histogram_equalization
+            _cumulativeDistributionValues = new Double[Source.Raster.NumberOfBands][];
+            _cumulativeDistributionMinimums = new Double[Source.Raster.NumberOfBands];
+            _cumulativeDistributionMaximums = new Double[Source.Raster.NumberOfBands];
+            _radiometricResolutionExponents = new Double[Source.Raster.NumberOfBands];
+            _radiometricValueLimits = new UInt32[Source.Raster.NumberOfBands];
 
-            return Math.Min((UInt32)((_cumulativeDistributionValues[bandIndex][value] - _cumulativeDistributionMinimums[bandIndex]) / 
-                                     (_cumulativeDistributionMaximums[bandIndex] - _cumulativeDistributionMinimums[bandIndex]) * _radiometricResolutionExponents[bandIndex]), 
-                            _radiometricValueLimits[bandIndex]);
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
+                ComputeParameters(bandIndex);
+
+            return base.PrepareResult();
         }
 
+        #endregion
+
+        #region Protected SpectralTransformation methods
+
+        /// <summary>
+        /// Computes the specified spectral value.
+        /// </summary>
+        /// <param name="rowIndex">The zero-based row index of the value.</param>
+        /// <param name="columnIndex">The zero-based column index of the value.</param>
+        /// <param name="bandIndex">The zero-based band index of the value.</param>
+        /// <returns>The spectral value at the specified index.</returns>
+        protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
+        {
+            return Math.Min((UInt32)((_cumulativeDistributionValues[bandIndex][Source.Raster.GetValue(rowIndex, columnIndex, bandIndex)] - _cumulativeDistributionMinimums[bandIndex]) / (_cumulativeDistributionMaximums[bandIndex] - _cumulativeDistributionMinimums[bandIndex]) * _radiometricResolutionExponents[bandIndex]), _radiometricValueLimits[bandIndex]);
+        }
+        
         #endregion
 
         #region Private methods
@@ -153,15 +153,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
         {
             // source: http://en.wikipedia.org/wiki/Histogram_equalization
 
-            IReadOnlyList<Int32> histogram = _source.Raster.HistogramValues[bandIndex];
+            IReadOnlyList<Int32> histogram = Source.Raster.HistogramValues[bandIndex];
 
             _cumulativeDistributionValues[bandIndex] = new Double[histogram.Count];
 
             // setting values
-            _cumulativeDistributionValues[bandIndex][0] = Convert.ToDouble(histogram[0]) / (_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
+            _cumulativeDistributionValues[bandIndex][0] = Convert.ToDouble(histogram[0]) / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns);
             for (Int32 i = 1; i < histogram.Count; i++)
             {
-                _cumulativeDistributionValues[bandIndex][i] = _cumulativeDistributionValues[bandIndex][i - 1] + Convert.ToDouble(histogram[i]) / (_source.Raster.NumberOfRows * _source.Raster.NumberOfColumns);
+                _cumulativeDistributionValues[bandIndex][i] = _cumulativeDistributionValues[bandIndex][i - 1] + Convert.ToDouble(histogram[i]) / (Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns);
             }
 
             // setting minimum
@@ -187,10 +187,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             _cumulativeDistributionMaximums[bandIndex] = _cumulativeDistributionValues[bandIndex][maxIndex];
 
             // exponent
-            _radiometricResolutionExponents[bandIndex] = Calculator.Pow(2, _source.Raster.RadiometricResolution);
+            _radiometricResolutionExponents[bandIndex] = Calculator.Pow(2, Source.Raster.RadiometricResolution);
 
             // radiometric value limit
-            _radiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(_source.Raster.RadiometricResolution);
+            _radiometricValueLimits[bandIndex] = RasterAlgorithms.RadiometricResolutionMax(Source.Raster.RadiometricResolution);
         }
 
         #endregion

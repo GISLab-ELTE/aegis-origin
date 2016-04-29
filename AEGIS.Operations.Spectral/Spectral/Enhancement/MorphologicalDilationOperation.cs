@@ -1,5 +1,5 @@
 ﻿/// <copyright file="MorphologicalDilationOperation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -25,7 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Enhancement
     /// Represents the dilation morphological operation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::251602", "Morphological dilation operation")]
-    public class MorphologicalDilationOperation : PerBandSpectralTransformation
+    public class MorphologicalDilationOperation : SpectralTransformation
     {
         #region Private fields
 
@@ -69,22 +69,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Enhancement
 
             Int32 firstRowIndex = rowIndex - rowCenter;
             Int32 firstColumnIndex = columnIndex - columnCenter;
-            UInt32 result = 0;
+            Double result = 0;
 
             for (Int32 row = 0; row < _structuringElement.NumberOfRows; row++)
             {
                 for (Int32 column = 0; column < _structuringElement.NumberOfColumns; column++)
                 {
-                    UInt32 value = _source.Raster.GetNearestValue(firstRowIndex + row, firstColumnIndex + column, bandIndex) + (UInt32)_structuringElement[row, column];
-
-                    value = RasterAlgorithms.Restrict(value, _source.Raster.RadiometricResolution);
-
+                    Double value = Source.Raster.GetNearestValue(firstRowIndex + row, firstColumnIndex + column, bandIndex) + _structuringElement[row, column];
+                    
                     if (value > result)
                         result = value;
                 }
             }
 
-            return result;
+            return RasterAlgorithms.Restrict(result, Source.Raster.RadiometricResolution);
         }
 
         #endregion

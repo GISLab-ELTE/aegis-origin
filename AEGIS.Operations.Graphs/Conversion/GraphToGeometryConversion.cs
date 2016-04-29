@@ -1,5 +1,5 @@
 ﻿/// <copyright file="GraphToGeometryConversion.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -334,7 +334,7 @@ namespace ELTE.AEGIS.Operations.Conversion
         public GraphToGeometryConversion(IGeometryGraph source, IGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, GraphOperationMethods.GraphToGeometryConversion, parameters)
         {
-            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, _source.Factory);
+            _factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, Source.Factory);
             _dimension = Convert.ToInt32(ResolveParameter(GraphOperationParameters.GeometryDimension));
             _metadataPreservation = Convert.ToBoolean(ResolveParameter(CommonOperationParameters.MetadataPreservation));
         }
@@ -346,11 +346,14 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometry PrepareResult()
         {
             _points = new HashSet<IPoint>(new PointEqualityComparer());
             _lines = new HashSet<ILine>(new LineEqualityComparer());
             _polygons = new HashSet<IPolygon>(new PolygonEqualityComparer());
+
+            return null;
         }
 
         /// <summary>
@@ -361,15 +364,15 @@ namespace ELTE.AEGIS.Operations.Conversion
             switch (_dimension)
             {
                 case 0:
-                    foreach (IGraphVertex vertex in _source.Vertices)
+                    foreach (IGraphVertex vertex in Source.Vertices)
                         _points.Add(_factory.CreatePoint(vertex.Coordinate, _metadataPreservation ? vertex.Metadata : null));
                     break;
                 case 1:
-                    foreach (IGraphVertex vertex in _source.Vertices)
+                    foreach (IGraphVertex vertex in Source.Vertices)
                         _points.Add(_factory.CreatePoint(vertex.Coordinate, _metadataPreservation ? vertex.Metadata : null));
 
-                    foreach (IGraphVertex vertex in _source.Vertices)
-                        foreach (IGraphEdge edge in _source.OutEdges(vertex))
+                    foreach (IGraphVertex vertex in Source.Vertices)
+                        foreach (IGraphEdge edge in Source.OutEdges(vertex))
                         { 
                             if (edge.Source.Coordinate.Equals(edge.Target.Coordinate))
                                 continue;
@@ -386,12 +389,12 @@ namespace ELTE.AEGIS.Operations.Conversion
                     // find all wedges
                     List<AngularEdge> edges = new List<AngularEdge>();
                     
-                    foreach (IGraphVertex vertex in _source.Vertices)
+                    foreach (IGraphVertex vertex in Source.Vertices)
                     {
                         Coordinate sourceCoordinate = vertex.Coordinate;
                         Coordinate baseCoordinate = vertex.Coordinate - new CoordinateVector(1, 0);
 
-                        IEnumerable<IGraphEdge> outEdges = _source.OutEdges(vertex);
+                        IEnumerable<IGraphEdge> outEdges = Source.OutEdges(vertex);
 
                         if (outEdges.Count() == 0)
                         {
@@ -460,7 +463,7 @@ namespace ELTE.AEGIS.Operations.Conversion
                             {
                                 metadata = new Dictionary<String, Object>();
 
-                                foreach (IMetadataCollection collection in shell.Select(coordinate => _source.GetVertex(coordinate).Metadata))
+                                foreach (IMetadataCollection collection in shell.Select(coordinate => Source.GetVertex(coordinate).Metadata))
                                 {
                                     foreach (String key in collection.Keys)
                                     {
@@ -479,13 +482,13 @@ namespace ELTE.AEGIS.Operations.Conversion
                         {
                             _lines.Add(_factory.CreateLine(leftOverEdges[i][j].First, 
                                                            leftOverEdges[i][j].Second,
-                                                           _metadataPreservation ? _source.GetEdge(leftOverEdges[i][j].First, leftOverEdges[i][j].Second).Metadata : null));
+                                                           _metadataPreservation ? Source.GetEdge(leftOverEdges[i][j].First, leftOverEdges[i][j].Second).Metadata : null));
                         }
                     }
 
                     foreach (Coordinate coordinate in coordinates)
                         _points.Add(_factory.CreatePoint(coordinate, 
-                                                         _metadataPreservation ? _source.GetVertex(coordinate).Metadata : null));
+                                                         _metadataPreservation ? Source.GetVertex(coordinate).Metadata : null));
                     break;
             }
         }
@@ -493,18 +496,18 @@ namespace ELTE.AEGIS.Operations.Conversion
         /// <summary>
         /// Finalizes the result.
         /// </summary>
-        protected override void FinalizeResult()
+        protected override IGeometry FinalizeResult()
         {
-            if (_source.VertexCount == 0)
-                _result = _factory.CreateGeometryCollection();
+            if (Source.VertexCount == 0)
+                return null;
 
             // if only points are in the graph
             if (_lines.Count == 0 && _polygons.Count == 0)
             {
                 if (_points.Count == 1)
-                    _result = _points.First();
-                else 
-                    _result = _factory.CreateMultiPoint(_points);
+                    return _points.First();
+
+                return _factory.CreateMultiPoint(_points);
             }
             // if no faces are extracted
             else if (_polygons.Count == 0)
@@ -512,28 +515,24 @@ namespace ELTE.AEGIS.Operations.Conversion
                 if (_points.Count == 0)
                 {
                     if (_lines.Count == 1)
-                        _result = _lines.First();
-                    else
-                        _result = _factory.CreateMultiLineString(_lines);
+                        return _lines.First();
+
+                    return _factory.CreateMultiLineString(_lines);
                 }
-                else
-                {
-                    _result = _factory.CreateGeometryCollection(_points.Concat<IGeometry>(_lines));
-                }
+
+                return _factory.CreateGeometryCollection(_points.Concat<IGeometry>(_lines));
             }
+
             // if faces are extracted
-            else
+            if (_points.Count == 0 && _lines.Count == 0)
             {
-                if (_points.Count == 0 && _lines.Count == 0)
-                {
-                    if (_polygons.Count == 1)
-                        _result = _polygons.First();
-                    else
-                        _result = _factory.CreateMultiPolygon(_polygons);
-                }
+                if (_polygons.Count == 1)
+                    return _polygons.First();
                 else
-                    _result = _factory.CreateGeometryCollection(_points.Concat<IGeometry>(_lines).Concat<IGeometry>(_polygons));
+                    return _factory.CreateMultiPolygon(_polygons);
             }
+            else
+                return _factory.CreateGeometryCollection(_points.Concat<IGeometry>(_lines).Concat<IGeometry>(_polygons));
         }
 
         #endregion

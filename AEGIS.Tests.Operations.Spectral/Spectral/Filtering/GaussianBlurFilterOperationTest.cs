@@ -124,25 +124,7 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Filtering
                                     FilterFactory.CreateGaussianFilter(3).Kernel.Sum());
             }
 
-
-            // integer values with specified band
-
-            parameters = new Dictionary<OperationParameter, Object>();
-            parameters.Add(SpectralOperationParameters.BandIndex, 1);
-
-            operation = new GaussianBlurFilterOperation(factory.CreateSpectralPolygon(_rasterMock.Object), parameters);
-            operation.Execute();
-
-            Assert.AreEqual(_rasterMock.Object.NumberOfRows, operation.Result.Raster.NumberOfRows);
-            Assert.AreEqual(_rasterMock.Object.NumberOfColumns, operation.Result.Raster.NumberOfColumns);
-            Assert.AreEqual(1, operation.Result.Raster.NumberOfBands);
-            Assert.AreEqual(_rasterMock.Object.RadiometricResolution, operation.Result.Raster.RadiometricResolution);
-            Assert.AreEqual(_rasterMock.Object.Format, operation.Result.Raster.Format);
-
-            AssertResultForBand(_rasterMock.Object, 1, operation.Result.Raster, 0, (Int32)SpectralOperationParameters.FilterRadius.DefaultValue,
-                                defaultFilterFactor);
-
-
+            
             // floating values with default parameters
 
             _rasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Floating);

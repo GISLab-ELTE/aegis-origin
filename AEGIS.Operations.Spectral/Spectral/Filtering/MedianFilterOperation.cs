@@ -23,7 +23,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// Represents a median filter operation.
     /// </summary>
     [OperationMethodImplementation("AEGIS::251108", "Median filter")]
-    public class MedianFilterOperation : PerBandSpectralTransformation
+    public class MedianFilterOperation : SpectralTransformation
     {
         #region Private fields
 
@@ -112,7 +112,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             for (Int32 k = 0; k < _filterRadius; k++)
                 for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    _filteredValues[index] = _source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
+                    _filteredValues[index] = Source.Raster.GetNearestValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(_filteredValues);
@@ -136,7 +136,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
             for (Int32 k = 0; k < _filterRadius; k++)
                 for (Int32 l = 0; l < _filterRadius; l++)
                 {
-                    _filteredValues[index] = _source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
+                    _filteredValues[index] = Source.Raster.GetNearestFloatValue(rowBase + k, columnBase + l, bandIndex);
                     index++;
                 }
             Array.Sort(_filteredValues);

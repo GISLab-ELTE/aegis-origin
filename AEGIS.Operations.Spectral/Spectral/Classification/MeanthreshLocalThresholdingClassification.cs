@@ -28,7 +28,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// To increase the resistance to noise the threshold value can be shifted by a thresholding constant.
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253305", "Meanthresh local thresholding")]
-    public class MeanthreshLocalThresholdingClassification : PerBandSpectralClassification
+    public class MeanthreshLocalThresholdingClassification : SpectralTransformation
     {
         #region Private fields
 
@@ -90,8 +90,33 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
             : base(source, null, SpectralOperationMethods.MeanthreshLocalThresholdingClassification, parameters)
         {
             _thresholdingConstant = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.MeanthreshThresholdingConstant));
+        }
 
-            ComputeMeanValue();
+        #endregion
+
+        #region Protected Operation methods
+
+        /// <summary>
+        /// Prepares the result of the operation.
+        /// </summary>
+        /// <returns>The resulting object.</returns>
+        protected override ISpectralGeometry PrepareResult()
+        {
+            _meanValue = new Double[Source.Raster.NumberOfBands];
+
+            for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
+            {
+                Double result = 0;
+                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
+                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
+                        result += Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex);
+
+                _meanValue[bandIndex] = result / (Source.Raster.NumberOfColumns * Source.Raster.NumberOfRows);
+            }
+
+            SetResultProperties(RasterFormat.Integer, 8, RasterPresentation.CreateGrayscalePresentation());
+
+            return base.PrepareResult();
         }
 
         #endregion
@@ -107,32 +132,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         /// <returns>The spectral value at the specified index.</returns>
         protected override UInt32 Compute(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
         {
-            if (_source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) >= _meanValue[bandIndex] - _thresholdingConstant)
-                return 255;
-            else
-                return 0;
-        }
-
-        #endregion
-        
-        #region Private methods
-
-        /// <summary>
-        /// Compute mean value for each band.
-        /// </summary>
-        private void ComputeMeanValue()
-        {
-            _meanValue = new Double[_source.Raster.NumberOfBands];
-
-            for (Int32 bandIndex = 0; bandIndex < SourceBandIndices.Length; bandIndex++)
-            {
-                Double result = 0;
-                for (Int32 rowIndex = 0; rowIndex < _source.Raster.NumberOfRows; rowIndex++)
-                    for (Int32 columnIndex = 0; columnIndex < _source.Raster.NumberOfColumns; columnIndex++)
-                        result += _source.Raster.GetFloatValue(rowIndex, columnIndex, SourceBandIndices[bandIndex]);
-
-                _meanValue[SourceBandIndices[bandIndex]] = result / (_source.Raster.NumberOfColumns * _source.Raster.NumberOfRows);
-            }
+            return Source.Raster.GetFloatValue(rowIndex, columnIndex, bandIndex) >= _meanValue[bandIndex] - _thresholdingConstant ? Byte.MaxValue : Byte.MinValue;
         }
 
         #endregion

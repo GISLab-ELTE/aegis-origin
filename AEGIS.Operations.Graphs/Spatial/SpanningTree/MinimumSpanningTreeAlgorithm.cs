@@ -75,26 +75,27 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>
-        protected override void PrepareResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph PrepareResult()
         {
             _spanningEdges = new List<IGraphEdge>();
+
+            return Source.Factory.CreateGraph(Source.VertexComparer, Source.EdgeComparer);
         }
 
         /// <summary>
         /// Finalizes the result of the operation.
         /// </summary>
-        protected override void FinalizeResult()
+        /// <returns>The result object.</returns>
+        protected override IGeometryGraph FinalizeResult()
         {
-
-            // generate a graph from the spanning tree if target is null
-            if (_result == null)
-                _result = _source.Factory.CreateGraph(_source.VertexComparer, _source.EdgeComparer);
-
             foreach (IGraphEdge spanningEdge in _spanningEdges)
             {
-                _result.AddEdge(spanningEdge.Source.Coordinate, spanningEdge.Target.Coordinate, spanningEdge.Metadata);
-                _result.AddEdge(spanningEdge.Target.Coordinate, spanningEdge.Source.Coordinate, spanningEdge.Metadata);
+                Result.AddEdge(spanningEdge.Source.Coordinate, spanningEdge.Target.Coordinate, spanningEdge.Metadata);
+                Result.AddEdge(spanningEdge.Target.Coordinate, spanningEdge.Source.Coordinate, spanningEdge.Metadata);
             }
+
+            return base.FinalizeResult();
         }
 
         #endregion
