@@ -139,6 +139,7 @@
     <Compile Include="Spectral\Indexing\VogelmannRedEdgeIndex3Computation.cs" />
     <Compile Include="Spectral\Indexing\VogelmannRedEdgeIndexComputation.cs" />
     <Compile Include="Spectral\Indexing\WaterBandIndexComputation.cs" />
+    <Compile Include="Spectral\SpectralBandFiltering.cs" />
     <Compile Include="Spectral\Reflectance\LandsatTemperatureExtraction.cs" />
     <Compile Include="Spectral\Reflectance\LandsatTopOfAtmosphereReflectanceComputation.cs" />
     <Compile Include="Spectral\Reflectance\SpotTopOfAtmosphereReflectanceComputation.cs" />

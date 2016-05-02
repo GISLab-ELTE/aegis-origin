@@ -95,6 +95,7 @@ namespace ELTE.AEGIS.Operations.Spectral
         private static SpectralOperationMethod _inverseGammaCorrection;
         private static SpectralOperationMethod _logarithmicTransformation;
         private static SpectralOperationMethod _saturatingContrastEnhancement;
+        private static SpectralOperationMethod _spectralBandFiltering;
         private static SpectralOperationMethod _spectralInversion;
         private static SpectralOperationMethod _spectralResampling;
         private static SpectralOperationMethod _spectralTranslation;
@@ -116,9 +117,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250218", "Adaptive histogram equalization",
                                                                          "Adaptive histogram equalization (AHE) is a computer image processing technique used to improve contrast in images.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.TileNumberHorizontally,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         SpectralOperationParameters.TileNumberHorizontally));
             }
         }
         
@@ -132,9 +131,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _exponentialTransformation ?? (_exponentialTransformation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250107", "Exponential spectral transformation.",
                                                                          "Exponential spectral transformation.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         false, SpectralOperationDomain.BandLocal));
             }
         }
 
@@ -149,8 +146,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250280", "Gamma correction",
                                                                          "Gamma encoding of images is required to compensate for properties of human vision, hence to maximize the use of the bits or bandwidth relative to how humans perceive light and color.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.GammaValue));
             }
         }
@@ -165,9 +160,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _greyWorldNormalization ?? (_greyWorldNormalization =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250285", "Grey world normalization",
                                                                          "The gray world normalization is a color normalization technique which applies constant factors to the individual bands.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         false, SpectralOperationDomain.BandLocal));
             }
         }
 
@@ -181,9 +174,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _histogramEqualization ?? (_histogramEqualization =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250207", "Histogram equalization",
                                                                          "Histogram equalization is a method in image processing of contrast adjustment using the image's histogram.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         false, SpectralOperationDomain.BandLocal));
             }
         }
 
@@ -198,8 +189,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250238", "Histogram matching",
                                                                          "Histogram matching is the adjustment of raster histogram to the histogram of another raster.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.HistogramMatchValues));
             }
         }
@@ -215,8 +204,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250239", "Histogram specification",
                                                                          "Histogram specification transforms the band histograms to match the shapes of specific function, rather than simply equalizing them.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.HistogramMatchFunction));
             }
         }
@@ -232,8 +219,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250281", "Inverse gamma correction",
                                                                          "Gamma encoding of images is required to compensate for properties of human vision, hence to maximize the use of the bits or bandwidth relative to how humans perceive light and color. This method is an inversion of the original transformation.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices,
                                                                          SpectralOperationParameters.GammaValue));
             }
         }
@@ -248,9 +233,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _logarithmicTransformation ?? (_logarithmicTransformation =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250108", "Logarithmic spectral transformation",
                                                                          "Logarithmic spectral transformation.", null, "1.0.0",
-                                                                         false, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         false, SpectralOperationDomain.BandLocal));
             }
         }
 
@@ -264,9 +247,26 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _saturatingContrastEnhancement ?? (_saturatingContrastEnhancement =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250204", "Saturating contrast enhancement",
                                                                          "Saturating contrast enhancement is a linear transformation method, where the raster histogram is pulled to fill the entire spectrum.", null, "1.0.0",
+                                                                         true, SpectralOperationDomain.BandLocal));
+            }
+        }
+
+        /// <summary>
+        /// Spectral band filtering.
+        /// </summary>
+        public static SpectralOperationMethod SpectralBandFiltering
+        {
+            get
+            {
+                return _spectralBandFiltering ?? (_spectralBandFiltering =
+                    SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250101", "Spectral band filtering",
+                                                                         "Filters one or more bands of a raster image.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
+                                                                         ExecutionMode.OutPlace,
                                                                          SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         SpectralOperationParameters.BandIndices,
+                                                                         SpectralOperationParameters.BandName,
+                                                                         SpectralOperationParameters.BandNames));
             }
         }
 
@@ -280,9 +280,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _spectralInversion ?? (_spectralInversion =
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::250104", "Spectral inversion",
                                                                          "Inverts all spectral values to the opposite.", null, "1.0.0",
-                                                                         true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         true, SpectralOperationDomain.BandLocal));
             }
         }
 
@@ -319,9 +317,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "The affine translation of spectral values.", null, "1.0.0",
                                                                          true, SpectralOperationDomain.BandLocal,
                                                                          SpectralOperationParameters.SpectralOffset,
-                                                                         SpectralOperationParameters.SpectralFactor,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         SpectralOperationParameters.SpectralFactor));
             }
         }
 
@@ -351,9 +347,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                     SpectralOperationMethod.CreateSpectralTransformation("AEGIS::255105", "Top of atmosphere reflectance computation",
                                                                          "Top-of-atmosphere reflectance (or TOA reflectance) is the reflectance measured by a space-based sensor flying higher than the earth's atmosphere.", 
                                                                          new String[] { "ToA reflectance computation", "ToAref computation" }, "1.0.0",
-                                                                         true, SpectralOperationDomain.BandLocal,
-                                                                         SpectralOperationParameters.BandIndex,
-                                                                         SpectralOperationParameters.BandIndices));
+                                                                         true, SpectralOperationDomain.BandLocal));
             }
         }
 

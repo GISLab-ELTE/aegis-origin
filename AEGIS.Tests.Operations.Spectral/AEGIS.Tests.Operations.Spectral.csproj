@@ -67,6 +67,7 @@
     <Compile Include="Spectral\Filtering\GaussianBlurFilterOperationTest.cs" />
     <Compile Include="Spectral\Filtering\KuwaharaFilterOperationTest.cs" />
     <Compile Include="Spectral\Filtering\ScharrFilterOperationTest.cs" />
+    <Compile Include="Spectral\SpectralBandFilteringTest.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingTest.cs" />
   </ItemGroup>
   <ItemGroup>
