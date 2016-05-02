@@ -92,7 +92,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
             try
             {
                 _indicesOf500600nmBands = new List<Int32>();
-                _indicesOf500600nmBands = ResolveParameter(SpectralOperationParameters.IndicesOfBandsBetween500nm600nm, Source.Imaging.SpectralRanges.FindIndices(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 600e-9));
+                _indicesOf500600nmBands = ResolveParameter(SpectralOperationParameters.IndicesOfBandsBetween500nm600nm, Source.Imaging.SpectralRanges.IndicesOf(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 600e-9));
             }
             catch
             {

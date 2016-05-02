@@ -109,7 +109,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             {
                 SpectralDomain domain;
                 if (Enum.TryParse<SpectralDomain>(ResolveParameter<String>(SpectralOperationParameters.BandName), out domain) && source.Imaging.Bands.Any(band => band.SpectralDomain == domain))
-                    _bandIndices = new Int32[] { source.Imaging.Bands.FindIndex(band => band.SpectralDomain == domain) };
+                    _bandIndices = new Int32[] { source.Imaging.Bands.IndexOf(band => band.SpectralDomain == domain) };
             }
             else if (IsProvidedParameter(SpectralOperationParameters.BandNames) && Source.Imaging != null)
             {
@@ -117,7 +117,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                 _bandIndices = ResolveParameter<IEnumerable<String>>(SpectralOperationParameters.BandNames).Select(name =>
                 {
                     Enum.TryParse<SpectralDomain>(name, true, out domain);
-                    return source.Imaging.Bands.FindIndex(band => band.SpectralDomain == domain);
+                    return source.Imaging.Bands.IndexOf(band => band.SpectralDomain == domain);
                 }).Where(index => index >= 0).ToArray();
             }
 

@@ -1,5 +1,5 @@
 ﻿/// <copyright file="EnumerableExtensions.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -27,7 +27,7 @@ namespace ELTE.AEGIS
     /// </summary>
     public static class EnumerableExtensions
     {
-        #region Public static extension methods
+        #region Extension methods for transformation
 
         /// <summary>
         /// Converts a geometry enumeration to geometry collection.
@@ -40,7 +40,7 @@ namespace ELTE.AEGIS
         public static IGeometryCollection<T> ToGeometryCollection<T>(this IEnumerable<T> collection) where T : IGeometry
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             // in case of empty collection the default factory is used
             if (!collection.Any())
@@ -74,7 +74,7 @@ namespace ELTE.AEGIS
         public static IDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             return new ReadOnlyDictionary<TKey, TValue>(collection);
         }
@@ -90,17 +90,49 @@ namespace ELTE.AEGIS
             return new ReadOnlySet<T>(collection);
         }
 
+        #endregion
+
+        #region Extension methods for search
+
+        /// <summary>
+        /// Determines the index of a specific item in the collection.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="match">The condition of the element to search for.</param>
+        /// <returns>The zero-based index of item if found in the collection; otherwise, -1.</returns>
+        public static Int32 IndexOf<T>(this IEnumerable<T> collection, T item)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
+
+            IList<T> collectionList = collection as IList<T>;
+            if (collectionList != null)
+                return collectionList.IndexOf(item);
+
+            Int32 index = 0;
+            foreach(T currentItem in collection)
+            {
+                if (currentItem.Equals(item))
+                    return index;
+
+                index++;
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Returns the zero-based index of the first occurrence of the element that matches the defined predicate.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="match">The condition of the element to search for.</param>
-        /// <returns>The zero-based index of the first occurrence of the element that matches the defined predicate.</returns>
-        public static Int32 FindIndex<T>(this IEnumerable<T> collection, Predicate<T> match)
+        /// <returns>The zero-based index of the first occurrence of the element that matches the defined predicate if found in the collection; otherwise, -1.</returns>
+        public static Int32 IndexOf<T>(this IEnumerable<T> collection, Predicate<T> match)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             Int32 index = 0;
             foreach (T item in collection)
@@ -118,11 +150,11 @@ namespace ELTE.AEGIS
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="match">The condition of the element to search for.</param>
-        /// <returns>The zero-based indices of the elements that match the defined predicate.</returns>
-        public static IList<Int32> FindIndices<T>(this IEnumerable<T> collection, Predicate<T> match)
+        /// <returns>The zero-based indices of the elements that match the defined predicate if found in the collection; otherwise, -1.</returns>
+        public static IList<Int32> IndicesOf<T>(this IEnumerable<T> collection, Predicate<T> match)
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             IList<Int32> indices = new List<Int32>();
 
@@ -163,12 +195,12 @@ namespace ELTE.AEGIS
         public static Int32 MaxIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             IEnumerator<TSource> enumerator = collection.GetEnumerator();
 
             if (!enumerator.MoveNext())
-                throw new ArgumentException("collection", "The collection is empty.");
+                throw new ArgumentException(nameof(collection), "The collection is empty.");
 
             Int32 index = 0, maxIndex = 0;
             TResult max = selector(enumerator.Current);
@@ -213,12 +245,12 @@ namespace ELTE.AEGIS
         public static Int32 MinIndex<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             IEnumerator<TSource> enumerator = collection.GetEnumerator();
 
             if (!enumerator.MoveNext())
-                throw new ArgumentException("collection", "The collection is empty.");
+                throw new ArgumentException(nameof(collection), "The collection is empty.");
 
             Int32 index = 0, minIndex = 0;
             TResult min = selector(enumerator.Current);
@@ -259,7 +291,7 @@ namespace ELTE.AEGIS
         public static TResult MaxOrDefault<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             IEnumerator<TSource> enumerator = collection.GetEnumerator();
 
@@ -302,7 +334,7 @@ namespace ELTE.AEGIS
         public static TResult MinOrDefault<TSource, TResult>(this IEnumerable<TSource> collection, Func<TSource, TResult> selector) where TResult : IComparable<TResult>
         {
             if (collection == null)
-                throw new ArgumentNullException("collection", "The collection is null.");
+                throw new ArgumentNullException(nameof(collection), "The collection is null.");
 
             IEnumerator<TSource> enumerator = collection.GetEnumerator();
 

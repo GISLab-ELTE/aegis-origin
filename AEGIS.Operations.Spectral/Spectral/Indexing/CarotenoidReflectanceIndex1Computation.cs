@@ -96,8 +96,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             try
             {
-                _indexOf510nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf510nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 510e-9 && range.WavelengthMaximum >= 510e-9)));
-                _indexOf550nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf550nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 550e-9 && range.WavelengthMaximum >= 550e-9)));
+                _indexOf510nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf510nmBand, Source.Imaging.SpectralRanges.IndexOf(range => range.WavelengthMinimum <= 510e-9 && range.WavelengthMaximum >= 510e-9)));
+                _indexOf550nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf550nmBand, Source.Imaging.SpectralRanges.IndexOf(range => range.WavelengthMinimum <= 550e-9 && range.WavelengthMaximum >= 550e-9)));
             }
             catch
             {

@@ -18,7 +18,6 @@ using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spectral.Reflectance
 {

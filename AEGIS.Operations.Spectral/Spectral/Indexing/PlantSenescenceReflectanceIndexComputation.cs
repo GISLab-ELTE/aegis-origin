@@ -101,9 +101,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Indexing
         {
             try
             {
-                _indexOf500nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf500nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 500e-9)));
-                _indexOf680nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf680nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 680e-9 && range.WavelengthMaximum >= 680e-9)));
-                _indexOf750nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf750nmBand, Source.Imaging.SpectralRanges.FindIndex(range => range.WavelengthMinimum <= 750e-9 && range.WavelengthMaximum >= 750e-9)));
+                _indexOf500nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf500nmBand, Source.Imaging.SpectralRanges.IndexOf(range => range.WavelengthMinimum <= 500e-9 && range.WavelengthMaximum >= 500e-9)));
+                _indexOf680nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf680nmBand, Source.Imaging.SpectralRanges.IndexOf(range => range.WavelengthMinimum <= 680e-9 && range.WavelengthMaximum >= 680e-9)));
+                _indexOf750nmBand = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.IndexOf750nmBand, Source.Imaging.SpectralRanges.IndexOf(range => range.WavelengthMinimum <= 750e-9 && range.WavelengthMaximum >= 750e-9)));
             }
             catch
             {
