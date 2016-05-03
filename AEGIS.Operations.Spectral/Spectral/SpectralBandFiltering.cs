@@ -88,45 +88,69 @@ namespace ELTE.AEGIS.Operations.Spectral
         public SpectralBandFiltering(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.SpectralBandFiltering, parameters)
         {
+            Int32[] bandsFromIndices = null, bandsFromNames = null;
+
             if (IsProvidedParameter(SpectralOperationParameters.BandIndex))
             {
-                _bandIndices = new Int32[] { Convert.ToInt32(ResolveParameter(SpectralOperationParameters.BandIndex)) };
+                bandsFromIndices = new Int32[] { Convert.ToInt32(ResolveParameter(SpectralOperationParameters.BandIndex)) };
 
-                if (_bandIndices[0] < 0 || _bandIndices[0] >= Source.Raster.NumberOfBands)
+                if (bandsFromIndices[0] < 0 || bandsFromIndices[0] >= Source.Raster.NumberOfBands)
                     throw new ArgumentException("A parameter value does not satisfy the conditions of the parameter.", nameof(parameters), new ArgumentOutOfRangeException("BandIndices", "BandIndex is not within the range 0.." + (Source.Raster.NumberOfBands - 1) + "."));
 
             }
             else if (IsProvidedParameter(SpectralOperationParameters.BandIndices))
             {
-                _bandIndices = ResolveParameter<IEnumerable<Int32>>(SpectralOperationParameters.BandIndices).ToArray();
+                bandsFromIndices = ResolveParameter<IEnumerable<Int32>>(SpectralOperationParameters.BandIndices).ToArray();
 
-                if (_bandIndices.Length == 0)
+                if (bandsFromIndices.Length == 0)
                     throw new ArgumentException("A parameter value does not satisfy the conditions of the parameter.", nameof(parameters), new ArgumentOutOfRangeException("BandIndices", "BandIndices has 0 values."));
-                if (_bandIndices.Any(index => index < 0 || index >= Source.Raster.NumberOfBands))
+                if (bandsFromIndices.Any(index => index < 0 || index >= Source.Raster.NumberOfBands))
                     throw new ArgumentException("A parameter value does not satisfy the conditions of the parameter.", nameof(parameters), new ArgumentOutOfRangeException("BandIndices", "One or more values within BandIndices is not within the range 0.." + (Source.Raster.NumberOfBands - 1) + "."));
             }
-            else if (IsProvidedParameter(SpectralOperationParameters.BandName) && Source.Imaging != null)
+
+            if (IsProvidedParameter(SpectralOperationParameters.BandName) && Source.Imaging != null)
             {
                 SpectralDomain domain;
                 if (Enum.TryParse<SpectralDomain>(ResolveParameter<String>(SpectralOperationParameters.BandName), out domain) && source.Imaging.Bands.Any(band => band.SpectralDomain == domain))
-                    _bandIndices = new Int32[] { source.Imaging.Bands.IndexOf(band => band.SpectralDomain == domain) };
+                {
+                    bandsFromNames = new Int32[] { source.Imaging.Bands.IndexOf(band => band.SpectralDomain == domain) };
+                }
+                if (bandsFromNames.Length == 0)
+                    throw new ArgumentException("A parameter value does not satisfy the conditions of the parameter.", nameof(parameters), new ArgumentOutOfRangeException("BandName", "No matching band names found."));
             }
             else if (IsProvidedParameter(SpectralOperationParameters.BandNames) && Source.Imaging != null)
             {
                 SpectralDomain domain;
-                _bandIndices = ResolveParameter<IEnumerable<String>>(SpectralOperationParameters.BandNames).Select(name =>
+                bandsFromNames = ResolveParameter<IEnumerable<String>>(SpectralOperationParameters.BandNames).Select(name =>
                 {
                     Enum.TryParse<SpectralDomain>(name, true, out domain);
                     return source.Imaging.Bands.IndexOf(band => band.SpectralDomain == domain);
                 }).Where(index => index >= 0).ToArray();
+
+                if (bandsFromNames.Length == 0)
+                    throw new ArgumentException("A parameter value does not satisfy the conditions of the parameter.", nameof(parameters), new ArgumentOutOfRangeException("BandNames", "No matching band names found."));
             }
 
-            if (_bandIndices == null)
+            if (bandsFromIndices != null && bandsFromNames != null)
+            {
+                _bandIndices = bandsFromIndices.Union(bandsFromNames).OrderBy(bandIndex => bandIndex).Distinct().ToArray();
+            }
+            else if (bandsFromIndices != null)
+            {
+                _bandIndices = bandsFromIndices;
+            }
+            else if (bandsFromNames != null)
+            {
+                _bandIndices = bandsFromNames;
+            }
+            else
+            {
                 _bandIndices = Enumerable.Range(0, Source.Raster.NumberOfBands).ToArray();
+            }
         }
 
         #endregion
-        
+
         #region Protected Operation methods
 
         /// <summary>
@@ -142,8 +166,14 @@ namespace ELTE.AEGIS.Operations.Spectral
                 presentation = RasterPresentation.CreateFalseColorPresentation(0, 1, 2);
             else
                 presentation = RasterPresentation.CreateGrayscalePresentation();
-            
-            SetResultProperties(Source.Raster.Format, _bandIndices.Length, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, Source.Raster.RadiometricResolution, presentation);
+
+            RasterImaging imaging = null;
+            if (Source.Imaging != null)
+            {
+                imaging = RasterImaging.Filter(Source.Imaging, _bandIndices);
+            }
+
+            SetResultProperties(Source.Raster.Format, _bandIndices.Length, Source.Raster.NumberOfRows, Source.Raster.NumberOfColumns, Source.Raster.RadiometricResolution, Source.Raster.Mapper, presentation, imaging);
 
             return base.PrepareResult();
         }
