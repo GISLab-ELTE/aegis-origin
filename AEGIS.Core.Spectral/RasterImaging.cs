@@ -34,12 +34,12 @@ namespace ELTE.AEGIS
         /// <summary>
         /// The list of spectral domains for each band.
         /// </summary>
-        private IList<SpectralDomain> _spectralDomains;
+        private SpectralDomain[] _spectralDomains;
         
         /// <summary>
         /// The list of spectral ranges for each band.
         /// </summary>
-        private IList<SpectralRange> _spectralRanges;
+        private SpectralRange[] _spectralRanges;
 
         /// <summary>
         /// The dictionary of additional parameters.
@@ -102,18 +102,18 @@ namespace ELTE.AEGIS
         /// Gets the band data.
         /// </summary>
         /// <value>The read-only array containing the band data.</value>
-        public IList<RasterImagingBand> Bands { get { return _bands.AsReadOnly(); } }
+        public IReadOnlyList<RasterImagingBand> Bands { get { return _bands; } }
 
         /// <summary>
         /// Gets the spectral domains of the bands.
         /// </summary>
         /// <value>The read-only list containing the spectral domain of each band.</value>
-        public IList<SpectralDomain> SpectralDomains
+        public IReadOnlyList<SpectralDomain> SpectralDomains
         {
             get
             {
                 if (_spectralDomains == null)
-                    _spectralDomains = _bands.Select(bandData => bandData.SpectralDomain).ToArray().AsReadOnly();
+                    _spectralDomains = _bands.Select(bandData => bandData.SpectralDomain).ToArray();
 
                 return _spectralDomains;
             }
@@ -123,12 +123,12 @@ namespace ELTE.AEGIS
         /// Gets the spectral ranges of the bands.
         /// </summary>
         /// <value>The read-only list containing the spectral range of each band.</value>
-        public IList<SpectralRange> SpectralRanges 
+        public IReadOnlyList<SpectralRange> SpectralRanges 
         { 
-            get 
+            get
             {
                 if (_spectralRanges == null)
-                    _spectralRanges = _bands.Select(bandData => bandData.SpectralRange).ToArray().AsReadOnly();
+                    _spectralRanges = _bands.Select(bandData => bandData.SpectralRange).ToArray();
 
                 return _spectralRanges;
             } 
@@ -178,11 +178,11 @@ namespace ELTE.AEGIS
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
         /// <exception cref="System.ArgumentException">The number of coordinates in the image location is not equal to 4.</exception>
-        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IList<GeoCoordinate> imageLocation, 
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IEnumerable<GeoCoordinate> imageLocation, 
                              Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, params RasterImagingBand[] bandData)
         {
-            if (imageLocation != null && imageLocation.Count != 4)
-                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", "imageLocation");
+            if (imageLocation != null && imageLocation.Count() != 4)
+                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", nameof(imageLocation));
 
             Device = device;
             Time = imagingTime;
@@ -209,11 +209,11 @@ namespace ELTE.AEGIS
         /// <param name="sunElevation">The sun elevation.</param>
         /// <param name="bandData">The band data.</param>
         /// <exception cref="System.ArgumentException">The number of coordinates in the image location is not equal to 4.</exception>
-        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IList<GeoCoordinate> imageLocation, 
-                             Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IList<RasterImagingBand> bandData)
+        public RasterImaging(ImagingDevice device, DateTime imagingTime, GeoCoordinate deviceLocation, IEnumerable<GeoCoordinate> imageLocation, 
+                             Double incidenceAngle, Double viewingAngle, Double sunAzimuth, Double sunElevation, IEnumerable<RasterImagingBand> bandData)
         {
-            if (imageLocation != null && imageLocation.Count != 4)
-                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", "imageLocation");
+            if (imageLocation != null && imageLocation.Count() != 4)
+                throw new ArgumentException("The number of coordinates in the image location is not equal to 4.", nameof(imageLocation));
 
             Device = device;
             Time = imagingTime;
@@ -240,7 +240,7 @@ namespace ELTE.AEGIS
         public void InsertBand(Int32 index, RasterImagingBand band)
         {
             if (index < 0 || index > _bands.Count)
-                throw new ArgumentOutOfRangeException("index", "The band index is out of range.");
+                throw new ArgumentOutOfRangeException(nameof(index), "The band index is out of range.");
 
             if (index == _bands.Count)
                 _bands.Add(band);
@@ -259,12 +259,37 @@ namespace ELTE.AEGIS
         public void RemoveBand(Int32 index)
         {
             if (index < 0 || index >= _bands.Count)
-                throw new ArgumentOutOfRangeException("index", "The band index is out of range.");
+                throw new ArgumentOutOfRangeException(nameof(index), "The band index is out of range.");
 
             _bands.RemoveAt(index);
             _spectralDomains = null;
             _spectralRanges = null;
         }
+
+        #endregion
+
+        #region Public static factory methods
+
+        /// <summary>
+        /// Filters raster imaging data for the specified bands.
+        /// </summary>
+        /// <param name="imaging">The raster imaging.</param>
+        /// <param name="bandIndices">The band indices.</param>
+        /// <returns>The filtered raster imaging data.</returns>
+        public static RasterImaging Filter(RasterImaging imaging, params Int32[] bandIndices)
+        {
+            if (imaging == null)
+                throw new ArgumentNullException(nameof(imaging), "The raster imaging is null.");
+            if (bandIndices == null)
+                throw new ArgumentNullException(nameof(bandIndices), "The band index array is null.");
+            if (bandIndices.Length == 0)
+                throw new ArgumentException("No bands specified.", nameof(bandIndices));
+            if (bandIndices.Any(bandIndex => bandIndex < 0 ||bandIndex >= imaging.Bands.Count))
+                throw new ArgumentException("One or more bands are out of range.", nameof(bandIndices));
+
+            return new RasterImaging(imaging.Device, imaging.Time, imaging.DeviceLocation, imaging.ImageLocation, imaging.IncidenceAngle, imaging.ViewingAngle, imaging.SunAzimuth, imaging.SunElevation, bandIndices.Select(bandIndex => imaging._bands[bandIndex]));
+        }
+
 
         #endregion
     }
