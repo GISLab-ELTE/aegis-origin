@@ -127,7 +127,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public TiffWriter(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.Tiff, parameters)
         {
-            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasers));
+            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasters));
             InitializeStream(ResolveParameter<TiffStructure>(SpectralGeometryStreamParameters.TiffStructure));
         }
 
@@ -162,7 +162,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public TiffWriter(Uri path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.Tiff, parameters)
         {
-            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasers));
+            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasters));
             InitializeStream(ResolveParameter<TiffStructure>(SpectralGeometryStreamParameters.TiffStructure));
         }
 
@@ -185,7 +185,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public TiffWriter(Stream stream, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(stream, SpectralGeometryStreamFormats.Tiff, parameters)
         {
-            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasers));
+            _maxImageCount = Convert.ToInt32(ResolveParameter(SpectralGeometryStreamParameters.MaxNumberOfRasters));
             InitializeStream(ResolveParameter<TiffStructure>(SpectralGeometryStreamParameters.TiffStructure));
         }
 

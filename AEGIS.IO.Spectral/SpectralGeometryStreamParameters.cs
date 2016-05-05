@@ -263,7 +263,7 @@ namespace ELTE.AEGIS.IO
         /// <summary>
         /// Maximum number of rasters.
         /// </summary>
-        public static GeometryStreamParameter MaxNumberOfRasers
+        public static GeometryStreamParameter MaxNumberOfRasters
         {
             get
             {
