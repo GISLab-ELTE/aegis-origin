@@ -80,7 +80,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
             Raster = raster;
             Count = raster.NumberOfRows * raster.NumberOfColumns;
-            _indexToSegmentDictionary = new Dictionary<Int32, Segment>();
+            _indexToSegmentDictionary = new Dictionary<Int32, Segment>(raster.NumberOfRows * raster.NumberOfColumns);
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
         }
 
