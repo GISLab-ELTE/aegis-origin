@@ -23,7 +23,7 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
-    // short expression for the IFD table
+    using Newtonsoft.Json;    // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
 
     /// <summary>
@@ -292,19 +292,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
             TiffPhotometricInterpretation photometricInterpretation = ComputePhotometricInterpretation(geometry);
 
             // add raster properties
-            imageFileDirectory.Add(TiffTag.PhotometricInterpretation, new Object[] { (UInt16)photometricInterpretation }); 
-            imageFileDirectory.Add(TiffTag.Compression, new Object[] { (UInt16)compression });
-            imageFileDirectory.Add(TiffTag.ImageLength, new Object[] { (UInt32)geometry.Raster.NumberOfRows });
-            imageFileDirectory.Add(TiffTag.ImageWidth, new Object[] { (UInt32)geometry.Raster.NumberOfColumns });
-            imageFileDirectory.Add(TiffTag.ResolutionUnit, new Object[] { (UInt16)2 });
-            imageFileDirectory.Add(TiffTag.XResolution, new Object[] { (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.ColumnSize : (Rational)1 });
-            imageFileDirectory.Add(TiffTag.YResolution, new Object[] { (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.RowSize : (Rational)1 });
-            imageFileDirectory.Add(TiffTag.RowsPerStrip, new Object[] { (UInt32)geometry.Raster.NumberOfRows });
-            imageFileDirectory.Add(TiffTag.StripOffsets, new Object[] { (UInt32)0 });
-            imageFileDirectory.Add(TiffTag.StripByteCounts, new Object[] { (UInt32)0 });
-            imageFileDirectory.Add(TiffTag.BitsPerSample, Enumerable.Repeat((UInt16)geometry.Raster.RadiometricResolution, geometry.Raster.NumberOfRows).Cast<Object>().ToArray());
-            imageFileDirectory.Add(TiffTag.SamplesPerPixel, new Object[] { (UInt32)geometry.Raster.NumberOfBands });
-            imageFileDirectory.Add(TiffTag.SampleFormat, new Object[] { (UInt16)format });
+            AddImageTag(imageFileDirectory, TiffTag.PhotometricInterpretation, (UInt16)photometricInterpretation);
+            AddImageTag(imageFileDirectory, TiffTag.Compression, (UInt16)compression);
+            AddImageTag(imageFileDirectory, TiffTag.ImageLength, (UInt32)geometry.Raster.NumberOfRows);
+            AddImageTag(imageFileDirectory, TiffTag.ImageWidth, (UInt32)geometry.Raster.NumberOfColumns);
+            AddImageTag(imageFileDirectory, TiffTag.ResolutionUnit, (UInt16)2);
+            AddImageTag(imageFileDirectory, TiffTag.XResolution, (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.ColumnSize : (Rational)1);
+            AddImageTag(imageFileDirectory, TiffTag.YResolution, (geometry.Raster.Mapper != null) ? (Rational)geometry.Raster.Mapper.RowSize : (Rational)1);
+            AddImageTag(imageFileDirectory, TiffTag.RowsPerStrip, (UInt32)geometry.Raster.NumberOfRows);
+            AddImageTag(imageFileDirectory, TiffTag.StripOffsets, (UInt32)0);
+            AddImageTag(imageFileDirectory, TiffTag.StripByteCounts, (UInt32)0);
+            AddImageTag(imageFileDirectory, TiffTag.BitsPerSample, Enumerable.Repeat((UInt16)geometry.Raster.RadiometricResolution, geometry.Raster.NumberOfBands).Cast<Object>().ToArray());
+            AddImageTag(imageFileDirectory, TiffTag.SamplesPerPixel, (UInt32)geometry.Raster.NumberOfBands);
+            AddImageTag(imageFileDirectory, TiffTag.SampleFormat, (UInt16)format);
 
             // add color palette
             if (photometricInterpretation == TiffPhotometricInterpretation.PaletteColor)
@@ -325,25 +325,22 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // add metadata
-            imageFileDirectory.Add(TiffTag.Software, new Object[] { "AEGIS Spatio-Temporal Framework" }); // software
-            imageFileDirectory.Add(TiffTag.DateTime, new Object[] { DateTime.Now.ToString(CultureInfo.InvariantCulture.DateTimeFormat) }); // date time
+            AddImageTag(imageFileDirectory, TiffTag.DocumentName, geometry.Metadata, "GeoTIFF::DocumentName");
+            AddImageTag(imageFileDirectory, TiffTag.ImageDescription, geometry.Metadata, "GeoTIFF::ImageDescription");
+            AddImageTag(imageFileDirectory, TiffTag.DocumentName, geometry.Metadata, "GeoTIFF::Make");
+            AddImageTag(imageFileDirectory, TiffTag.Make, geometry.Metadata, "GeoTIFF::DocumentName");
+            AddImageTag(imageFileDirectory, TiffTag.Model, geometry.Metadata, "GeoTIFF::Model");
+            AddImageTag(imageFileDirectory, TiffTag.PageName, geometry.Metadata, "GeoTIFF::PageName");
+            AddImageTag(imageFileDirectory, TiffTag.Artist, geometry.Metadata, "GeoTIFF::Artist");
+            AddImageTag(imageFileDirectory, TiffTag.HostComputer, geometry.Metadata, "GeoTIFF::HostComputer");
+            AddImageTag(imageFileDirectory, TiffTag.Copyright, geometry.Metadata, "GeoTIFF::Copyright");
+            AddImageTag(imageFileDirectory, TiffTag.Software, "AEGIS Geospatial Framework");
+            AddImageTag(imageFileDirectory, TiffTag.DateTime, DateTime.Now.ToString(CultureInfo.InvariantCulture.DateTimeFormat));
 
-            if (geometry.Metadata.ContainsKey("DocumentName"))
-                imageFileDirectory.Add(TiffTag.DocumentName, new Object[] { geometry.Metadata["DocumentName"] });
-            if (geometry.Metadata.ContainsKey("ImageDescription"))
-                imageFileDirectory.Add(TiffTag.ImageDescription, new Object[] { geometry.Metadata["ImageDescription"] });
-            if (geometry.Metadata.ContainsKey("Make"))
-                imageFileDirectory.Add(TiffTag.Make, new Object[] { geometry.Metadata["Make"] });
-            if (geometry.Metadata.ContainsKey("Model"))
-                imageFileDirectory.Add(TiffTag.Model, new Object[] { geometry.Metadata["Model"] });
-            if (geometry.Metadata.ContainsKey("PageName"))
-                imageFileDirectory.Add(TiffTag.PageName, new Object[] { geometry.Metadata["PageName"] });
-            if (geometry.Metadata.ContainsKey("Artist"))
-                imageFileDirectory.Add(TiffTag.Artist, new Object[] { geometry.Metadata["Artist"] });
-            if (geometry.Metadata.ContainsKey("HostComputer"))
-                imageFileDirectory.Add(TiffTag.HostComputer, new Object[] { geometry.Metadata["HostComputer"] });
-            if (geometry.Metadata.ContainsKey("Copyright"))
-                imageFileDirectory.Add(TiffTag.Copyright, new Object[] { geometry.Metadata["Copyright"] });
+            Dictionary<String, Object> attributes = geometry.Metadata.Where(attribute => !attribute.Key.Contains("GeoTIFF")).ToDictionary(attribute => attribute.Key, attribute => attribute.Value);
+
+            if (geometry.Metadata.Count(attribute => !attribute.Key.Contains("GeoTIFF")) > 0)
+                imageFileDirectory.Add(TiffTag.AegisAttributes, new Object[] { JsonConvert.SerializeObject(attributes, Formatting.None, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }) });
 
             return imageFileDirectory;
         }
@@ -449,8 +446,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             foreach (UInt16 entryTag in imageFileDirectory.Keys)
             {
-                entryType = GetTagType(imageFileDirectory[entryTag][0]);
-                dataSize = GetTagSize(entryType);
+                entryType = TiffTag.GetType(imageFileDirectory[entryTag][0]);
+                dataSize = TiffTag.GetSize(entryType);
 
                 if (entryType == TiffTagType.ASCII)
                 {
@@ -485,7 +482,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 for (Int32 valueIndex = 0; valueIndex < imageFileDirectory[entryTag].Length; valueIndex++)
                 {
-                    dataStartIndex = SetTagValue(entryType, imageFileDirectory[entryTag][valueIndex], dataBytes, dataStartIndex);
+                    dataStartIndex = TiffTag.SetValue(entryType, imageFileDirectory[entryTag][valueIndex], dataBytes, dataStartIndex);
                 }
 
                 if (dataCount * dataSize > 8)
@@ -540,8 +537,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             foreach (UInt16 entryTag in imageFileDirectory.Keys)
             {
-                entryType = GetTagType(imageFileDirectory[entryTag][0]);
-                dataSize = GetTagSize(entryType);
+                entryType = TiffTag.GetType(imageFileDirectory[entryTag][0]);
+                dataSize = TiffTag.GetSize(entryType);
 
                 if (entryType == TiffTagType.ASCII)
                 {
@@ -576,7 +573,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
                 for (Int32 valueIndex = 0; valueIndex < imageFileDirectory[entryTag].Length; valueIndex++)
                 {
-                    dataStartIndex = SetTagValue(entryType, imageFileDirectory[entryTag][valueIndex], dataBytes, dataStartIndex);
+                    dataStartIndex = TiffTag.SetValue(entryType, imageFileDirectory[entryTag][valueIndex], dataBytes, dataStartIndex);
                 }
 
                 if (dataCount * dataSize > 4)
@@ -614,8 +611,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
 
             foreach (UInt16 entryTag in imageFileDirectory.Keys)
             {
-                entryType = GetTagType(imageFileDirectory[entryTag][0]);
-                dataSize = GetTagSize(entryType);
+                entryType = TiffTag.GetType(imageFileDirectory[entryTag][0]);
+                dataSize = TiffTag.GetSize(entryType);
 
                 if (entryType == TiffTagType.ASCII)
                 {
@@ -833,133 +830,42 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
         }
 
-        #endregion
-
-        #region Private static methods
-
         /// <summary>
-        /// Gets the TIFF tag type of a value.
+        /// Adds the specified tag to the Image File Directory.
         /// </summary>
-        /// <param name="value">The value of the tag.</param>
-        private static TiffTagType GetTagType(Object value)
-        {
-            if (value is Byte)
-                return TiffTagType.Byte;
-            if (value is Char || value is String)
-                return TiffTagType.ASCII;
-            if (value is UInt16)
-                return TiffTagType.Short;
-            if (value is UInt32)
-                return TiffTagType.Long;
-            if (value is SByte)
-                return TiffTagType.SByte;
-            if (value is Int16)
-                return TiffTagType.SShort;
-            if (value is Int32)
-                return TiffTagType.SLong;
-            if (value is Rational)
-                return TiffTagType.SRational; // missing comparison for Rational
-            if (value is Single)
-                return TiffTagType.Float;
-            if (value is Double)
-                return TiffTagType.Double;
-            if (value is UInt64)
-                return TiffTagType.Long8;
-            if (value is Int64)
-                return TiffTagType.SLong8;
-
-            return TiffTagType.Undefined;
-        }
-        /// <summary>
-        /// Returns the value size for a specified tag type.
-        /// </summary>
-        /// <param name="type">The type of the tag.</param>
-        /// <returns>The size of the value in bytes.</returns>
-        private static UInt16 GetTagSize(TiffTagType type)
-        {
-            switch (type)
-            {
-                case TiffTagType.Byte:
-                case TiffTagType.SByte:
-                case TiffTagType.ASCII:
-                case TiffTagType.Undefined:
-                    return 1;
-                case TiffTagType.Short:
-                case TiffTagType.SShort:
-                    return 2;
-                case TiffTagType.Long:
-                case TiffTagType.SLong:
-                case TiffTagType.Float:
-                    return 4;
-                case TiffTagType.Double:
-                case TiffTagType.Rational:
-                case TiffTagType.SRational:
-                case TiffTagType.Long8:
-                case TiffTagType.SLong8:
-                case TiffTagType.LongOffset:
-                    return 8;
-                default:
-                    return 0;
-            }
-        }
-
-        /// <summary>
-        /// Sets the value of a TIFF tag.
-        /// </summary>
-        /// <param name="type">The type of the tag.</param>
+        /// <param name="directory">The Image File Directory.</param>
+        /// <param name="tag">The tag.</param>
         /// <param name="value">The value.</param>
-        /// <param name="array">The array.</param>
-        /// <param name="startIndex">The zero-based start index.</param>
-        /// <returns>The index of the array after the operation.</returns>
-        private static Int32 SetTagValue(TiffTagType type, Object value, Byte[] array, Int32 startIndex)
+        protected void AddImageTag(TiffImageFileDirectory directory, UInt16 tag, Object value)
         {
-            Int32 dataSize = GetTagSize(type);
+            directory[tag] = new Object[] { value };
+        }
 
-            switch (type)
+        /// <summary>
+        /// Adds the specified tag to the Image File Directory.
+        /// </summary>
+        /// <param name="directory">The Image File Directory.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="value">The array of values.</param>
+        protected void AddImageTag(TiffImageFileDirectory directory, UInt16 tag, Object[] value)
+        {
+            directory[tag] = value;
+        }
+
+        /// <summary>
+        /// Adds the specified tag to the Image File Directory.
+        /// </summary>
+        /// <param name="directory">The Image File Directory.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="metadata">The geometry metadata.</param>
+        /// <param name="tagName">The name of the tag.</param>
+        protected void AddImageTag(TiffImageFileDirectory directory, UInt16 tag, IDictionary<String, Object> metadata, String tagName)
+        {
+            if (metadata.ContainsKey(tagName))
             {
-                case TiffTagType.Byte:
-                    EndianBitConverter.CopyBytes(Convert.ToByte(value), array, startIndex);
-                    break;
-                case TiffTagType.ASCII:
-                    Byte[] asciiValues = System.Text.Encoding.ASCII.GetBytes(value as String);
-                    Array.Copy(asciiValues, 0, array, startIndex, asciiValues.Length);
-                    return startIndex + asciiValues.Length;
-                case TiffTagType.Short:
-                    EndianBitConverter.CopyBytes(Convert.ToUInt16(value), array, startIndex);
-                    break;
-                case TiffTagType.Long:
-                    EndianBitConverter.CopyBytes(Convert.ToUInt32(value), array, startIndex);
-                    break;
-                case TiffTagType.SByte:
-                    EndianBitConverter.CopyBytes(Convert.ToSByte(value), array, startIndex);
-                    break;
-                case TiffTagType.SShort:
-                    EndianBitConverter.CopyBytes(Convert.ToInt16(value), array, startIndex);
-                    break;
-                case TiffTagType.Rational:
-                    EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
-                    break;
-                case TiffTagType.SRational:
-                    EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
-                    break;
-                case TiffTagType.SLong:
-                    EndianBitConverter.CopyBytes(Convert.ToInt32(value), array, startIndex);
-                    break;
-                case TiffTagType.Float:
-                    EndianBitConverter.CopyBytes(Convert.ToSingle(value), array, startIndex);
-                    break;
-                case TiffTagType.Double:
-                    EndianBitConverter.CopyBytes(Convert.ToDouble(value), array, startIndex);
-                    break;
-                case TiffTagType.Long8:
-                case TiffTagType.LongOffset:
-                    EndianBitConverter.CopyBytes(Convert.ToUInt64(value), array, startIndex);
-                    break;
-                case TiffTagType.SLong8:
-                    EndianBitConverter.CopyBytes(Convert.ToInt64(value), array, startIndex);
-                    break;
+                directory[tag] = new Object[] { metadata[tagName] };
+                metadata.Remove(tagName);
             }
-            return startIndex + dataSize;
         }
 
         #endregion

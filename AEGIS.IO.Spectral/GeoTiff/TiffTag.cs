@@ -1,4 +1,19 @@
-﻿using ELTE.AEGIS.Numerics;
+﻿/// <copyright file="TiffTag.cs" company="Eötvös Loránd University (ELTE)">
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
+///     Educational Community License, Version 2.0 (the "License"); you may
+///     not use this file except in compliance with the License. You may
+///     obtain a copy of the License at
+///     http://opensource.org/licenses/ECL-2.0
+///
+///     Unless required by applicable law or agreed to in writing,
+///     software distributed under the License is distributed on an "AS IS"
+///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+///     or implied. See the License for the specific language governing
+///     permissions and limitations under the License.
+/// </copyright>
+/// <author>Roberto Giachetta</author>
+
+using ELTE.AEGIS.Numerics;
 using System;
 
 namespace ELTE.AEGIS.IO.GeoTiff
@@ -154,6 +169,56 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public const UInt16 Copyright = 33432;
 
         /// <summary>
+        /// The model pixel scale tag.
+        /// </summary>
+        public const UInt16 ModelPixelScaleTag = 33550;
+
+        /// <summary>
+        /// The model transformation tag.
+        /// </summary>
+        public const UInt16 ModelTransformationTag = 34264;
+
+        /// <summary>
+        /// The model transformation tag for GeoTIFF 0.2 (Intergraph).
+        /// </summary>
+        public const UInt16 IntergraphMatrixTag = 33920;
+
+        /// <summary>
+        /// The model tie-point tag.
+        /// </summary>
+        public const UInt16 ModelTiepointTag = 33922;
+
+        /// <summary>
+        /// The geo-key directory tag.
+        /// </summary>
+        public const UInt16 GeoKeyDirectoryTag = 34735;
+
+        /// <summary>
+        /// The geo-parameters tag for double precision floating-point values.
+        /// </summary>
+        public const UInt16 GeoDoubleParamsTag = 34736;
+
+        /// <summary>
+        /// The geo-parameters tag for ASCII values.
+        /// </summary>
+        public const UInt16 GeoAsciiParamsTag = 34737;
+
+        /// <summary>
+        /// The AEGIS imaging tag.
+        /// </summary>
+        public const UInt16 AegisImaging = 56101;
+
+        /// <summary>
+        /// The AEGIS interpretation tag.
+        /// </summary>
+        public const UInt16 AegisInterpretation = 56102;
+
+        /// <summary>
+        /// The AEGIS attributes tag.
+        /// </summary>
+        public const UInt16 AegisAttributes = 56165;
+
+        /// <summary>
         /// Returns the value of a TIFF tag.
         /// </summary>
         /// <param name="type">The type of the tag.</param>
@@ -264,6 +329,65 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 default:
                     return 0;
             }
+        }
+
+        /// <summary>
+        /// Sets the value of a TIFF tag.
+        /// </summary>
+        /// <param name="type">The type of the tag.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="array">The array.</param>
+        /// <param name="startIndex">The zero-based start index.</param>
+        /// <returns>The index of the array after the operation.</returns>
+        public static Int32 SetValue(TiffTagType type, Object value, Byte[] array, Int32 startIndex)
+        {
+            Int32 dataSize = GetSize(type);
+
+            switch (type)
+            {
+                case TiffTagType.Byte:
+                    EndianBitConverter.CopyBytes(Convert.ToByte(value), array, startIndex);
+                    break;
+                case TiffTagType.ASCII:
+                    Byte[] asciiValues = System.Text.Encoding.ASCII.GetBytes(value as String);
+                    Array.Copy(asciiValues, 0, array, startIndex, asciiValues.Length);
+                    return startIndex + asciiValues.Length;
+                case TiffTagType.Short:
+                    EndianBitConverter.CopyBytes(Convert.ToUInt16(value), array, startIndex);
+                    break;
+                case TiffTagType.Long:
+                    EndianBitConverter.CopyBytes(Convert.ToUInt32(value), array, startIndex);
+                    break;
+                case TiffTagType.SByte:
+                    EndianBitConverter.CopyBytes(Convert.ToSByte(value), array, startIndex);
+                    break;
+                case TiffTagType.SShort:
+                    EndianBitConverter.CopyBytes(Convert.ToInt16(value), array, startIndex);
+                    break;
+                case TiffTagType.Rational:
+                    EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
+                    break;
+                case TiffTagType.SRational:
+                    EndianBitConverter.CopyBytes((Rational)value, array, startIndex);
+                    break;
+                case TiffTagType.SLong:
+                    EndianBitConverter.CopyBytes(Convert.ToInt32(value), array, startIndex);
+                    break;
+                case TiffTagType.Float:
+                    EndianBitConverter.CopyBytes(Convert.ToSingle(value), array, startIndex);
+                    break;
+                case TiffTagType.Double:
+                    EndianBitConverter.CopyBytes(Convert.ToDouble(value), array, startIndex);
+                    break;
+                case TiffTagType.Long8:
+                case TiffTagType.LongOffset:
+                    EndianBitConverter.CopyBytes(Convert.ToUInt64(value), array, startIndex);
+                    break;
+                case TiffTagType.SLong8:
+                    EndianBitConverter.CopyBytes(Convert.ToInt64(value), array, startIndex);
+                    break;
+            }
+            return startIndex + dataSize;
         }
     }
 }

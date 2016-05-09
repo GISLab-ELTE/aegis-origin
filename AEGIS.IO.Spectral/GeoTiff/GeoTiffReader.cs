@@ -25,6 +25,8 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
+    using GeoKeyDirectory = Dictionary<Int16, Object>;
+
     /// <summary>
     /// Represents a GeoTIFF file format reader.
     /// </summary>
@@ -47,9 +49,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
             Projected = 1,
 
             /// <summary>
-            /// Geographic.
+            /// Geodetic.
             /// </summary>
-            Geographic = 2,
+            Geodetic = 2,
 
             /// <summary>
             /// Geocentric.
@@ -79,7 +81,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <summary>
         /// The list of geokeys in the current image.
         /// </summary>
-        private Dictionary<Int16, Object> _currentGeoKeys;
+        private GeoKeyDirectory _currentGeoKeys;
 
         #endregion
 
@@ -253,6 +255,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The spectral imaging scene data of the geometry.</returns>
         protected override RasterImaging ComputeRasterImaging()
         {
+            // DEPRECATED AEGIS SOLUTION
             // the imaging data may be contained within the tags
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(57410) &&
                 _imageFileDirectories[_currentImageIndex].ContainsKey(57411) &&
@@ -334,18 +337,28 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             IDictionary<String, Object> metadata = base.ComputeMetadata();
 
-            if (_currentGeoKeys == null)
-                return metadata;
-
-            if (_currentGeoKeys.ContainsKey(1026))
-                metadata["GeoCitation"] = _currentGeoKeys[1026];
-            if (_currentGeoKeys.ContainsKey(2049))
-                metadata["GeodeticCoordinateReferenceSystemCitation"] = _currentGeoKeys[2049];
-            if (_currentGeoKeys.ContainsKey(3073))
-                metadata["ProjectedCoordinateReferenceSystemCitation"] = _currentGeoKeys[3073];
-
+            AddMetadata(_currentGeoKeys, GeoKey.Citation, metadata, "GeoTIFF::GeoCitation");
+            AddMetadata(_currentGeoKeys, GeoKey.GeodeticCoordinateReferenceSystemCitation, metadata, "GeoTIFF::GeodeticCoordinateReferenceSystemCitation");
+            AddMetadata(_currentGeoKeys, GeoKey.ProjectedCoordinateReferenceSystemCitation, metadata, "GeoTIFF::ProjectedCoordinateReferenceSystemCitation");
+            
             return metadata;
         }
+
+        /// <summary>
+        /// Adds the specified geo-key to the metadata.
+        /// </summary>
+        /// <param name="directory">The geo-key directory.</param>
+        /// <param name="geoKey">The geo-key.</param>
+        /// <param name="metadata">The metadata.</param>
+        /// <param name="metadataKey">The metadata key.</param>
+        protected void AddMetadata(GeoKeyDirectory directory, Int16 geoKey, IDictionary<String, Object> metadata, String metadataKey)
+        {
+            if (directory == null || !metadata.ContainsKey(metadataKey))
+                return;
+
+            metadata[metadataKey] = directory[geoKey];
+        }
+
 
         /// <summary>
         /// Computes the raster mapper.
@@ -389,32 +402,33 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The mapping from model space to raster space.</returns>
         protected RasterMapper ComputeRasterToModelSpaceMapping()
         {
-            if (!_currentGeoKeys.ContainsKey(1025))
+            if (!_currentGeoKeys.ContainsKey(GeoKey.RasterType))
                 return null;
 
-            RasterMapMode mode = Convert.ToInt16(_currentGeoKeys[1025]) == 1 ? RasterMapMode.ValueIsArea : RasterMapMode.ValueIsCoordinate;
+            RasterMapMode mode = Convert.ToInt16(_currentGeoKeys[GeoKey.RasterType]) == 1 ? RasterMapMode.ValueIsArea : RasterMapMode.ValueIsCoordinate;
 
             Double[] modelTiePointsArray = null;
             Double[] modelPixelScaleArray = null;
             Double[] modelTransformationArray = null;
 
             // gather information from tags
-            if (_imageFileDirectories[_currentImageIndex].ContainsKey(33922))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.ModelTiepointTag))
             {
-                modelTiePointsArray = _imageFileDirectories[_currentImageIndex][33922].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTiePointsArray = _imageFileDirectories[_currentImageIndex][TiffTag.ModelTiepointTag].Select(value => Convert.ToDouble(value)).ToArray();
             }
-            if (_imageFileDirectories[_currentImageIndex].ContainsKey(33550))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.ModelPixelScaleTag))
             {
-                modelPixelScaleArray = _imageFileDirectories[_currentImageIndex][33550].Select(value => Convert.ToDouble(value)).ToArray();
+                modelPixelScaleArray = _imageFileDirectories[_currentImageIndex][TiffTag.ModelPixelScaleTag].Select(value => Convert.ToDouble(value)).ToArray();
             }
-            if (_imageFileDirectories[_currentImageIndex].ContainsKey(34264))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.ModelTransformationTag))
             {
-                modelTransformationArray = _imageFileDirectories[_currentImageIndex][34264].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTransformationArray = _imageFileDirectories[_currentImageIndex][TiffTag.ModelTransformationTag].Select(value => Convert.ToDouble(value)).ToArray();
             }
+
             // for GeoTIFF 0.2, IntergraphMatrixTag (33920) may contain the transformation values
-            if (modelTransformationArray == null && _imageFileDirectories[_currentImageIndex].ContainsKey(33920))
+            if (modelTransformationArray == null && _imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.IntergraphMatrixTag))
             {
-                modelTransformationArray = _imageFileDirectories[_currentImageIndex][33920].Select(value => Convert.ToDouble(value)).ToArray();
+                modelTransformationArray = _imageFileDirectories[_currentImageIndex][TiffTag.IntergraphMatrixTag].Select(value => Convert.ToDouble(value)).ToArray();
             }
 
             // compute with model tie points
@@ -469,27 +483,23 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The reference system of the raster image.</returns>
         protected override IReferenceSystem ComputeReferenceSystem()
         {
-            if (_currentGeoKeys.ContainsKey(1024))
+            if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(GeoKey.ModelType))
             {
                 // reference system information is in the file
                 try
                 {
-                    // read from GeoTIFF geokeys
-                    if (_currentGeoKeys != null && _currentGeoKeys.ContainsKey(1024))
+                    switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[GeoKey.ModelType]))
                     {
-                        switch ((ReferenceSystemType)Convert.ToInt32(_currentGeoKeys[1024]))
-                        {
-                            case ReferenceSystemType.Projected:
-                                return ComputeProjectedCoordinateReferenceSystem();
-                            case ReferenceSystemType.Geographic:
-                                return ComputeGeographicCoordinateReferenceSystem();
-                            case ReferenceSystemType.Geocentric:
-                                // currently not used
-                                return null;
-                            case ReferenceSystemType.UserDefined:
-                                // currently not used
-                                return null;
-                        }
+                        case ReferenceSystemType.Projected:
+                            return ComputeProjectedCoordinateReferenceSystem();
+                        case ReferenceSystemType.Geodetic:
+                            return ComputeGeodeticCoordinateReferenceSystem();
+                        case ReferenceSystemType.Geocentric:
+                            // currently not used
+                            return null;
+                        case ReferenceSystemType.UserDefined:
+                            // currently not used
+                            return null;
                     }
                 }
                 catch { }
@@ -518,36 +528,36 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Geo key data is in an invalid format.</exception>
         private void ComputeGeoKeys()
         {
-            _currentGeoKeys = new Dictionary<Int16, Object>();
+            _currentGeoKeys = new GeoKeyDirectory();
 
             // there are no geokeys in the file
-            if (!_imageFileDirectories[_currentImageIndex].ContainsKey(34735))
-            {
+            if (!_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.GeoKeyDirectoryTag))
                 return;
-            }
 
             try
             {
-                _geoTiffFormatVersion = _imageFileDirectories[_currentImageIndex][34735][0] + "." + _imageFileDirectories[_currentImageIndex][34735][1] + "." + _imageFileDirectories[_currentImageIndex][34735][2];
+                Object[] geokeyDirectory = _imageFileDirectories[_currentImageIndex][TiffTag.GeoKeyDirectoryTag];
+
+                _geoTiffFormatVersion = geokeyDirectory[0] + "." + geokeyDirectory[1] + "." + geokeyDirectory[2];
                 Int32 offset, count;
 
-                for (Int16 i = 4; i < _imageFileDirectories[_currentImageIndex][34735].Length; i += 4)
+                for (Int16 i = 4; i < geokeyDirectory.Length; i += 4)
                 {
-                    switch (Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][1 + i]))
+                    switch (Convert.ToInt32(geokeyDirectory[1 + i]))
                     {
                         case 0:
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][3 + i]));
+                            _currentGeoKeys.Add(Convert.ToInt16(geokeyDirectory[i]), Convert.ToInt16(geokeyDirectory[3 + i]));
                             break;
-                        case 34736:
-                            offset = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][3 + i]);
-                            Double doubleValue = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][34736][offset]);
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), doubleValue);
+                        case TiffTag.GeoDoubleParamsTag:
+                            offset = Convert.ToInt32(geokeyDirectory[3 + i]);
+                            Double doubleValue = Convert.ToDouble(_imageFileDirectories[_currentImageIndex][TiffTag.GeoDoubleParamsTag][offset]);
+                            _currentGeoKeys.Add(Convert.ToInt16(geokeyDirectory[i]), doubleValue);
                             break;
-                        case 34737:
-                            count = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][2 + i]);
-                            offset = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][34735][3 + i]);
+                        case TiffTag.GeoAsciiParamsTag:
+                            count = Convert.ToInt32(geokeyDirectory[2 + i]);
+                            offset = Convert.ToInt32(geokeyDirectory[3 + i]);
                             // strings are concatenated to a single value using the | (pipe) character, so they are split, and the ending character is removed
-                            _currentGeoKeys.Add(Convert.ToInt16(_imageFileDirectories[_currentImageIndex][34735][i]), Convert.ToString(_imageFileDirectories[_currentImageIndex][34737][0]).Substring(offset, count - 1));
+                            _currentGeoKeys.Add(Convert.ToInt16(geokeyDirectory[i]), Convert.ToString(_imageFileDirectories[_currentImageIndex][TiffTag.GeoAsciiParamsTag][0]).Substring(offset, count - 1));
                             break;
                     }
                 }
@@ -559,13 +569,13 @@ namespace ELTE.AEGIS.IO.GeoTiff
         }
 
         /// <summary>
-        /// Computes the geographic coordinate reference system.
+        /// Computes the Geodetic coordinate reference system.
         /// </summary>
-        /// <returns>The geographic coordinate reference system.</returns>
-        /// <exception cref="System.IO.InvalidDataException">Geographic coordinate reference system code is invalid.</exception>
-        private GeographicCoordinateReferenceSystem ComputeGeographicCoordinateReferenceSystem()
+        /// <returns>The Geodetic coordinate reference system.</returns>
+        /// <exception cref="System.IO.InvalidDataException">Geodetic coordinate reference system code is invalid.</exception>
+        private GeographicCoordinateReferenceSystem ComputeGeodeticCoordinateReferenceSystem()
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2048]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticCoordinateReferenceSystemType]);
             // EPSG geodetic coordinate reference system codes
             if (code < 32767)
             {
@@ -580,7 +590,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // user-defined geodetic coordinate reference system
             if (code == Int16.MaxValue)
             {
-                String citation = _currentGeoKeys[2049].ToString();
+                String citation = _currentGeoKeys[GeoKey.GeodeticCoordinateReferenceSystemCitation].ToString();
                 GeodeticDatum datum = ComputeGeodeticDatum();
                 UnitOfMeasurement angleUnit = ComputeAngularUnit();
 
@@ -593,7 +603,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                                                                citation, null, null, coordinateSystem, datum, null);
             }
 
-            throw new InvalidDataException("Geographic coordinate reference system code is invalid.");
+            throw new InvalidDataException("Geodetic coordinate reference system code is invalid.");
         }
 
         /// <summary>
@@ -603,7 +613,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Geodetic Datum code is invalid.</exception>
         private GeodeticDatum ComputeGeodeticDatum()
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2050]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticDatum]);
             // EPSG geodetic datum codes
             if (code >= 6000 && code <= 6999)
                 return GeodeticDatums.FromIdentifier("EPSG::" + code).FirstOrDefault();
@@ -626,24 +636,24 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Prime meridian code is invalid.</exception>
         private Ellipsoid ComputeEllipsoid()
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2056]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticEllipsoid]);
             // EPSG ellipsoid codes
             if (code >= 8000 && code <= 8999)
                 return Ellipsoids.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined ellipsoid
             if (code == Int16.MaxValue)
             {
-                Double semiMajorAxis = Convert.ToDouble(_currentGeoKeys[2057]);
+                Double semiMajorAxis = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticSemiMajorAxis]);
 
                 // either semi-minor axis or the inverse flattening is defined
-                if (_currentGeoKeys.ContainsKey(2058))
+                if (_currentGeoKeys.ContainsKey(GeoKey.GeodeticSemiMinorAxis))
                 {
                     Double semiMinorAxis = Convert.ToDouble(_currentGeoKeys[2058]);
                     return Ellipsoid.FromSemiMinorAxis(Ellipsoid.UserDefinedIdentifier, Ellipsoid.UserDefinedName, semiMajorAxis, semiMinorAxis);
                 }
                 else
                 {
-                    Double inverseFlattening = Convert.ToDouble(_currentGeoKeys[2059]);
+                    Double inverseFlattening = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticInverseFlattening]);
                     return Ellipsoid.FromInverseFlattening(Ellipsoid.UserDefinedIdentifier, Ellipsoid.UserDefinedName, semiMajorAxis, inverseFlattening);
                 }
             }
@@ -658,17 +668,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Prime meridian code is invalid.</exception>
         private Meridian ComputePrimeMeridian()
         {
-            if (!_currentGeoKeys.ContainsKey(2051))
+            if (!_currentGeoKeys.ContainsKey(GeoKey.GeodeticPrimeMeridian))
                 return Meridians.Greenwich;
 
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2051]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticPrimeMeridian]);
             // EPSG prime meridian codes
             if (code >= 8000 && code <= 8999)
                 return Meridians.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined prime meridian
             if (code == Int16.MaxValue)
             {
-                Double longitude = Convert.ToDouble(_currentGeoKeys[2061]);
+                Double longitude = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticPrimeMeridianLongitude]);
                 UnitOfMeasurement angleUnit = ComputeAngularUnit();
 
                 return new Meridian(Meridian.UserDefinedIdentifier, Meridian.UserDefinedName, new Angle(longitude, angleUnit));
@@ -684,17 +694,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Linear unit code is invalid.</exception>
         private UnitOfMeasurement ComputeLinearUnit()
         {
-            if (!_currentGeoKeys.ContainsKey(2052))
+            if (!_currentGeoKeys.ContainsKey(GeoKey.GeodeticLinearUnits))
                 return UnitsOfMeasurement.Metre;
 
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2052]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticLinearUnits]);
             // EPSG unit of measurement codes
             if (code >= 9000 && code <= 9099)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
             if (code == Int16.MaxValue)
             {
-                Double unitSize = Convert.ToDouble(_currentGeoKeys[2053]);
+                Double unitSize = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticLinearUnitSize]);
 
                 return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Length);
             }
@@ -709,17 +719,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Angular unit code is invalid.</exception>
         private UnitOfMeasurement ComputeAngularUnit()
         {
-            if (!_currentGeoKeys.ContainsKey(2054))
+            if (!_currentGeoKeys.ContainsKey(GeoKey.GeodeticAngularUnits))
                 return UnitsOfMeasurement.Degree;
 
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2054]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticAngularUnits]);
             // EPSG unit of measurement codes
             if (code >= 9100 && code <= 9199)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
             if (code == Int16.MaxValue)
             {
-                Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
+                Double unitSize = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticAngularUnitSize]);
 
                 return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Angle);
             }
@@ -734,17 +744,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Azimuth unit code is invalid.</exception>
         private UnitOfMeasurement ComputeAzimuthUnit()
         {
-            if (!_currentGeoKeys.ContainsKey(2060))
+            if (!_currentGeoKeys.ContainsKey(GeoKey.GeodeticAzimuthUnits))
                 return UnitsOfMeasurement.Degree;
 
-            Int32 code = Convert.ToInt32(_currentGeoKeys[2060]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.GeodeticAzimuthUnits]);
             // EPSG unit of measurement codes
             if (code >= 9100 && code <= 9199)
                 return UnitsOfMeasurement.FromIdentifier("EPSG::" + code).FirstOrDefault();
             // user-defined unit of measurement
             if (code == Int16.MaxValue)
             {
-                Double unitSize = Convert.ToDouble(_currentGeoKeys[2055]);
+                Double unitSize = Convert.ToDouble(_currentGeoKeys[GeoKey.GeodeticAngularUnitSize]);
 
                 return new UnitOfMeasurement(UnitOfMeasurement.UserDefinedIdentifier, UnitOfMeasurement.UserDefinedName, String.Empty, unitSize, UnitQuantityType.Angle);
             }
@@ -759,7 +769,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Projected coordinate reference system code is invalid.</exception>
         private ProjectedCoordinateReferenceSystem ComputeProjectedCoordinateReferenceSystem()
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[3072]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.ProjectedCoordinateReferenceSystemType]);
             // EPSG Projected Coordinate Reference System codes
             if (code < 32767)
             {
@@ -773,7 +783,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // user-defined Projected Coordinate Reference System
             if (code == Int16.MaxValue)
             {
-                GeographicCoordinateReferenceSystem baseReferenceSystem = ComputeGeographicCoordinateReferenceSystem();
+                GeographicCoordinateReferenceSystem baseReferenceSystem = ComputeGeodeticCoordinateReferenceSystem();
                 CoordinateProjection projection = ComputeProjection(baseReferenceSystem.Datum.Ellipsoid);
 
                 return new ProjectedCoordinateReferenceSystem(ProjectedCoordinateReferenceSystem.UserDefinedIdentifier, ProjectedCoordinateReferenceSystem.UserDefinedName, 
@@ -789,7 +799,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <returns>The coordinate operation method.</returns>
         private CoordinateOperationMethod ComputeCoordinateOperationMethod()
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[3075]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.ProjectionCoordinateTransformation]);
 
             switch (code)
             {
@@ -868,46 +878,46 @@ namespace ELTE.AEGIS.IO.GeoTiff
             UnitOfMeasurement angularUnit = ComputeAngularUnit();
             UnitOfMeasurement linearUnit = ComputeLinearUnit();
 
-            if (_currentGeoKeys.ContainsKey(3078))
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionStdParallel1))
             {
-                parameters.Add(CoordinateOperationParameters.LatitudeOf1stStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[3078]), angularUnit));
-                parameters.Add(CoordinateOperationParameters.LatitudeOfStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[3078]), angularUnit));
+                parameters.Add(CoordinateOperationParameters.LatitudeOf1stStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionStdParallel1]), angularUnit));
+                parameters.Add(CoordinateOperationParameters.LatitudeOfStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionStdParallel1]), angularUnit));
             }
-            if (_currentGeoKeys.ContainsKey(3079))
-                parameters.Add(CoordinateOperationParameters.LatitudeOf2ndStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[3079]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3080))
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionStdParallel2))
+                parameters.Add(CoordinateOperationParameters.LatitudeOf2ndStandardParallel, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionStdParallel2]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionNaturalOriginLongitude))
             {
-                parameters.Add(CoordinateOperationParameters.LongitudeOfNaturalOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[3080]), angularUnit));
-                parameters.Add(CoordinateOperationParameters.LongitudeOfOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[3080]), angularUnit));
+                parameters.Add(CoordinateOperationParameters.LongitudeOfNaturalOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionNaturalOriginLongitude]), angularUnit));
+                parameters.Add(CoordinateOperationParameters.LongitudeOfOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionNaturalOriginLongitude]), angularUnit));
             }
-            if (_currentGeoKeys.ContainsKey(3081))
-                parameters.Add(CoordinateOperationParameters.LatitudeOfNaturalOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[3081]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3082))
-                parameters.Add(CoordinateOperationParameters.FalseEasting, new Length(Convert.ToDouble(_currentGeoKeys[3082]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3083))
-                parameters.Add(CoordinateOperationParameters.FalseNorthing, new Length(Convert.ToDouble(_currentGeoKeys[3083]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3084))
-                parameters.Add(CoordinateOperationParameters.LongitudeOfFalseOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[3084]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3085))
-                parameters.Add(CoordinateOperationParameters.LatitudeOfFalseOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[3085]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3086))
-                parameters.Add(CoordinateOperationParameters.EastingAtFalseOrigin, new Length(Convert.ToDouble(_currentGeoKeys[3086]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3087))
-                parameters.Add(CoordinateOperationParameters.NorthingAtFalseOrigin, new Length(Convert.ToDouble(_currentGeoKeys[3087]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3088))
-                parameters.Add(CoordinateOperationParameters.LongitudeOfProjectionCentre, new Angle(Convert.ToDouble(_currentGeoKeys[3088]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3089))
-                parameters.Add(CoordinateOperationParameters.LatitudeOfProjectionCentre, new Angle(Convert.ToDouble(_currentGeoKeys[3089]), angularUnit));
-            if (_currentGeoKeys.ContainsKey(3090))
-                parameters.Add(CoordinateOperationParameters.EastingAtProjectionCentre, new Length(Convert.ToDouble(_currentGeoKeys[3090]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3091))
-                parameters.Add(CoordinateOperationParameters.NorthingAtProjectionCentre, new Length(Convert.ToDouble(_currentGeoKeys[3091]), linearUnit));
-            if (_currentGeoKeys.ContainsKey(3092))
-                parameters.Add(CoordinateOperationParameters.ScaleFactorAtNaturalOrigin, Convert.ToDouble(_currentGeoKeys[3092]));
-            if (_currentGeoKeys.ContainsKey(3093))
-                parameters.Add(CoordinateOperationParameters.ScaleFactorOnInitialLine, Convert.ToDouble(_currentGeoKeys[3093]));
-            if (_currentGeoKeys.ContainsKey(3094))
-                parameters.Add(CoordinateOperationParameters.AzimuthOfInitialLine, new Angle(Convert.ToDouble(_currentGeoKeys[3094]), ComputeAzimuthUnit()));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionNaturalOriginLatitude))
+                parameters.Add(CoordinateOperationParameters.LatitudeOfNaturalOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionNaturalOriginLatitude]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseEasting))
+                parameters.Add(CoordinateOperationParameters.FalseEasting, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseEasting]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseNorthing))
+                parameters.Add(CoordinateOperationParameters.FalseNorthing, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseNorthing]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseOriginLongitude))
+                parameters.Add(CoordinateOperationParameters.LongitudeOfFalseOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseOriginLongitude]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseOriginLatitude))
+                parameters.Add(CoordinateOperationParameters.LatitudeOfFalseOrigin, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseOriginLatitude]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseOriginEasting))
+                parameters.Add(CoordinateOperationParameters.EastingAtFalseOrigin, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseOriginEasting]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionFalseOriginNorthing))
+                parameters.Add(CoordinateOperationParameters.NorthingAtFalseOrigin, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionFalseOriginNorthing]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionCenterLongitude))
+                parameters.Add(CoordinateOperationParameters.LongitudeOfProjectionCentre, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionCenterLongitude]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionCenterLatitude))
+                parameters.Add(CoordinateOperationParameters.LatitudeOfProjectionCentre, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionCenterLatitude]), angularUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionCenterEasting))
+                parameters.Add(CoordinateOperationParameters.EastingAtProjectionCentre, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionCenterEasting]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionCenterNorthing))
+                parameters.Add(CoordinateOperationParameters.NorthingAtProjectionCentre, new Length(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionCenterNorthing]), linearUnit));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionScaleAtNaturalOrigin))
+                parameters.Add(CoordinateOperationParameters.ScaleFactorAtNaturalOrigin, Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionScaleAtNaturalOrigin]));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionScaleAtCenter))
+                parameters.Add(CoordinateOperationParameters.ScaleFactorOnInitialLine, Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionScaleAtCenter]));
+            if (_currentGeoKeys.ContainsKey(GeoKey.ProjectionAzimuthAngle))
+                parameters.Add(CoordinateOperationParameters.AzimuthOfInitialLine, new Angle(Convert.ToDouble(_currentGeoKeys[GeoKey.ProjectionAzimuthAngle]), ComputeAzimuthUnit()));
 
             return parameters;
         }
@@ -920,7 +930,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         /// <exception cref="System.IO.InvalidDataException">Projection code is invalid.</exception>
         private CoordinateProjection ComputeProjection(Ellipsoid ellipsoid)
         {
-            Int32 code = Convert.ToInt32(_currentGeoKeys[3074]);
+            Int32 code = Convert.ToInt32(_currentGeoKeys[GeoKey.Projection]);
 
             if (code >= 10000 && code <= 19999)
                 return CoordinateProjectionFactory.FromIdentifier("EPSG::" + code, ellipsoid).FirstOrDefault();

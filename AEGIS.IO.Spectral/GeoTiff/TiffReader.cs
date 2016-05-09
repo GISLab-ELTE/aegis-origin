@@ -24,7 +24,7 @@ using System.Linq;
 
 namespace ELTE.AEGIS.IO.GeoTiff
 {
-    // short expression for the IFD table
+    using Newtonsoft.Json;    // short expression for the IFD table
     using TiffImageFileDirectory = Dictionary<UInt16, Object[]>;
 
     /// <summary>
@@ -359,12 +359,12 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // read content based on the layout
-            if (_imageFileDirectories[_currentImageIndex].ContainsKey(273))
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.StripOffsets))
             {
                 // strip layout
                 ReadRasterContentFromStrips(spectralGeometry.Raster, radiometricResolutions);
             }
-            else if (_imageFileDirectories[_currentImageIndex].ContainsKey(324))
+            else if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.TileOffsets))
             {
                 // tiled layout
                 ReadRasterContentFromTiles(spectralGeometry.Raster, radiometricResolutions);
@@ -658,8 +658,8 @@ namespace ELTE.AEGIS.IO.GeoTiff
         private void ReadRasterContentFromStrips(IRaster raster, Int32[] radiometricResolutions)
         {
             Int32 rowsPerStrip;
-            if (_imageFileDirectories[_currentImageIndex].ContainsKey(278))
-                rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][278][0]);
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.RowsPerStrip))
+                rowsPerStrip = Convert.ToInt32(_imageFileDirectories[_currentImageIndex][TiffTag.RowsPerStrip][0]);
             else
                 rowsPerStrip = raster.NumberOfRows;
 
@@ -1238,25 +1238,35 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             Dictionary<String, Object> metadata = new Dictionary<String, Object>();
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.DocumentName))
-                metadata.Add("DocumentName", _imageFileDirectories[_currentImageIndex][TiffTag.DocumentName][0]);
+                metadata.Add("GeoTIFF::DocumentName", _imageFileDirectories[_currentImageIndex][TiffTag.DocumentName][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.ImageDescription))
-                metadata.Add("ImageDescription", _imageFileDirectories[_currentImageIndex][TiffTag.ImageDescription][0]);
+                metadata.Add("GeoTIFF::ImageDescription", _imageFileDirectories[_currentImageIndex][TiffTag.ImageDescription][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.Make))
-                metadata.Add("Make", _imageFileDirectories[_currentImageIndex][TiffTag.Make][0]);
+                metadata.Add("GeoTIFF::Make", _imageFileDirectories[_currentImageIndex][TiffTag.Make][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.Model))
-                metadata.Add("Model", _imageFileDirectories[_currentImageIndex][TiffTag.Model][0]);
+                metadata.Add("GeoTIFF::Model", _imageFileDirectories[_currentImageIndex][TiffTag.Model][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.PageName))
-                metadata.Add("PageName", _imageFileDirectories[_currentImageIndex][285][0]);
+                metadata.Add("GeoTIFF::PageName", _imageFileDirectories[_currentImageIndex][285][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.Software))
-                metadata.Add("Software", _imageFileDirectories[_currentImageIndex][TiffTag.Software][0]);
+                metadata.Add("GeoTIFF::Software", _imageFileDirectories[_currentImageIndex][TiffTag.Software][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.DateTime))
-                metadata.Add("DateTime", DateTime.Parse(_imageFileDirectories[_currentImageIndex][TiffTag.DateTime][0].ToString(), CultureInfo.InvariantCulture.DateTimeFormat));
+                metadata.Add("GeoTIFF::DateTime", DateTime.Parse(_imageFileDirectories[_currentImageIndex][TiffTag.DateTime][0].ToString(), CultureInfo.InvariantCulture.DateTimeFormat));
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.Artist))
-                metadata.Add("Artist", _imageFileDirectories[_currentImageIndex][TiffTag.Artist][0]);
+                metadata.Add("GeoTIFF::Artist", _imageFileDirectories[_currentImageIndex][TiffTag.Artist][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.HostComputer))
-                metadata.Add("HostComputer", _imageFileDirectories[_currentImageIndex][TiffTag.HostComputer][0]);
+                metadata.Add("GeoTIFF::HostComputer", _imageFileDirectories[_currentImageIndex][TiffTag.HostComputer][0]);
             if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.Copyright))
-                metadata.Add("Copyright", _imageFileDirectories[_currentImageIndex][TiffTag.Copyright][0]);
+                metadata.Add("GeoTIFF::Copyright", _imageFileDirectories[_currentImageIndex][TiffTag.Copyright][0]);
+
+            if (_imageFileDirectories[_currentImageIndex].ContainsKey(TiffTag.AegisAttributes))
+            {
+                Object attributes = JsonConvert.DeserializeObject(_imageFileDirectories[_currentImageIndex][TiffTag.AegisAttributes][0].ToString(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+                foreach (KeyValuePair<String, Object> attribute in attributes as IDictionary<String, Object>)
+                {
+                    metadata[attribute.Key] = attribute.Value;
+                }
+            }
 
             return metadata;
         }
