@@ -72,7 +72,7 @@ namespace ELTE.AEGIS
         /// Gets the geographic coordinates of the image.
         /// </summary>
         /// <value>The geographic coordinates of the image in clockwise order.</value>
-        public GeoCoordinate[] ImageLocation { get; private set; }
+        public IReadOnlyList<GeoCoordinate> ImageLocation { get; private set; }
 
         /// <summary>
         /// Gets the incidence angle.

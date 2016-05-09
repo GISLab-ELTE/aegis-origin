@@ -185,7 +185,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 imageFileDirectory.Add(57419, geometry.Imaging.Bands.Select(band => band.SolarIrradiance).Cast<Object>().ToArray());
 
                 Object[] imageLocation = new Object[12];
-                for (Int32 coordinateIndex = 0; coordinateIndex < geometry.Imaging.ImageLocation.Length; coordinateIndex++)
+                for (Int32 coordinateIndex = 0; coordinateIndex < geometry.Imaging.ImageLocation.Count; coordinateIndex++)
                 {
                     imageLocation[3 * coordinateIndex] = geometry.Imaging.ImageLocation[coordinateIndex].Latitude.BaseValue;
                     imageLocation[3 * coordinateIndex + 1] = geometry.Imaging.ImageLocation[coordinateIndex].Longitude.BaseValue;

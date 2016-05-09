@@ -13,8 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
-using System;
 using ELTE.AEGIS.Numerics;
+using System;
 
 namespace ELTE.AEGIS
 {
@@ -25,20 +25,52 @@ namespace ELTE.AEGIS
     {
         #region Private fields
 
+        /// <summary>
+        /// The minimum wavelength (in meters).
+        /// </summary>
         private readonly Double _wavelengthMinimum;
+
+        /// <summary>
+        /// The maximum wavelength (in meters).
+        /// </summary>
         private readonly Double _wavelengthMaximum;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SpectralRange" /> class.
+        /// </summary>
+        /// <param name="wavelengthBegin">The lower bound of the wavelength (in metre).</param>
+        /// <param name="wavelengthEnd">The upper bound of the wavelength (in metre).</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// The lower bound of the wavelength is less than or equal to 0.
+        /// or
+        /// The lower bound of the wavelength if greater than the upper bound.
+        /// </exception>
+        public SpectralRange(Double wavelengthBegin, Double wavelengthEnd)
+        {
+            if (wavelengthBegin <= 0)
+                throw new ArgumentOutOfRangeException("The lower bound of the wavelength is less than or equal to 0.", nameof(wavelengthBegin));
+            if (wavelengthEnd < wavelengthBegin)
+                throw new ArgumentOutOfRangeException("The lower bound of the wavelength if greater than the upper bound.", nameof(wavelengthEnd));
+
+            _wavelengthMinimum = wavelengthBegin;
+            _wavelengthMaximum = wavelengthEnd;
+        }
 
         #endregion
 
         #region Public properties
 
         /// <summary>
-        /// Gets the lower bound of the wavelength (in metre).
+        /// Gets the lower bound of the wavelength (in meters).
         /// </summary>
         public Double WavelengthMinimum { get { return _wavelengthMinimum; } }
 
         /// <summary>
-        /// Gets the upper bound of the wavelength (in metre).
+        /// Gets the upper bound of the wavelength (in meters).
         /// </summary>
         public Double WavelengthMaximum { get { return _wavelengthMaximum; } }
 
@@ -66,33 +98,12 @@ namespace ELTE.AEGIS
 
         #endregion
 
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:ELTE.AEGIS.Spectral.SpectralRange" /> class.
-        /// </summary>
-        /// <param name="wavelengthBegin">The lower bound of the wavelength (in metre).</param>
-        /// <param name="wavelengthEnd">The upper bound of the wavelength (in metre).</param>
-        /// <exception cref="System.ArgumentException">The beginning value of the wavelength if greater than the ending value.;wavelengthEnd</exception>
-        public SpectralRange(Double wavelengthBegin, Double wavelengthEnd)
-        {
-            if (wavelengthBegin <= 0)
-                throw new ArgumentOutOfRangeException("The lower bound of the wavelength is less than or equal to 0.", "wavelengthBegin");
-            if (wavelengthEnd < wavelengthBegin)
-                throw new ArgumentException("The lower bound of the wavelength if greater than the upper bound.", "wavelengthEnd");
-
-            _wavelengthMinimum = wavelengthBegin;
-            _wavelengthMaximum = wavelengthEnd;
-        }
-
-        #endregion
-
         #region IEquatable methods
 
         /// <summary>
-        /// Indicates whether this instance and a specified other <see cref="T:ELTE.AEGIS.Spectral.SpectralRange" /> are equal.
+        /// Indicates whether this instance and a specified other <see cref="SpectralRange" /> are equal.
         /// </summary>
-        /// <param name="obj">Another <see cref="T:ELTE.AEGIS.Spectral.SpectralRange" /> to compare to.</param>
+        /// <param name="obj">Another <see cref="SpectralRange" /> to compare to.</param>
         /// <returns><c>true</c> if <paramref name="another" /> and this instance represent the same value; otherwise, <c>false</c>.</returns>
         public Boolean Equals(SpectralRange another)
         {
