@@ -67,6 +67,8 @@
     <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\NearestNeighborResamplingAlgorithm.cs" />
     <Compile Include="Algorithms\Resampling\RasterResamplingAlgorithm.cs" />
+    <Compile Include="Collections\RasterSection.cs" />
+    <Compile Include="Collections\RasterSectionMap.cs" />
     <Compile Include="Collections\Segmentation\QuadSegmentCollection.cs" />
     <Compile Include="Collections\Segmentation\Segment.cs" />
     <Compile Include="Collections\Segmentation\SegmentCollection.cs" />
