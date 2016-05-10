@@ -13,10 +13,12 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Collections;
 using ELTE.AEGIS.Numerics;
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS.Operations.Spatial.Partitioning
 {
@@ -28,73 +30,6 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
     {
         #region Private types
 
-        /// <summary>
-        /// Represents the dimensions of a raster part.
-        /// </summary>
-        private class PartDimensions
-        {
-            #region Public properties
-
-            /// <summary>
-            /// Gets the index of the row.
-            /// </summary>
-            /// <value>
-            /// The index of the row.
-            /// </value>
-            public Int32 RowIndex { get; set; }
-
-            /// <summary>
-            /// Gets the index of the column.
-            /// </summary>
-            /// <value>
-            /// The index of the column.
-            /// </value>
-            public Int32 ColumnIndex { get; set; }
-
-            /// <summary>
-            /// Gets the number of rows.
-            /// </summary>
-            /// <value>
-            /// The number of rows.
-            /// </value>
-            public Int32 NumberOfRows { get; set; }
-
-            /// <summary>
-            /// Gets the number of columns.
-            /// </summary>
-            /// <value>
-            /// The number of columns.
-            /// </value>
-            public Int32 NumberOfColumns { get; set; }
-
-            /// <summary>
-            /// Gets the area of the raster.
-            /// </summary>
-            /// <value>The number of spectral values within the raster.</value>
-            public Int32 Area { get { return NumberOfRows * NumberOfColumns; } }
-
-            #endregion
-
-            #region Constructors
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="PartDimensions" /> class.
-            /// </summary>
-            /// <param name="rowIndex">The row index.</param>
-            /// <param name="columnIndex">The column index.</param>
-            /// <param name="numberOfRows">The number of rows.</param>
-            /// <param name="numberOfColumns">The number of columns.</param>
-            public PartDimensions(Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
-            {
-                RowIndex = rowIndex;
-                ColumnIndex = columnIndex;
-                NumberOfRows = numberOfRows;
-                NumberOfColumns = numberOfColumns;
-            }
-
-            #endregion
-        }
-
         #endregion
 
         #region Private fields
@@ -102,7 +37,12 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         /// <summary>
         /// The source raster.
         /// </summary>
-        private IRaster SourceRaster;
+        private IRaster _sourceRaster;
+
+        /// <summary>
+        /// The array of resulting geometries.
+        /// </summary>
+        private ISpectralGeometry[] _resultGeometries;
 
         /// <summary>
         /// A value indicating whether to preserve the metadata.
@@ -115,26 +55,21 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         private Int32 _numberOfParts;
 
         /// <summary>
-        /// The number of values which should overlap for columns.
+        /// The size of the buffer area with respect to columns.
         /// </summary>
-        private Int32 _overlapColumnMargin;
+        private Int32 _bufferColumnCount;
 
         /// <summary>
-        /// The number of values which should overlap for rows.
+        /// The size of the buffer area with respect to rows.
         /// </summary>
-        private Int32 _overlapRowMargin;
-
-        /// <summary>
-        /// The array of raster masks.
-        /// </summary>
-        private ISpectralGeometry[] _rasterMasks;
+        private Int32 _bufferRowCount;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinarySpectralGeometryPartitioning"/> class.
+        /// Initializes a new instance of the <see cref="BinarySpectralGeometryPartitioning" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="parameters">The parameters.</param>
@@ -145,7 +80,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinarySpectralGeometryPartitioning"/> class.
+        /// Initializes a new instance of the <see cref="BinarySpectralGeometryPartitioning" /> class.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
@@ -157,26 +92,23 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
             if (!(Source is ISpectralGeometry))
                 throw new ArgumentException("source", "The specified source is not supported.");
 
-            SourceRaster = (source as ISpectralGeometry).Raster;
+            _sourceRaster = (source as ISpectralGeometry).Raster;
             _metadataPreservation = ResolveParameter<Boolean>(CommonOperationParameters.MetadataPreservation);
             _numberOfParts = Convert.ToInt32(ResolveParameter(CommonOperationParameters.NumberOfParts));
 
             // compute overlap of raster
-            Double overlapMargin = Convert.ToDouble(ResolveParameter(CommonOperationParameters.OverlapMargin));
+            Double overlapAreaSize = Convert.ToDouble(ResolveParameter(CommonOperationParameters.BufferAreaSize));
 
-            if (overlapMargin == 0)
+            if ((Source as ISpectralGeometry).Raster.IsMapped)
             {
-                _overlapColumnMargin = _overlapRowMargin = 0;
+                _bufferColumnCount = Convert.ToInt32(Math.Ceiling(overlapAreaSize / (Source as ISpectralGeometry).Raster.Mapper.ColumnSize));
+                _bufferRowCount = Convert.ToInt32(Math.Ceiling(overlapAreaSize / (Source as ISpectralGeometry).Raster.Mapper.RowSize));
             }
-            else if ((Source as ISpectralGeometry).Raster.IsMapped)
-            {
-                _overlapColumnMargin = Convert.ToInt32(overlapMargin / (Source as ISpectralGeometry).Raster.Mapper.ColumnSize);
-                _overlapRowMargin = Convert.ToInt32(overlapMargin / (Source as ISpectralGeometry).Raster.Mapper.RowSize);
-            }
-            else
-            {
-                _overlapColumnMargin = _overlapRowMargin = Convert.ToInt32(overlapMargin);
-            }
+
+            Int32 overlapPixelCount = Convert.ToInt32(ResolveParameter(CommonOperationParameters.BufferValueCount));
+
+            _bufferColumnCount = Math.Max(_bufferColumnCount, overlapPixelCount);
+            _bufferRowCount = Math.Max(_bufferRowCount, overlapPixelCount);
         }
 
         #endregion
@@ -188,57 +120,121 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         /// </summary>
         protected override void ComputeResult()
         {
-            // perform the partitioning using a queue containing the dimensions
-            Queue<PartDimensions> mappingQueue = new Queue<PartDimensions>();
-            mappingQueue.Enqueue(new PartDimensions(0, 0, SourceRaster.NumberOfRows, SourceRaster.NumberOfColumns));
+            // perform the partitioning using a queue containing the sections
+            Queue<RasterSection> sectionQueue = new Queue<RasterSection>();
+            sectionQueue.Enqueue(new RasterSection(0, 0, _sourceRaster.NumberOfRows, _sourceRaster.NumberOfColumns));
 
             Int32 currentLevel = 0;
 
-            while (mappingQueue.Count < _numberOfParts)
+            while (sectionQueue.Count < _numberOfParts)
             {
                 // tile the first element in the queue
-                PartDimensions currentDimensions = mappingQueue.Dequeue();
+                RasterSection currentDimensions = sectionQueue.Dequeue();
 
                 // check in which direction the tiling should be performed
                 if (currentLevel % 2 == 0)
                 {
-                    mappingQueue.Enqueue(new PartDimensions(currentDimensions.RowIndex, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows / 2, currentDimensions.NumberOfColumns));
-                    mappingQueue.Enqueue(new PartDimensions(currentDimensions.RowIndex + currentDimensions.NumberOfRows / 2, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows - currentDimensions.NumberOfRows / 2, currentDimensions.NumberOfColumns));
+                    sectionQueue.Enqueue(new RasterSection(currentDimensions.RowIndex, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows / 2, currentDimensions.NumberOfColumns));
+                    sectionQueue.Enqueue(new RasterSection(currentDimensions.RowIndex + currentDimensions.NumberOfRows / 2, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows - currentDimensions.NumberOfRows / 2, currentDimensions.NumberOfColumns));
                 }
                 else
                 {
-                    mappingQueue.Enqueue(new PartDimensions(currentDimensions.RowIndex, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows, currentDimensions.NumberOfColumns / 2));
-                    mappingQueue.Enqueue(new PartDimensions(currentDimensions.RowIndex, currentDimensions.ColumnIndex + currentDimensions.NumberOfColumns / 2, currentDimensions.NumberOfRows, currentDimensions.NumberOfColumns - currentDimensions.NumberOfColumns / 2));
+                    sectionQueue.Enqueue(new RasterSection(currentDimensions.RowIndex, currentDimensions.ColumnIndex, currentDimensions.NumberOfRows, currentDimensions.NumberOfColumns / 2));
+                    sectionQueue.Enqueue(new RasterSection(currentDimensions.RowIndex, currentDimensions.ColumnIndex + currentDimensions.NumberOfColumns / 2, currentDimensions.NumberOfRows, currentDimensions.NumberOfColumns - currentDimensions.NumberOfColumns / 2));
                 }
 
                 // if the number of parts in the kD-tree has reached the next level
-                if (mappingQueue.Count == Calculator.Pow(2, currentLevel + 1))
+                if (sectionQueue.Count == Calculator.Pow(2, currentLevel + 1))
                     currentLevel++;
             }
 
+            // update buffer size based on part size
+            _bufferColumnCount = Math.Min(_bufferColumnCount, sectionQueue.Max(section => section.NumberOfColumns) / 2);
+            _bufferRowCount = Math.Min(_bufferRowCount, sectionQueue.Max(section => section.NumberOfRows) / 2);
+
             // the partitioning only creates a mask for the specified raster
 
-            _rasterMasks = new ISpectralGeometry[mappingQueue.Count];
+            RasterSection[] sectionsOverlappingParts = new RasterSection[sectionQueue.Count];
+            RasterSection[][] sectionsWithinParts = new RasterSection[sectionQueue.Count][];
+            _resultGeometries = new ISpectralGeometry[sectionQueue.Count];
 
             Int32 partIndex = 0;
-            while (mappingQueue.Count > 0)
+            while (sectionQueue.Count > 0)
             {
-                PartDimensions dimensions = mappingQueue.Dequeue();
+                RasterSection section = sectionQueue.Dequeue();
 
                 // compute overlap
-                dimensions.ColumnIndex -= Math.Min(_overlapColumnMargin, dimensions.ColumnIndex);
-                dimensions.NumberOfColumns += Math.Min(_overlapColumnMargin, dimensions.ColumnIndex);
-                dimensions.NumberOfRows += Math.Min(_overlapRowMargin, dimensions.RowIndex);
-                dimensions.RowIndex -= Math.Min(_overlapRowMargin, dimensions.RowIndex);
-                dimensions.NumberOfColumns = Math.Min(dimensions.NumberOfColumns + _overlapColumnMargin, (Source as ISpectralGeometry).Raster.NumberOfColumns - dimensions.ColumnIndex);
-                dimensions.NumberOfRows = Math.Min(dimensions.NumberOfRows + _overlapRowMargin, (Source as ISpectralGeometry).Raster.NumberOfRows - dimensions.RowIndex);
+                Int32 lowColumnDelta = 0, highColumnDelta = 0, lowRowDelta = 0, highRowDelta = 0;
+                if (section.ColumnIndex > 0)
+                {
+                    lowColumnDelta = Math.Min(_bufferColumnCount / 2, section.ColumnIndex);
+                    section.ColumnIndex -= lowColumnDelta;
+                    section.NumberOfColumns += lowColumnDelta;
+                }
+                if (section.RowIndex > 0)
+                {
+                    lowRowDelta = Math.Min(_bufferRowCount / 2, section.RowIndex);
+                    section.RowIndex -= lowRowDelta;
+                    section.NumberOfRows += lowRowDelta;
+                }
+                if (section.ColumnEndIndex < (Source as ISpectralGeometry).Raster.NumberOfColumns)
+                {
+                    highColumnDelta = _bufferColumnCount / 2;
+                    section.NumberOfColumns += highColumnDelta;
+                }
+                if (section.RowEndIndex < (Source as ISpectralGeometry).Raster.NumberOfRows)
+                {
+                    highRowDelta = _bufferRowCount / 2;
+                    section.NumberOfRows += highRowDelta;
+                }
 
                 // create mask
-                _rasterMasks[partIndex] = Source.Factory.CreateSpectralPolygon(Source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateMask(SourceRaster, dimensions.RowIndex, dimensions.ColumnIndex, dimensions.NumberOfRows, dimensions.NumberOfColumns), 
+                _resultGeometries[partIndex] = Source.Factory.CreateSpectralPolygon(Source.Factory.GetFactory<ISpectralGeometryFactory>().GetFactory<IRasterFactory>().CreateMask(_sourceRaster, section.RowIndex, section.ColumnIndex, section.NumberOfRows, section.NumberOfColumns), 
                                                                         (Source as ISpectralGeometry).Presentation, 
                                                                         _metadataPreservation ? (Source as ISpectralGeometry).Imaging : null, 
                                                                         _metadataPreservation ? Source.Metadata : null);
+
+                sectionsOverlappingParts[partIndex] = section;
+
+                // recompute sections (sections are in row-major order within the part)
+                sectionsWithinParts[partIndex] = new RasterSection[]
+                {
+                    new RasterSection(section.RowIndex, section.ColumnIndex, lowRowDelta * 2, lowColumnDelta * 2),
+                    new RasterSection(section.RowIndex, section.ColumnIndex + lowColumnDelta * 2, lowRowDelta * 2, section.NumberOfColumns - lowColumnDelta * 2 - highColumnDelta * 2),
+                    new RasterSection(section.RowIndex, section.ColumnEndIndex - highColumnDelta * 2, lowRowDelta * 2, highColumnDelta * 2),
+                    new RasterSection(section.RowIndex + lowRowDelta * 2, section.ColumnIndex, section.NumberOfRows - lowRowDelta * 2 - highRowDelta * 2, lowColumnDelta * 2),
+                    new RasterSection(section.RowIndex + lowRowDelta * 2, section.ColumnIndex + lowColumnDelta * 2, section.NumberOfRows - lowRowDelta * 2 - highRowDelta * 2, section.NumberOfColumns - lowColumnDelta * 2 - highColumnDelta * 2),
+                    new RasterSection(section.RowIndex + lowRowDelta * 2, section.ColumnEndIndex - highColumnDelta * 2, section.NumberOfRows - lowRowDelta * 2 - highRowDelta * 2, highColumnDelta * 2),
+                    new RasterSection(section.RowEndIndex - highRowDelta * 2, section.ColumnIndex, highRowDelta * 2, lowColumnDelta * 2),
+                    new RasterSection(section.RowEndIndex - highRowDelta * 2, section.ColumnIndex + lowColumnDelta * 2, highRowDelta * 2, section.NumberOfColumns - lowColumnDelta * 2 - highColumnDelta * 2),
+                    new RasterSection(section.RowEndIndex - highRowDelta * 2, section.ColumnEndIndex - highColumnDelta * 2, highRowDelta * 2, highColumnDelta * 2)
+                };
+
                 partIndex++;
+            }
+
+            // create raster section map
+            RasterSectionMap rasterSectionMap = new RasterSectionMap();
+            foreach (RasterSection[] partSections in sectionsWithinParts)
+                foreach (RasterSection section in partSections)
+                {
+                    rasterSectionMap.AddSection(section);
+                }
+
+            // create part section maps
+            for (partIndex = 0; partIndex < sectionsWithinParts.Length; partIndex++)
+            {
+                RasterSectionMap tileSectionMap = new RasterSectionMap(rasterSectionMap);
+
+                foreach (RasterSection[] partSections in sectionsWithinParts)
+                    foreach (RasterSection section in partSections)
+                    {
+                        if (sectionsOverlappingParts[partIndex].Contains(section))
+                            tileSectionMap.AddTileSection(section);
+                    }
+
+                // set the section map
+                _resultGeometries[partIndex]["AEGIS.RasterSectionMap"] = tileSectionMap.ToString();
             }
         }
 
@@ -248,7 +244,7 @@ namespace ELTE.AEGIS.Operations.Spatial.Partitioning
         /// <returns>The resulting object.</returns>
         protected override IGeometryCollection<IGeometry> FinalizeResult()
         {
-            return Source.Factory.CreateGeometryCollection<ISpectralGeometry>(_rasterMasks);
+            return Source.Factory.CreateGeometryCollection<ISpectralGeometry>(_resultGeometries);
         }
 
         #endregion

@@ -89,7 +89,8 @@ namespace ELTE.AEGIS.Operations
         private static OperationParameter _metadataPreservation;
         private static OperationParameter _numberOfIterations;
         private static OperationParameter _numberOfParts;
-        private static OperationParameter _overlapMargin;
+        private static OperationParameter _bufferAreaSize;
+        private static OperationParameter _bufferValueCount;
 
         #endregion
 
@@ -156,17 +157,33 @@ namespace ELTE.AEGIS.Operations
         }
 
         /// <summary>
-        /// Overlap zone.
+        /// Buffer area size.
         /// </summary>
-        public static OperationParameter OverlapMargin
+        public static OperationParameter BufferAreaSize
         {
             get
             {
-                return _overlapMargin ?? (_overlapMargin =
-                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::301575", "Overlap margin",
-                                                                       "The margin by which the individual parts should overlap after partitioning.", null,
+                return _bufferAreaSize ?? (_bufferAreaSize =
+                    OperationParameter.CreateOptionalParameter<Double>("AEGIS::301575", "Buffer area size",
+                                                                       "The size of the buffer area with respect to the reference system after partitioning.", null,
                                                                        0,
                                                                        Conditions.IsNotNegative()
+                    ));
+            }
+        }
+
+        /// <summary>
+        /// Buffer value count.
+        /// </summary>
+        public static OperationParameter BufferValueCount
+        {
+            get
+            {
+                return _bufferValueCount ?? (_bufferValueCount =
+                    OperationParameter.CreateOptionalParameter<Int32>("AEGIS::301576", "Buffer value count",
+                                                                      "The number of values within the buffer after partitioning.", null,
+                                                                      0,
+                                                                      Conditions.IsNotNegative()
                     ));
             }
         }
