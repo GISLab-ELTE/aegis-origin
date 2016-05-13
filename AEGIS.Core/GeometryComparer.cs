@@ -15,17 +15,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ELTE.AEGIS
 {
     /// <summary>
     /// Represents a comparer for <see cref="IGeometry" /> instances.
     /// </summary>
-    public class GeometryComparer : IComparer<IGeometry>, IComparer<IPoint>, IComparer<ILineString>, IComparer<IPolygon>, IComparer<IEnumerable<IGeometry>>
+    public class GeometryComparer : IComparer<IBasicGeometry>, IComparer<IBasicPoint>, IComparer<IBasicLineString>, IComparer<IBasicPolygon>, IComparer<IEnumerable<IBasicGeometry>>,
+                                    IComparer<IGeometry>, IComparer<IPoint>, IComparer<ILineString>, IComparer<IPolygon>, IComparer<IEnumerable<IGeometry>>
     {
         #region Private static fields
 
-        private static readonly String[] _geometryOrder;
+        /// <summary>
+        /// The order of geometry types for basic geometries.
+        /// </summary>
+        private static readonly Type[] _basicGeometryOrder;
+
+        /// <summary>
+        /// The order of geometry type for geometries.
+        /// </summary>
+        private static readonly Type[] _geometryOrder;
+
 
         #endregion
 
@@ -42,7 +53,8 @@ namespace ELTE.AEGIS
         /// </summary>
         static GeometryComparer()
         {
-            _geometryOrder = new String[] { "Point", "MultiPoint", "LineString", "LinearRing", "MultiLineString", "Polygon", "MultiPolygon", "GeometryCollection" };
+            _geometryOrder = new Type[] { typeof(IPoint), typeof(IMultiPoint), typeof(ILineString), typeof(ILinearRing), typeof(IMultiLineString), typeof(IPolygon), typeof(IMultiPolygon), typeof(IGeometryCollection<IGeometry>) };
+            _basicGeometryOrder = new Type[] { typeof(IBasicPoint), typeof(IBasicLineString), typeof(IBasicPolygon) };
         }
 
         /// <summary>
@@ -52,7 +64,206 @@ namespace ELTE.AEGIS
 
         #endregion
 
-        #region IComparer methods
+        #region Basic geometry comparison
+
+        /// <summary>
+        /// Compares two <see cref="IBasicGeometry" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first <see cref="IBasicGeometry" /> to compare.</param>
+        /// <param name="y">The second <see cref="IBasicGeometry" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The x argument is null.
+        /// or
+        /// The y argument is null.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">Comparison of the specified geometries is not supported.</exception>
+        public Int32 Compare(IBasicGeometry x, IBasicGeometry y)
+        {
+            if (x == null)
+                throw new ArgumentNullException("x", "The x argument is null.");
+            if (y == null)
+                throw new ArgumentNullException("y", "The y argument is null.");
+            if (x == y)
+                return 0;
+
+            if ((x is IGeometry) && (y is IGeometry))
+                return Compare(x as IGeometry, y as IGeometry);
+
+            // in case the classes are different, the order is specified by the following array
+
+            Int32 xIndex = x.GetType().GetInterfaces().Max(interfaceType => Array.IndexOf(_basicGeometryOrder, interfaceType));
+            Int32 yIndex = y.GetType().GetInterfaces().Max(interfaceType => Array.IndexOf(_basicGeometryOrder, interfaceType));
+
+            if (xIndex < yIndex)
+                return -1;
+            if (xIndex > yIndex)
+                return -1;
+
+            switch (xIndex)
+            {
+                case 0:
+                    return Compare(x as IBasicPoint, y as IBasicPoint);
+                case 1:
+                    // linearring should be compared as linestring
+                    return Compare(x as IBasicLineString, y as IBasicLineString);
+                case 2:
+                    return Compare(x as IBasicPolygon, y as IBasicPolygon);
+            }
+
+            throw new NotSupportedException("Comparison of the specified geometries is not supported.");
+        }
+
+        /// <summary>
+        /// Compares two <see cref="IBasicPoint" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first <see cref="IBasicPoint" /> to compare.</param>
+        /// <param name="y">The second <see cref="IBasicPoint" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The x argument is null.
+        /// or
+        /// The y argument is null.
+        /// </exception>
+        public Int32 Compare(IBasicPoint x, IBasicPoint y)
+        {
+            if (x == null)
+                throw new ArgumentNullException("x", "The x argument is null.");
+            if (y == null)
+                throw new ArgumentNullException("y", "The y argument is null.");
+            if (x == y)
+                return 0;
+
+            return _comparer.Compare(x.Coordinate, y.Coordinate);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="IBasicLineString" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first <see cref="IBasicLineString" /> to compare.</param>
+        /// <param name="y">The second <see cref="IBasicLineString" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The x argument is null.
+        /// or
+        /// The y argument is null.
+        /// </exception>
+        public Int32 Compare(IBasicLineString x, IBasicLineString y)
+        {
+            if (x == null)
+                throw new ArgumentNullException("x", "The x argument is null.");
+            if (y == null)
+                throw new ArgumentNullException("y", "The y argument is null.");
+            if (x == y)
+                return 0;
+
+            Int32 index = 0;
+
+            // look for the first different coordinate in the linestring
+            while (index < x.Count && index < y.Count)
+            {
+                Int32 comparison = _comparer.Compare(x.GetCoordinate(index), y.GetCoordinate(index));
+                if (comparison != 0)
+                    return comparison;
+                index++;
+            }
+
+            // check whether there are additional coordinates in either linestring
+            if (index < x.Count)
+                return 1;
+            if (index < y.Count)
+                return -1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Compares two <see cref="IBasicPolygon" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first <see cref="IBasicPolygon" /> to compare.</param>
+        /// <param name="y">The second <see cref="IBasicPolygon" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The x argument is null.
+        /// or
+        /// The y argument is null.
+        /// </exception>
+        public Int32 Compare(IBasicPolygon x, IBasicPolygon y)
+        {
+            if (x == null)
+                throw new ArgumentNullException("x", "The x argument is null.");
+            if (y == null)
+                throw new ArgumentNullException("y", "The y argument is null.");
+            if (x == y)
+                return 0;
+
+            // check the shell
+            Int32 shellCompare = Compare(x.Shell, y.Shell);
+            if (shellCompare != 0)
+                return shellCompare;
+
+            Int32 index = 0;
+
+            // look for the first different hole in the polygon
+            while (index < x.HoleCount && index < y.HoleCount)
+            {
+                Int32 holeCompare = Compare(x.GetHole(index), y.GetHole(index));
+                if (holeCompare != 0)
+                    return holeCompare;
+                index++;
+            }
+
+            // check whether there are additional holes in either polygon
+            if (index < x.HoleCount)
+                return 1;
+            if (index < y.HoleCount)
+                return -1;
+            return 0;
+        }
+
+
+        /// <summary>
+        /// Compares two <see cref="IEnumerable{IBasicGeometry}" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first <see cref="IEnumerable{IBasicGeometry}" /> to compare.</param>
+        /// <param name="y">The second <see cref="IEnumerable{IBasicGeometry}" /> to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        /// The x argument is null.
+        /// or
+        /// The y argument is null.
+        /// </exception>
+        public Int32 Compare(IEnumerable<IBasicGeometry> x, IEnumerable<IBasicGeometry> y)
+        {
+            if (x == null)
+                throw new ArgumentNullException("x", "The x argument is null.");
+            if (y == null)
+                throw new ArgumentNullException("y", "The y argument is null.");
+            if (x == y)
+                return 0;
+
+            IEnumerator<IBasicGeometry> enumX = x.GetEnumerator();
+            IEnumerator<IBasicGeometry> enumY = y.GetEnumerator();
+
+            // look for the first different element in the collection
+            while (enumX.MoveNext() && enumY.MoveNext())
+            {
+                Int32 comparison = Compare(enumX.Current, enumY.Current);
+                if (comparison != 0)
+                    return comparison;
+            }
+
+            // check whether there are additional elements in either collection
+            if (enumX.MoveNext())
+                return 1;
+            if (enumY.MoveNext())
+                return -1;
+            return 0;
+        }
+
+
+        #endregion
+
+        #region Geometry comparison
 
         /// <summary>
         /// Compares two <see cref="IGeometry" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
@@ -76,9 +287,9 @@ namespace ELTE.AEGIS
                 return 0;
 
             // in case the classes are different, the order is specified by the following array
-            
-            Int32 xIndex = Array.IndexOf(_geometryOrder, x.Name);
-            Int32 yIndex = Array.IndexOf(_geometryOrder, y.Name);
+
+            Int32 xIndex = x.GetType().GetInterfaces().Max(interfaceType => Array.IndexOf(_geometryOrder, interfaceType));
+            Int32 yIndex = y.GetType().GetInterfaces().Max(interfaceType => Array.IndexOf(_geometryOrder, interfaceType));
 
             if (xIndex < yIndex)
                 return -1;
@@ -105,7 +316,7 @@ namespace ELTE.AEGIS
 
             throw new NotSupportedException("Comparison of the specified geometries is not supported.");
         }
-        
+
         /// <summary>
         /// Compares two <see cref="IPoint" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
         /// </summary>
@@ -119,14 +330,7 @@ namespace ELTE.AEGIS
         /// </exception>
         public Int32 Compare(IPoint x, IPoint y)
         {
-            if (x == null)
-                throw new ArgumentNullException("x", "The x argument is null.");
-            if (y == null)
-                throw new ArgumentNullException("y", "The y argument is null.");
-            if (x == y)
-                return 0;
-
-            return _comparer.Compare(x.Coordinate, y.Coordinate);
+            return Compare(x as IBasicPoint, y as IBasicPoint);
         }
 
         /// <summary>
@@ -142,30 +346,7 @@ namespace ELTE.AEGIS
         /// </exception>
         public Int32 Compare(ILineString x, ILineString y)
         {
-            if (x == null)
-                throw new ArgumentNullException("x", "The x argument is null.");
-            if (y == null)
-                throw new ArgumentNullException("y", "The y argument is null.");
-            if (x == y)
-                return 0;
-
-            Int32 index = 0;
-
-            // look for the first different coordinate in the linestring
-            while (index < x.Count && index < y.Count)
-            {
-                Int32 comparison = _comparer.Compare(x.GetCoordinate(index), y.GetCoordinate(index));
-                if (comparison != 0)
-                    return comparison;
-                index++;
-            }
-
-            // check whether there are additional coordinates in either linestring
-            if (index < x.Count)
-                return 1;
-            if (index < y.Count)
-                return -1;
-            return 0;
+            return Compare(x as IBasicLineString, y as IBasicLineString);
         }
 
         /// <summary>
@@ -213,10 +394,10 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Compares two <see cref="IEnumerable{ELTE.AEGIS.IGeometry}" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// Compares two <see cref="IEnumerable{IGeometry}" /> instances and returns a value indicating whether one is less than, equal to, or greater than the other.
         /// </summary>
-        /// <param name="x">The first <see cref="IEnumerable{ELTE.AEGIS.IGeometry}" /> to compare.</param>
-        /// <param name="y">The second <see cref="IEnumerable{ELTE.AEGIS.IGeometry}" /> to compare.</param>
+        /// <param name="x">The first <see cref="IEnumerable{IGeometry}" /> to compare.</param>
+        /// <param name="y">The second <see cref="IEnumerable{IGeometry}" /> to compare.</param>
         /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
         /// <exception cref="System.ArgumentNullException">
         /// The x argument is null.
