@@ -401,11 +401,39 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Computes the dot product of two <see cref="CoordinateVector" /> instances.
+        /// Computes the dot product of two vectors.
+        /// </summary>
+        /// <param name="firstX">The X coordinate of the first vector.</param>
+        /// <param name="firstY">The Y coordinate of the first vector.</param>
+        /// <param name="secondX">The X coordinate of the second vector.</param>
+        /// <param name="secondY">The Y coordinate of the second vector.</param>
+        /// <returns>The dot product of two vectors.</returns>
+        public static Double DotProduct(Double firstX, Double firstY, Double secondX, Double secondY)
+        {
+            return firstX * secondX + firstY * secondY;
+        }
+
+        /// <summary>
+        /// Computes the dot product of two vectors.
+        /// </summary>
+        /// <param name="firstX">The X coordinate of the first vector.</param>
+        /// <param name="firstY">The Y coordinate of the first vector.</param>
+        /// <param name="firstZ">The Z coordinate of the first vector.</param>
+        /// <param name="secondX">The X coordinate of the second vector.</param>
+        /// <param name="secondY">The Y coordinate of the second vector.</param>
+        /// <param name="secondZ">The Z coordinate of the second vector.</param>
+        /// <returns>The dot product of two vectors.</returns>
+        public static Double DotProduct(Double firstX, Double firstY, Double firstZ, Double secondX, Double secondY, Double secondZ)
+        {
+            return firstX * secondX + firstY * secondY + firstZ * secondZ;
+        }
+
+        /// <summary>
+        /// Computes the dot product of two vectors.
         /// </summary>
         /// <param name="first">The first vector.</param>
         /// <param name="second">The second vector.</param>
-        /// <returns>The dot product of two <see cref="CoordinateVector" /> instances.</returns>
+        /// <returns>The dot product of two vectors.</returns>
         public static Double DotProduct(CoordinateVector first, CoordinateVector second)
         {
             return first._x * second._x + first._y * second._y + first._z * second._z;
