@@ -1206,16 +1206,17 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 case TiffPhotometricInterpretation.YCbCr:
                     return RasterPresentation.CreateTrueColorPresentation(RasterColorSpace.YCbCr);
                 case TiffPhotometricInterpretation.PaletteColor:
-                    Dictionary<Int32, UInt32[]> colorMap = new Dictionary<Int32, UInt32[]>();
-                    for (Int32 entryIndex = 0; entryIndex < _imageFileDirectories[_currentImageIndex][TiffTag.ColorPalette].Length; entryIndex += 3)
+                    Dictionary<Int32, UInt16[]> colorPalette = new Dictionary<Int32, UInt16[]>();
+                    Int32 valueCount = _imageFileDirectories[_currentImageIndex][TiffTag.ColorMap].Length / 3;
+                    for (Int32 valueIndex = 0; valueIndex < valueCount; valueIndex++)
                     {
-                        colorMap.Add(entryIndex / 3, new UInt32[] { 
-                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorPalette][entryIndex]),
-                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorPalette][entryIndex + 1]),
-                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorPalette][entryIndex + 2]) 
+                        colorPalette.Add(valueIndex, new UInt16[] {
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorMap][valueIndex]),
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorMap][valueCount + valueIndex]),
+                            Convert.ToUInt16(_imageFileDirectories[_currentImageIndex][TiffTag.ColorMap][2 * valueCount + valueIndex])
                         });
                     }
-                    return RasterPresentation.CreatePresudoColorPresentation(colorMap);
+                    return RasterPresentation.CreatePresudoColorPresentation(colorPalette);
                 default:
                     return null; // TODO: support other interpretations
             }

@@ -33,9 +33,9 @@ namespace ELTE.AEGIS
         private RasterColorSpaceBand[] _bands;
 
         /// <summary>
-        /// The color map used in pseudo-color and density slicing modes.
+        /// The color palette used in pseudo-color and density slicing modes.
         /// </summary>
-        private IDictionary<Int32, UInt32[]> _colorMap;
+        private Dictionary<Int32, UInt16[]> _colorPalette;
 
         #endregion
 
@@ -45,13 +45,13 @@ namespace ELTE.AEGIS
         /// The presentation model.
         /// </summary>
         /// <value>The presentation model of the raster.</value>
-        public RasterPresentationModel Model { get; private set; } 
+        public RasterPresentationModel Model { get; private set; }
 
         /// <summary>
-        /// The color map.
+        /// The color palette.
         /// </summary>
-        /// <value>The read-only color map used in pseudo-color and density slicing modes.</value>
-        public IDictionary<Int32, UInt32[]> ColorMap { get { return _colorMap == null ? null : _colorMap.IsReadOnly ? _colorMap : _colorMap.AsReadOnly(); } }
+        /// <value>The read-only color palette used in pseudo-color and density slicing modes.</value>
+        public IReadOnlyDictionary<Int32, UInt16[]> ColorPalette { get { return _colorPalette; } }
         
         /// <summary>
         /// The color space.
@@ -90,18 +90,18 @@ namespace ELTE.AEGIS
         /// Initializes a new instance of the <see cref="RasterPresentation" /> class.
         /// </summary>
         /// <param name="model">The presentation model.</param>
-        /// <param name="colorMap">The color map.</param>
+        /// <param name="colorPalette">The color palette.</param>
         /// <exception cref="System.ArgumentException">Only pseudo-color and density slicing models may define a color map.</exception>
         /// <exception cref="System.ArgumentNullException">The color map is null.</exception>
-        public RasterPresentation(RasterPresentationModel model, IDictionary<Int32, UInt32[]> colorMap)
+        public RasterPresentation(RasterPresentationModel model, IReadOnlyDictionary<Int32, UInt16[]> colorPalette)
         {
             if (model != RasterPresentationModel.DensitySlicing && model != RasterPresentationModel.PseudoColor)
                 throw new ArgumentException("Only pseudo-color and density slicing models can define a color map.", "model");
-            if (colorMap == null)
+            if (colorPalette == null)
                 throw new ArgumentNullException("colorMap", "The color map is null.");
 
             Model = model;
-            _colorMap = colorMap;
+            _colorPalette = colorPalette.ToDictionary(pair => pair.Key, pair => pair.Value);
             _bands = new RasterColorSpaceBand[1] { RasterColorSpaceBand.Value };
         }
 
@@ -261,23 +261,38 @@ namespace ELTE.AEGIS
         }
 
         /// <summary>
-        /// Creates a pseudo-color presentation using a color map.
+        /// Creates a pseudo-color presentation using a color palette.
         /// </summary>
-        /// <returns>A pseudo-color presentation using a color map.</returns>
-        /// <exception cref="System.ArgumentNullException">The color map is null.</exception>
-        public static RasterPresentation CreatePresudoColorPresentation(IDictionary<Int32, UInt32[]> colorMap)
+        /// <returns>A pseudo-color presentation using a color palette.</returns>
+        /// <exception cref="System.ArgumentNullException">The color palette is null.</exception>
+        public static RasterPresentation CreatePresudoColorPresentation(UInt16[][] colorPalette)
         {
-            return new RasterPresentation(RasterPresentationModel.PseudoColor, colorMap);
+            Dictionary<Int32, UInt16[]> colorDictionary = new Dictionary<Int32, UInt16[]>(colorPalette.Length);
+
+            for (Int32 index = 0; index < colorPalette.Length; index++)
+                colorDictionary.Add(index, colorPalette[index]);
+
+            return CreatePresudoColorPresentation(colorDictionary);
         }
 
         /// <summary>
-        /// Creates a density slicing presentation using a color map.
+        /// Creates a pseudo-color presentation using a color palette.
         /// </summary>
-        /// <returns>A density slicing presentation using a color map.</returns>
-        /// <exception cref="System.ArgumentNullException">The color map is null.</exception>
-        public static RasterPresentation CreateDencitySlicingPresentation(IDictionary<Int32, UInt32[]> colorMap)
+        /// <returns>A pseudo-color presentation using a color palette.</returns>
+        /// <exception cref="System.ArgumentNullException">The color palette is null.</exception>
+        public static RasterPresentation CreatePresudoColorPresentation(IReadOnlyDictionary<Int32, UInt16[]> colorPalette)
         {
-            return new RasterPresentation(RasterPresentationModel.DensitySlicing, colorMap);
+            return new RasterPresentation(RasterPresentationModel.PseudoColor, colorPalette);
+        }
+
+        /// <summary>
+        /// Creates a density slicing presentation using a color palette.
+        /// </summary>
+        /// <returns>A density slicing presentation using a color palette.</returns>
+        /// <exception cref="System.ArgumentNullException">The color palette is null.</exception>
+        public static RasterPresentation CreateDencitySlicingPresentation(IReadOnlyDictionary<Int32, UInt16[]> colorPalette)
+        {
+            return new RasterPresentation(RasterPresentationModel.DensitySlicing, colorPalette);
         }
 
         #endregion

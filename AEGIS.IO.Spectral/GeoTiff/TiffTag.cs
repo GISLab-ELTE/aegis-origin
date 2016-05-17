@@ -134,9 +134,9 @@ namespace ELTE.AEGIS.IO.GeoTiff
         public const UInt16 HorizontalDifferencing = 317;
 
         /// <summary>
-        /// The color palette tag.
+        /// The color map tag.
         /// </summary>
-        public const UInt16 ColorPalette = 320;
+        public const UInt16 ColorMap = 320;
 
         /// <summary>
         /// The tile width tag.

@@ -309,19 +309,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             // add color palette
             if (photometricInterpretation == TiffPhotometricInterpretation.PaletteColor)
             {
-                Object[] colorMap = new Object[3 * Calculator.Pow(2, geometry.Raster.RadiometricResolution)];
-
-                for (Int32 valueIndex = 0; valueIndex < colorMap.Length / 3; valueIndex++)
-                {
-                    if (!geometry.Presentation.ColorMap.ContainsKey(valueIndex))
-                        continue;
-
-                    colorMap[3 * valueIndex] = geometry.Presentation.ColorMap[valueIndex][0];
-                    colorMap[3 * valueIndex + 1] = geometry.Presentation.ColorMap[valueIndex][1];
-                    colorMap[3 * valueIndex + 2] = geometry.Presentation.ColorMap[valueIndex][2];
-                }
-
-                imageFileDirectory.Add(TiffTag.ColorPalette, colorMap);
+                imageFileDirectory.Add(TiffTag.ColorMap, ComputeColorMap(geometry));
             }
 
             // add metadata
@@ -695,6 +683,30 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     throw new InvalidDataException("The specified presentation is not supported.");
             }
             // TODO: process other presentations
+        }
+
+        /// <summary>
+        /// Computes the color map.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <returns>The computed color map.</returns>
+        private Object[] ComputeColorMap(ISpectralGeometry geometry)
+        {
+            if (geometry.Presentation.ColorPalette == null)
+                return null;
+
+            Int32 valueCount = (Int32)Math.Pow(2, geometry.Raster.RadiometricResolution);
+
+            Object[] colorMap = Enumerable.Repeat((UInt16)0, 3 * valueCount).Cast<Object>().ToArray();
+
+            foreach (Int32 entryIndex in geometry.Presentation.ColorPalette.Keys)
+            {
+                colorMap[entryIndex] = (UInt16)geometry.Presentation.ColorPalette[entryIndex][0];
+                colorMap[valueCount + entryIndex] = (UInt16)geometry.Presentation.ColorPalette[entryIndex][1];
+                colorMap[2 * valueCount + entryIndex] = (UInt16)geometry.Presentation.ColorPalette[entryIndex][2];
+            }
+
+            return colorMap;
         }
 
         /// <summary>
