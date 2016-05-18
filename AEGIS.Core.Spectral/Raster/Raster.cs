@@ -470,6 +470,22 @@ namespace ELTE.AEGIS.Raster
         #region IRaster methods
 
         /// <summary>
+        /// Determines whether the raster contains the specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns><c>true</c> if the raster contains the <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
+        public Boolean Contains(Coordinate coordinate)
+        {
+            if (Mapper == null)
+                return false;
+
+            Int32 rowIndex, columnIndex;
+            Mapper.MapRaster(coordinate, out rowIndex, out columnIndex);
+
+            return (rowIndex >= 0 && rowIndex < NumberOfRows && columnIndex >= 0 && columnIndex < NumberOfColumns);
+        }
+
+        /// <summary>
         /// Returns a band at a specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the band.</param>

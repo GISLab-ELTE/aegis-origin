@@ -230,6 +230,13 @@ namespace ELTE.AEGIS
         #region Methods
 
         /// <summary>
+        /// Determines whether the raster contains the specified coordinate.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns><c>true</c> if the raster contains the <paramref name="coordinate"/>; otherwise, <c>false</c>.</returns>
+        Boolean Contains(Coordinate coordinate);
+
+        /// <summary>
         /// Returns a band at a specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the band.</param>
