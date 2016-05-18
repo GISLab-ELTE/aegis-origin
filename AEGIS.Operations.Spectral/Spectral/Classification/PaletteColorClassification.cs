@@ -82,7 +82,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public PaletteColorClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.PaletteColorClassification, parameters)
         {
-            _palette = ResolveParameter<UInt32[][]>(SpectralOperationParameters.ColorPalette);
+            _palette = ResolveParameter<UInt16[][]>(SpectralOperationParameters.ColorPalette).Select(color => color.Cast<UInt32>().ToArray()).ToArray();
         }
 
         #endregion

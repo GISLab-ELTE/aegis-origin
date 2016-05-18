@@ -144,7 +144,7 @@ namespace ELTE.AEGIS.Operations.Spectral
             get
             {
                 return _colorPalette ?? (_colorPalette =
-                    OperationParameter.CreateRequiredParameter<UInt32[][]>("AEGIS::213801", "Color palette",
+                    OperationParameter.CreateRequiredParameter<UInt16[][]>("AEGIS::213801", "Color palette",
                                                                            "An array specifying an RGB color palette.", null)
                     );
             }
