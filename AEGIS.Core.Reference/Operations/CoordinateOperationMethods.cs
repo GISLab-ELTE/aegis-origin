@@ -120,6 +120,7 @@ namespace ELTE.AEGIS.Reference.Operations
         private static CoordinateOperationMethod _geocentricTranslationGeoc;
         private static CompoundCoordinateOperationMethod _geocentricTranslationGeog2D;
         private static CompoundCoordinateOperationMethod _geocentricTranslationGeog3D;
+        private static CoordinateOperationMethod _gnomonicProjection;
         private static CoordinateOperationMethod _guamProjection;
         private static CoordinateOperationMethod _hotineObliqueMercatorAProjection;
         private static CoordinateOperationMethod _hotineObliqueMercatorBProjection;
@@ -160,11 +161,13 @@ namespace ELTE.AEGIS.Reference.Operations
         private static CoordinateOperationMethod _reversiblePolynomial4Transformation;
         private static CoordinateOperationMethod _reversiblePolynomial13Transformation;
         private static CoordinateOperationMethod _similarityTransformation;
+        private static CoordinateOperationMethod _sinusoidalProjection;
         private static CoordinateOperationMethod _transverseMercatorProjection;
         private static CoordinateOperationMethod _transverseMercatorSouthProjection;
         private static CoordinateOperationMethod _transverseMercatorZonedProjection;
         private static CoordinateOperationMethod _verticalPerspectiveOrthographicProjection;
         private static CoordinateOperationMethod _verticalPerspectiveProjection;
+        private static CoordinateOperationMethod _worldMillerCylindricalProjection;
 
         #endregion
 
@@ -785,6 +788,24 @@ namespace ELTE.AEGIS.Reference.Operations
                                                       CoordinateOperationParameters.EllipsoidalHeightOfTopocentricOrigin);
 
                 return _geographicToTopocentricConversion;
+            }
+        }
+
+        /// <summary>
+        /// Gnomonic Projection.
+        /// </summary>
+        public static CoordinateOperationMethod GnomonicProjection
+        {
+            get
+            {
+                if (_gnomonicProjection == null)
+                    _gnomonicProjection =
+                        new CoordinateOperationMethod("AEGIS::735137", "Gnomonic Projection", true,
+                                                      CoordinateOperationParameters.LatitudeOfProjectionCentre,
+                                                      CoordinateOperationParameters.LongitudeOfProjectionCentre,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+                return _gnomonicProjection;
             }
         }
 
@@ -1714,6 +1735,24 @@ namespace ELTE.AEGIS.Reference.Operations
                 return _similarityTransformation;
             }
         }
+
+        /// <summary>
+        /// Sinusoidal Projection.
+        /// </summary>
+        public static CoordinateOperationMethod SinusoidalProjection
+        {
+            get
+            {
+                if (_sinusoidalProjection == null)
+                    _sinusoidalProjection =
+                        new CoordinateOperationMethod("ESRI::53008", "Sinusoidal Projection", true,
+                                                      CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+                return _sinusoidalProjection;
+            }
+        }
+
         /// <summary>
         /// Transverse Mercator.
         /// </summary>
@@ -1808,6 +1847,23 @@ namespace ELTE.AEGIS.Reference.Operations
                                                       CoordinateOperationParameters.ViewPointHeight);
 
                 return _verticalPerspectiveProjection;
+            }
+        }
+
+        /// <summary>
+        /// Miller Cylindrical Projection.
+        /// </summary>
+        public static CoordinateOperationMethod WorldMillerCylindricalProjection
+        {
+            get
+            {
+                if (_worldMillerCylindricalProjection == null)
+                    _worldMillerCylindricalProjection =
+                        new CoordinateOperationMethod("ESRI::54002", "Miller Cylindrical Projection", true,
+                                                      CoordinateOperationParameters.LongitudeOfNaturalOrigin,
+                                                      CoordinateOperationParameters.FalseEasting,
+                                                      CoordinateOperationParameters.FalseNorthing);
+                return _worldMillerCylindricalProjection;
             }
         }
 

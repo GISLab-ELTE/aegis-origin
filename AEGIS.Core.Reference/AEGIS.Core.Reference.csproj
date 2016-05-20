@@ -83,6 +83,7 @@
     <Compile Include="Operations\Projections\AlbersEqualAreaProjection.cs" />
     <Compile Include="Operations\Projections\BonneProjection.cs" />
     <Compile Include="Operations\Projections\BonneSouthOrientatedProjection.cs" />
+    <Compile Include="Operations\Projections\GnomonicProjection.cs" />
     <Compile Include="Operations\Projections\LabordeObliqueMercatorProjection.cs" />
     <Compile Include="Operations\Projections\LambertCylindricalEqualAreaEllipsoidalProjection.cs" />
     <Compile Include="Operations\Projections\LambertCylindricalEqualAreaSphericalProjection.cs" />
@@ -91,8 +92,10 @@
     <Compile Include="Operations\Projections\PolarStereographicCProjection.cs" />
     <Compile Include="Operations\Projections\PolarStereographicProjection.cs" />
     <Compile Include="Operations\Projections\PopularVisualisationPseudoMercatorProjection.cs" />
+    <Compile Include="Operations\Projections\SinusoidalProjection.cs" />
     <Compile Include="Operations\Projections\VerticalPerspectiveOrthographicProjection.cs" />
     <Compile Include="Operations\Projections\VerticalPerspectiveProjection.cs" />
+    <Compile Include="Operations\Projections\WorldMillerCylindricalProjection.cs" />
     <Compile Include="ProjectedCoordinateReferenceSystem.cs" />
     <Compile Include="ProjectedCoordinateReferenceSystems.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

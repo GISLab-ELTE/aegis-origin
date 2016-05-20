@@ -49,6 +49,7 @@
     <Compile Include="Operations\Projections\AmericanPolyconicProjectionTest.cs" />
     <Compile Include="Operations\Projections\CassiniSoldnerProjectionTest.cs" />
     <Compile Include="Operations\Projections\EquidistantCylindricalProjectionTest.cs" />
+    <Compile Include="Operations\Projections\GnomonicProjectionTest.cs" />
     <Compile Include="Operations\Projections\GuamProjectionTest.cs" />
     <Compile Include="Operations\Projections\HotineObliqueMercatorProjectionTest.cs" />
     <Compile Include="Operations\Projections\KrovakProjectionTest.cs" />
@@ -59,8 +60,10 @@
     <Compile Include="Operations\Projections\ModifiedAzimuthalEquidistantProjectionTest.cs" />
     <Compile Include="Operations\Projections\ObliqueStereographicProjectionTest.cs" />
     <Compile Include="Operations\Projections\PolarStereographicProjectionTest.cs" />
+    <Compile Include="Operations\Projections\SinusoidalProjectionTest.cs" />
     <Compile Include="Operations\Projections\TransverseMercatorProjectionTest.cs" />
     <Compile Include="Operations\Projections\VerticalPerspectiveProjectionTest.cs" />
+    <Compile Include="Operations\Projections\WorldMillerCylindricalProjectionTest.cs" />
     <Compile Include="Operations\Transformations\P6SeismicBinGridTransformationTest.cs" />
     <Compile Include="Operations\Transformations\SimilarityTransformationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
