@@ -839,18 +839,18 @@ namespace ELTE.AEGIS.IO.GeoTiff
                     return null;
                 case 18:
                     return CoordinateOperationMethods.CassiniSoldnerProjection;
-                case 19: // CT_Gnomonic
-                    return null;
-                case 20: // CT_MillerCylindrical 
-                    return null;
+                case 19:
+                    return CoordinateOperationMethods.GnomonicProjection;
+                case 20:
+                    return CoordinateOperationMethods.WorldMillerCylindricalProjection;
                 case 21: // CT_Orthographic 
                     return null;
                 case 22: // CT_Polyconic 
                     return null;
                 case 23: // CT_Robinson 
                     return null;
-                case 24: // CT_Sinusoidal 
-                    return null;
+                case 24:
+                    return CoordinateOperationMethods.SinusoidalProjection;
                 case 25: // CT_VanDerGrinten 
                     return null;
                 case 26: // CT_NewZealandMapGrid 
