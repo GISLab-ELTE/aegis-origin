@@ -221,8 +221,9 @@ namespace ELTE.AEGIS.Operations
         /// <summary>
         /// Executes the operation asynchronously.
         /// </summary>
+        /// <returns>The task performing the asynchronous operation.</returns>
         /// <exception cref="System.InvalidOperationException">Execution is already performed on the operation.</exception>
-        public async void ExecuteAsync()
+        public async Task ExecuteAsync()
         {
             if (_state == OperationState.Preparing || _state == OperationState.Executing || _state == OperationState.Finalizing)
                 throw new InvalidOperationException("Execution is already performed on the operation.");
