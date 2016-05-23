@@ -108,7 +108,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         {
             get
             {
-                return _landsat ?? (_landsat = new MetafileFormat("AEGIS:000000", "Landsat", "1.0", "*_MTL.txt", String.Empty, "txt"));
+                return _landsat ?? (_landsat = new MetafileFormat("AEGIS:000000", "Landsat", "1.0", "_MTL.txt", String.Empty, "txt"));
             }
         }
 
