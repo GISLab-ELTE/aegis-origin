@@ -669,7 +669,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             
             // fit the maximum number of readable bytes to the radiometric resolution
             UInt32 numberOfReadableBytes = NumberOfReadableBytes;
-            while (numberOfReadableBytes * 8 % raster.RadiometricResolution != 0)
+            while (numberOfReadableBytes * 8 % radiometricResolutions.Sum() != 0)
                 numberOfReadableBytes--;
 
             // read the stripes
