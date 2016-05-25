@@ -57,9 +57,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private Segment[] _clusters;
         
         /// <summary>
-        /// The intermediate segment collection.
+        /// The intermediate result segment collection.
         /// </summary>
-        private SegmentCollection _intermediateSegmentCollection;
+        private SegmentCollection _intermediateResult;
 
         #endregion
 
@@ -137,7 +137,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <returns>The resulting object.</returns>
         protected override SegmentCollection PrepareResult()
         {
-            _intermediateSegmentCollection = CreateResultCollection();
+            _intermediateResult = CreateResultCollection();
 
             return null;
         }
@@ -161,7 +161,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <returns>The resulting object.</returns>
         protected override SegmentCollection FinalizeResult()
         {
-            return _intermediateSegmentCollection;
+            return _intermediateResult;
         }
 
         #endregion
@@ -222,11 +222,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             while (!isConvergent && steps < NumberOfSteps)
             {
                 Int32 segmentIndex = 0;
-                Segment[] segments = Result.GetSegments().ToArray();
+                Segment[] segments = _intermediateResult.GetSegments().ToArray();
 
                 foreach (Segment segment in segments)
                 {
-                    if (!Result.Contains(segment))
+                    if (!_intermediateResult.Contains(segment))
                         continue;
 
                     // find the cluster with the minimum distance
@@ -245,7 +245,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     if (_clusters[segmentIndex] == null)
                         _clusters[segmentIndex] = segment;
                     else
-                        Result.MergeSegments(_clusters[segmentIndex], segment);
+                        _intermediateResult.MergeSegments(_clusters[segmentIndex], segment);
                 }
 
                 isConvergent = IsConvergent();
@@ -262,7 +262,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         _clusters[i] = null;
                     }
 
-                    _intermediateSegmentCollection = CreateResultCollection();
+                    _intermediateResult = CreateResultCollection();
                 }
             }
         }
@@ -301,9 +301,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         }
 
                         if (_clusters[segmentIndex] == null)
-                            _clusters[segmentIndex] = Result.GetSegment(row, column);
+                            _clusters[segmentIndex] = _intermediateResult.GetSegment(row, column);
                         else
-                            Result.MergeSegments(_clusters[segmentIndex], row, column);
+                            _intermediateResult.MergeSegments(_clusters[segmentIndex], row, column);
                     }
                 }
 
@@ -321,7 +321,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         _clusters[i] = null;
                     }
 
-                    _intermediateSegmentCollection = CreateResultCollection();
+                    _intermediateResult = CreateResultCollection();
                 }
             }
         }
