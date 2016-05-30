@@ -110,6 +110,9 @@ namespace ELTE.AEGIS.Collections.Segmentation
             }
             if (source._variance != null)
             {
+                _meanSquare = new Double[source._meanSquare.Length];
+                Array.Copy(source._meanSquare, _meanSquare, source._meanSquare.Length);
+
                 _variance = new Double[source._variance.Length];
                 Array.Copy(source._variance, _variance, source._variance.Length);
             }
