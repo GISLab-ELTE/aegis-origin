@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,6 +67,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErdasImagine\Objects\BaseData.cs" />
+    <Compile Include="ErdasImagine\Objects\EhfaEntry.cs" />
+    <Compile Include="ErdasImagine\Objects\EhfaObject.cs" />
+    <Compile Include="ErdasImagine\Objects\EhfaStructure.cs" />
+    <Compile Include="ErdasImagine\Objects\ImageLayer.cs" />
+    <Compile Include="ErdasImagine\Objects\IEhfaObject.cs" />
+    <Compile Include="ErdasImagine\ErdasImagineReader.cs" />
+    <Compile Include="ErdasImagine\HfaDictionary.cs" />
+    <Compile Include="ErdasImagine\Objects\PixelType.cs" />
+    <Compile Include="ErdasImagine\Objects\PixelTypeInfo.cs" />
+    <Compile Include="ErdasImagine\Types\DataPlacement.cs" />
+    <Compile Include="ErdasImagine\Types\EhfaPrimitiveType.cs" />
+    <Compile Include="ErdasImagine\Types\EhfaStructureType.cs" />
+    <Compile Include="ErdasImagine\Types\IEhfaObjectType.cs" />
+    <Compile Include="ErdasImagine\Types\ItemType.cs" />
+    <Compile Include="ErdasImagine\Types\ItemTypeInfo.cs" />
     <Compile Include="GeoTiff\GeoKey.cs" />
     <Compile Include="GeoTiff\GeoTiffGroupReader.cs">
       <SubType>Code</SubType>
@@ -123,6 +140,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

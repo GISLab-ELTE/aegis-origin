@@ -87,6 +87,7 @@ namespace ELTE.AEGIS.IO
         private static GeometryStreamFormat _genericRawImage;
         private static GeometryStreamFormat _geoTiff;
         private static GeometryStreamFormat _tiff;
+        private static GeometryStreamFormat _erdasImagine;
 
         #endregion
 
@@ -180,6 +181,22 @@ namespace ELTE.AEGIS.IO
                     new GeometryStreamFormat("AEGIS::610201", "Tagged Image File Format",
                                              "© 1986-1988, 1992 Adobe Systems, Inc.", new String[] { "TIFF" }, "6.0",
                                              new String[] { "tif", "tiff" }, new String[] { "image/tiff", "image/tiff-fx" },
+                                             new Type[] { typeof(ISpectralGeometry) },
+                                             new GeometryModel[] { GeometryModel.None }));
+            }
+        }
+
+        /// <summary>
+        /// Erdas Imagine file format.
+        /// </summary>
+        public static GeometryStreamFormat ErdasImagine
+        {
+            get
+            {
+                return _erdasImagine ?? (_erdasImagine =
+                    new GeometryStreamFormat("AEGIS::610301", "Erdas Imagine file format",
+                                             "", new String[] { "IMG" }, "9.1",
+                                             new String[] { "img", "IMG" }, new String[] { "image/img", "image/IMG" },
                                              new Type[] { typeof(ISpectralGeometry) },
                                              new GeometryModel[] { GeometryModel.None }));
             }
