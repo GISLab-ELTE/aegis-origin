@@ -214,6 +214,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             // variance computation
             if (statistics.HasFlag(SpectralStatistics.Variance) && raster.NumberOfColumns * raster.NumberOfRows > 1)
             {
+                _meanSquare = new Double[raster.NumberOfBands];
                 _variance = new Double[raster.NumberOfBands];
                 for (Int32 rowIndex = 0; rowIndex < raster.NumberOfRows; rowIndex++)
                 {
@@ -226,6 +227,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 for (Int32 bandIndex = 0; bandIndex < raster.NumberOfBands; bandIndex++)
                 {
+                    _meanSquare[bandIndex] = _mean[bandIndex] * _mean[bandIndex];
                     _variance[bandIndex] /= (raster.NumberOfColumns * raster.NumberOfRows - 1);
                 }
             }
