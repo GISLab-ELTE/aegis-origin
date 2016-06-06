@@ -24,27 +24,27 @@ namespace ELTE.AEGIS.Collections.Segmentation
     /// </summary>
     public class Segment
     {
-        #region Private fields
+        #region Protected fields
 
         /// <summary>
         /// The array of mean spectral values for each band.
         /// </summary>
-        private Double[] _mean;
+        protected Double[] _mean;
 
         /// <summary>
         /// The array of square mean spectral values for each band.
         /// </summary>
-        private Double[] _meanSquare;
+        protected Double[] _meanSquare;
 
         /// <summary>
         /// The array of spectral value variance for each band.
         /// </summary>
-        private Double[] _variance;
+        protected Double[] _variance;
 
         /// <summary>
         /// The matrix of comoment values between bands.
         /// </summary>
-        private Double[,] _comoment;
+        protected Double[,] _comoment;
 
         #endregion
 
@@ -269,7 +269,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Gets the number of spectral vectors within the set.
         /// </summary>
         /// <value>The number of spectral vectors within the set.</value>
-        public Int32 Count { get; private set; }
+        public Int32 Count { get; protected set; }
 
         /// <summary>
         /// Gets the number of bands.
@@ -293,7 +293,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// Gets the covariance of spectral values between the bands.
         /// </summary>
         /// <value>The covariance of spectral values between the bands.</value>
-        public Double[,] Covariance { get; private set; }
+        public Double[,] Covariance { get; protected set; }
 
         /// <summary>
         /// Gets or sets the Morton code of the segment.

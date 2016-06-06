@@ -166,7 +166,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// The number of segments within the collection.
         /// </summary>
         /// <value>The number of segments within the collection.</value>
-        public Int32 Count { get; set; }
+        public virtual Int32 Count { get; set; }
 
         /// <summary>
         /// The raster of the collection.
@@ -199,7 +199,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// </summary>
         /// <param name="segment">The segment.</param>
         /// <returns><c>true</c> if the collection contains the segment; otherwise <c>false</c>.</returns>
-        public Boolean Contains(Segment segment)
+        public virtual Boolean Contains(Segment segment)
         {
             return _segmentToIndexDictionary.ContainsKey(segment);
         }
@@ -219,7 +219,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The column index is equal to or greater than the number of columns.
         /// </exception>
-        public Segment GetSegment(Int32 rowIndex, Int32 columnIndex)
+        public virtual Segment GetSegment(Int32 rowIndex, Int32 columnIndex)
         {
             if (rowIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
@@ -277,7 +277,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <returns>The collection of spectral values.</returns>
         /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
         /// <exception cref="System.ArgumentException">The segment is not within the collection.</exception>
-        public IEnumerable<Double[]> GetFloatValues(Segment segment)
+        public virtual IEnumerable<Double[]> GetFloatValues(Segment segment)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -306,7 +306,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The band index is equal to or greater than the number of bands.
         /// </exception>
-        public IEnumerable<Double> GetFloatValues(Segment segment, Int32 bandIndex)
+        public virtual IEnumerable<Double> GetFloatValues(Segment segment, Int32 bandIndex)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -333,7 +333,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <returns>The collection of spectral values.</returns>
         /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
         /// <exception cref="System.ArgumentException">The segment is not within the collection.</exception>
-        public IEnumerable<UInt32[]> GetValues(Segment segment)
+        public virtual IEnumerable<UInt32[]> GetValues(Segment segment)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -362,7 +362,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The band index is equal to or greater than the number of bands.
         /// </exception>
-        public IEnumerable<UInt32> GetValues(Segment segment, Int32 bandIndex)
+        public virtual IEnumerable<UInt32> GetValues(Segment segment, Int32 bandIndex)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -390,7 +390,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="columnIndex">The column index.</param>
         /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
         /// <exception cref="System.ArgumentException">The segment is not within the collection.</exception>
-        public void GetIndex(Segment segment, out Int32 rowIndex, out Int32 columnIndex)
+        public virtual void GetIndex(Segment segment, out Int32 rowIndex, out Int32 columnIndex)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -420,7 +420,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The column index is equal to or greater than the number of columns.
         /// </exception>
-        public void MergeSegments(Segment segment, Int32 rowIndex, Int32 columnIndex)
+        public virtual void MergeSegments(Segment segment, Int32 rowIndex, Int32 columnIndex)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
@@ -469,7 +469,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The second segment is not within the collection.
         /// </exception>
-        public Segment MergeSegments(Segment first, Segment second)
+        public virtual Segment MergeSegments(Segment first, Segment second)
         {
             if (first == null)
                 throw new ArgumentNullException("first", "The first segment is null.");
@@ -519,7 +519,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The second column index is equal to or greater than the number of columns.
         /// </exception>
-        public void MergeSegments(Int32 firstRowIndex, Int32 firstColumnIndex, Int32 secondRowIndex, Int32 secondColumnIndex)
+        public virtual void MergeSegments(Int32 firstRowIndex, Int32 firstColumnIndex, Int32 secondRowIndex, Int32 secondColumnIndex)
         {
             if (firstRowIndex < 0)
                 throw new ArgumentOutOfRangeException("firstRowIndex", "The first row index is less than 0.");
@@ -594,7 +594,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// or
         /// The column index is equal to or greater than the number of columns.
         /// </exception>
-        public void SplitSegment(Int32 rowIndex, Int32 columnIndex)
+        public virtual void SplitSegment(Int32 rowIndex, Int32 columnIndex)
         {
             if (rowIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(rowIndex), "The row index is less than 0.");
@@ -614,7 +614,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
         /// <param name="segment">The segment.</param>
         /// <exception cref="System.ArgumentNullException">The segment is null.</exception>
         /// <exception cref="System.ArgumentException">The segment is not within the collection.</exception>
-        public void SplitSegment(Segment segment)
+        public virtual void SplitSegment(Segment segment)
         {
             if (segment == null)
                 throw new ArgumentNullException("segment", "The segment is null.");
