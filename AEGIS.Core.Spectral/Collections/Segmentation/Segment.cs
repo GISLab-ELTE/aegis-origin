@@ -560,8 +560,14 @@ namespace ELTE.AEGIS.Collections.Segmentation
 
                 if (_variance != null)
                 {
-                    _meanSquare[bandIndex] = _meanSquare[bandIndex] + other._meanSquare[bandIndex] + meanDelta * meanDelta * previousCount * other.Count / Count;
-                    _variance[bandIndex] = _meanSquare[bandIndex] / (Count - 1);
+                    if (Count == 2)
+                        _variance[bandIndex] = Math.Sqrt(Calculator.Pow(_mean[bandIndex] - previousMean, 2) + Calculator.Pow(_mean[bandIndex] - other._mean[bandIndex], 2));
+                    else
+                    {
+                        _variance[bandIndex] = (previousCount - 1) * _variance[bandIndex] + (other.Count - 1) * other._variance[bandIndex];
+                        _variance[bandIndex] += Calculator.Pow(previousMean - other._mean[bandIndex], 2) * (previousCount - 1) * (other.Count - 1) / (Count - 2);
+                        _variance[bandIndex] /= Count;
+                    }
                 }
 
                 for (Int32 otherBandIndex = bandIndex + 1; otherBandIndex < NumberOfBands; otherBandIndex++)
