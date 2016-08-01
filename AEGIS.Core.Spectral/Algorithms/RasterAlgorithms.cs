@@ -27,15 +27,24 @@ namespace ELTE.AEGIS.Algorithms
         #region Radiometric resolution
 
         /// <summary>
+        /// Computes the maximum value of a raster.
+        /// </summary>
+        /// <param name="radiometricResolution">The radiometric resolution.</param>
+        /// <returns>The maximum value of the specified radiometric resolution.</returns>
+        /// <exception cref="System.ArgumenNulltException">The raster is null. </exception>
+        public static UInt32 RadiometricResolutionMax(IRaster raster)
+        {
+            if (raster == null)
+                throw new ArgumentNullException(nameof(raster), "The raster is null.");
+
+            return RadiometricResolutionMax(raster.RadiometricResolution);
+        }
+
+        /// <summary>
         /// Computes the maximum value of a radiometric resolution.
         /// </summary>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
         /// <returns>The maximum value of the specified radiometric resolution.</returns>
-        /// <exception cref="System.ArgumentException">
-        /// The radiometric resolution is less than 1.
-        /// or
-        /// The radiometric resolution is greater than 32.
-        /// </exception>
         public static UInt32 RadiometricResolutionMax(Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
@@ -51,7 +60,7 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         /// <param name="spectralValue">The spectral value.</param>
         /// <param name="radiometricResolution">The radiometric resolution.</param>
-        /// <returns></returns>
+        /// <returns>The value restricted for the specified radiometric resolution.</returns>
         public static UInt32 Restrict(UInt32 spectralValue, Int32 radiometricResolution)
         {
             if (radiometricResolution < 1)
