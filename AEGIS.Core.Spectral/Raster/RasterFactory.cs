@@ -1,5 +1,5 @@
 ﻿/// <copyright file="RasterFactory.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -13,9 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Collections.Segmentation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ELTE.AEGIS.Raster
 {
@@ -271,6 +270,36 @@ namespace ELTE.AEGIS.Raster
         public IRaster CreateMask(IRaster raster, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns)
         {
             return new MaskedRaster(this, raster, rowIndex, columnIndex, numberOfRows, numberOfColumns);
+        }
+
+        #endregion
+
+        #region Factory methods for segmented rasters
+
+        /// <summary>
+        /// Creates a segmented raster.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <returns>The produced raster.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        public IRaster CreateSegmentedRaster(IRaster raster)
+        {
+            if (raster == null)
+                throw new ArgumentNullException(nameof(raster), "The raster is null.");
+
+            return new SegmentedRaster(new SegmentCollection(raster));
+        }
+
+        /// <summary>
+        /// Creates a segmented raster.
+        /// </summary>
+        /// <param name="segments">The segment collection.</param>
+        /// <returns>The produced raster.</returns>
+        /// <exception cref="System.ArgumentNullException">The segment collection is null.</exception>
+        /// <exception cref="System.ArgumentException">The segment collection has no raster.</exception>
+        public IRaster CreateSegmentedRaster(SegmentCollection segments)
+        {
+            return new SegmentedRaster(segments);
         }
 
         #endregion

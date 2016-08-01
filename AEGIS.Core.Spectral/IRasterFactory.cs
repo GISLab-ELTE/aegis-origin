@@ -13,8 +13,8 @@
 /// </copyright>
 /// <author>Roberto Giachetta</author>
 
+using ELTE.AEGIS.Collections.Segmentation;
 using System;
-using System.Collections.Generic;
 
 namespace ELTE.AEGIS
 {
@@ -166,6 +166,27 @@ namespace ELTE.AEGIS
         /// The starting columns index and the number of columns is greater than the number of rows in the source raster.
         /// </exception>
         IRaster CreateMask(IRaster raster, Int32 rowIndex, Int32 columnIndex, Int32 numberOfRows, Int32 numberOfColumns);
+
+        #endregion
+
+        #region Factory methods for segmented rasters
+
+        /// <summary>
+        /// Creates a segmented raster.
+        /// </summary>
+        /// <param name="raster">The raster.</param>
+        /// <returns>The produced raster.</returns>
+        /// <exception cref="System.ArgumentNullException">The raster is null.</exception>
+        IRaster CreateSegmentedRaster(IRaster raster);
+
+        /// <summary>
+        /// Creates a segmented raster.
+        /// </summary>
+        /// <param name="segments">The segment collection.</param>
+        /// <returns>The produced raster.</returns>
+        /// <exception cref="System.ArgumentNullException">The segment collection is null.</exception>
+        /// <exception cref="System.ArgumentException">The segment collection has no raster.</exception>
+        IRaster CreateSegmentedRaster(SegmentCollection segments);
 
         #endregion
     }
