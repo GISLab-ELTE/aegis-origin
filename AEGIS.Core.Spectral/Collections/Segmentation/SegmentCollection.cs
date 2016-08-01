@@ -624,6 +624,15 @@ namespace ELTE.AEGIS.Collections.Segmentation
             ApplySplitSegment(segment);
         }
 
+        /// <summary>
+        /// Clears all segments from the collection.
+        /// </summary>
+        public void Clear()
+        {
+            _indexToSegmentDictionary.Clear();
+            _segmentToIndexDictionary.Clear();
+        }
+
         #endregion
 
         #region Private methods
