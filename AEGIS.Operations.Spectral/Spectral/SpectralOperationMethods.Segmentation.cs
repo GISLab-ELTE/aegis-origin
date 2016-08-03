@@ -65,10 +65,9 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          "ISODATA clustering performs classification of spectral vectors in different clusters, by randomly initializing cluster centers, and then aligning these centers based on multispectral space properties. The initial number of cluster centers, and the distance threshold can be specified.", null, "1.0.0",
                                                                          false, SpectralOperationDomain.Global,
                                                                          ExecutionMode.OutPlace,
-                                                                         SpectralOperationParameters.SegmentCollection,
                                                                          SpectralOperationParameters.NumberOfClusters,
-                                                                         SpectralOperationParameters.ClusterDistanceAlgorithm,
-                                                                         SpectralOperationParameters.ClusterDistanceType,
+                                                                         SpectralOperationParameters.ClusterCenterDistanceAlgorithm,
+                                                                         SpectralOperationParameters.ClusterCenterDistanceType,
                                                                          SpectralOperationParameters.ClusterDistanceThreshold,
                                                                          SpectralOperationParameters.SpectralDistanceAlgorithm,
                                                                          SpectralOperationParameters.SpectralDistanceType));
@@ -108,7 +107,7 @@ namespace ELTE.AEGIS.Operations.Spectral
                                                                          SpectralOperationParameters.NumberOfClusters,
                                                                          SpectralOperationParameters.SpectralDistanceAlgorithm,
                                                                          SpectralOperationParameters.SpectralDistanceType,
-                                                                         SpectralOperationParameters.SegmentCollection));
+                                                                         CommonOperationParameters.NumberOfIterations));
             }
         }
         /// <summary>

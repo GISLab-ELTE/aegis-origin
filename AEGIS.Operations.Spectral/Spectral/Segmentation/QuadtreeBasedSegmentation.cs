@@ -76,15 +76,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Protected Operation methods
 
         /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        /// <returns>The resulting object.</returns>
-        protected override SegmentCollection PrepareResult()
-        {
-            return new QuadSegmentCollection(Source.Raster, _distance.Statistics | SpectralStatistics.Variance);
-        }
-        
-        /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()
@@ -109,6 +100,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 step++;
                 segmentList = result.GetSegments().ToList();
             }
+        }
+
+        #endregion
+
+        #region Protected SpectralSegmentation methods
+
+        /// <summary>
+        /// Prepares the segment collection.
+        /// </summary>
+        /// <returns>
+        /// The resulting segment collection.
+        /// </returns>
+        protected override SegmentCollection PrepareSegmentCollection()
+        {
+            return new QuadSegmentCollection(Source.Raster, _distance.Statistics | SpectralStatistics.Variance);
         }
 
         #endregion

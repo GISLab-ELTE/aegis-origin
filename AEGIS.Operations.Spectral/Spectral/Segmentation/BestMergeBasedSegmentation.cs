@@ -78,15 +78,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Protected Operation methods
 
         /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        /// <returns>The resulting object.</returns>
-        protected override SegmentCollection PrepareResult()
-        {
-            return new SegmentCollection(Source.Raster, _distance.Statistics);
-        }
-        
-        /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()
@@ -119,16 +110,16 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                         switch ((SegmentMergeDirection)Array.IndexOf(distances, minDistance))
                         {
                             case SegmentMergeDirection.Left:
-                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1);
+                                ResultSegments.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex - 1);
                                 break;
                             case SegmentMergeDirection.Up:
-                                Result.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex);
+                                ResultSegments.MergeSegments(rowIndex, columnIndex, rowIndex - 1, columnIndex);
                                 break;
                             case SegmentMergeDirection.Right:
-                                Result.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
+                                ResultSegments.MergeSegments(rowIndex, columnIndex, rowIndex, columnIndex + 1);
                                 break;
                             case SegmentMergeDirection.Down:
-                                Result.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
+                                ResultSegments.MergeSegments(rowIndex, columnIndex, rowIndex + 1, columnIndex);
                                 break;
                         }
 
@@ -158,8 +149,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             if (secondRowIndex < 0 || secondColumnIndex < 0 || secondRowIndex >= Source.Raster.NumberOfRows || secondColumnIndex >= Source.Raster.NumberOfColumns)
                 return Double.MaxValue;
 
-            Segment firstSegment = Result[firstRowIndex, firstColumnIndex];
-            Segment secondSegment = Result[secondRowIndex, secondColumnIndex];
+            Segment firstSegment = ResultSegments[firstRowIndex, firstColumnIndex];
+            Segment secondSegment = ResultSegments[secondRowIndex, secondColumnIndex];
 
             if (firstSegment == secondSegment)
                 return Double.MaxValue;

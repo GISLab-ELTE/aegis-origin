@@ -21,9 +21,9 @@ using System.Collections.Generic;
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
     /// <summary>
-    /// Represents an operation performing segmentation os spectral geometries.
+    /// Represents an operation performing segmentation on spectral geometries.
     /// </summary>
-    public abstract class SpectralSegmentation : Operation<ISpectralGeometry, SegmentCollection>
+    public abstract class SpectralSegmentation : Operation<ISpectralGeometry, ISpectralGeometry>
     {
         #region Protected fields
 
@@ -63,7 +63,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        protected SpectralSegmentation(ISpectralGeometry source, SegmentCollection target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
+        protected SpectralSegmentation(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
             if (source.Raster == null)
@@ -83,7 +83,33 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             {
                 _distance = new EuclideanDistance();
             }
+
+            Factory = ResolveParameter<IGeometryFactory>(CommonOperationParameters.GeometryFactory, Source.Factory);
+
+            if (Factory.GetFactory<IRasterFactory>() == null)
+                Factory = Source.Factory;
         }
+
+        #endregion
+
+        #region Protected properties
+
+        /// <summary>
+        /// The geometry factory.
+        /// </summary>
+        protected IGeometryFactory Factory { get; private set; }
+
+        /// <summary>
+        /// Gets the source segment collection.
+        /// </summary>
+        /// <value>The source segment collection.</value>
+        protected SegmentCollection SourceSegments { get { return (Source?.Raster as ISegmentedRaster)?.Segments; } }
+
+        /// <summary>
+        /// Gets the resulting segment collection.
+        /// </summary>
+        /// <value>The resulting segment collection.</value>
+        protected SegmentCollection ResultSegments { get { return (Result?.Raster as ISegmentedRaster)?.Segments; } }
 
         #endregion
 
@@ -93,11 +119,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// Prepares the result of the operation.
         /// </summary>
         /// <returns>The resulting object.</returns>
-        protected override SegmentCollection PrepareResult()
+        protected override sealed ISpectralGeometry PrepareResult()
         {
-            return new SegmentCollection(Source.Raster, SpectralStatistics.All);
+            return Factory.CreateSpectralGeometry(Source, Factory.GetFactory<IRasterFactory>().CreateSegmentedRaster(PrepareSegmentCollection()));
         }
-      
+
         #endregion
+
+        /// <summary>
+        /// Prepares the segment collection.
+        /// </summary>
+        /// <returns>The resulting segment collection.</returns>
+        protected virtual SegmentCollection PrepareSegmentCollection()
+        {
+            return new SegmentCollection(Source.Raster, _distance.Statistics);
+        }
     }
 }

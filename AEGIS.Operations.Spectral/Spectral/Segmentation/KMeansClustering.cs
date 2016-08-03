@@ -18,6 +18,8 @@ using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ELTE.AEGIS.Algorithms;
+using ELTE.AEGIS.Numerics;
 
 namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 {
@@ -30,15 +32,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
     [OperationMethodImplementation("AEGIS::254220", "K-means clustering")]
     public class KMeansClustering : SpectralClustering
     {
-        #region Constants
-
-        /// <summary>
-        /// The number of steps.
-        /// </summary>
-        private const Int32 NumberOfSteps = 10;
-
-        #endregion
-
         #region Private fields
 
         /// <summary>
@@ -47,14 +40,24 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         private Int32 _numberOfClusters;
 
         /// <summary>
-        /// The centroids of the clusters.
+        /// The cluster centers for each band.
         /// </summary>
-        private List<Double[]> _centroids;
+        private List<Double[]> _clusterCenters;
 
         /// <summary>
-        /// The clusters.
+        /// The array of clusters.
         /// </summary>
         private Segment[] _clusters;
+
+        /// <summary>
+        /// The maximum number of iterations.
+        /// </summary>
+        private Double _maximumIterations;
+
+        /// <summary>
+        /// The maximum difference with the cluster mean.
+        /// </summary>
+        private Double _maximumDifference;
 
         #endregion
 
@@ -115,28 +118,57 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        public KMeansClustering(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
+        public KMeansClustering(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.KMeansClustering, parameters)
         {
-            Int32 numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
-            _numberOfClusters = (numberOfClusters < 1) ? 1 : numberOfClusters;
+            _numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
+            _maximumIterations = Convert.ToInt32(ResolveParameter(CommonOperationParameters.NumberOfIterations));
+
+            if (_numberOfClusters == 0)
+                _numberOfClusters = (Int32)(Math.Sqrt(Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns) * Source.Raster.RadiometricResolution / 8);
+
+            if (_maximumIterations == 0)
+                _maximumIterations = _numberOfClusters;
+
+            _maximumDifference = RasterAlgorithms.RadiometricResolutionMax(Source.Raster) / Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns;
         }
 
         #endregion
 
         #region Protected Operation methods
-        
+
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
         protected override void ComputeResult()
         {
-            CreateRandomCentroids();
+            InitializeClusterCenters();
+            
+            Int32 iterationIndex = 0;
 
-            if (_initialSegmentsProvided)
-                MergeSegmentsToClusters();
-            else
-                MergeValuesToClusters();
+            while (iterationIndex < _maximumIterations)
+            {
+                if (Source.Raster is ISegmentedRaster)
+                    MergeSegmentsToClusters();
+                else
+                    MergeValuesToClusters();
+
+                iterationIndex++;
+                if (iterationIndex == _maximumIterations)
+                    break;
+
+                if (AreClustersCentersValid())
+                    break;
+
+                // create new clusters with new centers
+                for (Int32 clusterIndex = 0; clusterIndex < _clusters.Length; clusterIndex++)
+                {
+                    _clusterCenters[clusterIndex] = _clusters[clusterIndex].Mean.ToArray();
+                    _clusters[clusterIndex] = null;
+                }
+
+                ResultSegments.Clear();
+            }
         }
 
         #endregion
@@ -144,46 +176,44 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Private methods
 
         /// <summary>
-        /// Generates the random centroids.
+        /// Initializes the cluster centers.
         /// </summary>
-        private void CreateRandomCentroids()
+        private void InitializeClusterCenters()
         {
             Random randomGenerator = new Random();
             Int32 centroidRow, centroidColumn;
-            _centroids = new List<Double[]>();
-            _clusters = new Segment[_numberOfClusters];
+            _clusterCenters = new List<Double[]>();
 
             for (Int32 clusterIndex = 0; clusterIndex < _numberOfClusters; clusterIndex++)
             {
                 centroidRow = randomGenerator.Next(0, Source.Raster.NumberOfRows);
                 centroidColumn = randomGenerator.Next(0, Source.Raster.NumberOfColumns);
 
+                Double[] values = Source.Raster.GetFloatValues(centroidRow, centroidColumn);
+
                 // find a cluster center different from the former ones
-                Boolean hasMoreColors = true;
+                Boolean hasMoreValues = true;
                 for (Int32 i = 0; i < 1000; i++)
                 {
-                    hasMoreColors = true;
-                    if ((ContainsCentroid(clusterIndex, Source.Raster.GetFloatValues(centroidRow, centroidColumn))))
-                    {
-                        centroidRow = randomGenerator.Next(0, Source.Raster.NumberOfRows);
-                        centroidColumn = randomGenerator.Next(0, Source.Raster.NumberOfColumns);
-                        hasMoreColors = false;
-                    }
-                    else
-                    {
+                    if (!_clusterCenters.Any(center => center.SequenceEqual(values)))
                         break;
-                    }
+
+                    centroidRow = randomGenerator.Next(0, Source.Raster.NumberOfRows);
+                    centroidColumn = randomGenerator.Next(0, Source.Raster.NumberOfColumns);
+                    hasMoreValues = false;
+
+                    values = Source.Raster.GetFloatValues(centroidRow, centroidColumn);
                 }
 
-                if (!hasMoreColors)
+                // probably reached the maximum number of different values
+                if (!hasMoreValues)
                     _numberOfClusters = clusterIndex;
 
-                // set the centroid
-                _centroids.Add(new Double[Source.Raster.NumberOfBands]);
-                _centroids[clusterIndex] = Source.Raster.GetFloatValues(centroidRow, centroidColumn);
+                _clusterCenters.Add(new Double[Source.Raster.NumberOfBands]);
+                _clusterCenters[clusterIndex] = values;
             }
 
-            Array.Resize(ref _clusters, _numberOfClusters);
+            _clusters = new Segment[_numberOfClusters];
         }
 
         /// <summary>
@@ -191,54 +221,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         private void MergeSegmentsToClusters()
         {
-            Boolean isConvergent = false;
-            Int32 steps = 0;
+            Int32 minimalIndex = 0;
 
-            while (!isConvergent && steps < NumberOfSteps)
+            List<Segment> segments = ResultSegments.GetSegments().ToList();
+            foreach (Segment segment in segments)
             {
-                Int32 segmentIndex = 0;
-                Segment[] segments = Result.GetSegments().ToArray();
+                if (!ResultSegments.Contains(segment))
+                    continue;
 
-                foreach (Segment segment in segments)
-                {
-                    if (!Result.Contains(segment))
-                        continue;
+                minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(segment, center));
 
-                    // find the cluster with the minimum distance
-                    Double minimumDistance = _clusterDistance.Distance(segment, _centroids[0]);
-                    segmentIndex = 0;
-                    for (Int32 clusterIndex = 1; clusterIndex < _numberOfClusters; clusterIndex++)
-                    {
-                        Double distance = _clusterDistance.Distance(segment, _centroids[clusterIndex]);
-                        if (distance < minimumDistance)
-                        {
-                            minimumDistance = distance;
-                            segmentIndex = clusterIndex;
-                        }
-                    }
-
-                    if (_clusters[segmentIndex] == null)
-                        _clusters[segmentIndex] = segment;
-                    else
-                        Result.MergeSegments(_clusters[segmentIndex], segment);
-                }
-
-                isConvergent = IsConvergent();
-                if (!isConvergent)
-                {
-                    steps++;
-                    if (steps == NumberOfSteps)
-                        break;
-
-                    // create new clusters with new centroids
-                    for (Int32 i = 0; i < _clusters.Length; i++)
-                    {
-                        _centroids[i] = _clusters[i].Mean.ToArray();
-                        _clusters[i] = null;
-                    }
-
-                    Result.Clear();
-                }
+                if (_clusters[minimalIndex] == null)
+                    _clusters[minimalIndex] = segment;
+                else
+                    _clusters[minimalIndex] = ResultSegments.MergeSegments(_clusters[minimalIndex], segment);
             }
         }
 
@@ -247,110 +243,50 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         private void MergeValuesToClusters()
         {
-            Boolean isConvergent = false;
-            Int32 steps = 0;
-            while (!isConvergent && steps < NumberOfSteps)
+            Int32 minimalIndex = 0;
+            for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
             {
-                Int32 row = 0;
-                Int32 column = 0;
-                Int32 segmentIndex = 0;
-                for (Int32 rowIndex = 0; rowIndex < Source.Raster.NumberOfRows; rowIndex++)
+                for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
                 {
-                    for (Int32 columnIndex = 0; columnIndex < Source.Raster.NumberOfColumns; columnIndex++)
+                    switch (Source.Raster.Format)
                     {
-                        // find the cluster with the minimum distance
-                        Double minimumDistance = _clusterDistance.Distance(_centroids[0], Source.Raster.GetFloatValues(rowIndex, columnIndex));
-                        row = rowIndex;
-                        column = columnIndex;
-                        segmentIndex = 0;
-                        for (Int32 clusterIndex = 1; clusterIndex < _numberOfClusters; clusterIndex++)
-                        {
-                            Double distance = _clusterDistance.Distance(_centroids[clusterIndex], Source.Raster.GetFloatValues(rowIndex, columnIndex));
-                            if (distance < minimumDistance)
-                            {
-                                minimumDistance = distance;
-                                segmentIndex = clusterIndex;
-                                row = rowIndex;
-                                column = columnIndex;
-                            }
-                        }
-
-                        if (_clusters[segmentIndex] == null)
-                            _clusters[segmentIndex] = Result.GetSegment(row, column);
-                        else
-                            Result.MergeSegments(_clusters[segmentIndex], row, column);
-                    }
-                }
-
-                isConvergent = IsConvergent();
-                if (!isConvergent)
-                {
-                    steps++;
-                    if (steps == NumberOfSteps)
-                        break;
-
-                    // create new clusters with new centroids
-                    for (Int32 i = 0; i < _clusters.Length; i++)
-                    {
-                        _centroids[i] = _clusters[i].Mean.ToArray();
-                        _clusters[i] = null;
+                        case RasterFormat.Integer:
+                            UInt32[] values = Source.Raster.GetValues(rowIndex, columnIndex);
+                            minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, values));
+                            break;
+                        case RasterFormat.Floating:
+                            Double[] floatValues = Source.Raster.GetFloatValues(rowIndex, columnIndex);
+                            minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(center, floatValues));
+                            break;
                     }
 
-                    Result.Clear();
+                    if (_clusters[minimalIndex] == null)
+                        _clusters[minimalIndex] = ResultSegments.GetSegment(rowIndex, columnIndex);
+                    else
+                        ResultSegments.MergeSegments(_clusters[minimalIndex], rowIndex, columnIndex);
                 }
             }
         }
 
         /// <summary>
-        /// Determines whether one of the clusters already has the given centroid.
+        /// Determines whether the clusters centers are valid.
         /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="centroid">The centroid.</param>
-        /// <returns><c>true</c> if one of the clusters already has the same centroid; otherwise <c>false</c>.</returns>
-        private Boolean ContainsCentroid(Int32 index, Double[] centroid)
+        /// <returns><c>true</c> if the euclidean difference between the cluster centers and cluster means is smaller than the maximum allowed; otherwise <c>false</c>.</returns>
+        private Boolean AreClustersCentersValid()
         {
-            for (Int32 i = 0; i < index; i++)
-                if (AreEqual(_centroids[i], centroid))
-                    return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines whether the two values in the two arrays are equal.
-        /// </summary>
-        /// <param name="first">The first.</param>
-        /// <param name="second">The second.</param>
-        /// <returns><c>true</c> if the values in the two arrays are equal; otherwise <c>false</c>.</returns>
-        private Boolean AreEqual(Double[] first, Double[] second)
-        {
-            for (Int32 index = 0; index < first.Length; index++)
-                if (first[index] != second[index])
-                    return false;
-
-            return true;
-        }
-
-        /// <summary>
-        /// Determines whether new centroid values can be assigned.
-        /// </summary>
-        /// <returns><c>true</c> if the method converges; otherwise <c>false</c></returns>
-        private Boolean IsConvergent()
-        {
-            Boolean areAllEqual = true;
-            for (Int32 i = 0; i < _clusters.Length; i++)
+            Double difference = 0;
+            for (Int32 clusterIndex = 0; clusterIndex < _clusters.Length; clusterIndex++)
             {
-                for (Int32 j = 0; j < Source.Raster.NumberOfBands; j++)
-                {
-                    if (_clusters[i] == null)
-                        return true;
+                if (_clusters[clusterIndex] == null)
+                    continue;
 
-                    if (_centroids[i][j] != _clusters[i].Mean[j])
-                        areAllEqual = false;
+                for (Int32 bandIndex = 0; bandIndex < Source.Raster.NumberOfBands; bandIndex++)
+                {
+                    difference += Calculator.Square(_clusterCenters[clusterIndex][bandIndex] - _clusters[clusterIndex].Mean[bandIndex]);
                 }
             }
 
-            return areAllEqual;
+            return Math.Sqrt(difference) <= _maximumDifference;
         }
 
         #endregion

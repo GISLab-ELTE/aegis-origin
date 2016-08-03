@@ -30,21 +30,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// <summary>
         /// The cluster distance algorithm.
         /// </summary>
-        protected readonly SpectralDistance _clusterDistance;
-
-        /// <summary>
-        /// A value inidcating whether the initial segments were provided.
-        /// </summary>
-        protected Boolean _initialSegmentsProvided;
-
-        #endregion
-
-        #region Private fields
-
-        /// <summary>
-        /// The collection of segments.
-        /// </summary>
-        private SegmentCollection _initialSegments;
+        protected readonly SpectralDistance _clusterCenterDistance;
 
         #endregion
 
@@ -77,36 +63,21 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        protected SpectralClustering(ISpectralGeometry source, SegmentCollection target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
+        protected SpectralClustering(ISpectralGeometry source, ISpectralGeometry target, SpectralOperationMethod method, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, method, parameters)
         {
-            _initialSegments = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
-
-            if (IsProvidedParameter(SpectralOperationParameters.ClusterDistanceAlgorithm))
+            if (IsProvidedParameter(SpectralOperationParameters.ClusterCenterDistanceAlgorithm))
             {
-                _clusterDistance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.ClusterDistanceAlgorithm);
+                _clusterCenterDistance = ResolveParameter<SpectralDistance>(SpectralOperationParameters.ClusterCenterDistanceAlgorithm);
             }
-            else if (IsProvidedParameter(SpectralOperationParameters.ClusterDistanceType))
+            else if (IsProvidedParameter(SpectralOperationParameters.ClusterCenterDistanceType))
             {
-                _clusterDistance = (SpectralDistance)Activator.CreateInstance(ResolveParameter<Type>(SpectralOperationParameters.ClusterDistanceType));
+                _clusterCenterDistance = (SpectralDistance)Activator.CreateInstance(ResolveParameter<Type>(SpectralOperationParameters.ClusterCenterDistanceType));
             }
             else
             {
-                _clusterDistance = _distance;
+                _clusterCenterDistance = _distance;
             }
-        }
-
-        #endregion
-
-        #region Protected Operation methods
-
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        /// <returns>The resulting object.</returns>
-        protected override SegmentCollection PrepareResult()
-        {
-            return CreateResultCollection();
         }
 
         #endregion
@@ -114,19 +85,20 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         #region Protected methods
 
         /// <summary>
-        /// Creates the result segment collection.
+        /// Prepares the segment collection.
         /// </summary>
-        /// <returns>The result segment collection.</returns>
-        protected SegmentCollection CreateResultCollection()
+        /// <param name="source">The source raster.</param>
+        /// <returns>The resulting segment collection.</returns>
+        protected override SegmentCollection PrepareSegmentCollection()
         {
-            if (_initialSegments == null)
-                return new SegmentCollection(Source.Raster, _distance.Statistics | _clusterDistance.Statistics);
-
-            SegmentCollection collection = new SegmentCollection(_initialSegments, _distance.Statistics | _clusterDistance.Statistics);
-            _initialSegments = null;
-            _initialSegmentsProvided = true;
-
-            return collection;
+            if (SourceSegments != null)
+            {
+                return new SegmentCollection(SourceSegments, _distance.Statistics | _clusterCenterDistance.Statistics);
+            }
+            else
+            {
+                return new SegmentCollection(Source.Raster, _distance.Statistics | _clusterCenterDistance.Statistics);
+            }
         }
 
         #endregion

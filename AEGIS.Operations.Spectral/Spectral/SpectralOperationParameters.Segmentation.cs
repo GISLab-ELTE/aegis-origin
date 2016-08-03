@@ -26,9 +26,9 @@ namespace ELTE.AEGIS.Operations.Spectral
     {
         #region Private static fields
 
-        private static OperationParameter _clusterDistanceAlgorithm;
+        private static OperationParameter _clusterCenterDistanceAlgorithm;
+        private static OperationParameter _clusterCenterDistanceType;
         private static OperationParameter _clusterDistanceThreshold;
-        private static OperationParameter _clusterDistanceType;
         private static OperationParameter _clusterSizeThreshold;
         private static OperationParameter _numberOfClusterCenters;
         private static OperationParameter _segmentHomogeneityThreshold;
@@ -42,15 +42,29 @@ namespace ELTE.AEGIS.Operations.Spectral
         #region Public static properties
 
         /// <summary>
-        /// Cluster distance algorithm.
+        /// Cluster center distance algorithm.
         /// </summary>
-        public static OperationParameter ClusterDistanceAlgorithm
+        public static OperationParameter ClusterCenterDistanceAlgorithm
         {
             get
             {
-                return _clusterDistanceAlgorithm ?? (_clusterDistanceAlgorithm =
-                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::354501", "Cluster distance algorithm",
-                                                                                 "The algorithm used for determining the distance of spectral clusters.", null, (SpectralDistance)null)
+                return _clusterCenterDistanceAlgorithm ?? (_clusterCenterDistanceAlgorithm =
+                    OperationParameter.CreateOptionalParameter<SpectralDistance>("AEGIS::354501", "Cluster center distance algorithm",
+                                                                                 "The algorithm used for determining the distance to the cluster segment.", null, (SpectralDistance)null)
+                );
+            }
+        }
+
+        /// <summary>
+        /// Cluster center distance type.
+        /// </summary>
+        public static OperationParameter ClusterCenterDistanceType
+        {
+            get
+            {
+                return _clusterCenterDistanceType ?? (_clusterCenterDistanceType =
+                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::354502", "Cluster center distance type",
+                                                                     "The type used for determining the distance to cluster centers.", null, (Type)null)
                 );
             }
         }
@@ -65,20 +79,6 @@ namespace ELTE.AEGIS.Operations.Spectral
                 return _clusterDistanceThreshold ?? (_clusterDistanceThreshold =
                     OperationParameter.CreateRequiredParameter<Double>("AEGIS::354505", "Cluster distance threshold",
                                                                        "The upper threshold of the spectral distance between clusters.", null)
-                );
-            }
-        }
-
-        /// <summary>
-        /// Cluster distance type.
-        /// </summary>
-        public static OperationParameter ClusterDistanceType
-        {
-            get
-            {
-                return _clusterDistanceType ?? (_clusterDistanceType =
-                    OperationParameter.CreateOptionalParameter<Type>("AEGIS::354502", "Cluster distance type",
-                                                                     "The type used for determining the distance of spectral clusters.", null, (Type)null)
                 );
             }
         }

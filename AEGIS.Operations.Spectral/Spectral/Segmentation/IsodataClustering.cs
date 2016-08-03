@@ -99,15 +99,15 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The raster format of the source is not supported by the method.
         /// </exception>
-        public IsodataClustering(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
+        public IsodataClustering(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.IsodataClustering, parameters)  
         {
             _numberOfClusters = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.NumberOfClusters));
             _clusterDistanceThreshold = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.ClusterDistanceThreshold));
             _clusterSizeThreshold = Convert.ToInt32(ResolveParameter(SpectralOperationParameters.ClusterSizeThreshold));
 
-            if (_numberOfClusters < 10)
-                _numberOfClusters = Math.Min(Math.Max(10, Convert.ToInt32(Math.Sqrt(Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns))), Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns);
+            if (_numberOfClusters == 0)
+                _numberOfClusters = (Int32)(Math.Sqrt(Source.Raster.NumberOfRows * Source.Raster.NumberOfColumns) * Source.Raster.RadiometricResolution / 8);
         }
 
         #endregion
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             CreateInitialClusters();
             
-            if (_initialSegmentsProvided)
+            if (SourceSegments != null)
                 MergeSegmentsToClusters();
             else
                 MergeValuesToClusters();
@@ -203,9 +203,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                     }
 
                     if (clusters[minimalIndex] == null)
-                        clusters[minimalIndex] = Result.GetSegment(rowIndex, columnIndex);
+                        clusters[minimalIndex] = ResultSegments.GetSegment(rowIndex, columnIndex);
                     else
-                        Result.MergeSegments(clusters[minimalIndex], rowIndex, columnIndex);
+                        ResultSegments.MergeSegments(clusters[minimalIndex], rowIndex, columnIndex);
                 }
             }
         }
@@ -219,11 +219,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             
             Int32 minimalIndex = 0;
 
-            Segment[] segments = Result.GetSegments().ToArray();
+            List<Segment> segments = ResultSegments.GetSegments().ToList();
 
             foreach (Segment segment in segments)
             {
-                if (!Result.Contains(segment))
+                if (!ResultSegments.Contains(segment))
                     continue;
 
                 minimalIndex = _clusterCenters.MinIndex(center => _distance.Distance(segment, center));
@@ -231,7 +231,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (clusters[minimalIndex] == null)
                     clusters[minimalIndex] = segment;
                 else
-                    Result.MergeSegments(clusters[minimalIndex], segment);
+                    clusters[minimalIndex] = ResultSegments.MergeSegments(clusters[minimalIndex], segment);
             }
         }
 
@@ -242,12 +242,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         {
             _clusterCenters = null;
 
-            Segment[] segments = Result.GetSegments().ToArray();
+            Segment[] segments = ResultSegments.GetSegments().ToArray();
 
             foreach (Segment segment in segments)
             {
                 if (segment.Count < _clusterSizeThreshold)
-                    Result.SplitSegment(segment);
+                    ResultSegments.SplitSegment(segment);
             }
         }
 
@@ -256,29 +256,41 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         private void MergeClusters()
         {
-            Boolean clusterMerged = true;
+            HashSet<Segment> segmentsToCheck = new HashSet<Segment>(ResultSegments.GetSegments());
 
             do
             {
-                clusterMerged = false;
+                List<Segment> allSegments = ResultSegments.GetSegments().ToList();
+                HashSet<Segment> nextSegmentsToCheck = new HashSet<Segment>();
 
-                List<Segment> segments = Result.GetSegments().ToList();
-
-                for (Int32 firstIndex = 0; firstIndex < segments.Count - 1; firstIndex++)
+                foreach (Segment currentSegment in segmentsToCheck)
                 {
-                    for (Int32 secondIndex = segments.Count - 1; secondIndex > firstIndex; secondIndex--)
+                    if (!ResultSegments.Contains(currentSegment))
+                        continue;
+
+                    for (Int32 index = 0; index < allSegments.Count; index++)
                     {
-                        Double distance = _clusterDistance.Distance(segments[firstIndex], segments[secondIndex]);
+                        if (allSegments[index] == currentSegment || !ResultSegments.Contains(allSegments[index]))
+                            continue;
+
+                        Double distance = _clusterCenterDistance.Distance(currentSegment, allSegments[index]);
 
                         if (distance < _clusterDistanceThreshold)
                         {
-                            Segment mergedSegment = Result.MergeSegments(segments[firstIndex], segments[secondIndex]);
-                            segments.RemoveAt(mergedSegment == segments[firstIndex] ? secondIndex : firstIndex);
-                            clusterMerged = true;
+                            Segment mergedSegment = ResultSegments.MergeSegments(currentSegment, allSegments[index]);
+                            if (mergedSegment == currentSegment)
+                                allSegments.RemoveAt(index);
+                            else
+                                allSegments.Remove(currentSegment);
+
+                            nextSegmentsToCheck.Add(mergedSegment);
                         }
                     }
                 }
-            } while (clusterMerged);
+
+                segmentsToCheck = nextSegmentsToCheck;
+
+            } while (segmentsToCheck.Count > 0);
         }
  
         #endregion

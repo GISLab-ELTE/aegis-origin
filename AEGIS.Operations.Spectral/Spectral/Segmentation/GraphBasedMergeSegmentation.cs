@@ -128,7 +128,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// or
         /// The specified source and result are the same objects, but the method does not support in-place operations.
         /// </exception>
-        public GraphBasedMergeSegmentation(ISpectralGeometry source, SegmentCollection target, IDictionary<OperationParameter, Object> parameters)
+        public GraphBasedMergeSegmentation(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.GraphBasedMergeSegmentation, parameters)
         {
             _mergeThreshold = Convert.ToDouble(ResolveParameter(SpectralOperationParameters.SegmentMergeThreshold));
@@ -138,15 +138,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
         #region Protected Operation methods
 
-        /// <summary>
-        /// Prepares the result of the operation.
-        /// </summary>
-        /// <returns>The resulting object.</returns>
-        protected override SegmentCollection PrepareResult()
-        {
-            return new SegmentCollection(Source.Raster, _distance.Statistics);
-        }
-        
         /// <summary>
         /// Computes the result of the operation.
         /// </summary>
@@ -163,8 +154,8 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 SimpleGraphEdge edge = edges[edges.Count - 1];
                 edges.RemoveAt(edges.Count - 1);
 
-                Segment firstSegment = Result[edge.Source / Source.Raster.NumberOfColumns, edge.Source % Source.Raster.NumberOfColumns];
-                Segment secondSegment = Result[edge.Destination / Source.Raster.NumberOfColumns, edge.Destination % Source.Raster.NumberOfColumns];
+                Segment firstSegment = ResultSegments[edge.Source / Source.Raster.NumberOfColumns, edge.Source % Source.Raster.NumberOfColumns];
+                Segment secondSegment = ResultSegments[edge.Destination / Source.Raster.NumberOfColumns, edge.Destination % Source.Raster.NumberOfColumns];
 
                 // if the two indices are already within the same segment
                 if (firstSegment == secondSegment)
@@ -176,7 +167,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                 if (internalDifference > edge.Weight)
                 {
                     // the segments should be merged
-                    Segment mergedSegment = Result.MergeSegments(firstSegment, secondSegment);
+                    Segment mergedSegment = ResultSegments.MergeSegments(firstSegment, secondSegment);
                     Segment otherSegment = mergedSegment == firstSegment ? firstSegment : secondSegment;
 
                     // modify internal difference
