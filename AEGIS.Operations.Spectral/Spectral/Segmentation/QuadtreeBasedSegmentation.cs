@@ -80,7 +80,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         protected override void ComputeResult()
         {
-            QuadSegmentCollection result = Result as QuadSegmentCollection;
+            QuadSegmentCollection result = ResultSegments as QuadSegmentCollection;
             IList<Segment> segmentList = result.GetSegments().ToList();
 
             // split until all the segments are homogeneous

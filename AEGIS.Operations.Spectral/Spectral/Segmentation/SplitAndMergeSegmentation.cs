@@ -86,7 +86,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
         /// </summary>
         protected override void ComputeResult()
         {
-            QuadSegmentCollection result = Result as QuadSegmentCollection;
+            QuadSegmentCollection result = ResultSegments as QuadSegmentCollection;
             IList<Segment> segmentList = result.GetSegments().ToList();
 
             // split until all the segments are homogeneous or the threshold is reached
@@ -148,6 +148,16 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
             } while (!isHomogeneous);
         }
 
+        /// <summary>
+        /// Prepares the segment collection.
+        /// </summary>
+        /// <returns>
+        /// The resulting segment collection.
+        /// </returns>
+        protected override SegmentCollection PrepareSegmentCollection()
+        {
+            return new QuadSegmentCollection(Source.Raster, _distance.Statistics | SpectralStatistics.Variance);
+        }
         #endregion
     }
 }
