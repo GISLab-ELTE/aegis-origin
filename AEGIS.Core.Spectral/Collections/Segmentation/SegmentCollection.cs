@@ -120,6 +120,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
                 if (Statistics == other.Statistics)
                 {
                     segment = new Segment(otherSegment);
+                    otherIndices.ForEach(x => _indexToSegmentDictionary.Add(x, segment));
                 }
                 else
                 {
