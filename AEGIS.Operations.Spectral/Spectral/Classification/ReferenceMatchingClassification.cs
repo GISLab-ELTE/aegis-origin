@@ -101,11 +101,19 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         public ReferenceMatchingClassification(ISpectralGeometry source, ISpectralGeometry target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, SpectralOperationMethods.ReferenceMatchingClassification, parameters)
         {
-            _segmentCollection = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
             _referenceGeometry = ResolveParameter<ISpectralGeometry>(SpectralOperationParameters.ClassificationReferenceGeometry);
 
-            if (_segmentCollection.Raster != Source.Raster)
-                throw new ArgumentException(String.Format("The parameter value ({0}) does not satisfy the conditions of the parameter.", SpectralOperationParameters.SegmentCollection.Name));
+            _segmentCollection = ResolveParameter<SegmentCollection>(SpectralOperationParameters.SegmentCollection);
+            if (_segmentCollection == null)
+            {
+                ISegmentedRaster raster = source.Raster as ISegmentedRaster;
+                if (raster != null)
+                    _segmentCollection = raster.Segments;
+                else
+                    throw new ArgumentException($"No {SpectralOperationParameters.SegmentCollection.Name} was provided!");
+            }
+            else if (_segmentCollection.Raster != Source.Raster)
+                throw new ArgumentException($"The parameter value ({SpectralOperationParameters.SegmentCollection.Name}) does not satisfy the conditions of the parameter.");
         }
 
         #endregion
