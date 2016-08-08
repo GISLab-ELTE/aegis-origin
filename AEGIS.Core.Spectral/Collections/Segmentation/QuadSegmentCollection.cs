@@ -51,7 +51,7 @@ namespace ELTE.AEGIS.Collections.Segmentation
             Count = 1;
 
             _indexToSegmentDictionary = new Dictionary<Int32, Segment>(raster.NumberOfRows * raster.NumberOfColumns);
-            Segment segment = new Segment(raster, Statistics);
+            Segment segment = new Segment(raster, Statistics) { MortonCode = 1 };
 
             _segmentToIndexDictionary = new Dictionary<Segment, List<Int32>>();
             for (Int32 index = 0; index < raster.NumberOfRows * raster.NumberOfColumns; index++)
