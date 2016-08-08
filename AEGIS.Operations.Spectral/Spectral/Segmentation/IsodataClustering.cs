@@ -265,12 +265,11 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
 
                 foreach (Segment currentSegment in segmentsToCheck)
                 {
-                    if (!ResultSegments.Contains(currentSegment))
-                        continue;
-
                     for (Int32 index = 0; index < allSegments.Count; index++)
                     {
-                        if (allSegments[index] == currentSegment || !ResultSegments.Contains(allSegments[index]))
+                        if (allSegments[index] == currentSegment 
+                            || !ResultSegments.Contains(allSegments[index]) 
+                            || !ResultSegments.Contains(currentSegment))
                             continue;
 
                         Double distance = _clusterCenterDistance.Distance(currentSegment, allSegments[index]);
@@ -282,7 +281,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Segmentation
                                 allSegments.RemoveAt(index);
                             else
                                 allSegments.Remove(currentSegment);
-
+                            
                             nextSegmentsToCheck.Add(mergedSegment);
                         }
                     }
