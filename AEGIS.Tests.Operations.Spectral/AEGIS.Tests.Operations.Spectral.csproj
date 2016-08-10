@@ -72,6 +72,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spatial\BinarySpectralGeometryPartitioningTest.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassificationAreaChangeDetectionTest.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassifiedImageChangeDetectionTest.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassificationCategoryChangeDetectionTest.cs" />
     <Compile Include="Spectral\Classification\BernsenLocalThresholdingClassificationTest.cs" />
     <Compile Include="Spectral\Classification\ClassificationAccuracyValidationTest.cs" />
     <Compile Include="Spectral\Classification\ClassificationConfusionValidationTest.cs" />
@@ -93,6 +96,7 @@
     <Compile Include="Spectral\Filtering\ScharrFilterOperationTest.cs" />
     <Compile Include="Spectral\SpectralBandFilteringTest.cs" />
     <Compile Include="Spectral\Resampling\SpectralResamplingTest.cs" />
+    <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Core.Spectral\AEGIS.Core.Spectral.csproj">

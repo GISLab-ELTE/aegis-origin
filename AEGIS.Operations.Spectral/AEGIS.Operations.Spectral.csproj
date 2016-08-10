@@ -61,6 +61,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spatial\Partitioning\BinarySpectralGeometryPartitioningCredential.cs" />
     <Compile Include="Spatial\Partitioning\BinarySpectralGeometryPartitioning.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassificationAreaChangeDetection.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassificationChangeDetection.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassifiedImageChangeDetection.cs" />
+    <Compile Include="Spectral\ChangeDetection\ClassificationCategoryChangeDetection.cs" />
     <Compile Include="Spectral\Classification\BalancedHistogramTresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\BernsenLocalThresholdingClassification.cs" />
     <Compile Include="Spectral\Classification\ClassificationAccuracyValidation.cs" />
@@ -153,6 +157,7 @@
     <Compile Include="Spectral\Segmentation\SpectralClustering.cs" />
     <Compile Include="Spectral\Segmentation\SpectralSegmentation.cs" />
     <Compile Include="Spectral\Segmentation\SplitAndMergeSegmentation.cs" />
+    <Compile Include="Spectral\SpectralOperationMethods.ChangeDetection.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Enhancement.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Classification.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Filtering.cs" />
@@ -161,6 +166,7 @@
     <Compile Include="Spectral\SpectralOperationMethods.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Indexing.cs" />
     <Compile Include="Spectral\SpectralOperationMethods.Segmentation.cs" />
+    <Compile Include="Spectral\SpectralOperationParameters.ChangeDetection.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.Classification.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.cs" />
     <Compile Include="Spectral\SpectralOperationParameters.Filtering.cs" />
