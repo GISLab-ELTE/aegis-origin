@@ -82,12 +82,19 @@ namespace ELTE.AEGIS.IO.GeoTiff
                 {
                     _metafileReader = GeoTiffMetafileReaderFactory.CreateReader(basePath, GeoTiffMetafilePathOption.IsDirectoryPath);
                 }
-
+                
                 if (_metafileReader != null)
                 {
-                    _filePaths = _metafileReader.ReadFilePaths().Select(path => fileSystem.Combine(basePath, path)).ToList();
+                    // load files from the path specified by the metafile
+                    List<String> filePaths = _metafileReader.ReadFilePaths().Select(path => fileSystem.Combine(basePath, path)).ToList();
+
+                    // check whether the specified files exist
+                    foreach (String filePath in filePaths)
+                        if (fileSystem.Exists(filePath))
+                            _filePaths.Add(filePath);                   
                 }
-                else
+
+                if (_filePaths.Count == 0)
                 {
                     _filePaths = fileSystem.GetFiles(basePath, "*.tif", false).Union(fileSystem.GetFiles(basePath, "*.TIF", false)).ToList();
                 }
