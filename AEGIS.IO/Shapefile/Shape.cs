@@ -396,39 +396,56 @@ namespace ELTE.AEGIS.IO.Shapefile
                             if (_parts[i + 1] == _parts[i]) // in case the part is empty (should never happen) 
                                 continue;
 
-                            partCoordinates = new Coordinate[_parts[i + 1] - _parts[i]];
-                            Array.Copy(_coordinates, _parts[i], partCoordinates, 0, _parts[i + 1] - _parts[i]);
+                            if (_coordinates[_parts[i]] != _coordinates[_parts[i + 1] - 1])
+                            {
+                                partCoordinates = new Coordinate[_parts[i + 1] - _parts[i]];
+                                Array.Copy(_coordinates, _parts[i], partCoordinates, 0, _parts[i + 1] - _parts[i]);
+                                partCoordinates[partCoordinates.Length - 1] = partCoordinates[0];
+                            }
+                            else
+                            {
+                                partCoordinates = new Coordinate[_parts[i + 1] - _parts[i]];
+                                Array.Copy(_coordinates, _parts[i], partCoordinates, 0, _parts[i + 1] - _parts[i]);
+                            }
 
                             // check whether the current part is an outer or inner ring
                             switch (PolygonAlgorithms.Orientation(partCoordinates))
                             { 
                                 case Orientation.Clockwise:
                                     // in case of outer ring a new polygon is created
-                                    polygons.Add(_factory.CreatePolygon(partCoordinates, _metadata));
+                                    polygons.Add(_factory.CreatePolygon(partCoordinates.Reverse(), _metadata));
                                     break;
                                 case Orientation.CounterClockwise:
                                     // inner rings are simply added to the last polygon
-                                    Array.Reverse(partCoordinates);
-                                    polygons[polygons.Count - 1].AddHole(_factory.CreateLinearRing(partCoordinates));
+                                    polygons[polygons.Count - 1].AddHole(_factory.CreateLinearRing(partCoordinates.Reverse()));
                                     break;
                             }
 
                         }
 
                         // final part
-                        partCoordinates = new Coordinate[_coordinates.Length - _parts[_parts.Length - 1]];
-                        Array.Copy(_coordinates, _parts[_parts.Length - 1], partCoordinates, 0, _coordinates.Length - _parts[_parts.Length - 1]);
+                        if (_coordinates[_parts[_parts.Length - 1]] != _coordinates[_coordinates.Length - 1])
+                        {
+                            partCoordinates = new Coordinate[_coordinates.Length - _parts[_parts.Length - 1] + 1];
+                            Array.Copy(_coordinates, _parts[_parts.Length - 1], partCoordinates, 0, _coordinates.Length - _parts[_parts.Length - 1]);
+                            partCoordinates[partCoordinates.Length - 1] = partCoordinates[0];
+                        }
+                        else
+                        {
+                            partCoordinates = new Coordinate[_coordinates.Length - _parts[_parts.Length - 1]];
+                            Array.Copy(_coordinates, _parts[_parts.Length - 1], partCoordinates, 0, _coordinates.Length - _parts[_parts.Length - 1]);
+                        }
 
                         // check whether the current part is an outer or inner ring
                         switch (PolygonAlgorithms.Orientation(partCoordinates))
                         {
                             case Orientation.Clockwise:
                                 // in case of outer ring a new polygon is created
-                                polygons.Add(_factory.CreatePolygon(partCoordinates, _metadata));
+                                polygons.Add(_factory.CreatePolygon(partCoordinates.Reverse(), _metadata));
                                 break;
                             case Orientation.CounterClockwise:
                                 // inner rings are simply added to the last polygon
-                                polygons[polygons.Count - 1].AddHole(_factory.CreateLinearRing(partCoordinates));
+                                polygons[polygons.Count - 1].AddHole(_factory.CreateLinearRing(partCoordinates.Reverse()));
                                 break;
                         }
 
@@ -440,7 +457,18 @@ namespace ELTE.AEGIS.IO.Shapefile
                     }
                     else
                     {
-                        return _factory.CreatePolygon(_coordinates, _metadata);
+                        if (_coordinates[0] != _coordinates[_coordinates.Length - 1])
+                        {
+                            partCoordinates = new Coordinate[_coordinates.Length + 1];
+                            Array.Copy(_coordinates, 0, partCoordinates, 0, _coordinates.Length);
+                            partCoordinates[partCoordinates.Length - 1] = partCoordinates[0];
+
+                            return _factory.CreatePolygon(partCoordinates.Reverse(), _metadata);
+                        }
+                        else
+                        {
+                            return _factory.CreatePolygon(_coordinates.Reverse(), _metadata);
+                        }
                     }
                 case ShapeType.MultiPoint:
                 case ShapeType.MultiPointM:
