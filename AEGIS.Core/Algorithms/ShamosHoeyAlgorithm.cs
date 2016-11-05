@@ -38,6 +38,7 @@ namespace ELTE.AEGIS.Algorithms
         /// The sweep line.
         /// </summary>
         private SweepLine _sweepLine;
+        
 
         /// <summary>
         /// A value indicating whether the result is computed.
@@ -52,6 +53,12 @@ namespace ELTE.AEGIS.Algorithms
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
 
         /// <summary>
         /// Gets the result.
@@ -82,6 +89,7 @@ namespace ELTE.AEGIS.Algorithms
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new PresortedEventQueue(source.Coordinates);
             _sweepLine = new SweepLine(source.Coordinates, precisionModel);
             _hasResult = false;
@@ -98,6 +106,7 @@ namespace ELTE.AEGIS.Algorithms
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new PresortedEventQueue(source);
             _sweepLine = new SweepLine(source, precisionModel);
             _hasResult = false;
@@ -114,6 +123,7 @@ namespace ELTE.AEGIS.Algorithms
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new PresortedEventQueue(source.Select(lineString => lineString == null ? null : lineString.Coordinates));
             _sweepLine = new SweepLine(source.Select(hole => hole.Coordinates), precisionModel);
             _hasResult = false;
@@ -130,6 +140,7 @@ namespace ELTE.AEGIS.Algorithms
             if (source == null)
                 throw new ArgumentNullException("source", "The source is null.");
 
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _eventQueue = new PresortedEventQueue(source);
             _sweepLine = new SweepLine(source, precisionModel);
             _hasResult = false;
@@ -161,14 +172,18 @@ namespace ELTE.AEGIS.Algorithms
                             _sweepLine.Intersect(segment, segment.Below);
 
                         if (segment.Above != null && !_sweepLine.IsAdjacent(segment.Edge, segment.Above.Edge) &&
-                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate, segment.Above.LeftCoordinate, segment.Above.RightCoordinate))
+                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate,
+                                                      segment.Above.LeftCoordinate, segment.Above.RightCoordinate,
+                                                      PrecisionModel))
                         {
                             _hasResult = true;
                             _result = true;
                             return;
                         }
                         if (segment.Below != null && !_sweepLine.IsAdjacent(segment.Edge, segment.Below.Edge) &&
-                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate, segment.Below.LeftCoordinate, segment.Below.RightCoordinate))
+                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate, 
+                                                      segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
+                                                      PrecisionModel))
                         {
                             _hasResult = true;
                             _result = true;
@@ -180,7 +195,9 @@ namespace ELTE.AEGIS.Algorithms
                         if (segment != null)
                         {
                             if (segment.Above != null && segment.Below != null && !_sweepLine.IsAdjacent(segment.Below.Edge, segment.Above.Edge) &&
-                                LineAlgorithms.Intersects(segment.Above.LeftCoordinate, segment.Above.RightCoordinate, segment.Below.LeftCoordinate, segment.Below.RightCoordinate))
+                                LineAlgorithms.Intersects(segment.Above.LeftCoordinate, segment.Above.RightCoordinate,
+                                                          segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
+                                                          PrecisionModel))
                             {
                                 _hasResult = true;
                                 _result = true;

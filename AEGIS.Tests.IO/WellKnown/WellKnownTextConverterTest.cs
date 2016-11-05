@@ -98,10 +98,10 @@ namespace ELTE.AEGIS.Tests.IO.WellKnown
             String geodeticBase = "GEOGCS[\"Unknown\",DATUM[\"D_Unknown\",SPHEROID[\"Clarke_1866\",6378206.4,294.978698213901]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]";
             String wgs1984 = "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.017453292519943295]]";
 
-            Assert.IsNotNullOrEmpty(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(projectedUTMZone33)));
-            Assert.IsNotNullOrEmpty(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(UTMZone10NAD83)));
-            Assert.IsNotNullOrEmpty(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(geodeticBase)));
-            Assert.IsNotNullOrEmpty(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(wgs1984)));
+            Assert.IsNotNull(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(projectedUTMZone33)));
+            Assert.IsNotNull(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(UTMZone10NAD83)));
+            Assert.IsNotNull(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(geodeticBase)));
+            Assert.IsNotNull(WellKnownTextConverter.ToWellKnownText(WellKnownTextConverter.ToIdentifiedObject(wgs1984)));
 
             // conversion from identified object instance
 

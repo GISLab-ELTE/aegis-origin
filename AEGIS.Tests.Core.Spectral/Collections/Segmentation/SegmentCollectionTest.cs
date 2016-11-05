@@ -112,7 +112,7 @@ namespace ELTE.AEGIS.Tests.Collections.Segmentation
 
             // test repeating queries
 
-            Randomizer random = new Randomizer(0);
+            Random random = new Random(0);
             for (Int32 queryIndex = 0; queryIndex < 10; queryIndex++)
             {
                 Int32 rowIndex = random.Next(0, _raster.Object.NumberOfRows);

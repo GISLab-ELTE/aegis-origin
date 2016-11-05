@@ -1,5 +1,5 @@
 ﻿/// <copyright file="HalfedgeGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2015 Roberto Giachetta. Licensed under the
+///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -522,7 +522,7 @@ namespace ELTE.AEGIS.Topology
         }
 
         /// <summary>
-        /// Merges a (supported type of) geometry into the graph, resolving geomtry overlapping.
+        /// Merges a (supported type of) geometry into the graph, resolving geometry overlapping.
         /// </summary>
         /// <param name="geometry">The geometry to merge.</param>
         /// <exception cref="System.ArgumentException">The specified geometry type is not supported.</exception>
@@ -839,7 +839,7 @@ namespace ELTE.AEGIS.Topology
         /// <exception cref="InvalidOperationException">Thrown when cannot form a valid face with the given vertices and the existing topology.</exception>
         private Face CreateFace(Vertex[] vertices, FaceType addType)
         {
-            #region Initalization
+            #region Initialization
 
             Int32 n = vertices.Length;
 
@@ -1176,7 +1176,7 @@ namespace ELTE.AEGIS.Topology
             Face collisionFace = collisionFaces.FirstOrDefault();
             if (collisionFace != null)
             {
-                // Calculate the the internal and external clips with the colliding the faces.
+                // Calculate the internal and external clips with the colliding the faces.
                 IList<Coordinate> collisionShellPositions = otherPositions[collisionFace.Index];
                 IList<List<Coordinate>> collisionHolesPositions =
                     collisionFace.Holes.Select(face => face.Vertices.Select(vertex => vertex.Position).ToList()).ToList();

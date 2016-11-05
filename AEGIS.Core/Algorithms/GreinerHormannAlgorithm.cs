@@ -282,14 +282,15 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         private Boolean _computeExternalClips;
 
-        /// <summary>
-        /// The precision model.
-        /// </summary>
-        private readonly PrecisionModel _precisionModel;
-
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Gets the precision model.
+        /// </summary>
+        /// <value>The precision model used for computing the result.</value>
+        public PrecisionModel PrecisionModel { get; private set; }
 
         /// <summary>
         /// Gets the first polygon.
@@ -398,7 +399,7 @@ namespace ELTE.AEGIS.Algorithms
             _polygonA = first;
             _polygonB = second;
             _computeExternalClips = computeExternalClips;
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _hasResult = false;
         }
 
@@ -428,7 +429,7 @@ namespace ELTE.AEGIS.Algorithms
             _polygonA = new BasicPolygon(first);
             _polygonB = new BasicPolygon(second);
             _computeExternalClips = computeExternalClips;
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _hasResult = false;
         }
 
@@ -464,7 +465,7 @@ namespace ELTE.AEGIS.Algorithms
             _polygonA = new BasicPolygon(firstShell, firstHoles);
             _polygonB = new BasicPolygon(secondShell, secondHoles);
             _computeExternalClips = computeExternalClips;
-            _precisionModel = precisionModel ?? PrecisionModel.Default;
+            PrecisionModel = precisionModel ?? PrecisionModel.Default;
             _hasResult = false;
         }
 
@@ -554,7 +555,7 @@ namespace ELTE.AEGIS.Algorithms
             if (Envelope.FromCoordinates(_polygonA.Shell).Disjoint(Envelope.FromCoordinates(_polygonB.Shell)))
                 return;
 
-            BentleyOttmannAlgorithm algorithm = new BentleyOttmannAlgorithm(new List<IList<Coordinate>> { _polygonA.Shell.Coordinates, _polygonB.Shell.Coordinates }, _precisionModel);
+            BentleyOttmannAlgorithm algorithm = new BentleyOttmannAlgorithm(new List<IList<Coordinate>> { _polygonA.Shell.Coordinates, _polygonB.Shell.Coordinates }, PrecisionModel);
             IList<Coordinate> positions = algorithm.Intersections;
             IList<Tuple<Int32, Int32>> edges = algorithm.EdgeIndices;
 
@@ -616,11 +617,11 @@ namespace ELTE.AEGIS.Algorithms
                     LinkedListNode<Coordinate> prevNode = currentNode.Previous ?? _listA.Last;
                     LinkedListNode<Coordinate> nextNode = currentNode.Next ?? _listA.First;
 
-                    Coordinate prevEdge = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value);
-                    Coordinate nextEdge = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value);
+                    Coordinate prevEdge = LineAlgorithms.Centroid(currentNode.Value, prevNode.Value, PrecisionModel);
+                    Coordinate nextEdge = LineAlgorithms.Centroid(currentNode.Value, nextNode.Value, PrecisionModel);
 
-                    RelativeLocation prevLocation = PolygonAlgorithms.Location(_polygonB.Shell.Coordinates, prevEdge);
-                    RelativeLocation nextLocation = PolygonAlgorithms.Location(_polygonB.Shell.Coordinates, nextEdge);
+                    RelativeLocation prevLocation = PolygonAlgorithms.Location(_polygonB.Shell.Coordinates, prevEdge, PrecisionModel);
+                    RelativeLocation nextLocation = PolygonAlgorithms.Location(_polygonB.Shell.Coordinates, nextEdge, PrecisionModel);
 
                     // Entry
                     if (prevLocation == RelativeLocation.Exterior && nextLocation == RelativeLocation.Interior ||
@@ -721,7 +722,7 @@ namespace ELTE.AEGIS.Algorithms
             IList<Coordinate> shell = new List<Coordinate>(polygon);
             if (shell.Count > 0) shell.Add(polygon.First.Value);
 
-            BentleyOttmannAlgorithm algorithm = new BentleyOttmannAlgorithm(new List<IList<Coordinate>> { shell, hole }, _precisionModel);
+            BentleyOttmannAlgorithm algorithm = new BentleyOttmannAlgorithm(new List<IList<Coordinate>> { shell, hole }, PrecisionModel);
             IList<Coordinate> positions = algorithm.Intersections;
             IList<Tuple<Int32, Int32>> edges = algorithm.EdgeIndices;
 
@@ -908,8 +909,8 @@ namespace ELTE.AEGIS.Algorithms
         /// </summary>
         private void ComputeCompleteClips()
         {
-            Boolean isAinB = _polygonA.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonB.Shell.Coordinates, position));
-            Boolean isBinA = _polygonB.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonA.Shell.Coordinates, position));
+            Boolean isAinB = _polygonA.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonB.Shell.Coordinates, position, PrecisionModel));
+            Boolean isBinA = _polygonB.Shell.All(position => !PolygonAlgorithms.InExterior(_polygonA.Shell.Coordinates, position, PrecisionModel));
 
             List<Coordinate> finalShellA = _listA.ToList();
             finalShellA.Add(finalShellA[0]);
@@ -966,7 +967,7 @@ namespace ELTE.AEGIS.Algorithms
                         // Internal parts cannot have holes inside them at this point
                         var algorithm =
                             new GreinerHormannAlgorithm(_holesA[i].Coordinates, _internalPolygons[0].Shell,
-                                precisionModel: _precisionModel);
+                                precisionModel: PrecisionModel);
                         if (algorithm.InternalPolygons.Count > 0)
                         {
                             intersected = true;
@@ -997,7 +998,7 @@ namespace ELTE.AEGIS.Algorithms
                     {
                         var algorithm =
                             new GreinerHormannAlgorithm(_internalPolygons[0].Shell, _internalPolygons[0].Holes, _holesB[i].Coordinates, null,
-                                precisionModel: _precisionModel);
+                                precisionModel: PrecisionModel);
                         if (algorithm.InternalPolygons.Count > 0)
                         {
                             intersected = true;
@@ -1024,7 +1025,7 @@ namespace ELTE.AEGIS.Algorithms
                 {
                     var algorithm =
                         new GreinerHormannAlgorithm(externalB[0].ToPolygon(), new BasicPolygon(_holesB[i].Coordinates),
-                            precisionModel: _precisionModel);
+                            precisionModel: PrecisionModel);
                     if (algorithm.InternalPolygons.Count > 0)
                     {
                         intersected = true;
@@ -1058,10 +1059,10 @@ namespace ELTE.AEGIS.Algorithms
                 Boolean intersected = false;
                 for (Int32 i = 0; i < polygons.Count; ++i)
                 {
-                    if (ShamosHoeyAlgorithm.Intersects(new[] { polygons[i].Shell, holes[0].Coordinates }))
+                    if (ShamosHoeyAlgorithm.Intersects(new[] { polygons[i].Shell, holes[0].Coordinates }, PrecisionModel))
                     {
                         var clipping = new GreinerHormannAlgorithm(polygons[i].Shell, holes[0].Coordinates,
-                            precisionModel: _precisionModel);
+                            precisionModel: PrecisionModel);
                         clipping.Compute();
 
                         polygons.AddRange(clipping._externalPolygonsA);
@@ -1081,7 +1082,7 @@ namespace ELTE.AEGIS.Algorithms
             foreach (IBasicLineString hole in holes)
             {
                 PolygonClip containerClip =
-                    polygons.First(clip => hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate)));
+                    polygons.First(clip => hole.All(coordinate => !PolygonAlgorithms.InExterior(clip.Shell, coordinate, PrecisionModel)));
                 containerClip.AddHole(hole);
             }
         }

@@ -45,8 +45,8 @@ namespace ELTE.AEGIS.Tests.Core.Collections
         [SetUp]
         public void SetUp()
         {
-            Randomizer randomizer = new Randomizer(0);
-            Int32[] randomValues = randomizer.GetInts(1, 1000, 1000);
+            Random random = new Random(0);
+            Int32[] randomValues = Enumerable.Range(0, 1000).Select(value => random.Next(1, 1000)).ToArray();
 
             _innerSets = new ISet<Int32>[]
             {

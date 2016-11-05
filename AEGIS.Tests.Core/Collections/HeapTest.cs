@@ -45,9 +45,9 @@ namespace ELTE.AEGIS.Tests.Collections
         [SetUp]
         public void SetUp()
         { 
-            Randomizer randomizer = new Randomizer();
+            Random random = new Random();
 
-            _values = randomizer.GetInts(-100, 100, 20).Select(value => new KeyValuePair<Int32, String>(value, value.ToString())).ToArray();
+            _values = Enumerable.Range(0, 20).Select(value => random.Next(-100, 100)).Select(value => new KeyValuePair<Int32, String>(value, value.ToString())).ToArray();
         }
 
         #endregion

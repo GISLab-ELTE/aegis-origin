@@ -43,10 +43,10 @@ namespace ELTE.AEGIS.Tests.Operations.Geometry
         #region Test setup
 
         /// <summary>
-        /// Test fixture setup.
+        /// Test setup.
         /// </summary>
-        [TestFixtureSetUp]
-        public void FixtureInitialize()
+        [SetUp]
+        public void Setup()
         {
             _factory = new GeometryFactory();
             _operator = new HalfedgeGeometryRelateOperator();

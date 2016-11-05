@@ -36,16 +36,16 @@ namespace ELTE.AEGIS.Tests
         {
             // random values
 
-            Randomizer randomizer = new Randomizer();
+            Random random = new Random();
 
             for (Int32 i = 0; i < 1000; i++)
             {
-                Double firstX = randomizer.NextDouble() * randomizer.Next();
-                Double firstY = randomizer.NextDouble() * randomizer.Next();
-                Double firstZ = randomizer.NextDouble() * randomizer.Next();
-                Double secondX = randomizer.NextDouble() * randomizer.Next();
-                Double secondY = randomizer.NextDouble() * randomizer.Next();
-                Double secondZ = randomizer.NextDouble() * randomizer.Next();
+                Double firstX = random.NextDouble() * random.Next();
+                Double firstY = random.NextDouble() * random.Next();
+                Double firstZ = random.NextDouble() * random.Next();
+                Double secondX = random.NextDouble() * random.Next();
+                Double secondY = random.NextDouble() * random.Next();
+                Double secondZ = random.NextDouble() * random.Next();
 
                 Envelope envelope = new Envelope(firstX, secondX, firstY, secondY, firstZ, secondZ);
 

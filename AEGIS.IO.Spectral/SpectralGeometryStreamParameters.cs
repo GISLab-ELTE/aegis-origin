@@ -1,6 +1,4 @@
-﻿
-using ELTE.AEGIS.IO.GeoTiff;
-/// <copyright file="SpectralGeometryStreamParameters.cs" company="Eötvös Loránd University (ELTE)">
+﻿/// <copyright file="SpectralGeometryStreamParameters.cs" company="Eötvös Loránd University (ELTE)">
 ///     Copyright (c) 2011-2016 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
@@ -14,6 +12,8 @@ using ELTE.AEGIS.IO.GeoTiff;
 ///     permissions and limitations under the License.
 /// </copyright>
 /// <author>Roberto Giachetta</author>
+
+using ELTE.AEGIS.IO.GeoTiff;
 using ELTE.AEGIS.IO.RawImage;
 using ELTE.AEGIS.Management;
 using System;

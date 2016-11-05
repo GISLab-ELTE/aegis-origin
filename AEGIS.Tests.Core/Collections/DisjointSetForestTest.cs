@@ -45,7 +45,7 @@ namespace ELTE.AEGIS.Tests.Collections
         [SetUp]
         public void SetUp()
         {
-            Randomizer randomizer = new Randomizer();
+            Random random = new Random(0);
 
             _values = new int[20];
             for (int i = 0; i < 20; i++)
@@ -53,7 +53,7 @@ namespace ELTE.AEGIS.Tests.Collections
                 Int32 x;
                 do
                 {
-                    x = randomizer.Next(-100, 100);
+                    x = random.Next(-100, 100);
                 } while (_values.Contains(x));
                 _values[i] = x;
             }

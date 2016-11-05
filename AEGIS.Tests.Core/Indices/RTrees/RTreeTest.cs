@@ -55,13 +55,13 @@ namespace ELTE.AEGIS.Tests.Indices.RTrees
         [SetUp]
         public void SetUp()
         {
-            Randomizer randomizer = new Randomizer();
+            Random random = new Random();
 
             _factory = new GeometryFactory();
             _geometries = new List<IPoint>();
 
             for (Int32 i = 0; i < 1000; i++)
-                _geometries.Add(_factory.CreatePoint(randomizer.Next(1000), randomizer.Next(1000), randomizer.Next(1000)));
+                _geometries.Add(_factory.CreatePoint(random.Next(1000), random.Next(1000), random.Next(1000)));
 
             _tree = new RTree();
             _tree.Add(_geometries);

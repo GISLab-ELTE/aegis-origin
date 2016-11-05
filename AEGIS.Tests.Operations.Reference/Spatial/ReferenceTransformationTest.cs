@@ -187,7 +187,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spatial
         /// <param name="metadataPreservation">Indicates whether the metadata should be preserved.</param>
         private void TestExecuteForGeometries(Boolean metadataPreservation)
         {
-            Coordinate[] sourceCoordinates = new Randomizer(0).GetDoubles(0, 10000, 100).Select(value => new Coordinate(value, value)).ToArray();
+            Random random = new Random(0);
+            Coordinate[] sourceCoordinates = Enumerable.Range(0, 100).Select(value => random.Next(0, 10000)).Select(value => new Coordinate(value, value)).ToArray();
             Coordinate[] expectedCoordinates = new Coordinate[sourceCoordinates.Length];
 
             for (Int32 i = 0; i < sourceCoordinates.Length; i++)
