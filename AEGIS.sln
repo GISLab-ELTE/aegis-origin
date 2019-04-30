@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Core", "AEGIS.Core\AEGIS.Core.csproj", "{33852080-7C0A-4B62-9281-5E25B2E1F130}"
 EndProject
@@ -34,8 +34,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Temporal.Reference", "AEGIS.Temporal.Reference\AEGIS.Temporal.Reference.csproj", "{16F31A87-2E6D-432A-A9DA-F0EE2181D644}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Tests.Temporal.Reference", "AEGIS.Tests.Temporal.Reference\AEGIS.Tests.Temporal.Reference.csproj", "{ECD99753-A459-41C2-BAD1-CD82153D0EF1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Tests.IO.Spectral", "AEGIS.Tests.IO.Spectral\AEGIS.Tests.IO.Spectral.csproj", "{54E12608-DC28-43AC-BD79-6708C6849A2C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AEGIS.Operations", "AEGIS.Operations\AEGIS.Operations.csproj", "{AB2101FB-62A9-4462-8920-ECD5EC2A4AC0}"
 EndProject
@@ -265,18 +263,6 @@ Global
 		{ECD99753-A459-41C2-BAD1-CD82153D0EF1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{ECD99753-A459-41C2-BAD1-CD82153D0EF1}.Release|Win32.ActiveCfg = Release|Any CPU
 		{ECD99753-A459-41C2-BAD1-CD82153D0EF1}.Release|x86.ActiveCfg = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|Win32.ActiveCfg = Release|Any CPU
-		{54E12608-DC28-43AC-BD79-6708C6849A2C}.Release|x86.ActiveCfg = Release|Any CPU
 		{AB2101FB-62A9-4462-8920-ECD5EC2A4AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB2101FB-62A9-4462-8920-ECD5EC2A4AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB2101FB-62A9-4462-8920-ECD5EC2A4AC0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -424,5 +410,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {025F8DEF-2AAA-4711-BEF2-07F55C25D3C2}
 	EndGlobalSection
 EndGlobal
