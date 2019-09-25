@@ -84,6 +84,8 @@ namespace ELTE.AEGIS.IO
 
         private static GeometryStreamFormat _shapefile;
 
+        private static GeometryStreamFormat _lasfile;
+
         #endregion
 
         #region Public static fields
@@ -101,6 +103,19 @@ namespace ELTE.AEGIS.IO
                                              new String[] { "shp" }, null, 
                                              new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>), typeof(IMultiPolygon) },
                                              new GeometryModel[] { GeometryModel.Spatial2D, GeometryModel.Spatial3D }));
+            }
+        }
+
+        public static GeometryStreamFormat Lasfile
+        {
+            get
+            {
+                return _lasfile ?? (_lasfile =
+                           new GeometryStreamFormat("AEGIS::610104", "LAS file",
+                               "@ 2013, American Society for Photogrammetry & Remote Sensing (asprs)", null, "1.4",
+                               new String[] { "las" }, null,
+                               new Type[] { typeof(IPoint) },
+                               new GeometryModel[] { GeometryModel.Spatial3D }));
             }
         }
 

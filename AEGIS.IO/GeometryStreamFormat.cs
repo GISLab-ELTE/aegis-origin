@@ -56,7 +56,9 @@ namespace ELTE.AEGIS.IO
         public GeometryModel[] SupportedModels { get; private set; }
 
         /// <summary>
-        /// Gets the parameters of the format.
+        /// Gets the
+        ///
+        /// of the format.
         /// </summary>
         /// <value>The array containing the parameters of the format.</value>
         public GeometryStreamParameter[] Parameters { get; private set; }

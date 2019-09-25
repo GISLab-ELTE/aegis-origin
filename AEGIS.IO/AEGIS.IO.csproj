@@ -68,6 +68,23 @@
   <ItemGroup>
     <Compile Include="BufferingMode.cs" />
     <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
+    <Compile Include="Lasfile\CRSType.cs" />
+    <Compile Include="Lasfile\GPSTimeType.cs" />
+    <Compile Include="Lasfile\ILasPoint.cs" />
+    <Compile Include="Lasfile\LasfileReader.cs" />
+    <Compile Include="Lasfile\LasPointBase.cs" />
+    <Compile Include="Lasfile\LasPointFormat0.cs" />
+    <Compile Include="Lasfile\LasPointFormat1.cs" />
+    <Compile Include="Lasfile\LasPointFormat10.cs" />
+    <Compile Include="Lasfile\LasPointFormat2.cs" />
+    <Compile Include="Lasfile\LasPointFormat3.cs" />
+    <Compile Include="Lasfile\LasPointFormat4.cs" />
+    <Compile Include="Lasfile\LasPointFormat5.cs" />
+    <Compile Include="Lasfile\LasPointFormat6.cs" />
+    <Compile Include="Lasfile\LasPointFormat7.cs" />
+    <Compile Include="Lasfile\LasPointFormat8.cs" />
+    <Compile Include="Lasfile\LasPointFormat9.cs" />
+    <Compile Include="Lasfile\LasPublicHeader.cs" />
     <Compile Include="Storage\Operation\FileListingOperationResult.cs" />
     <Compile Include="Storage\Operation\FtpCreateDirectoryOperation.cs" />
     <Compile Include="Storage\Operation\FtpCreateFileOperation.cs" />
@@ -133,6 +150,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
