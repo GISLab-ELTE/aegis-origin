@@ -24,6 +24,8 @@ namespace ELTE.AEGIS.IO.Lasfile
     /// </summary>
     public abstract class LasPointBase : Point, ILasPoint
     {
+        private static GeometryFactory factory = new GeometryFactory();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LasPointBase" /> class.
         /// </summary>
@@ -31,7 +33,7 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// <param name="y">The Y coordinate.</param>
         /// <param name="z">The Z coordinate.</param>
         protected LasPointBase(Double x, Double y, Double z)
-            : base(x, y, z, null, null) { }
+            : base(x, y, z, factory, null) { }
 
         /// <summary>
         /// Gets or sets the key of the file that contains the point.
