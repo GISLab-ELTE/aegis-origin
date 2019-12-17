@@ -84,6 +84,10 @@ namespace ELTE.AEGIS.IO
 
         private static GeometryStreamFormat _shapefile;
 
+        private static GeometryStreamFormat _geojsonfile;
+
+        private static GeometryStreamFormat _topojsonfile;
+
         #endregion
 
         #region Public static fields
@@ -99,8 +103,36 @@ namespace ELTE.AEGIS.IO
                     new GeometryStreamFormat("AEGIS::610101", "Esri shapefile", 
                                              "© 1997, 1998 Environmental Systems Research Institute (ESRI), Inc.", new String[] { "Shapefile" }, "1.0", 
                                              new String[] { "shp" }, null, 
-                                             new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>), typeof(IMultiPolygon) },
+                                             new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>) },
                                              new GeometryModel[] { GeometryModel.Spatial2D, GeometryModel.Spatial3D }));
+            }
+        }
+
+        /// <summary>
+        /// GeoJSON file
+        /// </summary>
+        public static GeometryStreamFormat GeoJson
+        {
+            get
+            {
+                return _geojsonfile ?? (_geojsonfile =
+                           new GeometryStreamFormat("AEGIS::610102", "GeoJSON file", "1.0", new String[] { "json", "geojson" }, new String[] { "application/vnd.geo+json" },
+                               new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IGeometryCollection<ILineString>), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>), typeof(IGeometryCollection<IGeometry>) },
+                               new GeometryModel[] { GeometryModel.Spatial2D, GeometryModel.Spatial3D }));
+            }
+        }
+
+        /// <summary>
+        /// TopoJSON file
+        /// </summary>
+        public static GeometryStreamFormat TopoJson
+        {
+            get
+            {
+                return _topojsonfile ?? (_topojsonfile =
+                           new GeometryStreamFormat("AEGIS::610103", "TopoJSON file", "1.0", new String[] { "json", "topojson" }, new String[] { "application/vnd.topo+json" },
+                               new Type[] { typeof(IPoint), typeof(IGeometryCollection<IPoint>), typeof(ILineString), typeof(IGeometryCollection<ILineString>), typeof(IPolygon), typeof(IGeometryCollection<IPolygon>), typeof(IGeometryCollection<IGeometry>) },
+                               new GeometryModel[] { GeometryModel.Spatial2D, GeometryModel.Spatial3D }));
             }
         }
 

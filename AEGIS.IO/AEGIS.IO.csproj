@@ -56,6 +56,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -68,6 +71,16 @@
   <ItemGroup>
     <Compile Include="BufferingMode.cs" />
     <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
+    <Compile Include="GeoJson\CrsObject.cs" />
+    <Compile Include="GeoJson\Feature.cs" />
+    <Compile Include="GeoJson\FeatureCollection.cs" />
+    <Compile Include="GeoJson\GeoJsonConvert.cs" />
+    <Compile Include="GeoJson\GeoJsonConverter.cs" />
+    <Compile Include="GeoJson\GeoJsonObject.cs" />
+    <Compile Include="GeoJson\GeoJsonReader.cs" />
+    <Compile Include="GeoJson\GeoJsonWriter.cs" />
+    <Compile Include="GeoJson\GeometryObject.cs" />
+    <Compile Include="Json\JsonCreationConverter.cs" />
     <Compile Include="Storage\Operation\FileListingOperationResult.cs" />
     <Compile Include="Storage\Operation\FtpCreateDirectoryOperation.cs" />
     <Compile Include="Storage\Operation\FtpCreateFileOperation.cs" />
@@ -78,6 +91,14 @@
     <Compile Include="Storage\Operation\FtpMoveOperation.cs" />
     <Compile Include="Storage\Operation\FtpOpenFileOperation.cs" />
     <Compile Include="Storage\Operation\StreamOperationResult.cs" />
+    <Compile Include="TopoJson\TopoGeometryObject.cs" />
+    <Compile Include="TopoJson\TopoJsonConvert.cs" />
+    <Compile Include="TopoJson\TopoJsonConverter.cs" />
+    <Compile Include="TopoJson\TopoJsonObject.cs" />
+    <Compile Include="TopoJson\TopoJsonReader.cs" />
+    <Compile Include="TopoJson\TopoJsonWriter.cs" />
+    <Compile Include="TopoJson\TopologyObject.cs" />
+    <Compile Include="TopoJson\TransformObject.cs" />
     <Compile Include="Utilities\MemoryBufferedStream.cs" />
     <Compile Include="MetafileFormat.cs" />
     <Compile Include="Shapefile\DBaseField.cs" />
@@ -132,7 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
