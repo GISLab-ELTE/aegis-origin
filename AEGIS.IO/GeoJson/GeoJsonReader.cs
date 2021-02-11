@@ -271,7 +271,7 @@ namespace ELTE.AEGIS.IO.GeoJSON
                     if (systems.Count > 0)
                         return systems[0];
 
-                    return GeographicCoordinateReferenceSystems.FromName("WGS84").FirstOrDefault();
+                    throw new NotSupportedException("Not supported Coordinate Reference System: " + obj.Properties["name"]);
 
                 }
                 else throw new IOException("Named Crs must have a \"name\" property with string value.");
@@ -286,7 +286,7 @@ namespace ELTE.AEGIS.IO.GeoJSON
                     else throw new NotSupportedException("The given Reference System type is not supported.");
                 } else throw new InvalidDataException("Linked Crs must have an \"href\" property with string value.");
             }
-            else throw new NotSupportedException("Not suppoted Coordinate Reference System type: " + obj.Type);
+            else throw new NotSupportedException("Not supported Coordinate Reference System type: " + obj.Type);
         }
 
         /// <summary>
@@ -307,7 +307,10 @@ namespace ELTE.AEGIS.IO.GeoJSON
                     return WellKnown.WellKnownTextConverter.ToReferenceSystem(builder.ToString());
                 }
             }
-            catch { return GeographicCoordinateReferenceSystems.FromName("WGS84").FirstOrDefault(); }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException("Unrecognized CRS in linked WKT file.", ex);
+            }
         }
 
         /// <summary>

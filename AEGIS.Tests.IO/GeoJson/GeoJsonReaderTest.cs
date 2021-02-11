@@ -28,6 +28,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoJson
     {
         private string[] _inputFilePaths;
         private string _invalidInputJsonFilePath;
+        private string _unsupportedCrsJsonFilePath;
 
         /// <summary>
         /// Test setup.
@@ -36,15 +37,15 @@ namespace ELTE.AEGIS.Tests.IO.GeoJson
         public void SetUp()
         {
             string prefix = Path.Combine(TestContext.CurrentContext.TestDirectory, "_data");
-            _inputFilePaths = new string[4]
+            _inputFilePaths = new string[3]
             {
                 Path.Combine(prefix, "1.geojson"),
                 Path.Combine(prefix, "2.geojson"),
                 Path.Combine(prefix, "3.geojson"),
-                Path.Combine(prefix, "b.json"),
             };
 
             _invalidInputJsonFilePath = Path.Combine(prefix, "a.json");
+            _unsupportedCrsJsonFilePath = Path.Combine(prefix, "b.json");
         }
 
         /// <summary>
@@ -74,6 +75,19 @@ namespace ELTE.AEGIS.Tests.IO.GeoJson
         /// </summary>
         [Test]
         public void GeoJsonReaderHandleInvalidJsonTest()
+        {
+            GeoJsonReader reader = new GeoJsonReader(_invalidInputJsonFilePath);
+
+            Assert.Throws<InvalidDataException>(() => reader.Read());
+
+            reader.Close();
+        }
+
+        /// <summary>
+        /// Test method for handling unsupported CRS data.
+        /// </summary>
+        [Test]
+        public void GeoJsonReaderHandleUnsupportedCrsTest()
         {
             GeoJsonReader reader = new GeoJsonReader(_invalidInputJsonFilePath);
 
