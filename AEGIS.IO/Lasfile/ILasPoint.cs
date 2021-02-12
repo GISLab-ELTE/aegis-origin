@@ -18,7 +18,7 @@ namespace ELTE.AEGIS.IO.Lasfile
     using System;
 
     /// <summary>
-    /// Defines behavior of LAS point geometries.
+    /// Defines the behavior of LAS point geometries.
     /// </summary>
     public interface ILasPoint : IBasicPoint
     {

@@ -23,42 +23,37 @@ namespace ELTE.AEGIS.IO.Lasfile
     /// </summary>
     public class LasPublicHeader
     {
+        #region Private fields
+
         /// <summary>
         /// The flag indicating whether the wave packets are stored internally.
         /// </summary>
-        private Boolean isWavePacketStorageInternal;
+        private Boolean _isWavePacketStorageInternal;
 
         /// <summary>
         /// The flag indicating whether the wave packets are stored externally.
         /// </summary>
-        private Boolean isWavePacketStorageExternal;
+        private Boolean _isWavePacketStorageExternal;
 
         /// <summary>
         /// The system identifier.
         /// </summary>
-        private String systemIdentifier;
+        private String _systemIdentifier = String.Empty;
 
         /// <summary>
         /// The generating software.
         /// </summary>
-        private String generatingSoftware;
+        private String _generatingSoftware = String.Empty;
 
         /// <summary>
         /// The number of point data records by return.
         /// </summary>
-        private List<UInt64> dividedPointCount;
+        private List<UInt64> _pointCounts =
+                new List<UInt64>(15) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LasPublicHeader"/> class.
-        /// </summary>
-        public LasPublicHeader()
-        {
-            isWavePacketStorageInternal = false;
-            isWavePacketStorageExternal = false;
-            systemIdentifier = String.Empty;
-            generatingSoftware = String.Empty;
-            dividedPointCount = new List<UInt64>(15) { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        }
+        #endregion
+
+        #region Public properties
 
         /// <summary>
         /// Gets or sets the file source key.
@@ -75,8 +70,8 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// </summary>
         public Boolean IsGPSWeekTime
         {
-            get => GPSTimeType == GPSTimeType.GPSWeekTime;
-            set => GPSTimeType = (value ? GPSTimeType.GPSWeekTime : GPSTimeType.GPSStandardTime);
+            get => GPSTimeType == GPSTimeType.Week;
+            set => GPSTimeType = (value ? GPSTimeType.Week : GPSTimeType.Standard);
         }
 
         /// <summary>
@@ -84,46 +79,46 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// </summary>
         public Boolean IsGPSStandardTime
         {
-            get => GPSTimeType == GPSTimeType.GPSStandardTime;
-            set => GPSTimeType = (value ? GPSTimeType.GPSStandardTime : GPSTimeType.GPSWeekTime);
+            get => GPSTimeType == GPSTimeType.Standard;
+            set => GPSTimeType = value ? GPSTimeType.Standard : GPSTimeType.Week;
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the wave packets are stored internally.
+        /// Gets or sets a value indicating whether the waveform data packets are stored internally.
         /// </summary>
         public Boolean IsWavePacketStorageInternal
         {
-            get => isWavePacketStorageInternal;
+            get => _isWavePacketStorageInternal;
             set
             {
                 if (value)
                 {
-                    isWavePacketStorageInternal = true;
-                    isWavePacketStorageExternal = false;
+                    _isWavePacketStorageInternal = true;
+                    _isWavePacketStorageExternal = false;
                 }
                 else
                 {
-                    isWavePacketStorageInternal = false;
+                    _isWavePacketStorageInternal = false;
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the wave packets are stored externally.
+        /// Gets or sets a value indicating whether the waveform data packets are stored externally.
         /// </summary>
         public Boolean IsWavePacketStorageExternal
         {
-            get => isWavePacketStorageExternal;
+            get => _isWavePacketStorageExternal;
             set
             {
                 if (value)
                 {
-                    isWavePacketStorageExternal = true;
-                    isWavePacketStorageInternal = false;
+                    _isWavePacketStorageExternal = true;
+                    _isWavePacketStorageInternal = false;
                 }
                 else
                 {
-                    isWavePacketStorageExternal = false;
+                    _isWavePacketStorageExternal = false;
                 }
             }
         }
@@ -192,13 +187,23 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// <exception cref="ArgumentException">Thrown when the given string is longer than 32.</exception>
         public String SystemIdentifier
         {
-            get => systemIdentifier;
+            get => _systemIdentifier;
             set
             {
-                if (value.Length > 32)
-                    throw new ArgumentException("The given system identifier string is too long. Maximum length: 32.");
+                if (value is null)
+                {
+                    _systemIdentifier = String.Empty;
+                }
+                else if (value.Length > 32)
+                {
+                    throw new ArgumentException
+                        ("The given system identifier string is too long. Maximum length: 32.");
+                }
+                else
+                {
+                    _systemIdentifier = value;
+                }
 
-                systemIdentifier = value;
             }
         }
 
@@ -208,13 +213,22 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// <exception cref="ArgumentException">Thrown when the given string is longer than 32.</exception>
         public String GeneratingSoftware
         {
-            get => generatingSoftware;
+            get => _generatingSoftware;
             set
             {
-                if (value.Length > 32)
-                    throw new ArgumentException("The given generating software string is too long. Maximum length: 32.");
-
-                generatingSoftware = value;
+                if (value is null)
+                {
+                    _generatingSoftware = String.Empty;
+                }
+                else if (value.Length > 32)
+                {
+                    throw new ArgumentException
+                        ("The given generating software string is too long. Maximum length: 32.");
+                }
+                else
+                {
+                    _generatingSoftware = value;
+                }
             }
         }
 
@@ -231,14 +245,35 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// <summary>
         /// Gets the file creation date or null if not given.
         /// </summary>
+        /// <remarks>
+        /// If the file creation date is not given the value is null.
+        /// </remarks>
         public DateTime? FileCreationDate
         {
             get
             {
                 if (FileCreationDay < 1 || FileCreationYear < 1)
                     return null;
-                
-                return new DateTime(FileCreationYear, 1, 1).AddDays(FileCreationDay - 1);
+
+                DateTime date = new DateTime(FileCreationYear, 1, 1).AddDays(FileCreationDay - 1);
+
+                if (date.Year != FileCreationYear)
+                    return null;
+
+                return date;
+            }
+            set
+            {
+                if (value is null)
+                {
+                    FileCreationDay = 0;
+                    FileCreationYear = 0;
+                }
+                else
+                {
+                    FileCreationDay = Convert.ToUInt16(value.Value.DayOfYear);
+                    FileCreationYear = Convert.ToUInt16(value.Value.Year);
+                }
             }
         }
 
@@ -273,12 +308,16 @@ namespace ELTE.AEGIS.IO.Lasfile
         public UInt64 PointCount { get; set; }
 
         /// <summary>
-        /// Gets the number of point records or 0 if backward compatibility not supported.
+        /// Gets the number of point records in backward compatibility format.
+        /// If backward compatibility is not supported the value is 0.
         /// </summary>
         public UInt32 LegacyPointCount
         {
             get
             {
+                if (PointDataFormat > 5)
+                    return 0;
+
                 if (PointCount > UInt32.MaxValue)
                     return 0;
 
@@ -287,47 +326,60 @@ namespace ELTE.AEGIS.IO.Lasfile
         }
 
         /// <summary>
-        /// Gets or sets the number of point records by return (15 returns).
+        /// Gets or sets the number of point records by return.
+        /// It uses a list that stores the individual numbers.
         /// </summary>
-        /// <exception cref="ArgumentException">Thrown when the given list is longer than 15.</exception>
-        public IList<UInt64> DividedPointCount
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when the list is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the length of the list is greater than 15.
+        /// </exception>
+        public IList<UInt64> PointCountPerReturn
         {
-            get => dividedPointCount;
+            get => _pointCounts;
             set
             {
+                if (value is null)
+                    throw new ArgumentNullException(nameof(PointCountPerReturn), "The given list is null.");
+
                 if (value.Count > 15)
                     throw new ArgumentException("The given list is too long. Maximum length: 15.");
 
-                for (Int32 i = 0; i < 15; i++)
+                for (var i = 0; i < 15; i++)
                 {
                     if (value.Count > i)
-                        dividedPointCount[i] = value[i];
+                        _pointCounts[i] = value[i];
                     else
-                        dividedPointCount[i] = 0;
+                        _pointCounts[i] = 0;
                 }
             }
         }
 
         /// <summary>
-        /// Gets the number of point records by return (5 returns), each value is 0 if backward compatibility not supported.
+        /// Gets the number of point records by return in backward compatibility format.
+        /// It uses a list that stores the individual numbers.
+        /// If backward compatibility is not supported all value is 0.
         /// </summary>
-        public IList<UInt32> LegacyDividedPointCount
+        public IList<UInt32> LegacyPointCountPerReturn
         {
             get
             {
-                List<UInt32> value = new List<UInt32>(5) { 0, 0, 0, 0, 0 };
+                List<UInt32> value = new List<UInt32>(5);
+
+                if (PointDataFormat > 5)
+                    return new List<UInt32>(5) {0, 0, 0, 0, 0};
 
                 if (PointCount > UInt32.MaxValue)
-                    return value;
+                    return new List<UInt32>(5) {0, 0, 0, 0, 0};
 
-                for (Int32 i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
-                    if (dividedPointCount[i] > UInt32.MaxValue)
-                        return value;
-                }
+                    if (_pointCounts[i] > UInt32.MaxValue)
+                        return new List<UInt32>(5) {0, 0, 0, 0, 0};
 
-                for (Int32 i = 0; i < 5; i++)
-                    value[i] = Convert.ToUInt32(dividedPointCount[i]);
+                    value.Add(Convert.ToUInt32(_pointCounts[i]));
+                }
 
                 return value;
             }
@@ -394,7 +446,7 @@ namespace ELTE.AEGIS.IO.Lasfile
         public Double MinZ { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of bytes to the first wave packet record.
+        /// Gets or sets the offset to the first byte of the waveform data packet record.
         /// </summary>
         public UInt64 WavePacketRecordOffset { get; set; }
 
@@ -408,6 +460,10 @@ namespace ELTE.AEGIS.IO.Lasfile
         /// </summary>
         public UInt32 ExtendedVariableLengthRecordCount { get; set; }
 
+        #endregion
+
+        #region Public methods
+
         /// <summary>
         /// Gets the number of point records in the given return.
         /// </summary>
@@ -419,7 +475,7 @@ namespace ELTE.AEGIS.IO.Lasfile
             if (index < 0 || index > 14)
                 throw new IndexOutOfRangeException("The given index is out of range. Valid: 0 - 14.");
 
-            return dividedPointCount[index];
+            return _pointCounts[index];
         }
 
         /// <summary>
@@ -433,16 +489,19 @@ namespace ELTE.AEGIS.IO.Lasfile
             if (index < 0 || index > 4)
                 throw new IndexOutOfRangeException("The given index is out of range. Valid: 0 - 4.");
 
+            if (PointDataFormat > 5)
+                return 0;
+
             if (PointCount > UInt32.MaxValue)
                 return 0;
 
-            for (Int32 i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
-                if (dividedPointCount[i] > UInt32.MaxValue)
+                if (_pointCounts[i] > UInt32.MaxValue)
                     return 0;
             }
 
-            return Convert.ToUInt32(dividedPointCount[index]);
+            return Convert.ToUInt32(_pointCounts[index]);
         }
 
         /// <summary>
@@ -456,7 +515,9 @@ namespace ELTE.AEGIS.IO.Lasfile
             if (index < 0 || index > 14)
                 throw new IndexOutOfRangeException("The given index is out of range. Valid: 0 - 14.");
 
-            dividedPointCount[index] = value;
+            _pointCounts[index] = value;
         }
+
+        #endregion
     }
 }

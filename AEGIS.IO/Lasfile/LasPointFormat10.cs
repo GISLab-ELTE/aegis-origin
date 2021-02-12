@@ -20,7 +20,7 @@ namespace ELTE.AEGIS.IO.Lasfile
     /// <summary>
     /// Represents a LAS point format 10 geometry in Cartesian coordinate space.
     /// </summary>
-    public class LasPointFormat10 : LasPointFormat8
+    public class LasPointFormat10 : LasPointFormat9
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LasPointFormat10" /> class.
@@ -35,38 +35,24 @@ namespace ELTE.AEGIS.IO.Lasfile
         }
 
         /// <summary>
-        /// Gets or sets the record index of the wave packet.
+        /// Gets or sets the normalised value of the red color channel associated with the point.
         /// </summary>
-        public Byte WavePacketDescriptorIndex { get; set; }
+        public UInt16 RedChannel { get; set; }
 
         /// <summary>
-        /// Gets or sets the number of bytes to the wave packet.
+        /// Gets or sets the normalised value of the green color channel associated with the point.
         /// </summary>
-        public UInt64 WavePacketDataOffset { get; set; }
+        public UInt16 GreenChannel { get; set; }
 
         /// <summary>
-        /// Gets or sets the size of the wave packet in bytes.
+        /// Gets or sets the normalised value of the blue color channel associated with the point.
         /// </summary>
-        public UInt32 WavePacketSize { get; set; }
+        public UInt16 BlueChannel { get; set; }
 
         /// <summary>
-        /// Gets or sets the offset in picoseconds to the location that the associated return pulse was detected.
+        /// Gets or sets the normalised value of the near infrared color channel associated with the point.
         /// </summary>
-        public Single ReturnPointWaveformLocation { get; set; }
+        public UInt16 NearInfraredChannel { get; set; }
 
-        /// <summary>
-        /// Gets or sets the X(t) parameter.
-        /// </summary>
-        public Single Xt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Y(t) parameter.
-        /// </summary>
-        public Single Yt { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Z(t) parameter.
-        /// </summary>
-        public Single Zt { get; set; }
     }
 }

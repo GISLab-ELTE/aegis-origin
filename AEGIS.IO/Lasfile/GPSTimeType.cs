@@ -21,13 +21,13 @@ namespace ELTE.AEGIS.IO.Lasfile
     public enum GPSTimeType
     {
         /// <summary>
-        /// Global Positioning System Week Time.
+        /// GPS Week Time.
         /// </summary>
-        GPSWeekTime,
+        Week,
 
         /// <summary>
-        /// Standard Global Positioning System Time.
+        /// Standard GPS Time.
         /// </summary>
-        GPSStandardTime
+        Standard
     }
 }

@@ -21,13 +21,13 @@ namespace ELTE.AEGIS.IO.Lasfile
     public enum CRSType
     {
         /// <summary>
-        /// Georeferenced Tagged Image File Format.
-        /// </summary>
-        GeoTIFF,
-
-        /// <summary>
         /// Well Known Text.
         /// </summary>
-        WKT
+        WKT,
+
+        /// <summary>
+        /// Georeferenced Tagged Image File Format.
+        /// </summary>
+        GeoTIFF
     }
 }
