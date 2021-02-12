@@ -78,6 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeographyMarkup\GeographyMarkupConverterTest.cs" />
+    <Compile Include="Lasfile\LasFileReaderTests.cs" />
+    <Compile Include="Lasfile\LasPublicHeaderTests.cs" />
     <Compile Include="Storage\ConnectionExceptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WellKnown\WellKnownBinaryConverterTest.cs" />
@@ -108,6 +110,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
