@@ -72,6 +72,7 @@
     <Compile Include="Lasfile\GPSTimeType.cs" />
     <Compile Include="Lasfile\ILasPoint.cs" />
     <Compile Include="Lasfile\LasfileReader.cs" />
+    <Compile Include="Lasfile\LasfileWriter.cs" />
     <Compile Include="Lasfile\LasPointBase.cs" />
     <Compile Include="Lasfile\LasPointFormat0.cs" />
     <Compile Include="Lasfile\LasPointFormat1.cs" />
