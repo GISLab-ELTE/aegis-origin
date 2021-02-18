@@ -23,3 +23,10 @@ jobs:
 
     - name: Build the solution
       run: msbuild AEGIS.sln /p:Configuration=${{env.BUILD_CONFIGURATION}}
+
+    - name: Install NUnit Console
+      run: nuget install NUnit.Console -Version 3.11.1 -OutputDirectory packages
+
+    - name: Run unit tests
+      shell: powershell
+      run: .\packages\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console (Get-ChildItem -Recurse *\bin\${{env.BUILD_CONFIGURATION}}\AEGIS.Tests.*.dll | % FullName | Sort-Object -Unique)
