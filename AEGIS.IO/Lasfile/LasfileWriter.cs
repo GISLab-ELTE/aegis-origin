@@ -13,21 +13,51 @@
 /// </copyright>
 /// <author>Dániel Tanos</author>
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ELTE.AEGIS.IO.Lasfile
 {
+    using System;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using AEGIS.Management;
+
+    /// <summary>
+    /// Represents a LAS file (VERSION 1.4) format reader.
+    /// </summary>
+    /// <remarks>
+    /// Supported versions: LAS 1.0 - LAS 1.4 R14.
+    /// </remarks>
+    [IdentifiedObjectInstance("AEGIS::610104", "LAS file")]
     public class LasfileWriter : GeometryStreamWriter
     {
-        private BinaryWriter _writer;
+        #region Private fields
 
-        public LasPublicHeader Header { get; set; }
+        /// <summary>
+        /// The underlying binary writer.
+        /// </summary>
+        private readonly BinaryWriter _writer;
 
+        #endregion
+
+        #region Public properties
+
+        /// <summary>
+        /// Gets the LAS header.
+        /// </summary>
+        /// <value>The header.</value>
+        public LasPublicHeader Header { get; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LasfileWriter"/> class.
+        /// </summary>
+        /// <param name="path">The path of the file to write.</param>
+        /// <param name="header">The header of the LAS file.</param>
         public LasfileWriter(string path,LasPublicHeader header)
             : base(path, GeometryStreamFormats.Lasfile, null)
         {
@@ -36,6 +66,14 @@ namespace ELTE.AEGIS.IO.Lasfile
             WritePublicHeader();
         }
 
+        #endregion
+
+        #region GeometryStreamWriter protected methods
+
+        /// <summary>
+        /// Apply the write operation for the specified geometry.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
         protected override void ApplyWriteGeometry(IGeometry geometry)
         {            
             _writer.Write(Convert.ToInt32(((geometry as LasPointBase).X - Header.OffsetX) / Header.ScaleFactorX));
@@ -221,6 +259,10 @@ namespace ELTE.AEGIS.IO.Lasfile
             }
         }
 
+        #endregion
+
+        #region Private methods
+
         private void WritePublicHeader()
         {
             string s = "LASF";
@@ -289,7 +331,8 @@ namespace ELTE.AEGIS.IO.Lasfile
 
             _writer.Write(Header.PublicHeaderSize);
 
-            _writer.Write(Convert.ToUInt32(Header.PublicHeaderSize)); //PointDataOffset, headers written by this program will have no extra information between header and data
+            //PointDataOffset, headers written by this program will have no extra information between header and data
+            _writer.Write(Convert.ToUInt32(Header.PublicHeaderSize));
 
             _writer.Write(Header.VariableLengthRecordCount);
 
@@ -362,5 +405,7 @@ namespace ELTE.AEGIS.IO.Lasfile
                 }
             }
         }
+
+        #endregion
     }
 }

@@ -169,7 +169,7 @@ namespace ELTE.AEGIS.IO.Lasfile
 
         #endregion
 
-        #region Protected methods
+        #region GeometryStreamReader protected methods
 
         /// <summary>
         /// Returns a value indicating whether the end of the stream is reached.
@@ -505,6 +505,10 @@ namespace ELTE.AEGIS.IO.Lasfile
 
             return point;
         }
+
+        #endregion
+
+        #region IDisposable protected methods
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
