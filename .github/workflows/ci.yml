@@ -1,0 +1,25 @@
+name: Build project
+
+on: [push, pull_request]
+
+env:
+  BUILD_CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: [windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Restore NuGet packages
+      run: nuget restore AEGIS.sln
+
+    - name: Build the solution
+      run: msbuild AEGIS.sln /p:Configuration=${{env.BUILD_CONFIGURATION}}
