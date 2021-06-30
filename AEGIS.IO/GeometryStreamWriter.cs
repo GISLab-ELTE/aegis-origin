@@ -335,16 +335,18 @@ namespace ELTE.AEGIS.IO
             if (geometry == null)
                 throw new ArgumentNullException("geometry", MessageGeometryIsNull);
 
-            // required, because IGeometryCollection -> IGeometry conversion is prioritized over 
-            //                   IGeometryCollection -> IEnumerable<IGeometry> conversion
-            if (geometry is IEnumerable<IGeometry>)
-            {
-                Write(geometry as IEnumerable<IGeometry>);
-                return;
-            }
-
             if (!Format.Supports(geometry))
-                throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
+            {
+                // required, because IGeometryCollection -> IGeometry conversion is prioritized over 
+                //                   IGeometryCollection -> IEnumerable<IGeometry> conversion
+                if (geometry is IEnumerable<IGeometry>)
+                {
+                    Write(geometry as IEnumerable<IGeometry>);
+                    return;
+                }
+                else
+                    throw new ArgumentException(MessageGeometryIsNotSupported, "geometry");
+            }
 
             try
             {
@@ -370,7 +372,7 @@ namespace ELTE.AEGIS.IO
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (geometries == null)
-                throw new ArgumentNullException("geometries", MessageGeometryIsNull);
+                throw new ArgumentNullException(nameof(geometries), MessageGeometryIsNull);
 
             try
             {
@@ -380,7 +382,7 @@ namespace ELTE.AEGIS.IO
                         continue;
 
                     if (!Format.Supports(geometry))
-                        throw new ArgumentException(MessageGeometriesAreNotSupported, "geometries");
+                        throw new ArgumentException(MessageGeometriesAreNotSupported, nameof(geometries));
 
                     ApplyWriteGeometry(geometry);
                 }
