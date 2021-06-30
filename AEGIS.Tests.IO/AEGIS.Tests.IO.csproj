@@ -80,8 +80,12 @@
     <Compile Include="GeographyMarkup\GeographyMarkupConverterTest.cs" />
     <Compile Include="Lasfile\LasFileReaderTests.cs" />
     <Compile Include="Lasfile\LasPublicHeaderTests.cs" />
+    <Compile Include="GeoJson\GeoJsonReaderTest.cs" />
+    <Compile Include="GeoJson\GeoJsonWriterTest.cs" />
     <Compile Include="Storage\ConnectionExceptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TopoJson\TopoJsonReaderTest.cs" />
+    <Compile Include="TopoJson\TopoJsonWriterTest.cs" />
     <Compile Include="WellKnown\WellKnownBinaryConverterTest.cs" />
     <Compile Include="WellKnown\WellKnownTextConverterTest.cs" />
   </ItemGroup>
@@ -109,6 +113,33 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="_data\1.geojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\2.geojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\3.geojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\a.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\b.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\tj0.topojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\tj1.topojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\tj2.topojson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_data\wgs84.wkt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -26,6 +26,7 @@ namespace ELTE.AEGIS.Tests.IO.Storage
     /// Test fixture for class <see cref="HadoopFileSystem"/>.
     /// </summary>
     [TestFixture]
+    [Ignore("There is no longer a Hadoop server available on gis.inf.elte.hu.")]
     public class HadoopFileSystemTest
     {
         #region Private fields
