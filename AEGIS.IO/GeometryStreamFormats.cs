@@ -83,7 +83,9 @@ namespace ELTE.AEGIS.IO
         #region Private static fields
 
         private static GeometryStreamFormat _shapefile;
-
+      
+        private static GeometryStreamFormat _lasfile;
+      
         private static GeometryStreamFormat _geojsonfile;
 
         private static GeometryStreamFormat _topojsonfile;
@@ -108,6 +110,22 @@ namespace ELTE.AEGIS.IO
             }
         }
 
+        /// <summary>
+        /// LASer file
+        /// </summary>
+        public static GeometryStreamFormat Lasfile
+        {
+            get
+            {
+                return _lasfile ?? (_lasfile =
+                           new GeometryStreamFormat("AEGIS::610104", "LAS file",
+                               "@ 2013, American Society for Photogrammetry & Remote Sensing (asprs)", null, "1.4",
+                               new String[] { "las" }, null,
+                               new Type[] { typeof(IPoint) },
+                               new GeometryModel[] { GeometryModel.Spatial3D }));
+            }
+        }
+      
         /// <summary>
         /// GeoJSON file
         /// </summary>

@@ -78,6 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeographyMarkup\GeographyMarkupConverterTest.cs" />
+    <Compile Include="Lasfile\LasFileReaderTests.cs" />
+    <Compile Include="Lasfile\LasPublicHeaderTests.cs" />
     <Compile Include="GeoJson\GeoJsonReaderTest.cs" />
     <Compile Include="GeoJson\GeoJsonWriterTest.cs" />
     <Compile Include="Storage\ConnectionExceptionTest.cs" />
