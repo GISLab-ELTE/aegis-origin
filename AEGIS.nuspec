@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>AegisSpatial</id>
+    <version>1.0.0</version>
+    <title>AegisSpatial</title>
+    <authors>Roberto Giachetta, Máté Cserép</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">ECL-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/ECL-2.0</licenseUrl>
+    <projectUrl>https://github.com/AegisSpatial/aegis-origin</projectUrl>
+    <icon>icon.png</icon>
+    <description>The AEGIS framework is a geospatial toolkit developed on the .NET runtime facilitating creation of GIS applications.</description>
+    <copyright>Copyright © Roberto Giachetta 2012-2021</copyright>
+    <tags>gis spatial</tags>    
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2">
+        <dependency id="Newtonsoft.Json" version="12.0.3" />
+        <dependency id="Zlib.Portable" version="1.11.0" />
+        <dependency id="morelinq" version="1.4.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="AEGIS.Core\bin\Release\AEGIS.Core.dll" target="lib/net472" />
+    <file src="AEGIS.Core.Graphs\bin\Release\AEGIS.Core.Graphs.dll" target="lib/net472" />
+    <file src="AEGIS.Core.Reference\bin\Release\AEGIS.Core.Reference.dll" target="lib/net472" />
+    <file src="AEGIS.Core.Spectral\bin\Release\AEGIS.Core.Spectral.dll" target="lib/net472" />
+    <file src="AEGIS.IO\bin\Release\AEGIS.IO.dll" target="lib/net472" />
+    <file src="AEGIS.IO.Hadoop\bin\Release\AEGIS.IO.Hadoop.dll" target="lib/net472" />
+    <file src="AEGIS.IO.Spectral\bin\Release\AEGIS.IO.Spectral.dll" target="lib/net472" />
+    <file src="AEGIS.Numerics\bin\Release\AEGIS.Numerics.dll" target="lib/net472" />
+    <file src="AEGIS.Operations\bin\Release\AEGIS.Operations.dll" target="lib/net472" />
+    <file src="AEGIS.Operations.Graphs\bin\Release\AEGIS.Operations.Graphs.dll" target="lib/net472" />
+    <file src="AEGIS.Operations.Reference\bin\Release\AEGIS.Operations.Reference.dll" target="lib/net472" />
+    <file src="AEGIS.Operations.Reference.Graph\bin\Release\AEGIS.Operations.Reference.Graph.dll" target="lib/net472" />
+    <file src="AEGIS.Operations.Spectral\bin\Release\AEGIS.Operations.Spectral.dll" target="lib/net472" />
+    <file src="AEGIS.Temporal\bin\Release\AEGIS.Temporal.dll" target="lib/net472" />
+    <file src="AEGIS.Temporal.Reference\bin\Release\AEGIS.Temporal.Reference.dll" target="lib/net472" />
+    <file src="icon.png" target="" />
+  </files>
+</package>
