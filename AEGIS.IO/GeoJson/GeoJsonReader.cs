@@ -296,6 +296,12 @@ namespace ELTE.AEGIS.IO.GeoJSON
         /// <returns>The determined ReferenceSystem.</returns>
         private IReferenceSystem ReadReferenceSystemFromFile(string path)
         {
+            Uri pathUri = new Uri(path, UriKind.RelativeOrAbsolute);
+            if (!pathUri.IsAbsoluteUri)
+            {
+                path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Path.LocalPath), path);
+            }
+
             try
             {
                 using (StreamReader reader = new StreamReader(path))

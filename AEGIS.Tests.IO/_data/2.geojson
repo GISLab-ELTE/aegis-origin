@@ -4,7 +4,7 @@
   "features": [
     {
       "type": "Feature",
-      "crs": { "type": "link", "properties": { "href": "_data/wgs84.wkt" } },
+      "crs": { "type": "link", "properties": { "href": "wgs84.wkt" } },
       "geometry": { "type": "Point", "coordinates": [102.0, 0.5] },
       "properties": { "prop0": "value0" }
     },
@@ -14,7 +14,7 @@
         "type": "LineString",
         "crs": {
           "type": "link",
-          "properties": { "href": "_data/wgs84.wkt" }
+          "properties": { "href": "wgs84.wkt" }
         },
         "coordinates": [
           [10.0, 0.0], [13.0, 1.0], [14.0, 0.0], [15.0, 1.11]
@@ -31,7 +31,7 @@
       "type": "Feature",
       "crs": {
         "type": "link",
-        "properties": { "href": "_data/wgs84.wkt" }
+        "properties": { "href": "wgs84.wkt" }
       },
       "geometry": {
         "type": "Polygon",

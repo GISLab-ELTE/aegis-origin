@@ -20,6 +20,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace ELTE.AEGIS.Tests.IO.GeoJson
 {
@@ -35,7 +36,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoJson
         [SetUp]
         public void SetUp()
         {
-            string prefix = Path.Combine(TestContext.CurrentContext.TestDirectory, "_data");
+            string prefix = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "_data");
             _inputFilePaths = new string[3]
             {
                 Path.Combine(prefix, "1.geojson"),
