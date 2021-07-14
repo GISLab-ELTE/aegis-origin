@@ -59,13 +59,13 @@ namespace ELTE.AEGIS.Tests.Raster
             _service.Setup(entity => entity.ReadValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>())).Throws<ArgumentOutOfRangeException>();
 
             for (Int32 i = 0; i < 3; i++)
-                _service.Setup(entity => entity.ReadValue(It.IsInRange(0, 19, Range.Inclusive),
-                                                            It.IsInRange(0, 14, Range.Inclusive),
+                _service.Setup(entity => entity.ReadValue(It.IsInRange(0, 19, Moq.Range.Inclusive),
+                                                            It.IsInRange(0, 14, Moq.Range.Inclusive),
                                                             i)).Returns((UInt32)i);
 
             _service.Setup(entity => entity.ReadValueSequence(It.IsAny<Int32>(), It.IsAny<Int32>())).Throws<ArgumentOutOfRangeException>();
-            _service.Setup(entity => entity.ReadValueSequence(It.IsInRange(0, 19, Range.Inclusive),
-                                                                It.IsInRange(0, 14, Range.Inclusive),
+            _service.Setup(entity => entity.ReadValueSequence(It.IsInRange(0, 19, Moq.Range.Inclusive),
+                                                                It.IsInRange(0, 14, Moq.Range.Inclusive),
                                                                 0, 3)).Returns(new UInt32[] { 0, 1, 2 });
             _service.Setup(entity => entity.WriteValue(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<UInt32>())).Throws<ArgumentOutOfRangeException>();
             _service.Setup(entity => entity.WriteValueSequence(It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<Int32>(), It.IsAny<UInt32[]>())).Throws<ArgumentOutOfRangeException>();
@@ -229,8 +229,8 @@ namespace ELTE.AEGIS.Tests.Raster
         public void ProxyRasterSetValueTest()
         {
             for (Int32 i = 0; i < 3; i++)
-                _service.Setup(entity => entity.WriteValue(It.IsInRange(0, 19, Range.Inclusive),
-                                                             It.IsInRange(0, 14, Range.Inclusive),
+                _service.Setup(entity => entity.WriteValue(It.IsInRange(0, 19, Moq.Range.Inclusive),
+                                                             It.IsInRange(0, 14, Moq.Range.Inclusive),
                                                              i, It.IsAny<UInt32>()))
                                                  .Callback(new Action<Int32, Int32, Int32, UInt32>((rowIndex, columnIndex, bandIndex, value) => Assert.AreEqual(bandIndex, value, 0)));
 
@@ -267,9 +267,9 @@ namespace ELTE.AEGIS.Tests.Raster
         [Test]
         public void ProxyRasterSetValuesTest()
         {
-            _service.Setup(entity => entity.WriteValueSequence(It.IsInRange(0, 19, Range.Inclusive),
-                                                                 It.IsInRange(0, 14, Range.Inclusive),
-                                                                 It.IsInRange(0, 2, Range.Inclusive), It.IsAny<UInt32[]>()))
+            _service.Setup(entity => entity.WriteValueSequence(It.IsInRange(0, 19, Moq.Range.Inclusive),
+                                                                 It.IsInRange(0, 14, Moq.Range.Inclusive),
+                                                                 It.IsInRange(0, 2, Moq.Range.Inclusive), It.IsAny<UInt32[]>()))
                                              .Callback(new Action<Int32, Int32, Int32, UInt32[]>((rowIndex, columnIndex, bandIndex, values) => Assert.IsTrue(values.SequenceEqual(new UInt32[] { 0, 1, 2 }))));
 
             // test case 1: index based

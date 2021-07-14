@@ -120,7 +120,7 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
                         currentRep = _forest.Find(vertex);
                         if (_edgeSet.Count > 0)
                         {
-                            _spanningEdges.Add(_edgeSet.MinBy(x => _weightMetric(x)));
+                            _spanningEdges.Add(_edgeSet.MinBy(x => _weightMetric(x)).First());
                         }
                         _edgeSet.Clear();
                     }
@@ -129,13 +129,14 @@ namespace ELTE.AEGIS.Operations.Spatial.SpanningTree
                         _edgeSet.Add(
                             Source.OutEdges(vertex)
                                 .Where(x => _forest.Find(x.Target) != currentRep)
-                                .MinBy(y => _weightMetric(y)));
+                                .MinBy(y => _weightMetric(y))
+                                .First());
                 }
                 
                 if (_edgeSet.Count > 0)
                 {
                     //on the last element there is no component change
-                    _spanningEdges.Add(_edgeSet.MinBy(x => _weightMetric(x)));
+                    _spanningEdges.Add(_edgeSet.MinBy(x => _weightMetric(x)).First());
                 }
 
                 _edgeSet.Clear();

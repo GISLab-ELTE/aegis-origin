@@ -1,185 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{06119CFD-1E6F-44E4-B3FD-9C81A126C8BF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ELTE.AEGIS.IO</RootNamespace>
-    <AssemblyName>AEGIS.IO</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
+    <Copyright>Copyright © Roberto Giachetta 2011-2021</Copyright>
+    <Authors>Roberto Giachetta, Máté Cserép</Authors>
+    <Version>1.1.0</Version>
+    <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="BufferingMode.cs" />
-    <Compile Include="GeographyMarkup\GeographyMarkupConverter.cs" />
-    <Compile Include="Lasfile\CRSType.cs" />
-    <Compile Include="Lasfile\GPSTimeType.cs" />
-    <Compile Include="Lasfile\ILasPoint.cs" />
-    <Compile Include="Lasfile\LasfileReader.cs" />
-    <Compile Include="Lasfile\LasfileWriter.cs" />
-    <Compile Include="Lasfile\LasPointBase.cs" />
-    <Compile Include="Lasfile\LasPointFormat0.cs" />
-    <Compile Include="Lasfile\LasPointFormat1.cs" />
-    <Compile Include="Lasfile\LasPointFormat10.cs" />
-    <Compile Include="Lasfile\LasPointFormat2.cs" />
-    <Compile Include="Lasfile\LasPointFormat3.cs" />
-    <Compile Include="Lasfile\LasPointFormat4.cs" />
-    <Compile Include="Lasfile\LasPointFormat5.cs" />
-    <Compile Include="Lasfile\LasPointFormat6.cs" />
-    <Compile Include="Lasfile\LasPointFormat7.cs" />
-    <Compile Include="Lasfile\LasPointFormat8.cs" />
-    <Compile Include="Lasfile\LasPointFormat9.cs" />
-    <Compile Include="Lasfile\LasPublicHeader.cs" />
-    <Compile Include="GeoJson\CrsObject.cs" />
-    <Compile Include="GeoJson\Feature.cs" />
-    <Compile Include="GeoJson\FeatureCollection.cs" />
-    <Compile Include="GeoJson\GeoJsonConvert.cs" />
-    <Compile Include="GeoJson\GeoJsonConverter.cs" />
-    <Compile Include="GeoJson\GeoJsonObject.cs" />
-    <Compile Include="GeoJson\GeoJsonReader.cs" />
-    <Compile Include="GeoJson\GeoJsonWriter.cs" />
-    <Compile Include="GeoJson\GeometryObject.cs" />
-    <Compile Include="Json\JsonCreationConverter.cs" />
-    <Compile Include="Storage\Operation\FileListingOperationResult.cs" />
-    <Compile Include="Storage\Operation\FtpCreateDirectoryOperation.cs" />
-    <Compile Include="Storage\Operation\FtpCreateFileOperation.cs" />
-    <Compile Include="Storage\Operation\FtpDeleteOperation.cs" />
-    <Compile Include="Storage\Operation\FtpFileListingOperation.cs" />
-    <Compile Include="Storage\FtpFileSystem.cs" />
-    <Compile Include="Storage\Operation\FtpFileSystemOperation.cs" />
-    <Compile Include="Storage\Operation\FtpMoveOperation.cs" />
-    <Compile Include="Storage\Operation\FtpOpenFileOperation.cs" />
-    <Compile Include="Storage\Operation\StreamOperationResult.cs" />
-    <Compile Include="TopoJson\TopoGeometryObject.cs" />
-    <Compile Include="TopoJson\TopoJsonConvert.cs" />
-    <Compile Include="TopoJson\TopoJsonConverter.cs" />
-    <Compile Include="TopoJson\TopoJsonObject.cs" />
-    <Compile Include="TopoJson\TopoJsonReader.cs" />
-    <Compile Include="TopoJson\TopoJsonWriter.cs" />
-    <Compile Include="TopoJson\TopologyObject.cs" />
-    <Compile Include="TopoJson\TransformObject.cs" />
-    <Compile Include="Utilities\MemoryBufferedStream.cs" />
-    <Compile Include="MetafileFormat.cs" />
-    <Compile Include="Shapefile\DBaseField.cs" />
-    <Compile Include="Shapefile\DBaseHeader.cs" />
-    <Compile Include="Shapefile\DBaseStreamReader.cs" />
-    <Compile Include="Shapefile\DBaseStreamWriter.cs" />
-    <Compile Include="Storage\Authentication\AnonymousFileSystemAuthentication.cs" />
-    <Compile Include="Storage\Authentication\UsernamePasswordFileSystemAuthentication.cs" />
-    <Compile Include="Storage\FileSystemAuthenticationType.cs" />
-    <Compile Include="Storage\FileSystemEntry.cs" />
-    <Compile Include="Storage\IFileSystemAuthentication.cs" />
-    <Compile Include="Storage\ConnectionException.cs" />
-    <Compile Include="Storage\FileSystem.cs" />
-    <Compile Include="Storage\FileSystemEntryType.cs" />
-    <Compile Include="Storage\LocalFileSystem.cs" />
-    <Compile Include="GeometryStreamFormat.cs" />
-    <Compile Include="GeometryStreamFormats.cs" />
-    <Compile Include="GeometryStreamParameter.cs" />
-    <Compile Include="GeometryStreamParameters.cs" />
-    <Compile Include="GeometryStreamReader.cs" />
-    <Compile Include="GeometryStreamWriter.cs" />
-    <Compile Include="Shapefile\ShapefileWriter.cs" />
-    <Compile Include="Storage\Operation\FileSystemOperationException.cs" />
-    <Compile Include="Storage\Operation\FileSystemOperationResult.cs" />
-    <Compile Include="Storage\Operation\FileSystemOperationResultCode.cs" />
-    <Compile Include="Utilities\ProxyStream.cs" />
-    <Compile Include="Utilities\ProxyStreamOptions.cs" />
-    <Compile Include="WellKnown\Compatility\GeometryCompatibility.cs" />
-    <Compile Include="WellKnown\WellKnownBinaryConverter.cs" />
-    <Compile Include="WellKnown\WellKnownTextConverter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shapefile\Shape.cs" />
-    <Compile Include="Shapefile\ShapefileReader.cs" />
-    <Compile Include="Shapefile\ShapePartType.cs" />
-    <Compile Include="Shapefile\ShapeType.cs" />
-    <Compile Include="Utilities\ByteOrder.cs" />
-    <Compile Include="Utilities\EndianBitConverter.cs" />
+    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj" />
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj" />
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
-      <Project>{33852080-7C0A-4B62-9281-5E25B2E1F130}</Project>
-      <Name>AEGIS.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
-      <Project>{89DDCE89-0A0E-4DFD-B16F-05E020E873E1}</Project>
-      <Name>AEGIS.Numerics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AEGIS.Core.Reference\AEGIS.Core.Reference.csproj">
-      <Project>{BBF043A5-9195-43B3-8E01-459B5E66F136}</Project>
-      <Name>AEGIS.Core.Reference</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
