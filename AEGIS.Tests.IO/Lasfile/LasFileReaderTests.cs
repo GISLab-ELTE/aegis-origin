@@ -551,7 +551,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
 
             try
             {
-                LasFileReader reader = new LasFileReader(_fixture.NotLasFilePath);
+                LasFileReader reader = new LasFileReader("file://" + _fixture.NotLasFilePath);
             }
             catch (InvalidDataException)
             {
@@ -564,13 +564,13 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void OpenFileInUseTest()
         {
-            using (File.OpenWrite(_fixture.CurrentLasFilePath))
+            using (File.OpenWrite(new Uri(_fixture.CurrentLasFilePath).AbsolutePath))
             {
                 Boolean result = false;
 
                 try
                 {
-                    LasFileReader reader = new LasFileReader(_fixture.CurrentLasFilePath);
+                    LasFileReader reader = new LasFileReader("file://" + _fixture.CurrentLasFilePath);
                 }
                 catch (IOException)
                 {
@@ -584,7 +584,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void OpenFileAndGetHeaderTest()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.CurrentLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.CurrentLasFilePath))
             {
                 LasPublicHeader header = reader.Header;
 
@@ -642,7 +642,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void ReadPointTest()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.CurrentLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.CurrentLasFilePath))
             {
                 Assert.AreEqual((UInt64)0, reader.ReadedPointCount);
                 Assert.AreEqual((UInt64)5, reader.TotalPointCount);
@@ -762,7 +762,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void ReadMultiplePointsTest()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.CurrentLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.CurrentLasFilePath))
             {
                 Assert.AreEqual((UInt64)0, reader.ReadedPointCount);
                 Assert.False(reader.EndOfStream);
@@ -830,7 +830,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void OpenFileLegacyFormatAndGetHeader()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.LegacyLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.LegacyLasFilePath))
             {
                 LasPublicHeader header = reader.Header;
 
@@ -883,7 +883,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void ReadLegacyPointTest()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.LegacyLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.LegacyLasFilePath))
             {
                 Assert.AreEqual((UInt64)0, reader.ReadedPointCount);
                 Assert.AreEqual((UInt64)5, reader.TotalPointCount);
@@ -985,7 +985,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
         [Test]
         public void OpenFileNotSupportedPointVersionAndReadTest()
         {
-            using (LasFileReader reader = new LasFileReader(_fixture.FutureLasFilePath))
+            using (LasFileReader reader = new LasFileReader("file://" + _fixture.FutureLasFilePath))
             {
                 LasPublicHeader header = reader.Header;
 

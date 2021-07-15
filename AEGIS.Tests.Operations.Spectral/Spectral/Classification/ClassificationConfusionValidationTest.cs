@@ -76,8 +76,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             _sourceRasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _sourceRasterMock.Setup(raster => raster.IsMapped).Returns(true);
 
-            _sourceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(0, 1, Range.Inclusive), It.IsInRange(0, 3, Range.Inclusive), 0)).Returns(1);
-            _sourceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(2, 3, Range.Inclusive), It.IsInRange(0, 3, Range.Inclusive), 0)).Returns(1);
+            _sourceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(0, 1, Moq.Range.Inclusive), It.IsInRange(0, 3, Moq.Range.Inclusive), 0)).Returns(1);
+            _sourceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(2, 3, Moq.Range.Inclusive), It.IsInRange(0, 3, Moq.Range.Inclusive), 0)).Returns(1);
 
 
             _referenceRasterMock = new Mock<IRaster>(MockBehavior.Strict);
@@ -92,8 +92,8 @@ namespace ELTE.AEGIS.Tests.Operations.Spectral.Classification
             _referenceRasterMock.Setup(raster => raster.Format).Returns(RasterFormat.Integer);
             _referenceRasterMock.Setup(raster => raster.IsMapped).Returns(true);
 
-            _referenceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(0, 1, Range.Inclusive), It.IsInRange(0, 3, Range.Inclusive), 0)).Returns(4);
-            _referenceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(2, 3, Range.Inclusive), It.IsInRange(0, 3, Range.Inclusive), 0)).Returns(1);
+            _referenceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(0, 1, Moq.Range.Inclusive), It.IsInRange(0, 3, Moq.Range.Inclusive), 0)).Returns(4);
+            _referenceRasterMock.Setup(raster => raster.GetValue(It.IsInRange(2, 3, Moq.Range.Inclusive), It.IsInRange(0, 3, Moq.Range.Inclusive), 0)).Returns(1);
         }
 
         #endregion

@@ -7,26 +7,26 @@ env:
 
 jobs:
   build:
-    runs-on: [windows-latest]
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
-      
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
-
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+    # Required only for linux and macos
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+        
+    - run: dotnet --version
 
     - name: Restore NuGet packages
-      run: nuget restore AEGIS.sln
+      run: dotnet restore AEGIS.sln
 
     - name: Build the solution
-      run: msbuild AEGIS.sln /p:Configuration=${{env.BUILD_CONFIGURATION}}
-
-    - name: Install NUnit Console
-      run: nuget install NUnit.Console -Version 3.11.1 -OutputDirectory packages
+      run: dotnet build AEGIS.sln --configuration ${{env.BUILD_CONFIGURATION}}
 
     - name: Run unit tests
-      shell: powershell
-      run: .\packages\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console (Get-ChildItem -Recurse *\bin\${{env.BUILD_CONFIGURATION}}\AEGIS.Tests.*.dll | % FullName | Sort-Object -Unique)
+      run: dotnet test AEGIS.sln

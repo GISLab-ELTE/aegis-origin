@@ -1,142 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DE84226A-73AA-4AA6-B68B-417E9E8615C6}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ELTE.AEGIS</RootNamespace>
-    <AssemblyName>AEGIS.Core.Spectral</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
+    <Copyright>Copyright © Roberto Giachetta 2014-2021</Copyright>
+    <Authors>Roberto Giachetta, Máté Cserép</Authors>
+    <Version>1.1.0</Version>
+    <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj" />
+    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Algorithms\Distances\BhattacharyaDistance.cs" />
-    <Compile Include="Algorithms\Distances\EuclideanDistance.cs" />
-    <Compile Include="Algorithms\Distances\ManhattanDistance.cs" />
-    <Compile Include="Algorithms\Distances\SpectralDistance.cs" />
-    <Compile Include="Algorithms\RasterAlgorithms.cs" />
-    <Compile Include="Algorithms\Resampling\BicubicResamplingAlgorithm.cs" />
-    <Compile Include="Algorithms\Resampling\BilinearResamplingAlgorithm.cs" />
-    <Compile Include="Algorithms\Resampling\LanczosResamplingAlgorithm.cs" />
-    <Compile Include="Algorithms\Resampling\NearestNeighborResamplingAlgorithm.cs" />
-    <Compile Include="Algorithms\Resampling\RasterResamplingAlgorithm.cs" />
-    <Compile Include="Collections\RasterSection.cs" />
-    <Compile Include="Collections\RasterSectionMap.cs" />
-    <Compile Include="Collections\Segmentation\QuadSegmentCollection.cs" />
-    <Compile Include="Collections\Segmentation\Segment.cs" />
-    <Compile Include="Collections\Segmentation\SegmentCollection.cs" />
-    <Compile Include="Geometry\SpectralGeometryFactory.cs" />
-    <Compile Include="Geometry\SpectralPolygon.cs" />
-    <Compile Include="ImagingDevice.cs" />
-    <Compile Include="ImagingDeviceBand.cs" />
-    <Compile Include="ImagingDevices.cs" />
-    <Compile Include="ISegmentedRaster.cs" />
-    <Compile Include="RasterDimensions.cs" />
-    <Compile Include="RasterImaging.cs" />
-    <Compile Include="RasterImagingBand.cs" />
-    <Compile Include="Indices\ISpectralIndex.cs" />
-    <Compile Include="IRaster.cs" />
-    <Compile Include="IRasterBand.cs" />
-    <Compile Include="IRasterFactory.cs" />
-    <Compile Include="ISpectralGeometry.cs" />
-    <Compile Include="ISpectralGeometryFactory.cs" />
-    <Compile Include="ISpectralPolygon.cs" />
-    <Compile Include="IRasterService.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RasterColorSpace.cs" />
-    <Compile Include="RasterColorSpaceBand.cs" />
-    <Compile Include="RasterCoordinate.cs" />
-    <Compile Include="RasterPresentation.cs" />
-    <Compile Include="RasterPresentationModel.cs" />
-    <Compile Include="Raster\MultiRaster.cs" />
-    <Compile Include="Raster\SegmentedRaster.cs" />
-    <Compile Include="SpectralDomain.cs" />
-    <Compile Include="SpectralGeometryFactoryExtensions.cs" />
-    <Compile Include="RasterMapMode.cs" />
-    <Compile Include="RasterMapper.cs" />
-    <Compile Include="RasterFormat.cs" />
-    <Compile Include="Raster\RasterFloat32.cs" />
-    <Compile Include="Raster\RasterFloat64.cs" />
-    <Compile Include="Raster\MaskedRaster.cs" />
-    <Compile Include="Raster\ProxyRaster.cs" />
-    <Compile Include="Raster\Raster.cs" />
-    <Compile Include="Raster\Raster16.cs" />
-    <Compile Include="Raster\Raster32.cs" />
-    <Compile Include="Raster\Raster8.cs" />
-    <Compile Include="Raster\RasterBand.cs" />
-    <Compile Include="Raster\RasterFactory.cs" />
-    <Compile Include="RasterDataOrder.cs" />
-    <Compile Include="SpectralRange.cs" />
-    <Compile Include="SpectralRanges.cs" />
-    <Compile Include="SpectralStatistics.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj">
-      <Project>{33852080-7c0a-4b62-9281-5e25b2e1f130}</Project>
-      <Name>AEGIS.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj">
-      <Project>{89ddce89-0a0e-4dfd-b16f-05e020e873e1}</Project>
-      <Name>AEGIS.Numerics</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

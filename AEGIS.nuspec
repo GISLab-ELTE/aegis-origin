@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>AegisSpatial</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <title>AegisSpatial</title>
     <authors>Roberto Giachetta, Máté Cserép</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -14,29 +14,29 @@
     <copyright>Copyright © Roberto Giachetta 2012-2021</copyright>
     <tags>gis spatial</tags>    
     <dependencies>
-      <group targetFramework=".NETFramework4.7.2">
-        <dependency id="Newtonsoft.Json" version="12.0.3" />
-        <dependency id="Zlib.Portable" version="1.11.0" />
-        <dependency id="morelinq" version="1.4.0" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Newtonsoft.Json" version="13.0.1" exclude="Build,Analyzers" />
+        <dependency id="Iconic.Zlib.Netstandard" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="morelinq" version="3.3.2" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="AEGIS.Core\bin\Release\AEGIS.Core.dll" target="lib/net472" />
-    <file src="AEGIS.Core.Graphs\bin\Release\AEGIS.Core.Graphs.dll" target="lib/net472" />
-    <file src="AEGIS.Core.Reference\bin\Release\AEGIS.Core.Reference.dll" target="lib/net472" />
-    <file src="AEGIS.Core.Spectral\bin\Release\AEGIS.Core.Spectral.dll" target="lib/net472" />
-    <file src="AEGIS.IO\bin\Release\AEGIS.IO.dll" target="lib/net472" />
-    <file src="AEGIS.IO.Hadoop\bin\Release\AEGIS.IO.Hadoop.dll" target="lib/net472" />
-    <file src="AEGIS.IO.Spectral\bin\Release\AEGIS.IO.Spectral.dll" target="lib/net472" />
-    <file src="AEGIS.Numerics\bin\Release\AEGIS.Numerics.dll" target="lib/net472" />
-    <file src="AEGIS.Operations\bin\Release\AEGIS.Operations.dll" target="lib/net472" />
-    <file src="AEGIS.Operations.Graphs\bin\Release\AEGIS.Operations.Graphs.dll" target="lib/net472" />
-    <file src="AEGIS.Operations.Reference\bin\Release\AEGIS.Operations.Reference.dll" target="lib/net472" />
-    <file src="AEGIS.Operations.Reference.Graph\bin\Release\AEGIS.Operations.Reference.Graph.dll" target="lib/net472" />
-    <file src="AEGIS.Operations.Spectral\bin\Release\AEGIS.Operations.Spectral.dll" target="lib/net472" />
-    <file src="AEGIS.Temporal\bin\Release\AEGIS.Temporal.dll" target="lib/net472" />
-    <file src="AEGIS.Temporal.Reference\bin\Release\AEGIS.Temporal.Reference.dll" target="lib/net472" />
+    <file src="AEGIS.Core\bin\Release\netstandard2.0\AEGIS.Core.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Core.Graphs\bin\Release\netstandard2.0\AEGIS.Core.Graphs.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Core.Reference\bin\Release\netstandard2.0\AEGIS.Core.Reference.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Core.Spectral\bin\Release\netstandard2.0\AEGIS.Core.Spectral.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.IO\bin\Release\netstandard2.0\AEGIS.IO.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.IO.Hadoop\bin\Release\netstandard2.0\AEGIS.IO.Hadoop.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.IO.Spectral\bin\Release\netstandard2.0\AEGIS.IO.Spectral.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Numerics\bin\Release\netstandard2.0\AEGIS.Numerics.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Operations\bin\Release\netstandard2.0\AEGIS.Operations.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Operations.Graphs\bin\Release\netstandard2.0\AEGIS.Operations.Graphs.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Operations.Reference\bin\Release\netstandard2.0\AEGIS.Operations.Reference.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Operations.Reference.Graph\bin\Release\netstandard2.0\AEGIS.Operations.Reference.Graph.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Operations.Spectral\bin\Release\netstandard2.0\AEGIS.Operations.Spectral.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Temporal\bin\Release\netstandard2.0\AEGIS.Temporal.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.Temporal.Reference\bin\Release\netstandard2.0\AEGIS.Temporal.Reference.dll" target="lib/netstandard2.0" />
     <file src="icon.png" target="" />
   </files>
 </package>

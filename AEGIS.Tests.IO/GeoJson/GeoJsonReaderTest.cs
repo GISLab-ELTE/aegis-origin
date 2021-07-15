@@ -37,7 +37,7 @@ namespace ELTE.AEGIS.Tests.IO.GeoJson
         [SetUp]
         public void SetUp()
         {
-            string prefix = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "_data");
+            string prefix = "file://" + Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "_data");
             _inputFilePaths = new string[3]
             {
                 Path.Combine(prefix, "1.geojson"),

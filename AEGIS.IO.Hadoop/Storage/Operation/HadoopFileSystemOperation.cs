@@ -145,7 +145,7 @@ namespace ELTE.AEGIS.IO.Storage.Operation
         /// </summary>
         protected HadoopFileSystemOperation()
         {
-            _client = new HttpClient(new WebRequestHandler { AllowAutoRedirect = false }, true);
+            _client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }, true);
             _disposeClient = false;
             _disposed = false;
         }
