@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>AegisSpatial</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <title>AegisSpatial</title>
     <authors>Roberto Giachetta, Máté Cserép</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -37,6 +37,23 @@
     <file src="AEGIS.Operations.Spectral\bin\Release\netstandard2.0\AEGIS.Operations.Spectral.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.Temporal\bin\Release\netstandard2.0\AEGIS.Temporal.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.Temporal.Reference\bin\Release\netstandard2.0\AEGIS.Temporal.Reference.dll" target="lib/netstandard2.0" />
+
+    <file src="docs\AEGIS.Core.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Core.Graphs.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Core.Reference.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Core.Spectral.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.IO.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.IO.Hadoop.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.IO.Spectral.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Numerics.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Operations.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Operations.Graphs.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Operations.Reference.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Operations.Reference.Graph.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Operations.Spectral.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Temporal.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.Temporal.Reference.xml" target="lib/netstandard2.0" />
+
     <file src="icon.png" target="" />
   </files>
 </package>

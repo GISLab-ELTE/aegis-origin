@@ -7,15 +7,15 @@
     <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
     <Copyright>Copyright © Roberto Giachetta 2011-2021</Copyright>
     <Authors>Roberto Giachetta, Máté Cserép</Authors>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  <PropertyGroup>
+    <DocumentationFile>..\docs\AEGIS.IO.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
