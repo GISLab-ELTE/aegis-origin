@@ -1,5 +1,5 @@
-/// <copyright file="IDisjointSet.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2019 Roberto Giachetta. Licensed under the
+/// <copyright file="IDisjointSet.cs" company="Eï¿½tvï¿½s Lorï¿½nd University (ELTE)">
+///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
 ///     Educational Community License, Version 2.0 (the "License"); you may
 ///     not use this file except in compliance with the License. You may
 ///     obtain a copy of the License at
@@ -11,7 +11,7 @@
 ///     or implied. See the License for the specific language governing
 ///     permissions and limitations under the License.
 /// </copyright>
-/// <author>Dávid Kis</author>
+/// <author>Dï¿½vid Kis</author>
 
 using System;
 using System.Collections;
@@ -24,7 +24,7 @@ namespace ELTE.AEGIS.Collections
     /// </summary>
     /// <typeparam name="TElement">The type of the elements in the sets.</typeparam>
     /// <remarks>
-    /// In computing, a disjoint-set data structure, also called a union–find data structure or merge–find set,
+    /// In computing, a disjoint-set data structure, also called a unionï¿½find data structure or mergeï¿½find set,
     /// is a data structure that keeps track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets.
     /// </remarks>
     public interface IDisjointSet<TElement> : IEnumerable<TElement>, IEnumerable

@@ -11,7 +11,7 @@
     <projectUrl>https://github.com/AegisSpatial/aegis-origin</projectUrl>
     <icon>icon.png</icon>
     <description>The AEGIS framework is a geospatial toolkit developed on the .NET runtime facilitating creation of GIS applications.</description>
-    <copyright>Copyright © Roberto Giachetta 2012-2021</copyright>
+    <copyright>Copyright © Roberto Giachetta 2012-2022</copyright>
     <tags>gis spatial</tags>    
     <dependencies>
       <group targetFramework=".NETStandard2.0">
