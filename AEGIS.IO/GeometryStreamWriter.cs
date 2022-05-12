@@ -576,7 +576,7 @@ namespace ELTE.AEGIS.IO
             {
                 // open the stream for reading
                 if (path.IsAbsoluteUri)
-                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.Create, FileAccess.Write);
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(Uri.UnescapeDataString(path.AbsolutePath), FileMode.Create, FileAccess.Write);
                 else
                     return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.Create, FileAccess.Write);
             }

@@ -664,7 +664,7 @@ namespace ELTE.AEGIS.IO
             try
             {
                 if (path.IsAbsoluteUri)
-                    return FileSystem.GetFileSystemForPath(path).OpenFile(path.AbsolutePath, FileMode.Open, FileAccess.Read);
+                    return FileSystem.GetFileSystemForPath(path).OpenFile(Uri.UnescapeDataString(path.AbsolutePath), FileMode.Open, FileAccess.Read);
                 else
                     return FileSystem.GetFileSystemForPath(path).OpenFile(path.OriginalString, FileMode.Open, FileAccess.Read);
             }
