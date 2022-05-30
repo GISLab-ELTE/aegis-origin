@@ -29,4 +29,10 @@
     <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="LASzip.Net">
+      <HintPath>LASzip.Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

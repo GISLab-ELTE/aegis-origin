@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AEGIS.Core", "AEGIS.Core\AEGIS.Core.csproj", "{A520846F-5D27-4FD2-9685-1A053CF6E9E7}"
 EndProject
@@ -65,6 +65,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AEGIS.LiDAR", "AEGIS.LiDAR\AEGIS.LiDAR.csproj", "{3D055E11-598B-4223-A4DD-86794812C80C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AEGIS.Tests.LiDAR", "AEGIS.Tests.LiDAR\AEGIS.Tests.LiDAR.csproj", "{3FDD9479-C85D-4B56-ACC2-A18B950F8566}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -184,6 +188,14 @@ Global
 		{4D277D35-BC81-4B5E-B9E0-7D14EEBA9DFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D277D35-BC81-4B5E-B9E0-7D14EEBA9DFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D277D35-BC81-4B5E-B9E0-7D14EEBA9DFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D055E11-598B-4223-A4DD-86794812C80C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D055E11-598B-4223-A4DD-86794812C80C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D055E11-598B-4223-A4DD-86794812C80C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D055E11-598B-4223-A4DD-86794812C80C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FDD9479-C85D-4B56-ACC2-A18B950F8566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FDD9479-C85D-4B56-ACC2-A18B950F8566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FDD9479-C85D-4B56-ACC2-A18B950F8566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FDD9479-C85D-4B56-ACC2-A18B950F8566}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

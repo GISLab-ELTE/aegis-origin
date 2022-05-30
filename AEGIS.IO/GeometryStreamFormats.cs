@@ -85,7 +85,9 @@ namespace ELTE.AEGIS.IO
         private static GeometryStreamFormat _shapefile;
       
         private static GeometryStreamFormat _lasfile;
-      
+
+        private static GeometryStreamFormat _lazfile;
+
         private static GeometryStreamFormat _geojsonfile;
 
         private static GeometryStreamFormat _topojsonfile;
@@ -125,7 +127,23 @@ namespace ELTE.AEGIS.IO
                                new GeometryModel[] { GeometryModel.Spatial3D }));
             }
         }
-      
+
+        /// <summary>
+        /// Compressed LASer file
+        /// </summary>
+        public static GeometryStreamFormat Lazfile
+        {
+            get
+            {
+                return _lazfile ?? (_lazfile =
+                           new GeometryStreamFormat("AEGIS::610105", "LAZ file",
+                               "LAZ is a compressed version of the LAS format", null, null,
+                               new String[] { "laz" }, null,
+                               new Type[] { typeof(IPoint) },
+                               new GeometryModel[] { GeometryModel.Spatial3D }));
+            }
+        }
+
         /// <summary>
         /// GeoJSON file
         /// </summary>
