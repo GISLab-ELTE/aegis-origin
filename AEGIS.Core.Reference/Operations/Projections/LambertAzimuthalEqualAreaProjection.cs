@@ -115,6 +115,7 @@ namespace ELTE.AEGIS.Reference.Operations
             : base(identifier, name, method, parameters, ellipsoid, areaOfUse)
         {
             // EPSG Guidance Note number 7, part 2, page 72
+            // Also here: https://epsg.io/9820-method
 
             _latO = ((Angle)_parameters[CoordinateOperationParameters.LatitudeOfNaturalOrigin]).BaseValue;
             _lonO = ((Angle)_parameters[CoordinateOperationParameters.LongitudeOfNaturalOrigin]).BaseValue;
