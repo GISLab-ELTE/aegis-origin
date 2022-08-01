@@ -28,16 +28,24 @@ namespace ELTE.AEGIS.Reference.Operations
     {
         #region Protected fields
 
-        protected Double _latitudeOfNaturalOrigin; // projection params
-        protected Double _longitudeOfNaturalOrigin;
-        protected Double _falseEasting;
-        protected Double _falseNorthing;
-        protected Double _D; // projection constants
-        protected Double _RQ;
-        protected Double _betaO;
-        protected Double _qP;
-        protected Double _qO;
-        protected OperationAspect _operationAspect; // aspect
+        // projection params
+        protected readonly double _latO;
+        protected readonly double _lonO;
+        protected readonly double _FE;
+        protected readonly double _FN;
+        protected readonly double _e;
+        protected readonly double _e2;
+        protected readonly double _a;
+        protected readonly double _ras;
+
+        // projection constants
+        protected readonly double _D;
+        protected readonly double _Rq;
+        protected readonly double _betaO;
+        protected readonly double _qP;
+        protected readonly double _qO;
+
+        protected OperationAspect _operationAspect;
 
         #endregion
 
@@ -70,29 +78,8 @@ namespace ELTE.AEGIS.Reference.Operations
         /// The parameter does not have the same measurement unit as the ellipsoid.
         /// </exception>
         public LambertAzimuthalEqualAreaProjection(String identifier, String name, Dictionary<CoordinateOperationParameter, Object> parameters, Ellipsoid ellipsoid, AreaOfUse areaOfUse)
-            : base(identifier, name, CoordinateOperationMethods.LambertAzimuthalEqualAreaProjection, parameters, ellipsoid, areaOfUse)
+            : this(identifier, name, CoordinateOperationMethods.LambertAzimuthalEqualAreaProjection, parameters, ellipsoid, areaOfUse)
         {
-            // EPSG Guidance Note number 7, part 2, page 72
-
-            _latitudeOfNaturalOrigin = ((Angle)_parameters[CoordinateOperationParameters.LatitudeOfNaturalOrigin]).BaseValue;
-            _longitudeOfNaturalOrigin = ((Angle)_parameters[CoordinateOperationParameters.LongitudeOfNaturalOrigin]).BaseValue;
-            _falseEasting = ((Length)_parameters[CoordinateOperationParameters.FalseEasting]).BaseValue;
-            _falseNorthing = ((Length)_parameters[CoordinateOperationParameters.FalseNorthing]).BaseValue;
-
-            _qP = (1 - _ellipsoid.EccentricitySquare) * ((1 / (1 - _ellipsoid.EccentricitySquare)) - ((1 / 2 * _ellipsoid.Eccentricity) * Math.Log((1 - _ellipsoid.Eccentricity) / (1 + _ellipsoid.Eccentricity), Math.E)));
-            _qO = (1 - _ellipsoid.EccentricitySquare) * ((Math.Sin(_latitudeOfNaturalOrigin) / (1 - _ellipsoid.EccentricitySquare * Calculator.Sin2(_latitudeOfNaturalOrigin))) - ((1 / (2 * _ellipsoid.Eccentricity)) * Math.Log((1 - _ellipsoid.Eccentricity * Math.Sin(_latitudeOfNaturalOrigin)) / (1 + _ellipsoid.Eccentricity * Math.Sin(_latitudeOfNaturalOrigin)), Math.E)));
-            _betaO = Math.Asin(_qO / _qP);
-            _RQ = _ellipsoid.SemiMajorAxis.BaseValue * Math.Sqrt(_qP / 2);
-            _D = _ellipsoid.SemiMajorAxis.BaseValue * (Math.Cos(_latitudeOfNaturalOrigin) / Math.Sqrt(1 - _ellipsoid.EccentricitySquare * Calculator.Sin2(_latitudeOfNaturalOrigin))) / (_RQ * Math.Cos(_betaO));
-
-            if (Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.NorthPole.BaseValue) <= Calculator.Tolerance)
-                _operationAspect = OperationAspect.NorthPolar;
-            else if (Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.SouthPole.BaseValue) <= Calculator.Tolerance)
-                _operationAspect = OperationAspect.SouthPolar;
-            else if (_ellipsoid.IsSphere && Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.Equator.BaseValue) <= Calculator.Tolerance)
-                _operationAspect = OperationAspect.Equatorial;
-            else
-                _operationAspect = OperationAspect.Oblique;
         }
 
         /// <summary>
@@ -129,22 +116,28 @@ namespace ELTE.AEGIS.Reference.Operations
         {
             // EPSG Guidance Note number 7, part 2, page 72
 
-            _latitudeOfNaturalOrigin = ((Angle)_parameters[CoordinateOperationParameters.LatitudeOfNaturalOrigin]).BaseValue;
-            _longitudeOfNaturalOrigin = ((Angle)_parameters[CoordinateOperationParameters.LongitudeOfNaturalOrigin]).BaseValue;
-            _falseEasting = ((Length)_parameters[CoordinateOperationParameters.FalseEasting]).BaseValue;
-            _falseNorthing = ((Length)_parameters[CoordinateOperationParameters.FalseNorthing]).BaseValue;
+            _latO = ((Angle)_parameters[CoordinateOperationParameters.LatitudeOfNaturalOrigin]).BaseValue;
+            _lonO = ((Angle)_parameters[CoordinateOperationParameters.LongitudeOfNaturalOrigin]).BaseValue;
+            _FE = ((Length)_parameters[CoordinateOperationParameters.FalseEasting]).BaseValue;
+            _FN = ((Length)_parameters[CoordinateOperationParameters.FalseNorthing]).BaseValue;
 
-            _qP = (1 - _ellipsoid.EccentricitySquare) * ((1 / (1 - _ellipsoid.EccentricitySquare)) - ((1 / 2 * _ellipsoid.Eccentricity) * Math.Log((1 - _ellipsoid.Eccentricity) / (1 + _ellipsoid.Eccentricity), Math.E)));
-            _qO = (1 - _ellipsoid.EccentricitySquare) * ((Math.Sin(_latitudeOfNaturalOrigin) / (1 - _ellipsoid.EccentricitySquare * Calculator.Sin2(_latitudeOfNaturalOrigin))) - ((1 / (2 * _ellipsoid.Eccentricity)) * Math.Log((1 - _ellipsoid.Eccentricity * Math.Sin(_latitudeOfNaturalOrigin)) / (1 + _ellipsoid.Eccentricity * Math.Sin(_latitudeOfNaturalOrigin)), Math.E)));
+            // Short variable names to improve readability
+            _e = ellipsoid.Eccentricity;
+            _e2 = ellipsoid.EccentricitySquare;
+            _a = _ellipsoid.SemiMajorAxis.BaseValue;
+            _ras = _ellipsoid.RadiusOfAuthalicSphere;
+
+            _qP = (1 - _e2) * ((1 / (1 - _e2)) - ((1 / (2 * _e)) * Math.Log((1 - _e) / (1 + _e), Math.E)));
+            _qO = (1 - _e2) * ((Math.Sin(_latO) / (1 - _e2 * Calculator.Sin2(_latO))) - ((1 / (2 * _e)) * Math.Log((1 - _e * Math.Sin(_latO)) / (1 + _e * Math.Sin(_latO)), Math.E)));
             _betaO = Math.Asin(_qO / _qP);
-            _RQ = _ellipsoid.SemiMajorAxis.BaseValue * Math.Sqrt(_qP / 2);
-            _D = _ellipsoid.SemiMajorAxis.BaseValue * (Math.Cos(_latitudeOfNaturalOrigin) / Math.Sqrt(1 - _ellipsoid.EccentricitySquare * Calculator.Sin2(_latitudeOfNaturalOrigin))) / (_RQ * Math.Cos(_betaO));
+            _Rq = _a * Math.Sqrt(_qP / 2);
+            _D = _a * (Math.Cos(_latO) / Math.Sqrt(1 - _e2 * Calculator.Sin2(_latO))) / (_Rq * Math.Cos(_betaO));
 
-            if (Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.NorthPole.BaseValue) <= Calculator.Tolerance)
+            if (Math.Abs(_latO) - Math.Abs(Angles.NorthPole.BaseValue) <= Calculator.Tolerance)
                 _operationAspect = OperationAspect.NorthPolar;
-            else if (Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.SouthPole.BaseValue) <= Calculator.Tolerance)
+            else if (Math.Abs(_latO) - Math.Abs(Angles.SouthPole.BaseValue) <= Calculator.Tolerance)
                 _operationAspect = OperationAspect.SouthPolar;
-            else if (_ellipsoid.IsSphere && Math.Abs(_latitudeOfNaturalOrigin) - Math.Abs(Angles.Equator.BaseValue) <= Calculator.Tolerance)
+            else if (_ellipsoid.IsSphere && Math.Abs(_latO) - Math.Abs(Angles.Equator.BaseValue) <= Calculator.Tolerance)
                 _operationAspect = OperationAspect.Equatorial;
             else
                 _operationAspect = OperationAspect.Oblique;
@@ -160,33 +153,36 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The transformed coordinate.</returns>
         protected override Coordinate ComputeForward(GeoCoordinate coordinate)
-        {            
-            Double easting = 0, northing = 0;
+        {
+            double easting = 0;
+            double northing = 0;
+            double lat = coordinate.Latitude.BaseValue;
+            double lon = coordinate.Longitude.BaseValue;
 
             if (_ellipsoid.IsSphere)
             {
                 // source: Snyder, J. P.: Map Projections - A Working Manual, page 185
-                Double k;
+                double k;
 
                 switch (_operationAspect)
                 {
                     case OperationAspect.NorthPolar:
-                        easting = 2 * _ellipsoid.RadiusOfAuthalicSphere * Math.Sin(Math.PI / 4 - coordinate.Latitude.BaseValue / 2) * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
-                        northing = -2 * _ellipsoid.RadiusOfAuthalicSphere * Math.Sin(Math.PI / 4 - coordinate.Latitude.BaseValue / 2) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
+                        easting = 2 * _ras * Math.Sin(Math.PI / 4 - lat / 2) * Math.Sin(lon - _lonO);
+                        northing = -2 * _ras * Math.Sin(Math.PI / 4 - lat / 2) * Math.Cos(lon - _lonO);
                         break;
                     case OperationAspect.SouthPolar:
-                        easting = 2 * _ellipsoid.RadiusOfAuthalicSphere * Math.Cos(Math.PI / 4 - coordinate.Latitude.BaseValue / 2) * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
-                        northing = 2 * _ellipsoid.RadiusOfAuthalicSphere * Math.Cos(Math.PI / 4 - coordinate.Latitude.BaseValue / 2) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
+                        easting = 2 * _ras * Math.Cos(Math.PI / 4 - lat / 2) * Math.Sin(lon - _lonO);
+                        northing = 2 * _ras * Math.Cos(Math.PI / 4 - lat / 2) * Math.Cos(lon - _lonO);
                         break;
                     case OperationAspect.Equatorial:
-                        k = Math.Sqrt(2 / (1 + Math.Cos(coordinate.Latitude.BaseValue) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin)));
-                        easting = _ellipsoid.RadiusOfAuthalicSphere * k * Math.Cos(coordinate.Latitude.BaseValue) * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
-                        northing = _ellipsoid.RadiusOfAuthalicSphere * k * Math.Sin(coordinate.Latitude.BaseValue);
+                        k = Math.Sqrt(2 / (1 + Math.Cos(lat) * Math.Cos(lon - _lonO)));
+                        easting = _ras * k * Math.Cos(lat) * Math.Sin(lon - _lonO);
+                        northing = _ras * k * Math.Sin(lat);
                         break;
                     case OperationAspect.Oblique:
-                        k = Math.Sqrt(2 / (1 + Math.Sin(_latitudeOfNaturalOrigin) * Math.Sin(coordinate.Latitude.BaseValue) + Math.Cos(_latitudeOfNaturalOrigin) * Math.Cos(coordinate.Latitude.BaseValue) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin)));
-                        easting = _ellipsoid.RadiusOfAuthalicSphere * k * Math.Cos(coordinate.Latitude.BaseValue) * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin);
-                        northing = _ellipsoid.RadiusOfAuthalicSphere * k * (Math.Cos(_latitudeOfNaturalOrigin) * Math.Sin(coordinate.Latitude.BaseValue) - Math.Sin(_latitudeOfNaturalOrigin) * Math.Cos(coordinate.Latitude.BaseValue) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin));
+                        k = Math.Sqrt(2 / (1 + Math.Sin(_latO) * Math.Sin(lat) + Math.Cos(_latO) * Math.Cos(lat) * Math.Cos(lon - _lonO)));
+                        easting = _ras * k * Math.Cos(lat) * Math.Sin(lon - _lonO);
+                        northing = _ras * k * (Math.Cos(_latO) * Math.Sin(lat) - Math.Sin(_latO) * Math.Cos(lat) * Math.Cos(lon - _lonO));
                         break;
                 }
             }
@@ -194,28 +190,28 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 // source: EPSG Guidance Note number 7, part 2, page 72
 
-                Double q = (1 - _ellipsoid.EccentricitySquare) * ((Math.Sin(coordinate.Latitude.BaseValue) / (1 - _ellipsoid.EccentricitySquare * Calculator.Sin2(coordinate.Latitude.BaseValue))) - ((1 / (2 * _ellipsoid.Eccentricity)) * Math.Log((1 - _ellipsoid.Eccentricity * Math.Sin(coordinate.Latitude.BaseValue)) / (1 + _ellipsoid.Eccentricity * Math.Sin(coordinate.Latitude.BaseValue)), Math.E)));
+                double q = (1 - _e2) * ((Math.Sin(lat) / (1 - _e2 * Calculator.Sin2(lat))) - ((1 / (2 * _e)) * Math.Log((1 - _e * Math.Sin(lat)) / (1 + _e * Math.Sin(lat)), Math.E)));
 
+                double rho;
                 switch (_operationAspect)
                 {
                     case OperationAspect.NorthPolar:
-                        Double rho = _ellipsoid.SemiMajorAxis.BaseValue * Math.Sqrt(_qP - q);
-
-                        easting = _falseEasting + (rho * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin));
-                        northing = _falseNorthing - (rho * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin));
+                        rho = _a * Math.Sqrt(_qP - q);
+                        easting = _FE + (rho * Math.Sin(lon - _lonO));
+                        northing = _FN - (rho * Math.Cos(lon - _lonO));
                         break;
+
                     case OperationAspect.SouthPolar:
-                        Double ro = _ellipsoid.SemiMajorAxis.BaseValue * Math.Sqrt(_qP + q);
-
-                        easting = _falseEasting + (ro * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin));
-                        northing = _falseNorthing + (ro * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin));
+                        rho = _a * Math.Sqrt(_qP + q);
+                        easting = _FE + (rho * Math.Sin(lon - _lonO));
+                        northing = _FN + (rho * Math.Cos(lon - _lonO));
                         break;
-                    case OperationAspect.Oblique:
-                        Double beta = Math.Asin(q / _qP);
-                        Double b = _RQ * Math.Sqrt((2 / (1 + Math.Sin(_betaO) * Math.Sin(beta) + (Math.Cos(_betaO) * Math.Cos(beta) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin)))));
 
-                        easting = _falseEasting + ((b * _D) * (Math.Cos(beta) * Math.Sin(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin)));
-                        northing = _falseNorthing + ((b / _D) * ((Math.Cos(_betaO) * Math.Sin(beta)) - (Math.Sin(_betaO) * Math.Cos(beta) * Math.Cos(coordinate.Longitude.BaseValue - _longitudeOfNaturalOrigin))));
+                    case OperationAspect.Oblique:
+                        double beta = Math.Asin(q / _qP);
+                        double b = _Rq * Math.Sqrt((2 / (1 + Math.Sin(_betaO) * Math.Sin(beta) + (Math.Cos(_betaO) * Math.Cos(beta) * Math.Cos(lon - _lonO)))));
+                        easting = _FE + ((b * _D) * (Math.Cos(beta) * Math.Sin(lon - _lonO)));
+                        northing = _FN + ((b / _D) * ((Math.Cos(_betaO) * Math.Sin(beta)) - (Math.Sin(_betaO) * Math.Cos(beta) * Math.Cos(lon - _lonO))));
                         break;
                 }
             }
@@ -229,26 +225,29 @@ namespace ELTE.AEGIS.Reference.Operations
         /// <returns>The transformed coordinate.</returns>
         protected override GeoCoordinate ComputeReverse(Coordinate coordinate)
         {
-            Double phi = 0, lambda = 0;
+            double phi = 0;
+            double lambda = 0;
+            double x = coordinate.X;
+            double y = coordinate.Y;
 
             if (_ellipsoid.IsSphere)
             {
                 // source: Snyder, J. P.: Map Projections - A Working Manual, page 185
 
-                Double rho = Math.Pow(Math.Pow(coordinate.X, 2) + Math.Pow(coordinate.Y, 2), 1 / 2);
-                Double c = 2 * Math.Asin(rho / (2 * _ellipsoid.RadiusOfAuthalicSphere));
-                phi = Math.Asin(Math.Cos(c) * Math.Sin(_latitudeOfNaturalOrigin) + (coordinate.Y * Math.Sin(c) * Math.Cos(_latitudeOfNaturalOrigin / rho)));
+                double rho = Math.Pow(Math.Pow(x, 2) + Math.Pow(y, 2), 1 / 2);
+                double c = 2 * Math.Asin(rho / (2 * _ras));
+                phi = Math.Asin(Math.Cos(c) * Math.Sin(_latO) + (y * Math.Sin(c) * Math.Cos(_latO / rho)));
 
                 switch (_operationAspect)
                 {
                     case OperationAspect.NorthPolar:
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan(coordinate.X / (-coordinate.Y));
+                        lambda = _lonO + Math.Atan(x / (-y));
                         break;
                     case OperationAspect.SouthPolar:
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan(coordinate.X / coordinate.Y);
+                        lambda = _lonO + Math.Atan(x / y);
                         break;
                     case OperationAspect.Oblique:
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan(coordinate.X * Math.Sin(c) / (rho * Math.Cos(_latitudeOfNaturalOrigin) * Math.Cos(c) - coordinate.Y * Math.Sin(_latitudeOfNaturalOrigin) * Math.Sin(c)));
+                        lambda = _lonO + Math.Atan(x * Math.Sin(c) / (rho * Math.Cos(_latO) * Math.Cos(c) - y * Math.Sin(_latO) * Math.Sin(c)));
                         break;
                 }
             }
@@ -256,27 +255,27 @@ namespace ELTE.AEGIS.Reference.Operations
             {
                 // source: EPSG Guidance Note number 7, part 2, page 72
 
-                Double rho = Math.Pow((Math.Pow((coordinate.X - _falseEasting) / _D, 2) + Math.Pow(_D * (coordinate.Y - _falseNorthing), 2)), 0.5);
-                Double c = 2 * Math.Asin(rho / 2 * _RQ);
-                Double beta = 0;
+                double rho = Math.Pow((Math.Pow((x - _FE) / _D, 2) + Math.Pow(_D * (y - _FN), 2)), 0.5);
+                double c = 2 * Math.Asin(rho / 2 * _Rq);
+                double beta = 0;
 
                 switch (_operationAspect)
                 {
                     case OperationAspect.NorthPolar:
-                        beta = Math.Asin(1 - Math.Pow(rho, 2) / (Math.Pow(_ellipsoid.SemiMajorAxis.BaseValue, 2) * (1 - ((1 - _ellipsoid.EccentricitySquare) / 2 * _ellipsoid.Eccentricity) * Math.Log((1 - _ellipsoid.Eccentricity) / (1 + _ellipsoid.Eccentricity), Math.E))));
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan((coordinate.X - _falseEasting) / (_falseNorthing - coordinate.Y));
+                        beta = Math.Asin(1 - Math.Pow(rho, 2) / (Math.Pow(_a, 2) * (1 - ((1 - _e2) / 2 * _e) * Math.Log((1 - _e) / (1 + _e), Math.E))));
+                        lambda = _lonO + Math.Atan((x - _FE) / (_FN - y));
                         break;
                     case OperationAspect.SouthPolar:
-                        beta = -Math.Asin(1 - Math.Pow(rho, 2) / (Math.Pow(_ellipsoid.SemiMajorAxis.BaseValue, 2) * (1 - ((1 - _ellipsoid.EccentricitySquare) / 2 * _ellipsoid.Eccentricity) * Math.Log((1 - _ellipsoid.Eccentricity) / (1 + _ellipsoid.Eccentricity), Math.E))));
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan((coordinate.X - _falseEasting) / (coordinate.Y - _falseNorthing));
+                        beta = -Math.Asin(1 - Math.Pow(rho, 2) / (Math.Pow(_a, 2) * (1 - ((1 - _e2) / 2 * _e) * Math.Log((1 - _e) / (1 + _e), Math.E))));
+                        lambda = _lonO + Math.Atan((x - _FE) / (y - _FN));
                         break;
                     case OperationAspect.Oblique:
-                        beta = Math.Asin((Math.Cos(c) * Math.Sin(_betaO)) + ((_D * (coordinate.Y - _falseNorthing) * Math.Sin(c) * Math.Cos(_betaO)) / rho));
-                        lambda = _longitudeOfNaturalOrigin + Math.Atan((coordinate.X - _falseEasting) * Math.Sin(c) / (_D * rho * Math.Cos(_betaO) * Math.Cos(c) - Math.Pow(_D, 2) * (coordinate.Y - _falseNorthing) * Math.Sin(_betaO) * Math.Sin(c)));
+                        beta = Math.Asin((Math.Cos(c) * Math.Sin(_betaO)) + ((_D * (y - _FN) * Math.Sin(c) * Math.Cos(_betaO)) / rho));
+                        lambda = _lonO + Math.Atan((x - _FE) * Math.Sin(c) / (_D * rho * Math.Cos(_betaO) * Math.Cos(c) - Math.Pow(_D, 2) * (y - _FN) * Math.Sin(_betaO) * Math.Sin(c)));
                         break;
                 }
 
-                phi = beta + ((_ellipsoid.EccentricitySquare / 3 + 31 * Math.Pow(_ellipsoid.EccentricitySquare, 2) / 180 + 517 * Math.Pow(_ellipsoid.EccentricitySquare, 3) / 5040) * Math.Sin(2 * beta)) + ((23 * Math.Pow(_ellipsoid.EccentricitySquare, 2) / 360 + 251 * Math.Pow(_ellipsoid.EccentricitySquare, 3) / 3780) * Math.Sin(4 * beta)) + ((761 * Math.Pow(_ellipsoid.EccentricitySquare, 3) / 45360) * Math.Sin(6 * beta));
+                phi = beta + ((_e2 / 3 + 31 * Math.Pow(_e2, 2) / 180 + 517 * Math.Pow(_e2, 3) / 5040) * Math.Sin(2 * beta)) + ((23 * Math.Pow(_e2, 2) / 360 + 251 * Math.Pow(_e2, 3) / 3780) * Math.Sin(4 * beta)) + ((761 * Math.Pow(_e2, 3) / 45360) * Math.Sin(6 * beta));
             }
 
             return new GeoCoordinate(phi, lambda);
