@@ -128,20 +128,28 @@ namespace ELTE.AEGIS.Reference.Operations
             _a = _ellipsoid.SemiMajorAxis.BaseValue;
             _ras = _ellipsoid.RadiusOfAuthalicSphere;
 
-            _qP = (1 - _e2) * ((1 / (1 - _e2)) - ((1 / (2 * _e)) * Math.Log((1 - _e) / (1 + _e), Math.E)));
-            _qO = (1 - _e2) * ((Math.Sin(_latO) / (1 - _e2 * Calculator.Sin2(_latO))) - ((1 / (2 * _e)) * Math.Log((1 - _e * Math.Sin(_latO)) / (1 + _e * Math.Sin(_latO)), Math.E)));
+            _qP = (1 - _e2) * ((1 / (1 - _e2)) - (1 / (2 * _e) * Math.Log((1 - _e) / (1 + _e), Math.E)));
+            _qO = (1 - _e2) * ((Math.Sin(_latO) / (1 - _e2 * Calculator.Sin2(_latO))) - (1 / (2 * _e) * Math.Log((1 - _e * Math.Sin(_latO)) / (1 + _e * Math.Sin(_latO)), Math.E)));
             _betaO = Math.Asin(_qO / _qP);
             _Rq = _a * Math.Sqrt(_qP / 2);
             _D = _a * (Math.Cos(_latO) / Math.Sqrt(1 - _e2 * Calculator.Sin2(_latO))) / (_Rq * Math.Cos(_betaO));
 
-            if (Math.Abs(_latO) - Math.Abs(Angles.NorthPole.BaseValue) <= Calculator.Tolerance)
+            if (Math.Abs(_latO - Angles.NorthPole.BaseValue) <= Calculator.Tolerance)
+            {
                 _operationAspect = OperationAspect.NorthPolar;
-            else if (Math.Abs(_latO) - Math.Abs(Angles.SouthPole.BaseValue) <= Calculator.Tolerance)
+            }
+            else if (Math.Abs(_latO - Angles.SouthPole.BaseValue) <= Calculator.Tolerance)
+            {
                 _operationAspect = OperationAspect.SouthPolar;
-            else if (_ellipsoid.IsSphere && Math.Abs(_latO) - Math.Abs(Angles.Equator.BaseValue) <= Calculator.Tolerance)
+            }
+            else if (_ellipsoid.IsSphere && Math.Abs(_latO - Angles.Equator.BaseValue) <= Calculator.Tolerance)
+            {
                 _operationAspect = OperationAspect.Equatorial;
+            }
             else
+            {
                 _operationAspect = OperationAspect.Oblique;
+            }
         }
 
         #endregion
