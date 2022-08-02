@@ -257,7 +257,7 @@ namespace ELTE.AEGIS.Reference.Operations
                 // source: EPSG Guidance Note number 7, part 2, page 72
 
                 double rho = Math.Pow((Math.Pow((x - _FE) / _D, 2) + Math.Pow(_D * (y - _FN), 2)), 0.5);
-                double c = 2 * Math.Asin(rho / 2 * _Rq);
+                double c = 2 * Math.Asin(rho / (2 * _Rq));
                 double beta = 0;
 
                 switch (_operationAspect)
