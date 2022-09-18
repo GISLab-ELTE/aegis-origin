@@ -13,6 +13,7 @@
 
   <PropertyGroup>
     <DocumentationFile>..\docs\AEGIS.IO.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.IO</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -31,7 +32,7 @@
 
   <ItemGroup>
     <Reference Include="LASzip.Net">
-      <HintPath>LASzip.Net.dll</HintPath>
+      <HintPath>Lasfile\LASzip\LASzip.Net.dll</HintPath>
     </Reference>
   </ItemGroup>
 

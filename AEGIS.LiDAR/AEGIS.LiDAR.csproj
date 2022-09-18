@@ -13,6 +13,7 @@
 
   <PropertyGroup>
     <DocumentationFile>..\docs\AEGIS.LiDAR.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.LiDAR</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

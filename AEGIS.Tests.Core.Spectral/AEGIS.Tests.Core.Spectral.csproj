@@ -11,6 +11,7 @@
     <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
 
     <IsPackable>false</IsPackable>
+    <RootNamespace>ELTE.AEGIS.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

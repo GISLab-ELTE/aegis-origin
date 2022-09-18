@@ -13,14 +13,14 @@
 /// </copyright>
 /// <author>Roland Krisztandl</author>
 
-using ELTE.AEGIS.Management;
-using LASzip.Net;
-using System;
-using System.IO;
-using System.Text;
-
 namespace ELTE.AEGIS.IO.Lasfile
 {
+    using AEGIS.Management;
+    using LASzip.Net;
+    using System;
+    using System.IO;
+    using System.Text;
+
     /// <summary>
     /// Represents a LAZ file format reader using LASzip.Net.
     /// Supports LAS and LAZ files.

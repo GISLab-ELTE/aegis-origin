@@ -13,10 +13,15 @@
 
   <PropertyGroup>
     <DocumentationFile>..\docs\AEGIS.Core.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PointCloud\" />
   </ItemGroup>
 
 </Project>

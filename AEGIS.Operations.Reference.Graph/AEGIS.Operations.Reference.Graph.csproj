@@ -13,6 +13,7 @@
 
   <PropertyGroup>
     <DocumentationFile>..\docs\AEGIS.Operations.Reference.Graph.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.Operations</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
