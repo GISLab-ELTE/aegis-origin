@@ -30,7 +30,7 @@ namespace ELTE.AEGIS.IO.Lasfile
     /// Supported versions: LAS 1.0 - LAS 1.4 R14.
     /// </remarks>
     [IdentifiedObjectInstance("AEGIS::610104", "LAS file")]
-    public class LasfileWriter : GeometryStreamWriter
+    public class LasFileWriter : GeometryStreamWriter
     {
         #region Private fields
 
@@ -54,11 +54,11 @@ namespace ELTE.AEGIS.IO.Lasfile
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LasfileWriter"/> class.
+        /// Initializes a new instance of the <see cref="LasFileWriter"/> class.
         /// </summary>
         /// <param name="path">The path of the file to write.</param>
         /// <param name="header">The header of the LAS file.</param>
-        public LasfileWriter(string path,LasPublicHeader header)
+        public LasFileWriter(string path,LasPublicHeader header)
             : base(path, GeometryStreamFormats.Lasfile, null)
         {
             Header = header;
