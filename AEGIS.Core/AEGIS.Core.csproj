@@ -20,8 +20,4 @@
     <ProjectReference Include="..\AEGIS.Numerics\AEGIS.Numerics.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="PointCloud\" />
-  </ItemGroup>
-
 </Project>
