@@ -1,18 +1,16 @@
-﻿/// <copyright file="WindingNumberAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="WindingNumberAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -24,12 +22,13 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents a type for performing the Winding Number algorithm.
     /// </summary>
     /// <remarks>
-    /// The Winding Number algorithm counts the number of times the polygon winds around a coordinate. 
+    /// The Winding Number algorithm counts the number of times the polygon winds around a coordinate.
     /// When the coordinate is outside, the value of the winding number is zero; otherwise, the coordinate is inside.
     /// However, the winding number is not defined for coordinates on the boundary of the polygon, it might be both a non-zero or a zero value.
     /// For an input consisting of n line segments, the Winding Number algorithm has a linear complexity of O(2n).
     /// The algorithm assumes that the specified coordinates are valid, ordered, distinct and in the same plane.
     /// </remarks>
+    /// <author>Roberto Giachetta, Máté Cserép</author>
     public class WindingNumberAlgorithm
     {
         #region Private fields
@@ -76,12 +75,12 @@ namespace ELTE.AEGIS.Algorithms
         /// <exception cref="System.InvalidOperationException">The value is null.</exception>
         public IList<Coordinate> Shell
         {
-            get 
+            get
             {
                 if (_shell.IsReadOnly)
                     return _shell;
                 else
-                    return _shell.AsReadOnly(); 
+                    return _shell.AsReadOnly();
             }
         }
 
@@ -95,9 +94,9 @@ namespace ELTE.AEGIS.Algorithms
             set
             {
                 if (_coordinate != value)
-                { 
-                    _coordinate = value; 
-                    _hasResult = false; 
+                {
+                    _coordinate = value;
+                    _hasResult = false;
                 }
             }
         }
@@ -111,10 +110,10 @@ namespace ELTE.AEGIS.Algorithms
             get { return _verifyBoundary; }
             set
             {
-                if (_verifyBoundary != value) 
-                { 
-                    _verifyBoundary = value; 
-                    _hasResult = false; 
+                if (_verifyBoundary != value)
+                {
+                    _verifyBoundary = value;
+                    _hasResult = false;
                 }
             }
         }
@@ -391,7 +390,7 @@ namespace ELTE.AEGIS.Algorithms
 
             return IsInsidePolygon(shell.Coordinates, holes != null ? holes.Select(hole => hole.Coordinates) : null, coordinate, PrecisionModel.Default);
         }
-        
+
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>
@@ -412,7 +411,7 @@ namespace ELTE.AEGIS.Algorithms
 
             return IsInsidePolygon(shell.Coordinates, holes != null ? holes.Select(hole => hole.Coordinates) : null, coordinate, precisionModel);
         }
-        
+
         /// <summary>
         /// Determines whether a coordinate is inside a polygon.
         /// </summary>

@@ -1,17 +1,16 @@
-﻿/// <copyright file="RTree.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamás Nagy</author>
+﻿// <copyright file="RTree.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -22,6 +21,7 @@ namespace ELTE.AEGIS.Indices.RTrees
     /// <summary>
     /// Represents a 3D R-Tree, which contains a collection of <see cref="IGeometry" /> instances.
     /// </summary>
+    /// <author>Tamás Nagy</author>
     public class RTree : ISpatialIndex
     {
         #region Protected types
@@ -274,7 +274,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// Gets the number of indexed geometries.
         /// </summary>
         /// <value>The number of indexed geometries.</value>
-        public Int32 NumberOfGeometries 
+        public Int32 NumberOfGeometries
         {
             get { return _numberOfGeometries; }
         }
@@ -471,7 +471,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         #region Protected methods
 
         /// <summary>
-        /// Adds a node into the tree on a specified height. 
+        /// Adds a node into the tree on a specified height.
         /// </summary>
         /// <param name="node">The node.</param>
         /// <param name="height">The height where the node should be inserted.</param>
@@ -542,7 +542,7 @@ namespace ELTE.AEGIS.Indices.RTrees
 
                 result = ContainsGeometry(geometry, node.Children[i]);
             }
-                
+
             return result;
         }
 
@@ -691,7 +691,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// <param name="secondNode">The second seed node.</param>
         protected virtual void PickSeeds(IList<RTreeNode> nodes, out RTreeNode firstNode, out RTreeNode secondNode)
         {
-            // the linear cost algorithm chooses the two points which are 
+            // the linear cost algorithm chooses the two points which are
             // the furthest away from each other considering the three axis
 
             RTreeNode highestLowX = nodes[0];

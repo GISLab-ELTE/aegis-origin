@@ -1,18 +1,16 @@
-﻿/// <copyright file="GeoTiffWriter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Krisztián Fodor</author>
+﻿// <copyright file="GeoTiffWriter.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Reference;
@@ -34,6 +32,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
     /// <remarks>
     /// GeoTIFF is a generic TIFF based interchange format for georeferenced raster imagery.
     /// </remarks>
+    /// <author>Roberto Giachetta, Krisztián Fodor</author>
     [IdentifiedObjectInstance("AEGIS::610202", "Geotagged Image File Format")]
     public class GeoTiffWriter : TiffWriter
     {
@@ -142,7 +141,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
         protected override TiffImageFileDirectory ComputeImageFileDirectory(ISpectralGeometry geometry, TiffCompression compression, TiffSampleFormat format)
         {
             TiffImageFileDirectory imageFileDirectory = base.ComputeImageFileDirectory(geometry, compression, format);
-            
+
             CoordinateReferenceSystem referenceSystem = geometry.ReferenceSystem as CoordinateReferenceSystem;
 
             GeoKeyDirectory geoKeyDirectory = new GeoKeyDirectory();
@@ -150,7 +149,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             AddGeoKey(geoKeyDirectory, GeoKey.Citation, geometry.Metadata, "GeoTIFF::GeoCitation");
             AddGeoKey(geoKeyDirectory, GeoKey.GeodeticCoordinateReferenceSystemCitation, geometry.Metadata, "GeoTIFF::GeodeticCoordinateReferenceSystemCitation");
             AddGeoKey(geoKeyDirectory, GeoKey.ProjectedCoordinateReferenceSystemCitation, geometry.Metadata, "GeoTIFF::ProjectedCoordinateReferenceSystemCitation");
-            
+
             if (geometry.Raster.Mapper != null) // if mapper is available
             {
                 geoKeyDirectory.Add(GeoKey.RasterType, (Int16)((geometry.Raster.Mapper.Mode == RasterMapMode.ValueIsArea) ? 1 : 2));
@@ -236,7 +235,7 @@ namespace ELTE.AEGIS.IO.GeoTiff
             }
 
             // user-defined reference system
-            geoKeyDirectory.Add(GeoKey.ProjectedCoordinateReferenceSystemType, Int16.MaxValue); 
+            geoKeyDirectory.Add(GeoKey.ProjectedCoordinateReferenceSystemType, Int16.MaxValue);
 
             ComputeGeodeticCoordinateReferenceSystem(geoKeyDirectory, referenceSystem.Base);
             ComputeCoordinateProjection(geoKeyDirectory, referenceSystem.Projection);

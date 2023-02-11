@@ -1,17 +1,16 @@
-﻿/// <copyright file="TopoJsonConverter.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Norbert Vass</author>
+﻿// <copyright file="TopoJsonConverter.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using Newtonsoft.Json;
@@ -23,6 +22,10 @@ using System.Security;
 
 namespace ELTE.AEGIS.IO.TopoJSON
 {
+    /// <summary>
+    /// Helper class to convert between geometry and TopoJSON.
+    /// </summary>
+    /// <author>Norbert Vass</author>
     public static class TopoJsonConverter
     {
         #region Private types
@@ -116,7 +119,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                  * 3rd step: Cut. Cut lines and rings at junctions.
                  * 4th step: Dedup. Removing duplicates from cutted arcs. If an arc equals another arc's
                  *                  reverse form, then this duplicate is also eliminated.
-                 * 
+                 *
                  * The created topology then stored in the _arcs array.
                  * */
 
@@ -144,7 +147,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                 //start to write data
                 _jsonwriter.WriteStartObject();
                 _jsonwriter.WritePropertyName("type");
-                _jsonwriter.WriteValue("Topology");                
+                _jsonwriter.WriteValue("Topology");
 
                 _jsonwriter.WritePropertyName("objects");
                 _jsonwriter.WriteStartObject();
@@ -176,7 +179,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                         prevx += _arcs[i][j][0];
                         prevy += _arcs[i][j][1];
                     }
-                }                
+                }
 
                 //change topology's transform
                 scale[0] = 1.0 / scale[0];
@@ -189,7 +192,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                 WriteTransform(scale, translate);
 
                 _jsonwriter.WritePropertyName("arcs");
-                WriteArcs();                
+                WriteArcs();
                 _jsonwriter.WriteEndObject();
             }
             catch (IOException ioex)
@@ -209,7 +212,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                 throw new ArgumentException("Geometry content is invalid", ex);
             }
             finally
-            {                
+            {
                 _jsonwriter.Close();
                 _arcs.Clear();
             }
@@ -257,7 +260,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
         }
 
         /// <summary>
-        /// Extracts a LineString. It's coordinates are stored in coordinates list. 
+        /// Extracts a LineString. It's coordinates are stored in coordinates list.
         /// It's first and last coordinate index stored in lines.
         /// </summary>
         /// <param name="line">The linestring.</param>
@@ -276,7 +279,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
         }
 
         /// <summary>
-        /// Extracts a Polygon. It's coordinates are stored in coordinates list. 
+        /// Extracts a Polygon. It's coordinates are stored in coordinates list.
         /// It's first and last coordinate index stored in lines.
         /// </summary>
         /// <param name="poly">The polygon.</param>
@@ -322,15 +325,15 @@ namespace ELTE.AEGIS.IO.TopoJSON
              * The value is a CoordinateInfo, which has
              *      isJunction: boolean which tells if this coordinate is a junction or not
              *      NeighBours: List of KeyValuePairs, which elements has
-             *          
+             *
              *              Key: integer, the number of the arc which owns the value
              *              Value: KeyValuePair of two coordinates, the Key is the previous coordinate, the Value is the right. We store
              *                      neighbours of only one arc's coordinates, if the coordinate appears in another arc
-             *                      and the neighbours are different, then we know that this is a junction 
+             *                      and the neighbours are different, then we know that this is a junction
              *                      (or if the neigbour coordinates matches, then it is not junction, and we store it too).
             */
             HashSet<Coordinate> junctions = new HashSet<Coordinate>();
-            Dictionary<Coordinate, CoordinateInfo> neighboursByCoordinate = 
+            Dictionary<Coordinate, CoordinateInfo> neighboursByCoordinate =
                 new Dictionary<Coordinate, CoordinateInfo>();
 
             for (int i = 0; i < lines.Count; i++)
@@ -380,9 +383,9 @@ namespace ELTE.AEGIS.IO.TopoJSON
                                         neighboursByCoordinate[c].IsJunction = true;
                                     }
                                 }
-                            }                            
+                            }
                         }
-                    }                        
+                    }
                     else
                         neighboursByCoordinate.Add(c, new CoordinateInfo {
                             IsJunction = false,
@@ -442,7 +445,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                                 }
                             }
                         }
-                    }                        
+                    }
                     else
                         neighboursByCoordinate.Add(c, new CoordinateInfo {
                             IsJunction = false,
@@ -572,7 +575,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
 
                     arc.Add(coord);
                 }
-                
+
                 bool isSame = false;
                 for (int a = 0; a < _arcs.Count && !isSame; a++)
                 {
@@ -614,7 +617,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                         isSame = true;
                 }
 
-                if (!isSame) 
+                if (!isSame)
                 {
                     bool l = true;
                     int off1 = FindMinimumOffset(arc);
@@ -808,7 +811,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
         /// <param name="scale">The scale array.</param>
         /// <param name="translate">The translate array.</param>
         /// <returns>The quantized point.</returns>
-        private static IPoint QuantizePoint(IPoint point, double[] scale, double[] translate) 
+        private static IPoint QuantizePoint(IPoint point, double[] scale, double[] translate)
         {
             point.X = Math.Round((point.X + translate[0]) * scale[0]);
             point.Y = Math.Round((point.Y + translate[1]) * scale[1]);
@@ -834,7 +837,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
         /// <param name="scale">The scale array.</param>
         /// <param name="translate">The translate array.</param>
         /// <returns>The quantized linestring.</returns>
-        private static ILineString QuantizeLine(ILineString line, double[] scale, double[] translate) 
+        private static ILineString QuantizeLine(ILineString line, double[] scale, double[] translate)
         {
             GeometryFactory fact = new GeometryFactory(line.PrecisionModel, line.ReferenceSystem);
 
@@ -1033,7 +1036,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
             }
             else
                 throw new NotSupportedException("Geometry type " + geometry.Name + " is not supported by TopoJSON.");
-            
+
 
             bool l1 = geometry.Metadata != null && geometry.Metadata.Count > 0;
             bool l2 = geometry.ReferenceSystem != null;

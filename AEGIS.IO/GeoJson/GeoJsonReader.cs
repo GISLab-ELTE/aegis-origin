@@ -1,17 +1,16 @@
-﻿/// <copyright file="GeoJsonReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Norbert Vass</author>
+﻿// <copyright file="GeoJsonReader.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Management;
@@ -28,12 +27,12 @@ namespace ELTE.AEGIS.IO.GeoJSON
 {
     /// <summary>
     /// Represents a GeoJSON format reader.
-    /// </summary>    
+    /// </summary>
     /// <remarks>
     /// GeoJSON is a geospatial data interchange format based on JavaScript Object Notation (JSON).
     /// You can read about the format specification <a href="http://geojson.org/geojson-spec.html">here</a>.
     /// </remarks>
-
+    /// <author>Norbert Vass</author>
     [IdentifiedObjectInstance("AEGIS::610102", "GeoJSON file")]
     public class GeoJsonReader : GeometryStreamReader
     {
@@ -74,7 +73,7 @@ namespace ELTE.AEGIS.IO.GeoJSON
         /// Exception occurred during stream opening.
         /// </exception>
         public GeoJsonReader(String path) : base(path, GeometryStreamFormats.GeoJson, null)
-        { 
+        {
         }
 
         /// <summary>
@@ -193,7 +192,7 @@ namespace ELTE.AEGIS.IO.GeoJSON
                 }
 
                 ResolveFactory(GetReferenceSystem(obj.Crs));
-                
+
                 switch (obj.Type)
                 {
                     case "Point":
@@ -385,7 +384,7 @@ namespace ELTE.AEGIS.IO.GeoJSON
         /// <returns>The created LineString.</returns>
         /// <exception cref="System.IO.IOException">
         /// The coordinates' lengh less than 2.
-        /// </exception>        
+        /// </exception>
         private ILineString CreateLineString(JArray coordinates, IDictionary<string, object> properties)
         {
             List<IPoint> points = new List<IPoint>();

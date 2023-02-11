@@ -1,17 +1,16 @@
-﻿/// <copyright file="KuwaharaFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Gábor Balázs Butkay</author>
+﻿// <copyright file="KuwaharaFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -26,6 +25,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// </summary>
     /// <remarks>
     /// The Kuwahara filter is a non-linear smoothing filter used in image processing for adaptive noise reduction.
+    /// <author>Gábor Balázs Butkay</author>
     /// </remarks>
     [OperationMethodImplementation("AEGIS::251168", "Kuwahara filter")]
     public class KuwaharaFilterOperation : SpectralTransformation
@@ -36,7 +36,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// The radius of the filter.
         /// </summary>
         private Int32 _filterRadius;
-        
+
         #endregion
 
         #region Constructors
@@ -111,7 +111,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
         /// <param name="bandIndex">The zero-based band index of the value.</param>
         /// <returns>The spectral value at the specified index.</returns>
         protected override Double ComputeFloat(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
-        { 
+        {
             List<Double> topLeftElements = GetTopLeftElements(rowIndex, columnIndex, bandIndex);
             List<Double> topRightElements = GetTopRightElements(rowIndex, columnIndex, bandIndex);
             List<Double> bottomLeftElements = GetBottomLeftElements(rowIndex, columnIndex, bandIndex);
@@ -138,7 +138,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
                     return bottomLeftElements.Average();
                 default:
                     return bottomRightElements.Average();
-            }   
+            }
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
 
             foreach (Double elem in values)
                 deviationsFromMean.Add(Math.Pow(elem - mean, 2));
-     
+
             Double variance = deviationsFromMean.Average();
             return Math.Sqrt(variance);
         }

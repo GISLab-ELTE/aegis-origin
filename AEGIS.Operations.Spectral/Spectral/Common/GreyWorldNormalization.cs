@@ -1,17 +1,16 @@
-﻿/// <copyright file="GreyWorldNormalization.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Dóra Papp</author>
+﻿// <copyright file="GreyWorldNormalization.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Numerics;
@@ -25,9 +24,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
     /// Represent an operation performing gray world normalization.
     /// </summary>
     /// <remarks>
-    /// The grey world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be 
+    /// The grey world normalization is a color normalization technique, which makes the assumption that changes in the lighting spectrum can be
     /// modeled by constant factors applied to the different bands.
     /// </remarks>
+    /// <author>Dóra Papp</author>
     [OperationMethodImplementation("AEGIS::250285", "Grey world normalization")]
     public class GreyWorldNormalization : SpectralTransformation
     {
@@ -103,7 +103,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
 
             return RasterAlgorithms.Restrict(_multipliers[bandIndex] * Source.Raster.GetValue(rowIndex, columnIndex, bandIndex), Source.Raster.RadiometricResolution);
         }
-        
+
         #endregion
 
         #region Private methods
@@ -133,6 +133,6 @@ namespace ELTE.AEGIS.Operations.Spectral.Common
             }
         }
 
-        #endregion        
+        #endregion
     }
 }

@@ -1,17 +1,16 @@
-﻿/// <copyright file="SparseArray.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamás Szabó</author>
+﻿// <copyright file="SparseArray.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections;
@@ -25,10 +24,11 @@ namespace ELTE.AEGIS.Collections
     /// </summary>
     /// <typeparam name="T">The type of the value in the sparse array.</typeparam>
     /// <remarks>
-    /// A sparse array is an array in which most of the elements have the same value (known as the default value—usually 0 or null). 
-    /// The occurrence of zero elements in a large array is inefficient for both computation and storage. 
+    /// A sparse array is an array in which most of the elements have the same value (known as the default value—usually 0 or null).
+    /// The occurrence of zero elements in a large array is inefficient for both computation and storage.
     /// An array in which there is a large number of zero elements is referred to as being sparse.
-    /// </remarks>  
+    /// </remarks>
+    /// <author>Tamás Szabó</author>
     [Serializable]
     public class SparseArray<T> : IList<T>, IReadOnlyList<T>
     {
@@ -197,7 +197,7 @@ namespace ELTE.AEGIS.Collections
             /// </summary>
             /// <param name="disposing">A value indicating whether disposing is performed on the object.</param>
             protected virtual void Dispose(Boolean disposing)
-            {                
+            {
                 _disposed = true;
 
                 if (disposing)
@@ -307,15 +307,15 @@ namespace ELTE.AEGIS.Collections
         /// </summary>
         /// <value>A 32-bit integer that represents the total number of elements in all the dimensions of the array; <c>0</c> if there are no elements in the array.</value>
         /// <exception cref="System.OverflowException">The array contains more elements than the maximum value.</exception>
-        public Int32 Length 
-        { 
-            get 
+        public Int32 Length
+        {
+            get
             {
                 if (_length > Int32.MaxValue)
                     throw new OverflowException("The array contains more elements than the maximum value.");
 
-                return (Int32)_length; 
-            } 
+                return (Int32)_length;
+            }
         }
 
         /// <summary>
@@ -654,7 +654,7 @@ namespace ELTE.AEGIS.Collections
             {
                 array[arrayLongIndex] = item;
                 arrayLongIndex++;
-            } 
+            }
         }
 
         /// <summary>
@@ -724,7 +724,7 @@ namespace ELTE.AEGIS.Collections
         #region Private static methods
 
         /// <summary>
-        /// Returns true if two objects are equal. 
+        /// Returns true if two objects are equal.
         /// </summary>
         private static Boolean AreEqual(T item, T value)
         {

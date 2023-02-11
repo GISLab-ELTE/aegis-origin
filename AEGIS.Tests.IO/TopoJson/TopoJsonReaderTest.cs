@@ -1,18 +1,16 @@
-﻿/// <copyright file="TopoJsonReaderTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Norbert Vass</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="TopoJsonReaderTest.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.IO.TopoJSON;
@@ -24,6 +22,10 @@ using System.Reflection;
 
 namespace ELTE.AEGIS.Tests.IO.TopoJson
 {
+    /// <summary>
+    /// Test fixture for the <see cref="TopoJsonReader" /> class.
+    /// </summary>
+    /// <author>Norbert Vass, Máté Cserép</author>
     [TestFixture]
     public class TopoJsonReaderTest
     {
@@ -133,7 +135,7 @@ namespace ELTE.AEGIS.Tests.IO.TopoJson
             Assert.IsInstanceOf(typeof(IPolygon), collection[0]);
             Assert.IsInstanceOf(typeof(IPolygon), collection[1]);
 
-            IPolygon left_polygon = factory.CreatePolygon(new Coordinate[] 
+            IPolygon left_polygon = factory.CreatePolygon(new Coordinate[]
             {
                 new Coordinate(1,2),
                 new Coordinate(1,0),
@@ -142,7 +144,7 @@ namespace ELTE.AEGIS.Tests.IO.TopoJson
                 new Coordinate(1,2)
             });
 
-            IPolygon right_polygon = factory.CreatePolygon(new Coordinate[] 
+            IPolygon right_polygon = factory.CreatePolygon(new Coordinate[]
             {
                 new Coordinate(1,2),
                 new Coordinate(2,2),

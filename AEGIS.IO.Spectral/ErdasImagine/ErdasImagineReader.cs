@@ -1,17 +1,16 @@
-﻿/// <copyright file="ErdasImagineReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamas Nagy</author>
+﻿// <copyright file="ErdasImagineReader.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.IO.ErdasImagine.Objects;
 using ELTE.AEGIS.IO.ErdasImagine.Types;
@@ -30,6 +29,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine
     /// <remarks>
     /// This format is used widely for processing remote sensing data, since it provides a framework for integrating sensor data and imagery from many sources.
     /// </remarks>
+    /// <author>Tamas Nagy</author>
     [IdentifiedObjectInstance("AEGIS::610210", "Erdas Imagine file format")]
     public class ErdasImagineReader : GeometryStreamReader
     {
@@ -156,7 +156,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine
         protected override IGeometry ApplyReadGeometry()
         {
             ISpectralPolygon spectralPolygon = ResolveFactory(_layers[0].ReferenceSystem).CreateSpectralPolygon(_layers.Count, (Int32)_layers[0].Height, (Int32)_layers[0].Width, _layers.Max(layer => layer.RadiometricResolution), _layers[0].RasterMapper);
-            
+
             for (Int32 bandIndex = 0; bandIndex < _layers.Count; bandIndex++)
             {
                 _layers[bandIndex].ReadRasterBand(BaseStream, spectralPolygon.Raster[bandIndex]);

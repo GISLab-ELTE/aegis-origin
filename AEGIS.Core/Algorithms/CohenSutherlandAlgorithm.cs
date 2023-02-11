@@ -1,17 +1,16 @@
-﻿/// <copyright file="CohenSutherlandAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Daniel Ballagi</author>
+﻿// <copyright file="CohenSutherlandAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -24,9 +23,10 @@ namespace ELTE.AEGIS.Algorithms
     /// </summary>
     /// <remarks>
     /// The Cohen–Sutherland algorithm is a computational geometry algorithm used for line clipping using a rectangular
-    /// clipping window. The algorithm divides a two-dimensional space into 9 regions, and then efficiently determines 
+    /// clipping window. The algorithm divides a two-dimensional space into 9 regions, and then efficiently determines
     /// the lines and portions of lines that are visible in the center region of interest (the viewport).
     /// </remarks>
+    /// <author>Daniel Ballagi</author>
     public class CohenSutherlandAlgorithm
     {
         #region Private types
@@ -170,7 +170,7 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         #endregion
-        
+
         #region Public methods
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace ELTE.AEGIS.Algorithms
 
                 _result.Add(clippedLineString);
             }
-            
+
             _hasResult = true;
         }
 
@@ -218,9 +218,9 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="coordinate">The coordinate.</param>
         /// <param name="window">The clipping window.</param>
         /// <returns>The computed bitcode.</returns>
-        private static OutCode ComputeOutCode(Coordinate coordinate, Envelope window) 
-        { 
-            return ComputeOutCode(coordinate.X, coordinate.Y, window); 
+        private static OutCode ComputeOutCode(Coordinate coordinate, Envelope window)
+        {
+            return ComputeOutCode(coordinate.X, coordinate.Y, window);
         }
 
         /// <summary>
@@ -238,9 +238,9 @@ namespace ELTE.AEGIS.Algorithms
                 code |= OutCode.Left;
             if (x > window.MaxX)
                 code |= OutCode.Right;
-            if (y < window.MinY) 
+            if (y < window.MinY)
                 code |= OutCode.Top;
-            if (y > window.MaxY) 
+            if (y > window.MaxY)
                 code |= OutCode.Bottom;
 
             return code;
@@ -290,7 +290,7 @@ namespace ELTE.AEGIS.Algorithms
 
             if (accept)
                 return new Coordinate[] { first, second };
-            
+
             return null;
         }
 
@@ -386,7 +386,7 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("source", "The source is null.");
 
             List<IList<Coordinate>> coordinates = new List<IList<Coordinate>>();
-            
+
             coordinates.Add(source.Shell.Coordinates);
 
             foreach (IBasicLineString hole in source.Holes)

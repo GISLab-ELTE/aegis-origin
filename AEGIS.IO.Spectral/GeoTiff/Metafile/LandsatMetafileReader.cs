@@ -1,18 +1,16 @@
-﻿/// <copyright file="LandsatMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamás Kovács</author>
-/// <author>Roberto Giachetta</author>
+﻿// <copyright file="LandsatMetafileReader.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Reference;
 using System;
@@ -26,6 +24,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
     /// <summary>
     /// Represents a type for reading Landsat metafiles.
     /// </summary>
+    /// <author>Tamás Kovács, Roberto Giachetta</author>
     public class LandsatMetafileReader : GeoTiffMetafileReader
     {
         #region Private fields
@@ -173,7 +172,7 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             // read the device data
             ImagingDevice device = ReadDeviceInternal();
 
-            // time            
+            // time
             DateTime imagingDateTime = DateTime.Parse(_metadata["DATE_ACQUIRED"] + " " + _metadata["SCENE_CENTER_TIME"], CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.AssumeUniversal);
 
             // view
@@ -185,13 +184,13 @@ namespace ELTE.AEGIS.IO.GeoTiff.Metafile
             // image location
             GeoCoordinate[] imageLocation = new GeoCoordinate[]
             {
-                new GeoCoordinate(Double.Parse(_metadata["CORNER_UL_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat), 
+                new GeoCoordinate(Double.Parse(_metadata["CORNER_UL_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
                                   Double.Parse(_metadata["CORNER_UL_LON_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat)),
-                new GeoCoordinate(Double.Parse(_metadata["CORNER_UR_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat), 
+                new GeoCoordinate(Double.Parse(_metadata["CORNER_UR_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
                                   Double.Parse(_metadata["CORNER_UR_LON_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat)),
-                new GeoCoordinate(Double.Parse(_metadata["CORNER_LL_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat), 
+                new GeoCoordinate(Double.Parse(_metadata["CORNER_LL_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
                                   Double.Parse(_metadata["CORNER_LL_LON_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat)),
-                new GeoCoordinate(Double.Parse(_metadata["CORNER_LR_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat), 
+                new GeoCoordinate(Double.Parse(_metadata["CORNER_LR_LAT_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat),
                                   Double.Parse(_metadata["CORNER_LR_LON_PRODUCT"], NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat))
             };
 

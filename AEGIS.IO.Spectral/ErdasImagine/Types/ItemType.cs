@@ -1,48 +1,48 @@
-﻿/// <copyright file="ItemType.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamas Nagy</author>
+﻿// <copyright file="ItemType.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 namespace ELTE.AEGIS.IO.ErdasImagine.Types
 {
     /// <summary>
     /// Defines item types in the MIF data dictionary.
     /// </summary>
+    /// <author>Tamas Nagy</author>
     public enum ItemType
     {
         /// <summary>
         /// Unsigned 1-bit integer (0 - 1).
         /// </summary>
         /// <remarks>
-        /// When the data are read from a MIF file, they are automatically expanded to give one value per byte in memory. 
+        /// When the data are read from a MIF file, they are automatically expanded to give one value per byte in memory.
         /// When they are written to the file, they are automatically compressed to place eight values into one output byte.
         /// </remarks>
         U1 = '1',
 
         /// <summary>
-        /// Unsigned 2-bit integer (0 - 3). 
+        /// Unsigned 2-bit integer (0 - 3).
         /// </summary>
         /// <remarks>
-        /// When the data are read from a MIF file they are automatically expanded to give one value per byte in memory. 
+        /// When the data are read from a MIF file they are automatically expanded to give one value per byte in memory.
         /// When they are written to the file, they are automatically compressed to place four values into one output byte.
         /// </remarks>
         U2 = '2',
 
         /// <summary>
-        /// Unsigned 4-bit integer (0 - 15). 
+        /// Unsigned 4-bit integer (0 - 15).
         /// </summary>
         /// <remarks>
-        /// When these data are read from a MIF file, they are automatically expanded to give one value per byte. 
+        /// When these data are read from a MIF file, they are automatically expanded to give one value per byte.
         /// When they are written to the file they are automatically compressed to place two values into one output byte.
         /// </remarks>
         U4 = '4',
@@ -58,16 +58,16 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         Char = 'C',
 
         /// <summary>
-        /// Enumerated data type as a 16-bit unsigned integer. 
+        /// Enumerated data type as a 16-bit unsigned integer.
         /// </summary>
         /// <remarks>
-        /// The least significant byte is stored first. 
-        /// The list of strings associated with the type are defined in the data dictionary. 
+        /// The least significant byte is stored first.
+        /// The list of strings associated with the type are defined in the data dictionary.
         /// </remarks>
         Enum = 'e',
 
         /// <summary>
-        /// 16-bit unsigned integer. 
+        /// 16-bit unsigned integer.
         /// </summary>
         /// <remarks>
         /// The least significant byte is stored first.
@@ -75,7 +75,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         UShort = 's',
 
         /// <summary>
-        /// 16-bit two's-complement integer. 
+        /// 16-bit two's-complement integer.
         /// </summary>
         /// <remarks>
         /// The least significant byte is stored first.
@@ -91,7 +91,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         Time = 't',
 
         /// <summary>
-        /// 32-bit unsigned integer. 
+        /// 32-bit unsigned integer.
         /// </summary>
         /// <remarks>
         /// The least significant byte is stored first.
@@ -99,7 +99,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         ULong = 'l',
 
         /// <summary>
-        /// 32-bit two's-complement integer value. 
+        /// 32-bit two's-complement integer value.
         /// </summary>
         /// <remarks>
         /// The least significant byte is stored first.
@@ -127,16 +127,16 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         DComplex = 'M',
 
         /// <summary>
-        /// A base-data is a generic two dimensional array of values. 
+        /// A base-data is a generic two dimensional array of values.
         /// </summary>
         /// <remarks>
-        /// It can store any of the types of data used by Erdas Imagine. 
+        /// It can store any of the types of data used by Erdas Imagine.
         /// It is a variable length object whose size is determined by the data type, the number of rows, and the number of columns.
         /// </remarks>
         BaseData = 'b',
 
         /// <summary>
-        /// Previously defined object. 
+        /// Previously defined object.
         /// </summary>
         /// <remarks>
         /// Indicates that the description of the following data has been previously defined.
@@ -144,10 +144,10 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         PreviouslyDefined = 'o',
 
         /// <summary>
-        /// Defined object for this entry. 
+        /// Defined object for this entry.
         /// </summary>
         /// <remarks>
-        /// Indicates that the description of the following data follows. 
+        /// Indicates that the description of the following data follows.
         /// It is similar to using a structure definition within a structure definition.
         /// </summary>
         FollowedDefined = 'x',

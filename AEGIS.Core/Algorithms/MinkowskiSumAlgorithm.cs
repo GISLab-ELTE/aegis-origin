@@ -1,17 +1,16 @@
-﻿/// <copyright file="MinkowskiSumAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Gréta Bereczki</author>
+﻿// <copyright file="MinkowskiSumAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 namespace ELTE.AEGIS.Algorithms
 {
@@ -26,6 +25,7 @@ namespace ELTE.AEGIS.Algorithms
     /// The Minkowski sum algorithm is used for computing the buffer of a geometry.
     /// The algorithms assumes that the specified coordinates are valid, in counterclockwise order (in case of shell coordinates) or clockwise order (in case of hole coordinates) and in the same plane.
     /// </remarks>
+    /// <author>Gréta Bereczki</author>
     public class MinkowskiSumAlgorithm
     {
         #region Constants
@@ -292,7 +292,7 @@ namespace ELTE.AEGIS.Algorithms
                 List<Tuple<Coordinate, Coordinate>> edges = new List<Tuple<Coordinate, Coordinate>>();
                 edges = GetConvolutionEdges(source, sourceIndex);
 
-                // sort edges in counterclockwise order and add them to the result distinctly 
+                // sort edges in counterclockwise order and add them to the result distinctly
                 edges = SortEdgesInCounterclockwiseOrder(edges);
                 for (Int32 edgeindex = 0; edgeindex < edges.Count; edgeindex++)
                     resultCoordinates.Add(new Coordinate(edges[edgeindex].Item1.X, edges[edgeindex].Item1.Y));

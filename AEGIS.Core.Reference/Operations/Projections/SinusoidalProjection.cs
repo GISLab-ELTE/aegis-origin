@@ -1,17 +1,16 @@
-﻿/// <copyright file="SinusoidalProjection.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Péter Rónai</author>
+﻿// <copyright file="SinusoidalProjection.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Management;
 using ELTE.AEGIS.Numerics;
@@ -24,6 +23,7 @@ namespace ELTE.AEGIS.Reference.Operations.Projections
     /// Represents a Sinusoidal Projection.
     /// Source: Map Projections - A Working Manual by John P. Snyder (1987) pages 247-248
     /// </summary>
+    /// <author>Péter Rónai</author>
     [CoordinateOperationMethodImplementation("ESRI::53008", "Sinusoidal Projection")]
     public class SinusoidalProjection : CoordinateProjection
     {
@@ -62,7 +62,7 @@ namespace ELTE.AEGIS.Reference.Operations.Projections
         /// or
         /// The parameter does not have the same measurement unit as the ellipsoid.
         /// </exception>
-        public SinusoidalProjection(string identifier, string name, IDictionary<CoordinateOperationParameter, object> parameters, Ellipsoid ellipsoid, AreaOfUse areaOfUse) : 
+        public SinusoidalProjection(string identifier, string name, IDictionary<CoordinateOperationParameter, object> parameters, Ellipsoid ellipsoid, AreaOfUse areaOfUse) :
             base(identifier, name, CoordinateOperationMethods.SinusoidalProjection, parameters, ellipsoid, areaOfUse)
         {
             _falseNorthing = ((Length)_parameters[CoordinateOperationParameters.FalseNorthing]).Value;

@@ -1,18 +1,16 @@
-﻿/// <copyright file="HalfedgeGeometryOverlayOperator.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="HalfedgeGeometryOverlayOperator.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -24,6 +22,7 @@ namespace ELTE.AEGIS.Operations.Geometry
     /// <summary>
     /// Represents an operator computing spatial overlays using the halfedge topology model.
     /// </summary>
+    /// <author>Máté Cserép</author>
     public class HalfedgeGeometryOverlayOperator : IGeometryOverlayOperator
     {
         // Source: http://edndoc.esri.com/arcsde/9.0/general_topics/understand_spatial_relations.htm
@@ -85,7 +84,7 @@ namespace ELTE.AEGIS.Operations.Geometry
             {
                 return CreateResult(geometry, otherGeometry, face => face.Identifiers.All(id => !_bIdentifiers.Contains(id)));
             }
-            catch (NotSupportedException) 
+            catch (NotSupportedException)
             {
                 throw new NotSupportedException("The operation is not supported with the specified geometry type.");
             }
@@ -116,7 +115,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, face => 
+                return CreateResult(geometry, otherGeometry, face =>
                     face.Identifiers.Any(id => _aIdentifiers.Contains(id)) &&
                     face.Identifiers.Any(id => _bIdentifiers.Contains(id)));
             }
@@ -147,7 +146,7 @@ namespace ELTE.AEGIS.Operations.Geometry
 
             try
             {
-                return CreateResult(geometry, otherGeometry, 
+                return CreateResult(geometry, otherGeometry,
                     face => face.Identifiers.All(id => _aIdentifiers.Contains(id) && !_bIdentifiers.Contains(id)) ||
                             face.Identifiers.All(id => !_aIdentifiers.Contains(id) && _bIdentifiers.Contains(id)));
             }

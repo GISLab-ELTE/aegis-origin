@@ -1,17 +1,16 @@
-﻿/// <copyright file="BentleyOttmannAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="BentleyOttmannAlgorithmTest.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Algorithms;
 using ELTE.AEGIS.Geometry;
@@ -25,6 +24,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
     /// <summary>
     /// Test fixture for the <see cref="BentleyOttmannAlgorithm" /> class.
     /// </summary>
+    /// <author>Máté Cserép</author>
     [TestFixture]
     public class BentleyOttmannAlgorithmTest
     {
@@ -102,7 +102,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple lines, one intersection
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     new List<Coordinate>
@@ -137,10 +137,10 @@ namespace ELTE.AEGIS.Tests.Algorithms
                 });
 
             Assert.AreEqual(new[] { new Coordinate(15, 15) }, intersections);
-        
+
 
             // multiple lines, multiple intersections
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     new List<Coordinate>
@@ -174,7 +174,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple lines, multiple intersections
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     new List<Coordinate>
@@ -204,7 +204,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple lines, multiple intersections in the same coordinate
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     new List<Coordinate>
@@ -233,7 +233,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple lines, multiple intersections in the same coordinate
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     new List<Coordinate>
@@ -293,7 +293,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // single polygon, no intersection
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(
                 _factory.CreatePolygon(
                     _factory.CreatePoint(0, 0),
@@ -309,26 +309,26 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
             intersections = BentleyOttmannAlgorithm.Intersection(new List<Coordinate>
                 {
-                    new Coordinate(-1, 1), 
-                    new Coordinate(1, -1), 
-                    new Coordinate(11, -1), 
-                    new Coordinate(13, 1), 
-                    new Coordinate(13, 6), 
-                    new Coordinate(11, 8), 
-                    new Coordinate(8, 8), 
-                    new Coordinate(6, 6), 
-                    new Coordinate(7, 3), 
-                    new Coordinate(9, 1), 
-                    new Coordinate(11, 3), 
-                    new Coordinate(9, 5), 
-                    new Coordinate(3, 5), 
-                    new Coordinate(1, 3), 
-                    new Coordinate(3, 1), 
-                    new Coordinate(5, 3), 
-                    new Coordinate(6, 6), 
-                    new Coordinate(4, 8), 
-                    new Coordinate(1, 8), 
-                    new Coordinate(-1, 6), 
+                    new Coordinate(-1, 1),
+                    new Coordinate(1, -1),
+                    new Coordinate(11, -1),
+                    new Coordinate(13, 1),
+                    new Coordinate(13, 6),
+                    new Coordinate(11, 8),
+                    new Coordinate(8, 8),
+                    new Coordinate(6, 6),
+                    new Coordinate(7, 3),
+                    new Coordinate(9, 1),
+                    new Coordinate(11, 3),
+                    new Coordinate(9, 5),
+                    new Coordinate(3, 5),
+                    new Coordinate(1, 3),
+                    new Coordinate(3, 1),
+                    new Coordinate(5, 3),
+                    new Coordinate(6, 6),
+                    new Coordinate(4, 8),
+                    new Coordinate(1, 8),
+                    new Coordinate(-1, 6),
                     new Coordinate(-1, 1)
                 });
 
@@ -344,7 +344,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple polygons, no intersection
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     _factory.CreatePolygon(
@@ -365,7 +365,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple polygons, multiple intersections in the same coordinate
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     _factory.CreatePolygon(
@@ -417,7 +417,7 @@ namespace ELTE.AEGIS.Tests.Algorithms
 
 
             // multiple polygons, multiple intersections
-            
+
             intersections = BentleyOttmannAlgorithm.Intersection(new[]
                 {
                     _factory.CreatePolygon(

@@ -1,17 +1,16 @@
-﻿/// <copyright file="LasFileReaderTests.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2021 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Antal Tar</author>
+﻿// <copyright file="LasFileReaderTests.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -25,6 +24,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
     /// <summary>
     /// An xUnit support class to create testing environment for unit testing.
     /// </summary>
+    /// <author>Antal Tar</author>
     public class LasFileFixture : IDisposable
     {
         private readonly String _testFolder;
@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
             using (BinaryWriter writer = new BinaryWriter(File.Create(CurrentLasFilePath), Encoding.ASCII))
             {
                 // Header.
-                
+
                 Char[] sysid = new Char[32];
                 sysid[0] = 'O';
                 sysid[1] = 'T';
@@ -633,7 +633,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
                 Assert.AreEqual((UInt64)5, header.PointCount);
                 Assert.AreEqual((UInt64)3, header.PointCountPerReturn[0]);
                 Assert.AreEqual((UInt64)2, header.PointCountPerReturn[1]);
-                    
+
                 for (var i = 2; i < 15; i++)
                     Assert.AreEqual((UInt64)0, header.PointCountPerReturn[i]);
             }
@@ -743,7 +743,7 @@ namespace ELTE.AEGIS.Tests.IO.Lasfile
                 Assert.AreEqual((UInt16)1, point.RedChannel);
                 Assert.AreEqual((UInt16)2, point.GreenChannel);
                 Assert.AreEqual((UInt16)3, point.BlueChannel);
-                
+
                 Boolean result = false;
 
                 try

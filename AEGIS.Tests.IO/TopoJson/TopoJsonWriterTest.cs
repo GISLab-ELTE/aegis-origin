@@ -1,18 +1,16 @@
-﻿/// <copyright file="TopoJsonWriterTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://www.osedu.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Norbert Vass</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="TopoJsonWriterTest.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.IO.TopoJSON;
@@ -24,6 +22,10 @@ using System.Reflection;
 
 namespace ELTE.AEGIS.Tests.IO.TopoJson
 {
+    /// <summary>
+    /// Test fixture for the <see cref="TopoJsonWriter" /> class.
+    /// </summary>
+    /// <author>Norbert Vass, Máté Cserép</author>
     [TestFixture]
     public class TopoJsonWriterTest
     {
@@ -77,7 +79,7 @@ namespace ELTE.AEGIS.Tests.IO.TopoJson
             GeometryFactory factory = new GeometryFactory();
             IMultiPolygon mp = factory.CreateMultiPolygon
                 (
-                    new List<IPolygon> 
+                    new List<IPolygon>
                     {
                         factory.CreatePolygon(factory.CreatePoint(10,10),
                                                 factory.CreatePoint(20,10),
@@ -95,7 +97,7 @@ namespace ELTE.AEGIS.Tests.IO.TopoJson
             Assert.AreEqual(2, mp.Count);
 
             IMultiPoint p = factory.CreateMultiPoint(
-                new IPoint[2] 
+                new IPoint[2]
                 {
                     factory.CreatePoint(10,10),
                     factory.CreatePoint(23,23)
