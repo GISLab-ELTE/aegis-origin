@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
+    <Copyright>Copyright © Roberto Giachetta 2013-2023</Copyright>
+    <Authors>Máté Cserép</Authors>
+    <Version>1.1.1</Version>
+    <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>..\docs\AEGIS.Versioning.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.Versioning</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj" />
+    <ProjectReference Include="..\AEGIS.Operations\AEGIS.Operations.csproj" />
+  </ItemGroup>
+
+</Project>
