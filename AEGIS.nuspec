@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">ECL-2.0</license>
     <licenseUrl>https://licenses.nuget.org/ECL-2.0</licenseUrl>
-    <projectUrl>https://github.com/AegisSpatial/aegis-origin</projectUrl>
+    <projectUrl>https://github.com/GISLab-ELTE/aegis-origin</projectUrl>
     <icon>icon.png</icon>
     <description>The AEGIS framework is a geospatial toolkit developed on the .NET runtime facilitating creation of GIS applications.</description>
     <copyright>Copyright © Roberto Giachetta 2012-2022</copyright>
