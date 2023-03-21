@@ -1,18 +1,16 @@
-﻿/// <copyright file="ShamosHoeyAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="ShamosHoeyAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Collections.SweepLine;
 using System;
@@ -25,6 +23,7 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents the Shamos-Hoey Algorithm for determining intersection of line strings.
     /// </summary>
     /// <seealso cref="BentleyOttmannAlgorithm"/>
+    /// <author>Roberto Giachetta, Máté Cserép</author>
     public class ShamosHoeyAlgorithm
     {
         #region Private fields
@@ -38,7 +37,7 @@ namespace ELTE.AEGIS.Algorithms
         /// The sweep line.
         /// </summary>
         private SweepLine _sweepLine;
-        
+
 
         /// <summary>
         /// A value indicating whether the result is computed.
@@ -64,14 +63,14 @@ namespace ELTE.AEGIS.Algorithms
         /// Gets the result.
         /// </summary>
         /// <value><c>true</c> if the specified line strings intersect; otherwise <c>false</c>.</value>
-        public Boolean Result 
-        { 
-            get 
-            { 
-                if (!_hasResult) 
+        public Boolean Result
+        {
+            get
+            {
+                if (!_hasResult)
                     Compute();
-                return _result; 
-            } 
+                return _result;
+            }
         }
 
         #endregion
@@ -181,7 +180,7 @@ namespace ELTE.AEGIS.Algorithms
                             return;
                         }
                         if (segment.Below != null && !_sweepLine.IsAdjacent(segment.Edge, segment.Below.Edge) &&
-                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate, 
+                            LineAlgorithms.Intersects(segment.LeftCoordinate, segment.RightCoordinate,
                                                       segment.Below.LeftCoordinate, segment.Below.RightCoordinate,
                                                       PrecisionModel))
                         {

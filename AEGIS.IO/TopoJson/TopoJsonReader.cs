@@ -1,17 +1,16 @@
-﻿/// <copyright file="TopoJsonReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Norbert Vass</author>
+﻿// <copyright file="TopoJsonReader.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Management;
@@ -32,7 +31,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
     /// TopoJSON is a topological geospatial data interchange format based on GeoJSON.
     /// You can read about the format specification <a href="https://github.com/mbostock/topojson-specification">here</a>.
     /// </remarks>
-
+    /// <author>Norbert Vass</author>
     [IdentifiedObjectInstance("AEGIS::610103", "TopoJSON file")]
     public class TopoJsonReader : GeometryStreamReader
     {
@@ -162,7 +161,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
                 }
 
                 if (obj.Id != null)
-                    properties.Add("OBJECTID", obj.Id);                
+                    properties.Add("OBJECTID", obj.Id);
 
                 switch (obj.Type)
                 {
@@ -462,16 +461,16 @@ namespace ELTE.AEGIS.IO.TopoJSON
         private IPolygon CreatePolygon(JArray arcs, Dictionary<String, object> properties)
         {
             ILineString points = null;
-            List<ILineString> holes = new List<ILineString>();            
+            List<ILineString> holes = new List<ILineString>();
 
             bool first = true;
             foreach (JArray arc in arcs.Children())
             {
-                ILineString temp = CreateLineString(arc, null); 
+                ILineString temp = CreateLineString(arc, null);
 
                 if (temp.Coordinates.Count < 4)
                     throw new InvalidDataException("Polygon must have at least four coordinates.");
-                if (Math.Abs(temp.Coordinates.First().X - temp.Coordinates.Last().X) > 1 || 
+                if (Math.Abs(temp.Coordinates.First().X - temp.Coordinates.Last().X) > 1 ||
                     Math.Abs(temp.Coordinates.First().Y - temp.Coordinates.Last().Y) > 1)
                 {
                     throw new InvalidDataException("Polygon's first and last coordinate must match.");
@@ -525,7 +524,7 @@ namespace ELTE.AEGIS.IO.TopoJSON
         /// </exception>
         private IGeometryCollection<IGeometry> CreateGeometryCollection(TopoGeometryObject[] geometries, Dictionary<String, object> properties)
         {
-            List<IGeometry> geos = new List<IGeometry>();         
+            List<IGeometry> geos = new List<IGeometry>();
 
             try
             {

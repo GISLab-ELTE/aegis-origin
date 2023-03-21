@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
+    <Copyright>Copyright © Roberto Giachetta 2022-2023</Copyright>
+    <Authors>Roberto Giachetta, Máté Cserép</Authors>
+    <Version>1.2.0</Version>
+    <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocumentationFile>..\docs\AEGIS.LiDAR.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.LiDAR</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AEGIS.Core\AEGIS.Core.csproj" />
+    <ProjectReference Include="..\AEGIS.IO\AEGIS.IO.csproj" />
+  </ItemGroup>
+
+</Project>

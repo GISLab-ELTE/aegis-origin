@@ -1,17 +1,16 @@
-﻿/// <copyright file="ShortestPathTreeAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Krisztián Fodor</author>
+﻿// <copyright file="ShortestPathTreeAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +20,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
     /// <summary>
     /// Represents an operation computing the shortest path from a source vertex to all other vertices.
     /// </summary>
+    /// <author>Krisztián Fodor</author>
     public abstract class ShortestPathTreeAlgorithm : Operation<IGeometryGraph, IGeometryGraph>
     {
         #region Protected fields
@@ -92,7 +92,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
         /// Prepares the result of the operation.
         /// </summary>
         /// <returns>The result object.</returns>
-        protected override IGeometryGraph PrepareResult() 
+        protected override IGeometryGraph PrepareResult()
         {
             _parent = new Dictionary<IGraphVertex, IGraphVertex>(Source.VertexComparer);
             _distance = new Dictionary<IGraphVertex, Double>(Source.VertexComparer);
@@ -110,7 +110,7 @@ namespace ELTE.AEGIS.Operations.Spatial.ShortestPath
             // if the path is not valid, there is no result
             if (!_isValidPath)
                 return Result;
-            
+
             // generate a graph from the path
             _parent.Remove(_sourceVertex); // removing the source, we really don't want an edge between a vertex and a null.
             foreach (IGraphVertex vertex in _parent.Keys)

@@ -1,18 +1,16 @@
-﻿/// <copyright file="PolygonAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="PolygonAlgorithms.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +21,7 @@ namespace ELTE.AEGIS.Algorithms
     /// <summary>
     /// Contains algorithms for computing planar polygon properties.
     /// </summary>
+    /// <author>Roberto Giachetta, Máté Cserép</author>
     public static class PolygonAlgorithms
     {
         #region Area computation
@@ -74,7 +73,7 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
-            
+
             return SignedArea(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates));
         }
 
@@ -302,7 +301,7 @@ namespace ELTE.AEGIS.Algorithms
             for (Int32 firstEdgeIndex = 0; firstEdgeIndex < shell.Count - 2; firstEdgeIndex++)
                 for (Int32 secondEdgeIndex = firstEdgeIndex + 1; secondEdgeIndex < shell.Count - 1; secondEdgeIndex++)
                 {
-                    if (firstEdgeIndex == 0 && secondEdgeIndex == shell.Count - 2) // for the first and final edges the endpoints must match, 
+                    if (firstEdgeIndex == 0 && secondEdgeIndex == shell.Count - 2) // for the first and final edges the endpoints must match,
                     {
                         if (LineAlgorithms.Contains(shell[0], shell[1], shell[shell.Count - 2], precision) ||
                             LineAlgorithms.Contains(shell[shell.Count - 1], shell[shell.Count - 2], shell[1], precision))
@@ -644,7 +643,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <returns>The relative location of the coordinate with respect to the polygon.</returns>
         /// <exception cref="System.ArgumentNullException">The polygon is null.</exception>
         public static RelativeLocation Location(IBasicPolygon polygon, Coordinate coordinate, PrecisionModel precision)
-        { 
+        {
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
 
@@ -743,7 +742,7 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
-            
+
             return InInterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, PrecisionModel.Default);
         }
 
@@ -901,7 +900,7 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (polygon == null)
                 throw new ArgumentNullException("polygon", "The polygon is null.");
-            
+
 
             return InExterior(polygon.Shell.Coordinates, polygon.Holes.Select(hole => hole.Coordinates), coordinate, PrecisionModel.Default);
         }
@@ -1014,7 +1013,7 @@ namespace ELTE.AEGIS.Algorithms
         /// <param name="coordinate">The examined coordinate.</param>
         /// <param name="precision">The precision model.</param>
         /// <returns>The location of the coordinate.</returns>
-        private static RelativeLocation ComputeLocation(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision) 
+        private static RelativeLocation ComputeLocation(IList<Coordinate> shell, IEnumerable<IList<Coordinate>> holes, Coordinate coordinate, PrecisionModel precision)
         {
             if (!coordinate.IsValid)
                 return RelativeLocation.Undefined;

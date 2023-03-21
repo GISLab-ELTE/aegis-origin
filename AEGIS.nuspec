@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>AegisSpatial</id>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <title>AegisSpatial</title>
     <authors>Roberto Giachetta, Máté Cserép</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">ECL-2.0</license>
     <licenseUrl>https://licenses.nuget.org/ECL-2.0</licenseUrl>
-    <projectUrl>https://github.com/AegisSpatial/aegis-origin</projectUrl>
+    <projectUrl>https://github.com/GISLab-ELTE/aegis-origin</projectUrl>
     <icon>icon.png</icon>
     <description>The AEGIS framework is a geospatial toolkit developed on the .NET runtime facilitating creation of GIS applications.</description>
     <copyright>Copyright © Roberto Giachetta 2012-2022</copyright>
@@ -29,6 +29,7 @@
     <file src="AEGIS.IO\bin\Release\netstandard2.0\AEGIS.IO.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.IO.Hadoop\bin\Release\netstandard2.0\AEGIS.IO.Hadoop.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.IO.Spectral\bin\Release\netstandard2.0\AEGIS.IO.Spectral.dll" target="lib/netstandard2.0" />
+    <file src="AEGIS.LiDAR\bin\Release\netstandard2.0\AEGIS.LiDAR.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.Numerics\bin\Release\netstandard2.0\AEGIS.Numerics.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.Operations\bin\Release\netstandard2.0\AEGIS.Operations.dll" target="lib/netstandard2.0" />
     <file src="AEGIS.Operations.Graphs\bin\Release\netstandard2.0\AEGIS.Operations.Graphs.dll" target="lib/netstandard2.0" />
@@ -45,6 +46,7 @@
     <file src="docs\AEGIS.IO.xml" target="lib/netstandard2.0" />
     <file src="docs\AEGIS.IO.Hadoop.xml" target="lib/netstandard2.0" />
     <file src="docs\AEGIS.IO.Spectral.xml" target="lib/netstandard2.0" />
+    <file src="docs\AEGIS.LiDAR.xml" target="lib/netstandard2.0" />
     <file src="docs\AEGIS.Numerics.xml" target="lib/netstandard2.0" />
     <file src="docs\AEGIS.Operations.xml" target="lib/netstandard2.0" />
     <file src="docs\AEGIS.Operations.Graphs.xml" target="lib/netstandard2.0" />

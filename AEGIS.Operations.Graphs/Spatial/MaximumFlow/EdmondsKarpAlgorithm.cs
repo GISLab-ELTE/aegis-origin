@@ -1,17 +1,16 @@
-﻿/// <copyright file="EdmondsKarpAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Marcell Lipp</author>
+﻿// <copyright file="EdmondsKarpAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -22,6 +21,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
     /// <summary>
     /// Represents an operation computing the maximum flow between two vertices in a graph using the Edmonds-Karp algorithm.
     /// </summary>
+    /// <author>Marcell Lipp</author>
     [OperationMethodImplementation("AEGIS::225710", "Edmonds-Karp algorithm")]
     public class EdmondsKarpAlgorithm : MaximumFlowComputation
     {
@@ -48,7 +48,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         /// </exception>
         public EdmondsKarpAlgorithm(IGeometryGraph source, IDictionary<OperationParameter, Object> parameters)
             : base(source, null, GraphOperationMethods.EdmondsKarpAlgorithm, parameters)
-        {         
+        {
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
         public EdmondsKarpAlgorithm(IGeometryGraph source, IGeometryGraph target, IDictionary<OperationParameter, Object> parameters)
             : base(source, target, GraphOperationMethods.EdmondsKarpAlgorithm, parameters)
         {
-            
+
         }
 
         #endregion
@@ -158,7 +158,7 @@ namespace ELTE.AEGIS.Operations.Spatial.MaximumFlow
                     if (_capacityMetric(edge) - _usedCapacity[edge] > 0 && !parent.ContainsKey(edge.Target))
                     {
                         parent.Add(edge.Target, currentVertex);
-                       
+
                         if (pathCapacity.ContainsKey(currentVertex))
                             pathCapacity.Add(edge.Target, Math.Min(pathCapacity[currentVertex], _capacityMetric(edge) - _usedCapacity[edge]));
                         else

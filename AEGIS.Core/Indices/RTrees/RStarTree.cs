@@ -1,17 +1,16 @@
-﻿/// <copyright file="RstarTree.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamás Nagy</author>
+﻿// <copyright file="RStarTree.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +22,7 @@ namespace ELTE.AEGIS.Indices.RTrees
     /// <summary>
     /// Represents a 3D R*-Tree, which contains a collection of <see cref="IGeometry" /> instances.
     /// </summary>
+    /// <author>Tamás Nagy</author>
     public class RStarTree : RTree
     {
         #region Private fields
@@ -58,7 +58,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         #region Protected methods
 
         /// <summary>
-        /// Adds a node into the tree on a specified height. 
+        /// Adds a node into the tree on a specified height.
         /// </summary>
         /// <param name="node">The node.</param>
         /// <param name="height">The height where the node should be inserted.</param>
@@ -74,7 +74,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// <param name="overflownNode">The overflown node.</param>
         /// <param name="firstNode">The first produced node.</param>
         /// <param name="secondNode">The second produced node.</param>
-        protected override void SplitNode(RTreeNode overflownNode, out RTreeNode firstNode, out RTreeNode secondNode) 
+        protected override void SplitNode(RTreeNode overflownNode, out RTreeNode firstNode, out RTreeNode secondNode)
         {
             List<RTreeNode> alongChosenAxis = ChooseSplitAxis(overflownNode);
 
@@ -190,7 +190,7 @@ namespace ELTE.AEGIS.Indices.RTrees
                 height = Height - 1;
                 startHeight = height;
             }
-                
+
             nodeToInsert.AddChild(node);
 
             if (nodeToInsert.IsOverflown)
@@ -264,7 +264,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         {
             // the number of elements we will reinsert
             // experiments shown that the 30% of the maximum children yields the best performance
-            Int32 p = Convert.ToInt32(Math.Round(0.3 * MaxChildren)); 
+            Int32 p = Convert.ToInt32(Math.Round(0.3 * MaxChildren));
 
             List<RTreeNode> nodesInOrder = overflownNode.Children.
                 OrderByDescending(x => Coordinate.Distance(x.Envelope.Center, overflownNode.Envelope.Center)).Take(p).ToList();
@@ -353,7 +353,7 @@ namespace ELTE.AEGIS.Indices.RTrees
             }
             return minimalEntry;
         }
-        
+
         #endregion
 
         #region Private static methods
@@ -365,7 +365,7 @@ namespace ELTE.AEGIS.Indices.RTrees
         /// <returns></returns>
         private static Double ComputeMargin(Envelope envelope)
         {
-            return 2 * ((envelope.MaxX - envelope.MinX) + (envelope.MaxY - envelope.MinY) + (envelope.MaxZ - envelope.MinZ)); 
+            return 2 * ((envelope.MaxX - envelope.MinX) + (envelope.MaxY - envelope.MinY) + (envelope.MaxZ - envelope.MinZ));
         }
 
         /// <summary>

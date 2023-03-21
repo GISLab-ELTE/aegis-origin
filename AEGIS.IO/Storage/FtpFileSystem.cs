@@ -1,17 +1,16 @@
-﻿/// <copyright file="FtpFileSystem.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Marcell Lipp</author>
+﻿// <copyright file="FtpFileSystem.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.IO.Storage.Authentication;
 using ELTE.AEGIS.IO.Storage.Operation;
@@ -29,6 +28,7 @@ namespace ELTE.AEGIS.IO.Storage
     /// <summary>
     /// Represents FTP file system
     /// </summary>
+    /// <author>Marcell Lipp</author>
     public class FtpFileSystem : FileSystem
     {
         #region Public properties
@@ -278,7 +278,7 @@ namespace ELTE.AEGIS.IO.Storage
                 throw new ArgumentException(MessagePathExists, "path");
 
             FtpCreateFileOperation operation = new FtpCreateFileOperation(CreateUri(path));
-            
+
             try
             {
                 return (operation.Execute() as StreamOperationResult).Stream;
@@ -750,7 +750,7 @@ namespace ELTE.AEGIS.IO.Storage
                 throw new ConnectionException(MessageNoConnectionToFileSystem, ex);
             }
         }
-        
+
         /// <summary>
         /// Asynchronously determines whether the specified path exists.
         /// </summary>
@@ -838,7 +838,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             return GetFiles(GetParent(path)).Contains(path);
         }
-        
+
         /// <summary>
         /// Asynchronously determines whether the specified path is an existing file.
         /// </summary>
@@ -864,7 +864,7 @@ namespace ELTE.AEGIS.IO.Storage
         {
             return VolumeSeparator.ToString();
         }
-        
+
         /// <summary>
         /// Returns the path of the parent directory for the specified path.
         /// </summary>
@@ -894,7 +894,7 @@ namespace ELTE.AEGIS.IO.Storage
             if (String.IsNullOrWhiteSpace(path))
                 throw new ArgumentException(MessagePathIsEmpty, "path");
 
-            if (!path.Contains(DirectorySeparator)) 
+            if (!path.Contains(DirectorySeparator))
                 throw new ArgumentException(MessagePathInvalidFormat);
 
             return path.Substring(0, path.LastIndexOf(DirectorySeparator) - 1);
@@ -970,7 +970,7 @@ namespace ELTE.AEGIS.IO.Storage
 
             return path.Substring(path.LastIndexOf(DirectorySeparator) + 1);
         }
-        
+
         /// <summary>
         /// Returns the file name and file extension for a specified path asynchronously.
         /// </summary>
@@ -1487,7 +1487,7 @@ namespace ELTE.AEGIS.IO.Storage
             catch (FileSystemOperationException ex)
             {
                 switch (ex.Code)
-                { 
+                {
                     case FileSystemOperationResultCode.InvalidPath:
                         throw new ArgumentException(MessagePathInvalidFormat, "path");
                     case FileSystemOperationResultCode.UnavailablePath:

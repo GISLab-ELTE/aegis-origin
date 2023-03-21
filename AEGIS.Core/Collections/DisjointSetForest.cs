@@ -1,17 +1,16 @@
-﻿/// <copyright file="DisjointSetForest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Dávid Kis</author>
+﻿// <copyright file="DisjointSetForest.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections;
@@ -30,6 +29,7 @@ namespace ELTE.AEGIS.Collections
     /// This implementation of the <see cref="IDisjointSet{TElement}" /> interface is the Disjoint-set forests that are data structures
     /// where each set is represented by a tree data structure, in which each node holds a reference to its parent node.
     /// </remarks>
+    /// <author>Dávid Kis</author>
     public class DisjointSetForest<TElement> : IDisjointSet<TElement>, IEnumerable, IEnumerable<TElement>
     {
         #region Private fields
@@ -94,7 +94,7 @@ namespace ELTE.AEGIS.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DisjointSetForest{TElement}"/> class, that contains singletons(set with one element) from the specified <see cref="IEnumerable{TElement}" />. 
+        /// Initializes a new instance of the <see cref="DisjointSetForest{TElement}"/> class, that contains singletons(set with one element) from the specified <see cref="IEnumerable{TElement}" />.
         /// </summary>
         /// <param name="source">The <see cref="IEnumerable{TElement}" /> whose elements are gonna be singletons in the new <see cref="DisjointSetForest{TElement}" />.</param>
         /// <exception cref="System.ArgumentNullException">The <paramref name="source" /> is null.</exception>

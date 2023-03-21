@@ -1,17 +1,16 @@
-﻿/// <copyright file="CyrusBeckAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Daniel Ballagi</author>
+﻿// <copyright file="CyrusBeckAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -23,10 +22,11 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents a type for performing the Cyrus–Beck algorithm.
     /// </summary>
     /// <remarks>
-    /// The Cyrus–Beck algorithm is a computational geometry algorithm used for line clipping using a convex polygon 
-    /// clipping window. It was designed to be more efficient than the <see cref="CohenSutherlandAlgorithm"/> which 
+    /// The Cyrus–Beck algorithm is a computational geometry algorithm used for line clipping using a convex polygon
+    /// clipping window. It was designed to be more efficient than the <see cref="CohenSutherlandAlgorithm"/> which
     /// uses repetitive clipping.
     /// </remarks>
+    /// <author>Daniel Ballagi</author>
     public class CyrusBeckAlgorithm
     {
         #region Private fields
@@ -158,7 +158,7 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         #endregion
-        
+
         #region Public properties
 
         /// <summary>
@@ -201,9 +201,9 @@ namespace ELTE.AEGIS.Algorithms
         public void Compute()
         {
             _result = new List<IList<Coordinate>>();
-            
+
             List<Coordinate> windowNormals = ComputeNormals(_window);
-            
+
             foreach (IList<Coordinate> line in _source)
             {
                 List<Coordinate> retLineString = new List<Coordinate>();
@@ -288,7 +288,7 @@ namespace ELTE.AEGIS.Algorithms
             List<Coordinate> normals = new List<Coordinate>(window.Count);
             CoordinateVector direction;
 
-            for (Int32 index = 0; index < window.Count - 1; ++index) 
+            for (Int32 index = 0; index < window.Count - 1; ++index)
             {
                 direction = window[index + 1] - window[index];
                 direction = direction.Normalize();

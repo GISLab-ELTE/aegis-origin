@@ -1,17 +1,16 @@
-﻿/// <copyright file="LiangBarskyAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Daniel Ballagi</author>
+﻿// <copyright file="LiangBarskyAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -23,13 +22,14 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents a type for performing the Liang–Barsky algorithm.
     /// </summary>
     /// <remarks>
-    /// The Liang–Barsky algorithm is a computational geometry algorithm used for line clipping using a rectangular 
+    /// The Liang–Barsky algorithm is a computational geometry algorithm used for line clipping using a rectangular
     /// clipping window. The algorithm uses the parametric equation of a line and inequalities describing the range of
-    /// the clipping window to determine the intersections between the line and the clipping window. With these 
-    /// intersections it knows which portion of the line should be drawn. This algorithm is significantly more 
-    /// efficient than <see cref="CohenSutherlandAlgorithm" />. The idea of the Liang-Barsky clipping algorithm is to 
+    /// the clipping window to determine the intersections between the line and the clipping window. With these
+    /// intersections it knows which portion of the line should be drawn. This algorithm is significantly more
+    /// efficient than <see cref="CohenSutherlandAlgorithm" />. The idea of the Liang-Barsky clipping algorithm is to
     /// do as much testing as possible before computing line intersections.
     /// </remarks>
+    /// <author>Daniel Ballagi</author>
     public class LiangBarskyAlgorithm
     {
         #region Private fields
@@ -139,7 +139,7 @@ namespace ELTE.AEGIS.Algorithms
         }
 
         #endregion
-        
+
         #region Public methods
 
         /// <summary>

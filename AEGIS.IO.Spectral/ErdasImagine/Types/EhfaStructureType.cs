@@ -1,17 +1,16 @@
-﻿/// <copyright file="EhfaStructureType.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamas Nagy</author>
+﻿// <copyright file="EhfaStructureType.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -23,6 +22,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
     /// <summary>
     /// Represents a structure type in the HFA file structure.
     /// </summary>
+    /// <author>Tamas Nagy</author>
     public class EhfaStructureType : IEhfaObjectType
     {
         #region Private constants
@@ -33,7 +33,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         /// <remarks>
         /// Each object definition contain one or more item definition and it has a name.
         /// </remarks>
-        private const String ObjectDefinitonPattern = @"\{(?<itemDefinitions>(.|\s)+)\}(?<name>[^\{\}]+),";    
+        private const String ObjectDefinitonPattern = @"\{(?<itemDefinitions>(.|\s)+)\}(?<name>[^\{\}]+),";
 
         /// <summary>
         /// The EHFA file type definition. This field is constant.
@@ -121,7 +121,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         /// </summary>
         /// <value>The items contained by this structure.</value>
         public OrderedDictionary Items { get; private set; }
-        
+
         /// <summary>
         /// Gets the name of the structure.
         /// </summary>
@@ -149,13 +149,13 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         /// </summary>
         /// <value>The global type dictionary.</value>
         public HfaDictionary Dictionary { get; private set; }
-        
+
         /// <summary>
         /// Gets the type of the header tag.
         /// </summary>
         /// <value>The type of the header tag.</value>
         public static EhfaStructureType EhfaHeaderTagType { get { return ParseObjectDefinition(EhfaHeaderTypeDefinition, 0, EhfaHeaderTypeDefinition.Length, null); } }
-        
+
         /// <summary>
         /// Gets the type of the root file entry.
         /// </summary>
@@ -231,10 +231,10 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Types
         private static EhfaStructureType ParseObjectDefinition(String definition, Int32 startIndex, Int32 length, HfaDictionary dictionary)
         {
             Match objectMatch = ObjectDefinitionExpression.Match(definition, startIndex, length);
-            
+
             if (!objectMatch.Success)
                 return null;
-            
+
             return new EhfaStructureType(objectMatch.Groups["name"].Value, dictionary, objectMatch.Groups["itemDefinitions"].Value);
         }
 

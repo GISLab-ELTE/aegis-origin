@@ -1,17 +1,16 @@
-﻿/// <copyright file="HalfedgeGraphTest.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="HalfedgeGraphTest.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Geometry;
 using ELTE.AEGIS.Topology;
@@ -24,6 +23,7 @@ namespace ELTE.AEGIS.Tests.Topology
     /// <summary>
     /// Test fixture for the <see cref="HalfedgeGraph" /> class.
     /// </summary>
+    /// <author>Máté Cserép</author>
     [TestFixture]
     public class HalfedgeGraphTest
     {
@@ -116,7 +116,7 @@ namespace ELTE.AEGIS.Tests.Topology
             _graph.VerifyTopology();
             Assert.IsTrue(faces[0].IsAdjacent(faces[1]));
             Assert.AreSame(faces[0].Edges.Single(e => e.FaceA != null && e.FaceB != null), faces[1].Edges.Single(e => e.FaceA != null && e.FaceB != null));
-        
+
 
             // multiple adjacent polygons
 
@@ -252,7 +252,7 @@ namespace ELTE.AEGIS.Tests.Topology
             _graph.RemoveVertex(new Coordinate(0, 5));
             Assert.AreEqual(3, _graph.Vertices.Count());
             _graph.VerifyTopology();
-        
+
 
             // adding and removing polygon vertices
 
@@ -323,7 +323,7 @@ namespace ELTE.AEGIS.Tests.Topology
 
             // remove non-existent vertex
             Assert.IsFalse(_graph.RemoveVertex(new Coordinate(5, 5), RemoveMode.Clean));
-        
+
 
             // adding and removing vertices of multiple polygons
 
@@ -527,7 +527,7 @@ namespace ELTE.AEGIS.Tests.Topology
             Assert.AreEqual(8, _graph.Edges.Count());
             Assert.AreEqual(16, _graph.Halfedges.Count());
             Assert.AreEqual(7, _graph.Vertices.Count());
-        
+
 
             // adding two adjacent polygons and merging an intersecting one
 

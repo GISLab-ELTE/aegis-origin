@@ -1,18 +1,16 @@
-﻿/// <copyright file="RawImageReader.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Gréta Bereczki</author>
+﻿// <copyright file="RawImageReader.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Management;
 using System;
@@ -26,11 +24,12 @@ namespace ELTE.AEGIS.IO.RawImage
     /// Represents a general raw image format reader.
     /// </summary>
     /// <remarks>
-    /// Raw image formats are not in themselves image formats, but are schemes for storing the actual pixel values of an image in a file. 
-    /// Band interleaved by line (BIL), band interleaved by pixel (BIP), and band sequential (BSQ) are common methods of organizing image data for multiband images. 
-    /// Therefore, no image metadata (width, height, radiometric resolution, etc.) is actually stored in the file, hence these values must be supplied as parameters. 
+    /// Raw image formats are not in themselves image formats, but are schemes for storing the actual pixel values of an image in a file.
+    /// Band interleaved by line (BIL), band interleaved by pixel (BIP), and band sequential (BSQ) are common methods of organizing image data for multiband images.
+    /// Therefore, no image metadata (width, height, radiometric resolution, etc.) is actually stored in the file, hence these values must be supplied as parameters.
     /// Also, raw images do not contain reference system information, this must be supplied in addition.
     /// </remarks>
+    /// <author>Roberto Giachetta, Gréta Bereczki</author>
     [IdentifiedObjectInstance("AEGIS::610210", "Generic Raw Image")]
     public class RawImageReader : GeometryStreamReader
     {
@@ -47,7 +46,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// The raw image format reader.
             /// </summary>
             private readonly RawImageReader _rawImageReader;
-            
+
             #endregion
 
             #region Constructor
@@ -88,7 +87,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// The dimensions of the raster.
             /// </value>
             public RasterDimensions Dimensions { get; private set; }
-            
+
             /// <summary>
             /// Gets a value indicating whether the service is readable.
             /// </summary>
@@ -199,7 +198,7 @@ namespace ELTE.AEGIS.IO.RawImage
             /// <param name="columnIndex">The zero-based column index of the value.</param>
             /// <param name="bandIndex">The zero-based band index of the value.</param>
             /// <returns>The spectral value at the specified index.</returns>
-            public Double ReadFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex) 
+            public Double ReadFloatValue(Int32 rowIndex, Int32 columnIndex, Int32 bandIndex)
             {
                 return _rawImageReader.ReadValue(rowIndex, columnIndex, bandIndex);
             }
@@ -509,7 +508,7 @@ namespace ELTE.AEGIS.IO.RawImage
         public RawImageReader(String path, IDictionary<GeometryStreamParameter, Object> parameters)
             : base(path, SpectralGeometryStreamFormats.GenericRawImage, parameters)
         {
-            SetParameters(parameters);   
+            SetParameters(parameters);
         }
 
         /// <summary>
@@ -693,7 +692,7 @@ namespace ELTE.AEGIS.IO.RawImage
                 IRaster raster = ReadRasterContent(referenceSystem);
                 IDictionary<String, Object> metadata = ReadGeometryMetadata();
 
-                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster, metadata); 
+                return ResolveFactory(referenceSystem).CreateSpectralPolygon(raster, metadata);
             }
             catch (Exception ex)
             {
@@ -718,11 +717,11 @@ namespace ELTE.AEGIS.IO.RawImage
             _radiometricResolution = ResolveParameter<Int32>(SpectralGeometryStreamParameters.RadiometricResolution);
             _byteOrder = ResolveParameter<ByteOrder>(SpectralGeometryStreamParameters.SpectralResolution);
             _bytesGapPerBand = ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesGapPerBand);
-            _bytesPerBandRow = IsProvidedParameter(SpectralGeometryStreamParameters.BytesPerBandRow) ? 
-                               ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesPerBandRow) : 
+            _bytesPerBandRow = IsProvidedParameter(SpectralGeometryStreamParameters.BytesPerBandRow) ?
+                               ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesPerBandRow) :
                                Convert.ToInt32(Math.Ceiling(_numberOfColumns * _radiometricResolution / 8.0));
-            _bytesPerRow = IsProvidedParameter(SpectralGeometryStreamParameters.BytesPerRow) ? 
-                           ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesPerRow) : 
+            _bytesPerRow = IsProvidedParameter(SpectralGeometryStreamParameters.BytesPerRow) ?
+                           ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesPerRow) :
                            (_layout == RawImageLayout.BandInterlevedByLine ? _numberOfBands * _bytesGapPerBand : (Int32)Math.Ceiling(_numberOfRows * _numberOfColumns * _radiometricResolution / 8.0));
             _bytesSkipped = ResolveParameter<Int32>(SpectralGeometryStreamParameters.BytesSkipped);
 
@@ -899,7 +898,7 @@ namespace ELTE.AEGIS.IO.RawImage
 
         protected UInt32[] ReadValueSequence(Int32 startIndex, Int32 numberOfValues)
         {
-            Byte[] bytes = new Byte[numberOfValues];   
+            Byte[] bytes = new Byte[numberOfValues];
             _baseStream.Read(bytes, startIndex, bytes.Length);
             UInt32[] list=new UInt32[bytes.Length];
             for (int i = 0; i < bytes.Length;i++ )

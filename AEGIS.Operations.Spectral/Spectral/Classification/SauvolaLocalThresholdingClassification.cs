@@ -1,33 +1,30 @@
-﻿/// <copyright file="SauvolaLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Gábor Balázs Butkay</author>
+﻿// <copyright file="SauvolaLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// Represent a Sauvola local thresholding classification.
-/// </summary>
 namespace ELTE.AEGIS.Operations.Spectral.Classification
 {
     /// <summary>
     /// Represent a local thresholding classification using Sauvola's method.
     /// </summary>
     /// <remarks>
-    /// Sauvola's thresholding method is a local adaptive thresholding designed primarily for text images. 
+    /// Sauvola's thresholding method is a local adaptive thresholding designed primarily for text images.
     /// It is a variant of Niblack's method.
+    /// <author>Gábor Balázs Butkay</author>
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253312", "Sauvola local thresholding")]
     public class SauvolaLocalThresholdingClassification : SpectralTransformation
@@ -136,7 +133,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         }
 
         #endregion
-        
+
         #region Private methods
 
         /// <summary>

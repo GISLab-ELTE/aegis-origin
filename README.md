@@ -1,4 +1,4 @@
-# AEGIS geospatial framework - Origin edition
+# AEGIS geospatial framework - Origin edition (v1)
 
 [![Build Status](https://github.com/AegisSpatial/aegis-origin/actions/workflows/ci.yml/badge.svg)](https://github.com/AegisSpatial/aegis-origin/actions?query=branch%3Amaster)
 [![Code Coverage report](https://codecov.io/gh/AegisSpatial/aegis-origin/branch/master/graph/badge.svg?token=4YG21UHDLV)](https://codecov.io/gh/AegisSpatial/aegis-origin)
@@ -18,8 +18,11 @@ AEGIS has been developed by taking adaptability and extensibility in mind. It em
 - Giachetta, R.: A framework for processing large scale geospatial and remote sensing data in MapReduce environment. *Computer & Graphics*, vol. 49, pp. 37-46, 2015.
 DOI: [10.1016/j.cag.2015.03.003](https://doi.org/10.1016/j.cag.2015.03.003)
 
+- Kristóf D., Giachetta R., et al.: Using big geospatial data for fast flood detection: Developments from the IQmulus project. *IEEE International Geoscience and Remote Sensing Symposium (IGARSS)*, Milan, Italy, pp. 838-841, 2015.
+DOI: [10.1109/IGARSS.2015.7325895](https://doi.org/10.1109/IGARSS.2015.7325895)
+
 - Cserép, M.; Giachetta, R.: Operation-based revision control for geospatial data sets, *Geomatics Workbooks*, vol. 12, pp. 139-152, 2015.
-URL: [ResearchGate](https://www.researchgate.net/publication/282155515_Operation-based_revision_control_for_geospatial_data_sets)
+URL: [ResearchGate](https://www.geolab.polimi.it/wp-content/uploads/GW12_FOSS4G-eu15.pdf)
 
 - Giachetta, R.: AEGIS - A state-of-the-art spatio-temporal framework for education and research. *OSGeo Journal*, vol. 13, pp. 68-77, 2014.
 DOI: [10.7275/R53R0R22](https://doi.org/10.7275/R53R0R22)

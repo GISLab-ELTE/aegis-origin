@@ -1,17 +1,16 @@
-﻿/// <copyright file="GeometryStreamFormats.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
+﻿// <copyright file="GeometryStreamFormats.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Management;
 using System;
@@ -85,7 +84,9 @@ namespace ELTE.AEGIS.IO
         private static GeometryStreamFormat _shapefile;
       
         private static GeometryStreamFormat _lasfile;
-      
+
+        private static GeometryStreamFormat _lazfile;
+
         private static GeometryStreamFormat _geojsonfile;
 
         private static GeometryStreamFormat _topojsonfile;
@@ -125,7 +126,23 @@ namespace ELTE.AEGIS.IO
                                new GeometryModel[] { GeometryModel.Spatial3D }));
             }
         }
-      
+
+        /// <summary>
+        /// Compressed LASer file
+        /// </summary>
+        public static GeometryStreamFormat Lazfile
+        {
+            get
+            {
+                return _lazfile ?? (_lazfile =
+                           new GeometryStreamFormat("AEGIS::610105", "LAZ file",
+                               "LAZ is a compressed version of the LAS format", null, null,
+                               new String[] { "laz" }, null,
+                               new Type[] { typeof(IPoint) },
+                               new GeometryModel[] { GeometryModel.Spatial3D }));
+            }
+        }
+
         /// <summary>
         /// GeoJSON file
         /// </summary>

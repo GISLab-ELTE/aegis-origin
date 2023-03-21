@@ -1,17 +1,16 @@
-﻿/// <copyright file="ScharrFilterTransformation.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Dóra Papp</author>
+﻿// <copyright file="ScharrFilterOperation.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -24,8 +23,9 @@ namespace ELTE.AEGIS.Operations.Spectral.Filtering
     /// </summary>
     /// <remarks>
     /// The Scharr edge detection filter is a specialization of the Sobel filter.
-    /// Scharr operators result from an optimization minimizing weighted mean squared angular error in Fourier domain. 
+    /// Scharr operators result from an optimization minimizing weighted mean squared angular error in Fourier domain.
     /// </remarks>
+    /// <author>Dóra Papp</author>
     [OperationMethodImplementation("AEGIS::251183", "Scharr filter")]
     public class ScharrFilterOperation : GradientFilterOperation
     {

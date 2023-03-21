@@ -5,7 +5,7 @@
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <FileVersion>1.1.0.0</FileVersion>
     <Company>Eötvös Loránd University (ELTE), Faculty of Informatics</Company>
-    <Copyright>Copyright © Roberto Giachetta 2014-2022</Copyright>
+    <Copyright>Copyright © Roberto Giachetta 2014-2023</Copyright>
     <Authors>Roberto Giachetta, Máté Cserép</Authors>
     <Version>1.1.1</Version>
     <PackageLicenseExpression>ECL-2.0</PackageLicenseExpression>
@@ -13,6 +13,7 @@
 
   <PropertyGroup>
     <DocumentationFile>..\docs\AEGIS.Operations.Reference.Graph.xml</DocumentationFile>
+    <RootNamespace>ELTE.AEGIS.Operations</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

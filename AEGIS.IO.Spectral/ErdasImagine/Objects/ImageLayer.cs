@@ -1,17 +1,16 @@
-﻿/// <copyright file="ErdasImgLayer.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Tamas Nagy</author>
+﻿// <copyright file="ImageLayer.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -27,6 +26,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
     /// <summary>
     /// Represents an image layer.
     /// </summary>
+    /// <author>Tamas Nagy</author>
     public class ImageLayer : EhfaStructure
     {
         #region Private types
@@ -178,7 +178,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
         public String LayerType { get { return _layerType ?? (_layerType = GetValue<String>("layerType")); } }
 
         /// <summary>
-        /// Gets the number of blocks across the image. 
+        /// Gets the number of blocks across the image.
         /// </summary>
         /// <value>The number of blocks across the image.</value>
         public Int32 BlockCountAcross { get { return (Int32)Math.Ceiling((Double)Width / BlockWidth); } }
@@ -362,7 +362,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
         #endregion
 
         #region Private methods
-        
+
         /// <summary>
         /// Reads the layer information.
         /// </summary>
@@ -654,7 +654,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
                         projection = CoordinateProjectionFactory.FromMethod(CoordinateOperationMethods.LabordeObliqueMercatorProjection, parameters, ellipsoid, AreasOfUse.World);
                     }
                     break;
-                case 21: // 21="Space Oblique Mercator" 
+                case 21: // 21="Space Oblique Mercator"
                     throw new NotSupportedException("Space Oblique Mercator projection is not supported");
                 case 22: // 22 = "Modified Transverse Mercator"
                     throw new NotSupportedException("Modified Transverse Mercator projection is not supported");
@@ -694,7 +694,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
         private IEnumerable<Double> ReadFloatingRasterBlock(Stream stream, BlockInformation blockInfo)
         {
             stream.Seek(blockInfo.Offset, SeekOrigin.Begin);
-            
+
             if (blockInfo.CompressionType != null && blockInfo.CompressionType != "no compression")
             {
                 return DecompressFloatingBlock(stream, blockInfo);
@@ -781,7 +781,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
 
             if (blockSegmentCount == -1)
             {
-                // if the algorithm decides that it is not worthwhile to compress runs, 
+                // if the algorithm decides that it is not worthwhile to compress runs,
                 // numsegments will be set to -1 and you will just find the range compressed data at the data offset
 
                 Byte[] buffer = new Byte[(Int32)(BlockWidth * BlockHeight * (8.0 / bitsPerValue))];
@@ -857,7 +857,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
 
             if (blockSegmentCount == -1)
             {
-                // if the algorithm decides that it is not worthwhile to compress runs, 
+                // if the algorithm decides that it is not worthwhile to compress runs,
                 // numsegments will be set to -1 and you will just find the range compressed data at the data offset
 
                 Byte[] buffer = new Byte[(Int32)(BlockWidth * BlockHeight * (8.0 / bitsPerValue))];
@@ -933,7 +933,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
 
             if (blockSegmentCount == -1)
             {
-                // if the algorithm decides that it is not worthwhile to compress runs, 
+                // if the algorithm decides that it is not worthwhile to compress runs,
                 // numsegments will be set to -1 and you will just find the range compressed data at the data offset
 
                 Byte[] buffer = new Byte[(Int32)(BlockWidth * BlockHeight * (8.0 / bitsPerValue))];
@@ -965,7 +965,7 @@ namespace ELTE.AEGIS.IO.ErdasImagine.Objects
                     Int32 repeats = EndianBitConverter.ToInt32(countByteList.ToArray(), ByteOrder.BigEndian);
                     repeatCount[segment] = repeats;
                 }
-                
+
                 Byte[] buffer = new Byte[blockInfo.Size - (stream.Position - blockStartPointer)];
                 stream.Read(buffer, 0, buffer.Length);
 

@@ -1,17 +1,16 @@
-﻿/// <copyright file="HalfedgeGraph.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="HalfedgeGraph.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Algorithms;
 using System;
@@ -28,6 +27,7 @@ namespace ELTE.AEGIS.Topology
     /// <remarks>
     /// The implementation of the core topological model was inspired by Alexander Kolliopoulos's <a href="http://www.dgp.toronto.edu/~alexk/">Lydos library</a>.
     /// </remarks>
+    /// <author>Máté Cserép</author>
     public sealed partial class HalfedgeGraph : IHalfedgeGraph
     {
         #region Private fields
@@ -1296,7 +1296,7 @@ namespace ELTE.AEGIS.Topology
         /// <param name="imageSize">Size of the image.</param>
         /// <param name="vertexSize">Size of the radius of a vertex.</param>
         [System.Diagnostics.Conditional("DEBUG")]
-        public void DebugSvg(String filename, 
+        public void DebugSvg(String filename,
             Boolean hasLabels = true, Double imageSize = 800d, Single vertexSize = 0.5f)
         {
             Double minX, minY, maxX, maxY;

@@ -1,17 +1,16 @@
-﻿/// <copyright file="GreinerHormannAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Máté Cserép</author>
+﻿// <copyright file="GreinerHormannAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -26,16 +25,17 @@ namespace ELTE.AEGIS.Algorithms
     /// </summary>
     /// <remarks>
     /// The Greiner-Hormann algorithm is based on the Weiler-Atherton algorithm, but with a different implementational approach.
-    /// 
+    ///
     /// The algorithm was extended to handle degenerate cases without vertex perturbation based on the proposal of Dae Hyun Kim and Myoung-Jun Kim [1].
     /// Degenerate cases consists of polygons with joint edges and polygons touching but not intersecting each other.
-    /// 
+    ///
     /// The case of self-intersecting polygons might be implemented based on the ideas of Anurag Chakraborty [2].
-    /// 
+    ///
     /// References:
     /// [1] D. H. Kim, M-J. Kim, An Extension of Polygon Clipping To Resolve Degenerate Cases, 2006
     /// [2] A. Chakraborty, An Extension Of Weiler-Atherton Algorithm To Cope With The Self-intersecting Polygon, 2014
     /// </remarks>
+    /// <author>Máté Cserép</author>
     public class GreinerHormannAlgorithm
     {
         #region Private types
@@ -308,8 +308,8 @@ namespace ELTE.AEGIS.Algorithms
         /// A value indicating whether to compute the external clips of the polygons.
         /// </summary>
         /// <value><c>true</c> if the algorithm should compute the external clips of the polygons, otherwise <c>false</c>.</value>
-        public Boolean ComputeExternalClips 
-        { 
+        public Boolean ComputeExternalClips
+        {
             get { return _computeExternalClips; }
             set
             {
@@ -425,7 +425,7 @@ namespace ELTE.AEGIS.Algorithms
 
             if (!PolygonAlgorithms.IsSimple(first) || !PolygonAlgorithms.IsSimple(second))
                 throw new NotSupportedException("Self-intersecting polygons are not (yet) supported by the Greiner-Hormann algorithm.");
-            
+
             _polygonA = new BasicPolygon(first);
             _polygonB = new BasicPolygon(second);
             _computeExternalClips = computeExternalClips;
@@ -458,7 +458,7 @@ namespace ELTE.AEGIS.Algorithms
                 throw new ArgumentNullException("secondShell", "The shell of the second polygon is null.");
 
             if (!PolygonAlgorithms.IsSimple(firstShell) || !PolygonAlgorithms.IsSimple(secondShell) ||
-                firstHoles != null && firstHoles.Any(h => !PolygonAlgorithms.IsSimple(h.Reverse().ToList())) || 
+                firstHoles != null && firstHoles.Any(h => !PolygonAlgorithms.IsSimple(h.Reverse().ToList())) ||
                 secondHoles != null && secondHoles.Any(h => !PolygonAlgorithms.IsSimple(h.Reverse().ToList())))
                 throw new NotSupportedException("Self-intersecting polygons are not (yet) supported by the Greiner-Hormann algorithm.");
 
@@ -501,7 +501,7 @@ namespace ELTE.AEGIS.Algorithms
             {
                 ComputeCompleteClips();
             }
-            
+
             // Holes exist.
             if (_holesA.Count > 0 || _holesB.Count > 0)
             {
@@ -634,7 +634,7 @@ namespace ELTE.AEGIS.Algorithms
                              prevLocation == RelativeLocation.Boundary && nextLocation == RelativeLocation.Exterior ||
                              prevLocation == RelativeLocation.Interior && nextLocation == RelativeLocation.Boundary)
                         _intersections[currentNode.Value].Mode = IntersectionMode.Exit;
-                    
+
                     // Entry + Exit / Exit + Entry
                     else if (prevLocation == RelativeLocation.Interior && nextLocation == RelativeLocation.Interior ||
                              prevLocation == RelativeLocation.Exterior && nextLocation == RelativeLocation.Exterior)
@@ -658,7 +658,7 @@ namespace ELTE.AEGIS.Algorithms
         {
             if (_intersections.Count == 0)
                 return;
-            
+
             // Process the first polygon.
             Intersection firstIntersection = null;
             Intersection lastIntersection = null;

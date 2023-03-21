@@ -1,18 +1,16 @@
-﻿/// <copyright file="HadoopFileSystem.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Roberto Giachetta</author>
-/// <author>Tamás Nagy</author>
+﻿// <copyright file="HadoopFileSystem.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.IO.Storage.Authentication;
 using ELTE.AEGIS.IO.Storage.Operation;
@@ -29,6 +27,7 @@ namespace ELTE.AEGIS.IO.Storage
     /// <summary>
     /// Represents a HDFS file system.
     /// </summary>
+    /// <author>Roberto Giachetta, Tamás Nagy</author>
     public class HadoopFileSystem : FileSystem
     {
         #region Private fields
@@ -75,19 +74,19 @@ namespace ELTE.AEGIS.IO.Storage
         /// Gets a value indicating whether the file system is connected.
         /// </summary>
         /// <value><c>true</c> if operations can be executed on the file system; otherwise, <c>false</c>.</value>
-        public override Boolean IsConnected 
-        { 
-            get 
+        public override Boolean IsConnected
+        {
+            get
             {
                 try
                 {
                     return IsDirectory("/");
                 }
-                catch 
+                catch
                 {
                     return false;
                 }
-            } 
+            }
         }
 
         /// <summary>
@@ -479,7 +478,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
 
-                // process the result                
+                // process the result
                 return (result as HadoopFileStreamingOperationResult).FileStream;
             }
             catch (AggregateException ex)
@@ -562,7 +561,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
 
-                // process the result                
+                // process the result
                 return (result as HadoopFileStreamingOperationResult).FileStream;
             }
             catch (AggregateException ex)
@@ -627,7 +626,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
 
-                // process the result                
+                // process the result
                 if (!(result as HadoopBooleanOperationResult).Success)
                     throw new ArgumentException(MessagePathNotExists, "path");
             }
@@ -695,7 +694,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
 
-                // process the result                
+                // process the result
                 if (!(result as HadoopBooleanOperationResult).Success)
                     throw new ArgumentException(MessagePathNotExists, "path");
             }
@@ -784,7 +783,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = operation.ExecuteAsync().Result;
 
-                // process the result                
+                // process the result
                 if (!(result as HadoopBooleanOperationResult).Success)
                     throw new ArgumentException(MessagePathNotExists, "sourcePath");
             }
@@ -873,7 +872,7 @@ namespace ELTE.AEGIS.IO.Storage
                 // execute operation
                 HadoopFileSystemOperationResult result = await operation.ExecuteAsync();
 
-                // process the result                
+                // process the result
                 if (!(result as HadoopBooleanOperationResult).Success)
                     throw new ArgumentException(MessagePathNotExists, "sourcePath");
             }
@@ -1361,7 +1360,7 @@ namespace ELTE.AEGIS.IO.Storage
 
                 // the path exists, take the directory part
                 switch ((result as HadoopFileStatusOperationResult).EntryType)
-                { 
+                {
                     case FileSystemEntryType.Directory:
                         return path;
                     default:
@@ -1889,7 +1888,7 @@ namespace ELTE.AEGIS.IO.Storage
                 {
                     throw ex.InnerException;
                 }
-                
+
                 // handle unexpected exceptions
                 throw new ConnectionException(MessageNoConnectionToFileSystem, ex.InnerException);
             }
@@ -2126,14 +2125,14 @@ namespace ELTE.AEGIS.IO.Storage
                 List<HadoopFileStatusOperationResult> result = GetFileEntryStatusListAsync(path, searchPattern, recursive).Result;
 
                 // convert and sort the result
-                return result.Select(fileStatusResult => new FileSystemEntry { 
-                    Path = fileStatusResult.Path, 
-                    Name = fileStatusResult.Name, 
-                    Type = fileStatusResult.EntryType, 
-                    CreationTime = DateTime.MinValue, 
-                    LastAccessTime = fileStatusResult.AccessTime, 
-                    LastModificationTime = fileStatusResult.ModificationTime, 
-                    Length = fileStatusResult.Length 
+                return result.Select(fileStatusResult => new FileSystemEntry {
+                    Path = fileStatusResult.Path,
+                    Name = fileStatusResult.Name,
+                    Type = fileStatusResult.EntryType,
+                    CreationTime = DateTime.MinValue,
+                    LastAccessTime = fileStatusResult.AccessTime,
+                    LastModificationTime = fileStatusResult.ModificationTime,
+                    Length = fileStatusResult.Length
                 }).OrderBy(entry => entry.Path).ToArray();
             }
             catch (AggregateException ex)

@@ -1,17 +1,16 @@
-﻿/// <copyright file="BernsenLocalTresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Gábor Balázs Butkay</author>
+﻿// <copyright file="BernsenLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -24,11 +23,12 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represent a local thresholding classification using Bernsen's algorithm.
     /// </summary>
     /// <remarks>
-    /// In Bernsen local thresholding, if the local contrast is above or equal to the user provided contrast threshold, the threshold 
-    /// is set at the local midgray value (the mean of the minimum and maximum gray values in the local window). 
-    /// If the local contrast is below the contrast threshold the neighborhood is considered to consist only of one class and the pixel 
+    /// In Bernsen local thresholding, if the local contrast is above or equal to the user provided contrast threshold, the threshold
+    /// is set at the local midgray value (the mean of the minimum and maximum gray values in the local window).
+    /// If the local contrast is below the contrast threshold the neighborhood is considered to consist only of one class and the pixel
     /// is set to object or background depending on the value of the midgray.
     /// </remarks>
+    /// <author>Gábor Balázs Butkay</author>
     [OperationMethodImplementation("AEGIS::253302", "Bernsen local thresholding")]
     public class BernsenLocalThresholdingClassification : SpectralTransformation
     {
@@ -100,7 +100,7 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
         #endregion
 
         #region Protected Operation methods
-        
+
         /// <summary>
         /// Prepares the result of the operation.
         /// </summary>

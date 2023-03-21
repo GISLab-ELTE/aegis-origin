@@ -1,17 +1,16 @@
-﻿/// <copyright file="MonotoneSubdivisionAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Orsolya Harazin</author>
+﻿// <copyright file="MonotoneSubdivisionAlgorithm.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using System;
 using System.Collections.Generic;
@@ -22,10 +21,11 @@ namespace ELTE.AEGIS.Algorithms
     /// Represents a type for executing the Monotone Subdivision algorithm.
     /// </summary>
     /// <remarks>
-    /// Monotone subdivision is an algorithm for creating the triangulation of the polygon by partitioning to trapezoids, 
-    /// converting them to monotone subdivisions, and triangulating each monotone piece. 
+    /// Monotone subdivision is an algorithm for creating the triangulation of the polygon by partitioning to trapezoids,
+    /// converting them to monotone subdivisions, and triangulating each monotone piece.
     /// The algorithm can only handle simple polygons without holes. When a polygon with holes is specified, the holes will be ignored.
     /// </remarks>
+    /// <author>Orsolya Harazin</author>
     public class MonotoneSubdivisionAlgorithm
     {
         #region Protected fields
@@ -138,7 +138,7 @@ namespace ELTE.AEGIS.Algorithms
             _result = new List<Coordinate[]>();
 
             IList<Coordinate> shell = new List<Coordinate>(_shell);
-            IList<Coordinate> nextShell = new List<Coordinate>(shell);            
+            IList<Coordinate> nextShell = new List<Coordinate>(shell);
             Coordinate[] triangle;
 
             Int32 coordinateCount = shell.Count - 1;

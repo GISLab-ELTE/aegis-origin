@@ -1,17 +1,16 @@
-﻿/// <copyright file="MeanthreshLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
-///     Copyright (c) 2011-2022 Roberto Giachetta. Licensed under the
-///     Educational Community License, Version 2.0 (the "License"); you may
-///     not use this file except in compliance with the License. You may
-///     obtain a copy of the License at
-///     http://opensource.org/licenses/ECL-2.0
-///
-///     Unless required by applicable law or agreed to in writing,
-///     software distributed under the License is distributed on an "AS IS"
-///     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
-///     or implied. See the License for the specific language governing
-///     permissions and limitations under the License.
-/// </copyright>
-/// <author>Gábor Balázs Butkay</author>
+﻿// <copyright file="MeanthreshLocalThresholdingClassification.cs" company="Eötvös Loránd University (ELTE)">
+//     Copyright (c) 2011-2023 Roberto Giachetta. Licensed under the
+//     Educational Community License, Version 2.0 (the "License"); you may
+//     not use this file except in compliance with the License. You may
+//     obtain a copy of the License at
+//     http://opensource.org/licenses/ECL-2.0
+// 
+//     Unless required by applicable law or agreed to in writing,
+//     software distributed under the License is distributed on an "AS IS"
+//     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+//     or implied. See the License for the specific language governing
+//     permissions and limitations under the License.
+// </copyright>
 
 using ELTE.AEGIS.Operations.Management;
 using System;
@@ -23,9 +22,10 @@ namespace ELTE.AEGIS.Operations.Spectral.Classification
     /// Represent a local thresholding classification using the Meanthresh algorithm.
     /// </summary>
     /// <remarks>
-    /// The Meanthresh algorithm calculates the mean value in a window and if the pixel's intensity is above the mean 
-    /// the pixel is set to white color, otherwise the pixel is set to black color. 
+    /// The Meanthresh algorithm calculates the mean value in a window and if the pixel's intensity is above the mean
+    /// the pixel is set to white color, otherwise the pixel is set to black color.
     /// To increase the resistance to noise the threshold value can be shifted by a thresholding constant.
+    /// <author>Gábor Balázs Butkay</author>
     /// </remarks>
     [OperationMethodImplementation("AEGIS::253305", "Meanthresh local thresholding")]
     public class MeanthreshLocalThresholdingClassification : SpectralTransformation
