@@ -33,7 +33,7 @@ namespace AEGIS.Tests.Reference.Operations.Projections
         {
             // Location: Berlin
             coordinate = new Coordinate(4553442.949403, 3271908.232428);
-            geoCoordinate = new GeoCoordinate(52.5072003, 13.4247528);
+            geoCoordinate = new GeoCoordinate(Angle.FromDegree(52.5072003), Angle.FromDegree(13.4247528));
         }
 
         [SetUp]
