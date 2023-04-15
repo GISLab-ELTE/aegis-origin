@@ -19,7 +19,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
-namespace AEGIS.Tests.Reference.Operations
+namespace ELTE.AEGIS.Tests.Reference.Operations
 {
     [TestFixture]
     public class GeocentricToTopocentricConversionTest

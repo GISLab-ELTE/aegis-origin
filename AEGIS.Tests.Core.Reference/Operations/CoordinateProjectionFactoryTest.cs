@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AEGIS.Tests.Reference.Operations
+namespace ELTE.AEGIS.Tests.Reference.Operations
 {
     [TestFixture]
     public class CoordinateProjectionFactoryTest

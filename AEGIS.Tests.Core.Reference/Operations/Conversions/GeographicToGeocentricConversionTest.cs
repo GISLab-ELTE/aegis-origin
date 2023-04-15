@@ -17,7 +17,7 @@ using ELTE.AEGIS.Reference;
 using ELTE.AEGIS.Reference.Operations;
 using NUnit.Framework;
 
-namespace AEGIS.Tests.Reference.Operations
+namespace ELTE.AEGIS.Tests.Reference.Operations
 {
     [TestFixture]
     public class GeographicToGeocentricConversionTest
